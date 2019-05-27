@@ -6,7 +6,7 @@ XDFrame，让前端回到最纯粹的web；没有nodejs，没有webpack，也能
 
 ## 为什么叫XDFrame
 
-因为是使用 [Xhear](https://github.com/kirakiray/Xhear) 和 [drill.js](https://github.com/kirakiray/drill.js) 
+因为是使用 [Xhear](https://github.com/kirakiray/Xhear) 和 [drill.js](https://github.com/kirakiray/drill.js) 构建的框架，所以取两个库的开头字母；
 
 Xhear 负责视图和数据绑定；
 
