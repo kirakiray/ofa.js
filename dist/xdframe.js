@@ -3617,8 +3617,6 @@ const tatcheTargetFunc = (ele, tachedFunName, tachedKey) => {
 
 })(window);
 
-    
-
     ((glo) => {
     "use strict";
     // common
@@ -4594,6 +4592,19 @@ const tatcheTargetFunc = (ele, tachedFunName, tachedKey) => {
     gloDrill && gloDrill(drill);
 })(window);
 
+    drill.config({
+    paths: {
+        "^\\$/": "https://kirakiray.github.io/XDFrame/lib/"
+    }
+});
+
+// 配置全局变量
+glo.XDFrame = {
+    drill,
+    $,
+    version: 10000
+};
+
     // 用于xhear库载入html并获取temp的html代码用插件
 drill.ext("fixUrlObj", (args, next, base) => {
     // 将dcode的相关数据修正
@@ -4667,10 +4678,4 @@ drill.ext(base => {
         packData.stat = 3;
     });
 });
-
-    glo.XDFrame = {
-        drill,
-        $,
-        version: 10000
-    };
 })(window);

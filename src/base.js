@@ -3,15 +3,9 @@
 
     //<!--xhear-->
 
-    //<!--lib-->
-
     //<!--drill-->
 
-    //<!--drill-domcode-->
+    //<!--lib-->
 
-    glo.XDFrame = {
-        drill,
-        $,
-        version: 10000
-    };
+    //<!--drill-domcode-->
 })(window);
