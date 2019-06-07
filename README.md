@@ -42,6 +42,8 @@ XDFrame，让前端回归最纯粹的web；没有nodejs，没有webpack，也能
 </body>
 ```
 
+[查看案例，打开后右键 显示网页源代码](https://kirakiray.github.io/XDFrame/demo/markdown_test.html)
+
 下面有重定向官方包的方法；
 
 开发 **XDFrame组件包** 不需要学习 nodejs和webpack；
