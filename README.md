@@ -2,15 +2,15 @@
 
 No webpack,No nodejs,Let the front end go back to the purest web;
 
-XDFrame，让前端回到最纯粹的web；没有nodejs，没有webpack，也能开发超大型应用；
+XDFrame，让前端回归最纯粹的web；没有nodejs，没有webpack，也能开发超大型应用；
 
 ## 为什么要用XDFrame？
 
 使用 XDFrame封装的组件包，几乎不需要学习成本；
 
-先给页面添加XDFrame；
+下面给页面 添加XDFrame支持 和 使用官方组件包；
 
-### 如何给你的项目添加XDFrame
+### 给你的项目添加XDFrame
 
 直接引用 `xdframe.js` 入 html 文件即可；
 
@@ -24,9 +24,11 @@ XDFrame，让前端回到最纯粹的web；没有nodejs，没有webpack，也能
 </head>
 ```
 
+可以将xdframe下载下来放到你的cdn服务器上；
+
 ### 如何使用XDFrame组件包
 
-例如要使用 XDFrame 官方提供的组件包；
+例如要使用 XDFrame 官方提供的 `markdown组件包`；
 
 ```html
 <script>
@@ -40,9 +42,11 @@ XDFrame，让前端回到最纯粹的web；没有nodejs，没有webpack，也能
 </body>
 ```
 
+下面有重定向官方包的方法；
+
 开发 **XDFrame组件包** 不需要学习 nodejs和webpack；
 
-XDFrame的学习成本低，跳过了nodejs和webpack，开发web前端代码，仅需要升级浏览器即可；XDFrame已包含 `模块化`、`组件化`和`数据同步`的功能；
+XDFrame的学习成本低，跳过了nodejs和webpack，开发web前端代码，仅需要升级浏览器即可；XDFrame已集成 `模块化`、`组件化`和`数据同步`的方案；
 
 ## 为什么叫XDFrame
 
@@ -52,27 +56,49 @@ Xhear 负责视图和数据绑定；
 
 drill.js 负责模块和资源管理；
 
-打包起来，只有37kb (1.0.0 版)；
+XDFrame只是把它们打包起来而已，只有37kb (1.0.0 版)；
 
 <img src="doc/sources/xdframe_fime_info.png" width="263" />
 
 ## 如何开发 XDFrame组件包？
 
-再次重申，不需要使用第三方脚手架（没有 nodejs 和 webpack），只需要安装最新的浏览器(建议Chrome和Firefox)，只需要学会使用 `js`(推荐es7)、`html`和`css`即可；
+[点击这里进入XDFrame组件包开发文档](doc/README.md)；
+
+XDFrame 是由 [Xhear](https://github.com/kirakiray/Xhear) 和 [drill.js](https://github.com/kirakiray/drill.js) 构成，能使用它们所有方法，细节可查看它们的文档；
 
 ## XDFrame 目前适合那些项目？
+
+目前适合做工具类的项目（后台管理系统，Electron封装工具、Chrome(Firefox)扩展等）；XDFrame自带的 stanz库，提供强大的本地数据同步功能，非常适合工具类应用开发；并且工具类用户有很强的互联网属性，懂得升级和更换浏览器（目前的 XDFrame依赖es7，bable编译后需支持 Proxy 程度）；
+
+后面会提供低版本浏览器起支持（目前 底层 stanz 6 和 Xhear 5 正在开发中，去除 Proxy delete操作，可完全babel操作），请持续关注XDFrame，非常欢迎你的star，你的star就是作者的动力；
 
 ## 如何兼容旧版本浏览器？
 
 当前推荐用 `babel`(还是需要学会使用 nodejs和npm)，使用 babel-cli编译成 es5 的版本；
 
-XDFrame以后会推出工具软件（学习对象是微软，类似 vsstudio，全gui操作，无命令行），直接所见即所得的方式制作项目；
+XDFrame以后会推出辅助工具软件（模仿对象是微软的vsstudio，全gui操作，无命令行）；
+
+XDFrame展望的是未来，浏览器es7普及之时；
 
 ## 重定向XDFrame官方仓库
 
-## XDFrame构成
+官方的组件库地址 [点击这里](https://github.com/kirakiray/XDFrame/tree/master/lib)，可以把组件包目录下载后，放到你的 `cdn` 服务器上，并在项目开始后立刻使用下面代码替换成 `cdn` 的地址；
 
-## 案例
+```javascript
+drill.config({
+    paths: {
+        "^\\$/": "https://your_cdn_url/lib/"
+    }
+});
+```
+
+欢迎提交 XDFrame组件包 到lib；
+
+XDFrame官方仓库目前使用 `github.io` ，欢迎金主爸爸提供第三方稳定cdn空间；
+
+## [XDFrame Q&A](doc/qanda.md)
+
+## 成功案例
 
 ### [PageCreator](https://kirakiray.com/pageCreator/)
 
