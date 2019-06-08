@@ -6,7 +6,9 @@ XDFrame，让前端回归最纯粹的web；没有nodejs，没有webpack，也能
 
 ## 为什么要用XDFrame？
 
-没有 nodejs 和 webpack 做运行时，门槛大幅度降低；开发中遇到报错，没有脚手架的问题；
+开发大型项目
+
+相对前端三大栈，没有 nodejs 和 webpack 做运行时，门槛大幅度降低；开发中遇到报错，没有脚手架的问题；
 
 使用 XDFrame封装的组件包，几乎不需要学习成本；
 
