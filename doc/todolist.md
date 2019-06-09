@@ -10,7 +10,7 @@
 
 ## 2.添加需求和确认思路
 
-如果只按照图中的需求来做，无法即时改变 item的状态，所以在图的基础上添加3个需求；
+如果只按照图中的需求来做，无法即时改变 item的状态，所以在图的基础上添加3个需求；
 
 * 添加一个 ALL tab；
 * 添加todoitem的输入框；
@@ -20,7 +20,7 @@
 
 ## 3.制作静态模板
 
-静态模板在这里 [ToDoList静态模板](../demo/todilist/js/components/todolist/temp.html)
+静态模板在这里 [ToDoList静态模板](https://kirakiray.github.io/XDFrame/demo/todilist_test/js/components/todolist/temp.html)
 
 对伪类不熟悉的同学，也可以把 `:hover` 放到组件逻辑里做；动画采用 css3 的 `transition`；
 
@@ -54,4 +54,30 @@
 将组件的所有逻辑写在一个目录下，在通过目录同名的 `js` 文件作为目录的入口，进行组建封装，就是 `XD组件包`；
 
 参看 `demo/todilist/js/components/todolist`目录，就是 todolist 的组件包；
+
+[todolist组件封装](https://github.com/kirakiray/XDFrame/blob/master/demo/todilist_test/js/components/todolist/todolist.js)
+
+[todolist item 组件封装](https://github.com/kirakiray/XDFrame/blob/master/demo/todilist_test/js/components/todolist/todoitem.js)
+
+[todolist组件样式(less)](https://github.com/kirakiray/XDFrame/blob/master/demo/todilist_test/js/components/todolist/todilist.less)
+
+关于 `drill.js` 模块和包管理，[请查看文档](https://github.com/kirakiray/drill.js)；
+
+关于 `Xhear` 组件注册细节，[点击查看文档](https://github.com/kirakiray/Xhear)；
+
+封装完 XD组件包后，组件包内在建一个 `test.html` 测试包的使用情况；[点击查看包测试案例](https://kirakiray.github.io/XDFrame/demo/todilist_test/js/components/todolist/test.html)；
+
+## 5.封装主体逻辑
+
+[todolist 入口html](https://github.com/kirakiray/XDFrame/blob/master/demo/todilist_test/main.html)
+
+[todolist 主体 main.js](https://github.com/kirakiray/XDFrame/blob/master/demo/todilist_test/js/main.js)
+
+主体 `main.js` 的逻辑：
+
+* 将旧数据填充到 todolist
+* 记录数据到 localStorage
+* 衔接 输入框 到 todolist
+
+[点击查看完整版的 todoList](https://kirakiray.github.io/XDFrame/demo/todilist_test/main.html)；
 
