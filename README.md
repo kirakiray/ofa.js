@@ -4,6 +4,10 @@ No webpack,No nodejs,Let the front end go back to the purest web;
 
 XDFrame，让前端回归最纯粹的web；没有nodejs，没有webpack，也能开发超大型应用；
 
+## [XDFrame Q&A](doc/qanda.md)
+
+[XDFrame 的 问与答](doc/qanda.md)；
+
 ## 为什么要用XDFrame？
 
 开发大型项目
@@ -12,7 +16,7 @@ XDFrame，让前端回归最纯粹的web；没有nodejs，没有webpack，也能
 
 使用 XDFrame封装的组件包，几乎不需要学习成本；
 
-下面给页面 添加XDFrame支持 和 使用官方组件包；
+下面给页面 添加XDFrame支持 和 使用官方组件包；（官方组件包是 `$/` 开发，放在 XDFrame 的官方服务器上的组件）；
 
 ### 给你的项目添加XDFrame
 
@@ -103,8 +107,6 @@ drill.config({
 欢迎提交 XDFrame组件包 到lib；
 
 XDFrame官方仓库目前使用 `github.io` ，欢迎金主爸爸提供第三方稳定cdn空间；
-
-## [XDFrame Q&A](doc/qanda.md)
 
 ## 成功案例
 
