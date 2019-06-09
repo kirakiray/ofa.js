@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>todolist 模块使用测试</title>
+    <script src="../../../../../dist/xdframe.js"></script>
+    <script>
+        load("./todolist").then(e => {
+            let todolist = $('todolist');
+
+            // 第一个时间是一个月
+            todolist[0].time = parseInt(new Date().getTime() / 1000) + 65;
+            todolist[1].time = parseInt(new Date().getTime() / 1000) + 1000;
+            todolist[2].time = parseInt(new Date().getTime() / 1000) + 10000;
+            todolist[3].time = parseInt(new Date().getTime() / 1000) + 100000;
+            todolist[4].time = parseInt(new Date().getTime() / 1000) + 1000000;
+            todolist[5].time = parseInt(new Date().getTime() / 1000) + 10000000;
+        });
+    </script>
+</head>
+
+<body>
+    <todolist xv-ele style="width:400px;height: 600px;">
+        <todoitem xv-ele name="haha"></todoitem>
+        <todoitem xv-ele name="haha1"></todoitem>
+        <todoitem xv-ele name="haha2"></todoitem>
+        <todoitem xv-ele name="haha3"></todoitem>
+        <todoitem xv-ele name="haha4"></todoitem>
+        <todoitem xv-ele name="haha5"></todoitem>
+    </todolist>
+</body>
+
+</html>

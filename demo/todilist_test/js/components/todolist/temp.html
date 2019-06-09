@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TODOlist静态模板</title>
+    <link rel="stylesheet" href="todilist.css">
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: calc(100% - 1px);
+            margin: 0;
+            padding: 1px 0 0 0;
+            /* background-color: #3e404d; */
+        }
+    </style>
+</head>
+
+<body>
+    <todolist style="margin:40px 0 0 40px;width:400px;height:600px;">
+        <div class="tl_tabs">
+            <div class="tl_tab active">ALL</div>
+            <div class="tl_tab">DAY</div>
+            <div class="tl_tab">WEEK</div>
+            <div class="tl_tab">MONTH</div>
+        </div>
+        <div class="tl_main">
+            <div class="tl_main_scroller">
+                <todoitem>
+                    <div class="tdi_point"></div>
+                    <div class="tdi_name">我是任务我是任务我是任务我是任务我是任务我是任务我是任务我是任务是任务我是任务我是任务是任务我是任务我是任务</div>
+                    <div class="tdi_right">
+                        <div class="timecon">28 day</div>
+                        <div class="change_btn">Change
+                            <select>
+                                <option>完成</option>
+                                <option>未完成</option>
+                                <option>关闭</option>
+                            </select>
+                        </div>
+                    </div>
+                </todoitem>
+                <todoitem tdtype="1">
+                    <div class="tdi_point"></div>
+                    <div class="tdi_name">我是任务1</div>
+                    <div class="tdi_right">
+                        <div class="timecon">2 hours</div>
+                        <div class="change_btn">Change</div>
+                    </div>
+                </todoitem>
+                <todoitem tdtype="2">
+                    <div class="tdi_point"></div>
+                    <div class="tdi_name">我是任务2</div>
+                    <div class="tdi_right">
+                        <div class="timecon">30 min</div>
+                        <div class="change_btn">Change</div>
+                    </div>
+                </todoitem>
+                <todoitem tdtype="3">
+                    <div class="tdi_point"></div>
+                    <div class="tdi_name">我是任务3</div>
+                    <div class="tdi_right">
+                        <div class="timecon">LATE</div>
+                        <div class="change_btn">Change</div>
+                    </div>
+                </todoitem>
+                <todoitem tdtype="4">
+                    <div class="tdi_point"></div>
+                    <div class="tdi_name">我是任务4</div>
+                    <div class="tdi_right">
+                        <div class="timecon">DONE</div>
+                        <div class="change_btn">Change</div>
+                    </div>
+                </todoitem>
+                <todoitem domcode="todoitem">
+                    <div class="tdi_point"></div>
+                    <div class="tdi_name" xv-tar="name">{{name}}</div>
+                    <div class="tdi_right">
+                        <div class="timecon">{{showTime}}</div>
+                        <div class="change_btn">Change
+                            <select xv-module="doType" xv-tar="mainSelector">
+                                <option value="undo">未完成</option>
+                                <option value="done">完成</option>
+                                <option value="close">关闭</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:none;" xv-content></div>
+                </todoitem>
+            </div>
+        </div>
+    </todolist>
+
+    <todolist-input domcode="todolistInput">
+        <div>任务内容：
+            <input type="text" xv-module="todoName" />
+        </div>
+        <div>
+            <select xv-module="todoTime">
+                <option value="60">1分钟</option>
+                <option value="300">5分钟</option>
+                <option value="600">10分钟</option>
+                <option value="1800">30分钟</option>
+                <option value="3600">1小时</option>
+                <option value="10800">3小时</option>
+                <option value="21600">6小时</option>
+                <option value="43200">12小时</option>
+                <option value="86400">1天</option>
+                <option value="172800">2天</option>
+                <option value="259200">3天</option>
+                <option value="432000">5天</option>
+                <option value="604800">1周</option>
+                <option value="1209600">2周</option>
+                <option value="2419200">1个月</option>
+            </select>后
+        </div>
+        <button xv-tar="todoSubmit">添加</button>
+        <div style="display:none;" xv-content></div>
+    </todolist-input>
+
+    <todolist style="margin:40px 0 0 40px;width:400px;" domcode="todolist">
+        <div class="tl_tabs" xv-tar="tabs">
+            <div class="tl_tab active" stime="-1000000000" btime="1000000000">ALL</div>
+            <div class="tl_tab" stime="-1000000000" btime="86400">DAY</div>
+            <div class="tl_tab" stime="86400" btime="604800">WEEK</div>
+            <div class="tl_tab" stime="604800" btime="1000000000">MONTH</div>
+        </div>
+        <div class="tl_main">
+            <div class="tl_main_scroller" xv-content></div>
+        </div>
+    </todolist>
+</body>
+
+</html>
