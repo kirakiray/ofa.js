@@ -70,6 +70,8 @@ XDFrame只是把它们打包起来而已，只有37kb (1.0.0 版)；
 
 [点击这里进入XDFrame组件包开发文档](doc/README.md)；
 
+[ToDoList项目实战](https://github.com/kirakiray/XDFrame/blob/master/doc/todolist.md)
+
 XDFrame 是由 [Xhear](https://github.com/kirakiray/Xhear) 和 [drill.js](https://github.com/kirakiray/drill.js) 构成，能使用它们所有方法，细节可查看它们的文档；
 
 ## XDFrame 目前适合那些项目？
