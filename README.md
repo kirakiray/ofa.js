@@ -64,7 +64,7 @@ drill.js 负责模块和资源管理；
 
 XDFrame只是把它们打包起来而已，只有37kb (1.0.0 版)；
 
-<img src="doc/sources/xdframe_fime_info.png" width="263" />
+<img src="doc/sources/xdframe_fime_info.jpeg" width="263" />
 
 ## 如何开发 XDFrame组件包？
 
