@@ -1,11 +1,5 @@
 ((glo) => {
     "use strict";
-
-    //<!--xhear-->
-
-    //<!--drill-->
-
-    //<!--lib-->
-
-    //<!--drill-domcode-->
+    //<!--../Xhear/dist/xhear-->
+    //<!--../drill.js/dist/drill-->
 })(window);
