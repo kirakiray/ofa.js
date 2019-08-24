@@ -6,11 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>xdframe test</title>
-    <script src="../dist/xdframe.min.js"></script>
+    <script src="../dist/xdframe.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main_con {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .item {
+            flex: 1;
+        }
+
+        .item>iframe {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 
 <body>
-
+    <div class="main_con">
+        <div class="item">
+            <iframe src="drill_test/main.html" frameborder="0"></iframe>
+        </div>
+        <div class="item">
+            <iframe src="xhear_test/test.html" frameborder="0"></iframe>
+        </div>
+    </div>
 </body>
 
 </html>
