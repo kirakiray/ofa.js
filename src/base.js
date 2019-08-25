@@ -5,7 +5,7 @@
 
     drill.config({
         paths: {
-            "^\\$/": "https://kirakiray.github.io/XDFrame/lib/"
+            "^\\$/": "https://kirakiray.github.io/xdframe_lib/dollar2/"
         }
     });
 
