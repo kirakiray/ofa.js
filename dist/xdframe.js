@@ -177,6 +177,33 @@
             return redata;
         };
 
+        /**
+         * 将 stanz 转换的对象再转化为 children 结构的对象
+         * @param {Object} obj 目标对象
+         * @param {String} childKey 数组寄存属性
+         */
+        const toNoStanz = (obj, childKey) => {
+            if (obj instanceof Array) {
+                return obj.map(e => toNoStanz(e, childKey));
+            } else if (obj instanceof Object) {
+                let newObj = {};
+                let childs = [];
+                Object.keys(obj).forEach(k => {
+                    if (!/\D/.test(k)) {
+                        childs.push(toNoStanz(obj[k], childKey));
+                    } else {
+                        newObj[k] = toNoStanz(obj[k]);
+                    }
+                });
+                if (childs.length) {
+                    newObj[childKey] = childs;
+                }
+                return newObj;
+            } else {
+                return obj;
+            }
+        }
+
         // common
         const EVENTS = Symbol("events");
 
@@ -640,6 +667,19 @@
 
                 let _this = this[XDATASELF];
 
+                // 是否 point key
+                if (/\./.test(key)) {
+                    let kMap = key.split(".");
+                    let lastId = kMap.length - 1;
+                    kMap.some((k, i) => {
+                        if (i == lastId) {
+                            key = k;
+                            return true;
+                        }
+                        _this = _this[k];
+                    });
+                }
+
                 if (getType(key) === "string") {
                     let oldVal = _this[key];
 
@@ -824,6 +864,13 @@
                 return event;
             }
 
+            // 转换为children属性机构的数据
+            noStanz(opts = {
+                childKey: "children"
+            }) {
+                return toNoStanz(this.object, opts.childKey);
+            }
+
             /**
              * 转换为普通 object 对象
              * @property {Object} object
@@ -833,20 +880,30 @@
 
                 let isPureArray = true;
 
+                let {
+                    _unBubble = []
+                } = this;
+
                 // 遍历合并数组，并判断是否有非数字
                 Object.keys(this).forEach(k => {
-                    if (/^_/.test(k) || !/\D/.test(k)) {
+                    if (/^_/.test(k) || !/\D/.test(k) || _unBubble.includes(k)) {
                         return;
                     }
-                    isPureArray = false;
 
                     let val = this[k];
 
                     if (val instanceof XData) {
+                        // 禁止冒泡
+                        if (val._update === false) {
+                            return;
+                        }
+
                         val = val.object;
                     }
 
                     obj[k] = val;
+
+                    isPureArray = false;
                 });
                 this.forEach((val, k) => {
                     if (val instanceof XData) {
@@ -996,10 +1053,12 @@
                 // 根据参数调整类型
                 let watchType;
 
-                if (expr == "") {
+                if (expr === "") {
                     watchType = "watchSelf";
                 } else if (/\[.+\]/.test(expr)) {
                     watchType = "seekData";
+                } else if (/\./.test(expr)) {
+                    watchType = "watchPointKey";
                 } else {
                     watchType = "watchKey";
                 }
@@ -1077,6 +1136,46 @@
                                 val: callSelf[expr],
                                 trends: []
                             }, callSelf[expr]);
+                        }
+                        break;
+                    case "watchPointKey":
+                        let pointKeyArr = expr.split(".");
+                        let firstKey = pointKeyArr[0];
+                        let oldVal = this.getTarget(pointKeyArr);
+
+                        updateMethod = e => {
+                            let {
+                                trend
+                            } = e;
+                            if (trend.fromKey == firstKey) {
+                                oldVal;
+                                let newVal;
+                                try {
+                                    newVal = this.getTarget(pointKeyArr);
+                                } catch (e) {}
+                                if (newVal !== oldVal) {
+                                    cacheObj.trends.push(trend);
+                                    nextTick(() => {
+                                        newVal = this.getTarget(pointKeyArr);
+
+                                        (newVal !== oldVal) && callback.call(callSelf, {
+                                            expr,
+                                            old: oldVal,
+                                            val: newVal,
+                                            trends: Array.from(cacheObj.trends)
+                                        }, newVal);
+
+                                        cacheObj.trends.length = 0;
+                                    }, cacheObj);
+                                }
+                            }
+                        }
+
+                        if (ImmeOpt === true) {
+                            callback.call(callSelf, {
+                                expr,
+                                val: oldVal
+                            }, oldVal);
                         }
                         break;
                     case "seekData":
@@ -1702,17 +1801,15 @@
 
             // 添加数据
             objData.class && ele.setAttribute('class', objData.class);
+            objData.slot && ele.setAttribute('slot', objData.slot);
             objData.text && (ele.textContent = objData.text);
-            if (objData.data) {
-                let {
-                    data
-                } = objData;
-
-                Object.keys(data).forEach(k => {
-                    let val = data[k];
-                    ele.dataset[k] = val;
-                });
-            }
+            let {
+                data
+            } = objData;
+            data && Object.keys(data).forEach(k => {
+                let val = data[k];
+                ele.dataset[k] = val;
+            });
 
             if (ele.xvele) {
                 let xhearele = createXhearEle(ele);
@@ -1789,7 +1886,7 @@
         const xEleDefaultSetKeys = new Set(["text", "html", "display", "style"]);
 
         // 不可设置的key
-        const UnSetKeys = new Set(["parent", "index"]);
+        const UnSetKeys = new Set(["parent", "index", "slot"]);
 
         const XDataSetData = XData.prototype.setData;
 
@@ -1970,12 +2067,12 @@
                 let _this = this[XDATASELF];
 
                 // 只有在允许列表里才能进行set操作
-                let canSetKeys = this[CANSETKEYS];
+                let canSetKey = this[CANSETKEYS];
                 if (xEleDefaultSetKeys.has(key)) {
                     // 直接设置
                     _this[key] = value;
                     return true;
-                } else if (canSetKeys && canSetKeys.has(key)) {
+                } else if (canSetKey && canSetKey.has(key)) {
                     // 直接走xdata的逻辑
                     return XDataSetData.call(_this, key, value);
                 } else if (!/\D/.test(key)) {
@@ -2592,9 +2689,8 @@
                 tag: "",
                 // 正文内容字符串
                 temp: "",
-                // 属性绑定keys
+                // 和attributes绑定的keys
                 attrs: [],
-                props: [],
                 // 默认数据
                 data: {},
                 // 直接监听属性变动对象
@@ -2612,8 +2708,6 @@
 
             // 复制数据
             let attrs = defaults.attrs = defaults.attrs.map(val => propToAttr(val));
-            defaults.props = defaults.props.map(val => propToAttr(val));
-            // defaults.unBubble = defaults.unBubble.map(val => propToAttr(val));
             defaults.data = cloneObject(defaults.data);
             defaults.watch = Object.assign({}, defaults.watch);
 
@@ -2894,10 +2988,10 @@
             // attrs 上的数据
             defaults.attrs.forEach(attrName => {
                 // 获取属性值并设置
-                let attrVal = ele.getAttribute(attrName);
-                if (!isUndefined(attrVal) && attrVal != null) {
-                    rData[attrName] = attrVal;
-                }
+                // let attrVal = ele.getAttribute(attrName);
+                // if (!isUndefined(attrVal) && attrVal != null) {
+                //     rData[attrName] = attrVal;
+                // }
 
                 // 绑定值
                 xhearEle.watch(attrName, d => {
@@ -2906,21 +3000,40 @@
                 });
             });
 
-            // props 上的数据
-            defaults.props.forEach(attrName => {
-                let attrVal = ele.getAttribute(attrName);
-                (!isUndefined(attrVal) && attrVal != null) && (rData[attrName] = attrVal);
-            });
-
             // 添加_exkey
             let canSetKey = Object.keys(rData);
             canSetKey.push(...defaults.attrs);
-            canSetKey.push(...defaults.props);
             canSetKey.push(...Object.keys(defaults.watch));
             canSetKey = new Set(canSetKey);
             Object.defineProperty(xhearEle, CANSETKEYS, {
                 value: canSetKey
             });
+
+            // 根据attributes抽取值
+            let attributes = Array.from(ele.attributes);
+            if (attributes.length) {
+                attributes.forEach(e => {
+                    // 属性在数据列表内，进行rData数据覆盖
+                    let {
+                        name
+                    } = e;
+                    if (!/^xv\-/.test(name) && !/^:/.test(name) && canSetKey.has(name)) {
+                        rData[name] = e.value;
+                    }
+                });
+            }
+
+            // 判断是否有value，进行vaule绑定
+            if (canSetKey.has("value")) {
+                Object.defineProperty(ele, "value", {
+                    get() {
+                        return xhearEle.value;
+                    },
+                    set(val) {
+                        xhearEle.value = val;
+                    }
+                });
+            }
 
             // 合并数据后设置
             canSetKey.forEach(k => {
