@@ -1,6 +1,6 @@
 drill.ext(base => {
     let {
-        loaders, processors
+        loaders, processors, main
     } = base;
 
     // 设置控件类型
@@ -8,15 +8,20 @@ drill.ext(base => {
         let defaults = {
             // 默认模板
             temp: true,
-            // 加载外部link
+            // 加载组件样式
             link: true,
-            // 是否加载影子内的link
-            shadowLink: false,
+            // 与组件同域下的样式
+            hostlink: "",
             // 当前模块刚加载的时候
             onload() { },
             // 组件初始化完毕时
             inited() { },
+            // 依赖子组件目录
+            useComps: []
         };
+
+        // load方法
+        const load = (...args) => main.load(main.toUrlObjs(args, packData.dir));
 
         // 合并默认参数
         Object.assign(defaults, base.tempM.d);
@@ -25,28 +30,57 @@ drill.ext(base => {
         let fileName = packData.path.match(/.+\/(.+)/)[1];
         fileName = fileName.replace(/\.js$/, "");
 
+        // 添加子组件
+        if (defaults.useComps && defaults.useComps.length) {
+            await load(...defaults.useComps);
+        }
+
         // 置换temp
         let temp = "";
         if (defaults.temp) {
-            temp = await fetch(`${packData.dir}/${fileName}.html`);
+            let path = await load(`./${fileName}.html -getPath`);
+            temp = await fetch(path);
             temp = await temp.text();
-        }
-
-        // 判断是否加入shadowLink
-        if (defaults.shadowLink) {
-            let shadowLink = `${packData.dir}/${fileName}-shadow.css`;
-            temp = `<link rel="stylesheet" href="${shadowLink}">\n` + temp;
         }
 
         // 添加link
         if (defaults.link) {
-            await load(`${packData.dir}/${fileName}.css`);
+            let linkPath = await load(`./${fileName}.css -getPath`);
+            temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp;
         }
 
         defaults.temp = temp;
 
+        // inited钩子
+        let oldInited = defaults.inited;
+        defaults.inited = async function (...args) {
+            // 添加hostlink
+            if (defaults.hostlink) {
+                // 获取元素域上的主
+                let root = this.ele.getRootNode();
+
+                let hostlink = await load(defaults.hostlink + " -getPath");
+
+                // 查找是否已经存在该link
+                let targetLinkEle = root.querySelector(`link[href="${hostlink}"]`)
+
+                if (!targetLinkEle) {
+                    let linkEle = $(`<link rel="stylesheet" href="${hostlink}">`);
+                    if (root === document) {
+                        root.querySelector("head").appendChild(linkEle.ele);
+                    } else {
+                        root.appendChild(linkEle.ele);
+                    }
+                }
+            }
+            oldInited.apply(this, args);
+        }
+
         // 注册节点
         $.register(defaults);
+
+        // 设置数据载入完成
+        packData.stat = 3;
     });
 
     // 添加新类型
