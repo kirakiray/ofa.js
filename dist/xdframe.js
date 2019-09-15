@@ -2066,13 +2066,22 @@
 
                 let _this = this[XDATASELF];
 
+                if (/^_.+/.test(key)) {
+                    Object.defineProperty(this, key, {
+                        configurable: true,
+                        writable: true,
+                        value
+                    })
+                    return true;
+                }
+
                 // 只有在允许列表里才能进行set操作
                 let canSetKey = this[CANSETKEYS];
                 if (xEleDefaultSetKeys.has(key)) {
                     // 直接设置
                     _this[key] = value;
                     return true;
-                } else if (canSetKey && canSetKey.has(key)) {
+                } else if ((canSetKey && canSetKey.has(key)) || /^_.+/.test(key)) {
                     // 直接走xdata的逻辑
                     return XDataSetData.call(_this, key, value);
                 } else if (!/\D/.test(key)) {
