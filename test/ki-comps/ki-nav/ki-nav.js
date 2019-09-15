@@ -1,5 +1,6 @@
 Component({
     tag: "ki-nav",
+    hostlink: "./ki-nav-host.css",
     proto: {
         refreshActive() {
             let { pathname } = document.location;

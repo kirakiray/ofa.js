@@ -1,6 +1,7 @@
 Component({
     tag: "ki-ul",
-    hostlink: "./kiul-other.css",
+    link: false,
+    hostlink: "./kiul-host.css",
     inited() {
         // debugger
     }
