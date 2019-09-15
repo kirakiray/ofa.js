@@ -26,6 +26,9 @@ drill.ext(base => {
         // 合并默认参数
         Object.assign(defaults, base.tempM.d);
 
+        // 执行onload
+        await defaults.onload(load);
+
         // 获取文件名
         let fileName = packData.path.match(/.+\/(.+)/)[1];
         fileName = fileName.replace(/\.js$/, "");
@@ -73,13 +76,15 @@ drill.ext(base => {
                     }
                 }
             }
+
+            // 执行inited方法
             oldInited.apply(this, args);
         }
 
         // 注册节点
         $.register(defaults);
 
-        // 设置数据载入完成
+        // 设置模块载入完成
         packData.stat = 3;
     });
 
