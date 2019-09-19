@@ -27,7 +27,11 @@ drill.ext(base => {
         Object.assign(defaults, base.tempM.d);
 
         // 执行onload
-        await defaults.onload(load);
+        await defaults.onload({
+            load,
+            DIR: packData.dir,
+            FILE: packData.path
+        });
 
         // 获取文件名
         let fileName = packData.path.match(/.+\/(.+)/)[1];
