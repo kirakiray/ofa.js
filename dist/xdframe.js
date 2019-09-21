@@ -586,17 +586,18 @@
 
                 // 数据合并
                 Object.keys(obj).forEach(k => {
-                    if (/^\_/.test(k)) {
+                    // 值
+                    let value = obj[k];
+
+                    if (/^\_/.test(k) || value instanceof Element) {
                         // this[k] = obj[k];
                         Object.defineProperty(this, k, {
                             configurable: true,
                             writable: true,
-                            value: obj[k]
+                            value
                         });
                         return;
                     }
-                    // 值
-                    let value = obj[k];
 
                     if (!/\D/.test(k)) {
                         // 数字key进行length长度计算
@@ -1863,6 +1864,8 @@
             let tars = target.querySelectorAll(expr);
             return tars ? Array.from(tars) : [];
         }
+
+        const isXhear = (target) => target instanceof XhearEle;
         // 可setData的key
         const CANSETKEYS = Symbol("cansetkeys");
         const ORIEVE = Symbol("orignEvents");
@@ -2066,14 +2069,14 @@
 
                 let _this = this[XDATASELF];
 
-                if (/^_.+/.test(key)) {
-                    Object.defineProperty(this, key, {
-                        configurable: true,
-                        writable: true,
-                        value
-                    })
-                    return true;
-                }
+                // if (/^_.+/.test(key)) {
+                //     Object.defineProperty(this, key, {
+                //         configurable: true,
+                //         writable: true,
+                //         value
+                //     })
+                //     return true;
+                // }
 
                 // 只有在允许列表里才能进行set操作
                 let canSetKey = this[CANSETKEYS];
@@ -3079,7 +3082,8 @@
             nextTick,
             xdata: obj => createXData(obj),
             versinCode: 5000000,
-            fn: XhearEleFn
+            fn: XhearEleFn,
+            isXhear
         });
 
         glo.$ = $;
@@ -4130,8 +4134,8 @@
                 onload() {},
                 // 组件初始化完毕时
                 inited() {},
-                // 依赖子组件目录
-                useComps: []
+                // 依赖子模块
+                use: []
             };
 
             // load方法
@@ -4152,8 +4156,8 @@
             fileName = fileName.replace(/\.js$/, "");
 
             // 添加子组件
-            if (defaults.useComps && defaults.useComps.length) {
-                await load(...defaults.useComps);
+            if (defaults.use && defaults.use.length) {
+                await load(...defaults.use);
             }
 
             // 置换temp

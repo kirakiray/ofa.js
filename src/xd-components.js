@@ -16,8 +16,8 @@ drill.ext(base => {
             onload() { },
             // 组件初始化完毕时
             inited() { },
-            // 依赖子组件目录
-            useComps: []
+            // 依赖子模块
+            use: []
         };
 
         // load方法
@@ -38,8 +38,8 @@ drill.ext(base => {
         fileName = fileName.replace(/\.js$/, "");
 
         // 添加子组件
-        if (defaults.useComps && defaults.useComps.length) {
-            await load(...defaults.useComps);
+        if (defaults.use && defaults.use.length) {
+            await load(...defaults.use);
         }
 
         // 置换temp
