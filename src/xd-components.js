@@ -26,13 +26,6 @@ drill.ext(base => {
         // 合并默认参数
         Object.assign(defaults, base.tempM.d);
 
-        // 执行onload
-        await defaults.onload({
-            load,
-            DIR: packData.dir,
-            FILE: packData.path
-        });
-
         // 获取文件名
         let fileName = packData.path.match(/.+\/(.+)/)[1];
         fileName = fileName.replace(/\.js$/, "");
@@ -41,6 +34,13 @@ drill.ext(base => {
         if (defaults.use && defaults.use.length) {
             await load(...defaults.use);
         }
+
+        // 执行onload
+        await defaults.onload({
+            load,
+            DIR: packData.dir,
+            FILE: packData.path
+        });
 
         // 置换temp
         let temp = "";
