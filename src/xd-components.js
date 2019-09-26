@@ -101,32 +101,6 @@ drill.ext(base => {
             }
         }
 
-        // let oldInited = defaults.inited;
-        // defaults.inited = async function (...args) {
-        //     // 添加hostlink
-        //     if (defaults.hostlink) {
-        //         // 获取元素域上的主
-        //         let root = this.ele.getRootNode();
-
-        //         let hostlink = await load(defaults.hostlink + " -getPath");
-
-        //         // 查找是否已经存在该link
-        //         let targetLinkEle = root.querySelector(`link[href="${hostlink}"]`)
-
-        //         if (!targetLinkEle) {
-        //             let linkEle = $(`<link rel="stylesheet" href="${hostlink}">`);
-        //             if (root === document) {
-        //                 root.querySelector("head").appendChild(linkEle.ele);
-        //             } else {
-        //                 root.appendChild(linkEle.ele);
-        //             }
-        //         }
-        //     }
-
-        //     // 执行inited方法
-        //     oldInited.apply(this, args);
-        // }
-
         // 注册节点
         $.register(defaults);
 
