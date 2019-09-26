@@ -7,7 +7,7 @@ drill.ext(base => {
     processors.set("component", async packData => {
         let defaults = {
             // 默认模板
-            temp: true,
+            temp: false,
             // 加载组件样式
             link: true,
             // 与组件同域下的样式
@@ -45,24 +45,40 @@ drill.ext(base => {
         // 置换temp
         let temp = "";
         if (defaults.temp) {
-            let path = await load(`./${fileName}.html -getPath`);
-            temp = await fetch(path);
-            temp = await temp.text();
-        }
+            // 判断是否有换行
+            if (/\n/.test(defaults.temp)) {
+                // 拥有换行，是模板字符串
+                temp = defaults.temp;
+            } else {
+                let path;
+                if (defaults.temp === true) {
+                    path = await load(`./${fileName}.html -getPath`)
+                } else {
+                    // path = defaults.temp;
+                    path = await load(`${defaults.temp} -getPath`);
+                }
+                temp = await fetch(path);
+                temp = await temp.text();
+            }
 
-        // 添加link
-        if (defaults.link) {
-            let linkPath = await load(`./${fileName}.css -getPath`);
-            temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp;
+            // 添加link
+            let linkPath = defaults.link;
+            if (defaults.link === true) {
+                linkPath = await load(`./${fileName}.css -getPath`);
+            } else {
+                linkPath = await load(`${defaults.link} -getPath`);
+            }
+            linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
         }
 
         defaults.temp = temp;
 
         // inited钩子
-        let oldInited = defaults.inited;
-        defaults.inited = async function (...args) {
-            // 添加hostlink
-            if (defaults.hostlink) {
+        if (defaults.hostlink) {
+            let oldInited = defaults.inited;
+
+            defaults.inited = async function (...args) {
+                // 添加hostlink
                 // 获取元素域上的主
                 let root = this.ele.getRootNode();
 
@@ -79,11 +95,37 @@ drill.ext(base => {
                         root.appendChild(linkEle.ele);
                     }
                 }
-            }
 
-            // 执行inited方法
-            oldInited.apply(this, args);
+                // 执行inited方法
+                oldInited.apply(this, args);
+            }
         }
+
+        // let oldInited = defaults.inited;
+        // defaults.inited = async function (...args) {
+        //     // 添加hostlink
+        //     if (defaults.hostlink) {
+        //         // 获取元素域上的主
+        //         let root = this.ele.getRootNode();
+
+        //         let hostlink = await load(defaults.hostlink + " -getPath");
+
+        //         // 查找是否已经存在该link
+        //         let targetLinkEle = root.querySelector(`link[href="${hostlink}"]`)
+
+        //         if (!targetLinkEle) {
+        //             let linkEle = $(`<link rel="stylesheet" href="${hostlink}">`);
+        //             if (root === document) {
+        //                 root.querySelector("head").appendChild(linkEle.ele);
+        //             } else {
+        //                 root.appendChild(linkEle.ele);
+        //             }
+        //         }
+        //     }
+
+        //     // 执行inited方法
+        //     oldInited.apply(this, args);
+        // }
 
         // 注册节点
         $.register(defaults);
