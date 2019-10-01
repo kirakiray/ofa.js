@@ -1837,6 +1837,11 @@
 
         const parseToDom = (expr) => {
             let ele;
+
+            if (expr instanceof XhearEle) {
+                return expr.ele;
+            }
+
             switch (getType(expr)) {
                 case "string":
                     if (/\<.+\>/.test(expr)) {
