@@ -3388,6 +3388,7 @@
             // 主体script
             let script = document.createElement('script');
 
+
             //填充相应数据
             script.type = 'text/javascript';
             script.async = true;
@@ -4137,7 +4138,7 @@
                 // 默认模板
                 temp: false,
                 // 加载组件样式
-                link: true,
+                link: false,
                 // 与组件同域下的样式
                 hostlink: "",
                 // 当前模块刚加载的时候
@@ -4191,12 +4192,14 @@
 
                 // 添加link
                 let linkPath = defaults.link;
-                if (defaults.link === true) {
-                    linkPath = await load(`./${fileName}.css -getPath`);
-                } else {
-                    linkPath = await load(`${defaults.link} -getPath`);
+                if (linkPath) {
+                    if (defaults.link === true) {
+                        linkPath = await load(`./${fileName}.css -getPath`);
+                    } else {
+                        linkPath = await load(`${defaults.link} -getPath`);
+                    }
+                    linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
                 }
-                linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
             }
 
             defaults.temp = temp;
