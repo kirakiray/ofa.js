@@ -3039,6 +3039,12 @@
                     let {
                         name
                     } = e;
+
+                    // 下划线的属性不能直接定义
+                    if (/^_.*/.test(name)) {
+                        return;
+                    }
+
                     name = attrToProp(name);
                     if (!/^xv\-/.test(name) && !/^:/.test(name) && canSetKey.has(name)) {
                         rData[name] = e.value;
