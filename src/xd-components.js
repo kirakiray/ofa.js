@@ -3,6 +3,9 @@ drill.ext(base => {
         loaders, processors, main
     } = base;
 
+    const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
+    const isFunction = val => getType(val).includes("function");
+
     // 设置控件类型
     processors.set("component", async packData => {
         let defaults = {
@@ -12,8 +15,6 @@ drill.ext(base => {
             link: false,
             // 与组件同域下的样式
             hostlink: "",
-            // 当前模块刚加载的时候
-            onload() { },
             // 组件初始化完毕时
             inited() { },
             // 依赖子模块
@@ -23,8 +24,20 @@ drill.ext(base => {
         // load方法
         const load = (...args) => main.load(main.toUrlObjs(args, packData.dir));
 
+        let options = base.tempM.d;
+
+        if (isFunction(options)) {
+            options = options(load, {
+                DIR: packData.dir,
+                FILE: packData.path
+            });
+            if (options instanceof Promise) {
+                options = await options;
+            }
+        }
+
         // 合并默认参数
-        Object.assign(defaults, base.tempM.d);
+        Object.assign(defaults, options);
 
         // 获取文件名
         let fileName = packData.path.match(/.+\/(.+)/)[1];
@@ -34,13 +47,6 @@ drill.ext(base => {
         if (defaults.use && defaults.use.length) {
             await load(...defaults.use);
         }
-
-        // 执行onload
-        await defaults.onload({
-            load,
-            DIR: packData.dir,
-            FILE: packData.path
-        });
 
         // 置换temp
         let temp = "";
