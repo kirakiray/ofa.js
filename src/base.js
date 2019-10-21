@@ -2,8 +2,19 @@
     "use strict";
     //<!--../Xhear/dist/xhear-->
     //<!--../drill.js/dist/drill-->
-    
-    //<!--xd-components-->
+
+    const getRandomId = () => Math.random().toString(32).substr(2);
+    const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
+    const isFunction = val => getType(val).includes("function");
+
+    drill.ext(base => {
+        let {
+            loaders, processors, main
+        } = base;
+
+        //<!--xd-components-->
+        //<!--xd-page-->
+    });
 
     drill.config({
         paths: {

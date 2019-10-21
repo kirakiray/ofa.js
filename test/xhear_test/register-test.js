@@ -62,7 +62,7 @@
                 this.$mtitle.style.color = val;
             }
         },
-        inited() {
+        ready() {
             tester.ok(true, "init ok");
         },
         attached() {
