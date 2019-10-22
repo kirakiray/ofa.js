@@ -4,9 +4,12 @@ const STAT = Symbol("stat");
 $.register({
     tag: "xd-page",
     async created() {
-        let opts = {
+        debugger
+
+
+        return {
             temp: `haha`,
-            attrs: ["src"],
+            // attrs: ["src"],
             data: {
                 src: "",
             },
@@ -24,18 +27,21 @@ $.register({
                         };
                     }
 
+                    debugger
+
                     if (!val) {
                         return;
                     }
 
                     this[STAT] = "loading";
+
+                    // 请求文件
+                    debugger
                 }
             },
             ready() {
                 this[STAT] = "unload";
             }
         };
-
-        return opts;
     }
 });
