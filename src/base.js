@@ -11,9 +11,10 @@
         let {
             loaders, processors, main
         } = base;
-
-        //<!--xd-components-->
-        //<!--xd-page-->
+        $.ext(({ renderEle }) => {
+            //<!--xd-components-->
+            //<!--xd-page-->
+        })
     });
 
     drill.config({

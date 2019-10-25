@@ -2744,21 +2744,44 @@
 
                     let _xhearThis = createXhearEle(this);
 
+                    // 设置渲染识别属性
+                    Object.defineProperty(this, "xvele", {
+                        value: true
+                    });
+                    Object.defineProperty(_xhearThis, "xvele", {
+                        value: true
+                    });
+
                     let options = Object.assign({}, defaults);
 
-                    if (defaults.created) {
-                        $.nextTick(async () => {
-                            let opts = await defaults.created.call(_xhearThis[PROXYTHIS]);
-                            if (opts) {
-                                Object.assign(options, opts);
-                            }
-                            renderEle(this, options);
-                            options.ready && options.ready.call(_xhearThis[PROXYTHIS]);
-                        });
-                    } else {
-                        renderEle(this, options);
-                        options.ready && options.ready.call(_xhearThis[PROXYTHIS]);
-                    }
+                    // if (defaults.created) {
+                    //     $.nextTick(async () => {
+                    //         let { attributes } = this;
+                    //         let attrData = {};
+                    //         Array.from(attributes).forEach(e => {
+                    //             let name = e.name;
+                    //             switch (name) {
+                    //                 case "class":
+                    //                 case "id":
+                    //                     break
+                    //                 default:
+                    //                     attrData[name] = e.value;
+                    //             }
+                    //         });
+
+                    //         let opts = await defaults.created.call(_xhearThis[PROXYTHIS], {
+                    //             data: attrData
+                    //         });
+                    //         if (opts) {
+                    //             Object.assign(options, opts);
+                    //         }
+                    //         renderEle(this, options);
+                    //         options.ready && options.ready.call(_xhearThis[PROXYTHIS]);
+                    //     });
+                    // } else {
+                    renderEle(this, options);
+                    options.ready && options.ready.call(_xhearThis[PROXYTHIS]);
+                    // }
 
                     Object.defineProperties(this, {
                         [RUNARRAY]: {
@@ -2810,14 +2833,6 @@
 
             // 合并 proto
             defaults.proto && xhearEle.extend(defaults.proto);
-
-            // 设置值
-            Object.defineProperty(ele, "xvele", {
-                value: true
-            });
-            Object.defineProperty(xhearEle, "xvele", {
-                value: true
-            });
 
             let {
                 temp
@@ -3025,12 +3040,6 @@
 
             // attrs 上的数据
             defaults.attrs.forEach(attrName => {
-                // 获取属性值并设置
-                // let attrVal = ele.getAttribute(attrName);
-                // if (!isUndefined(attrVal) && attrVal != null) {
-                //     rData[attrName] = attrVal;
-                // }
-
                 // 绑定值
                 xhearEle.watch(attrName, d => {
                     // 绑定值
@@ -3043,30 +3052,39 @@
             canSetKey.push(...defaults.attrs);
             canSetKey.push(...Object.keys(defaults.watch));
             canSetKey = new Set(canSetKey);
-            Object.defineProperty(xhearEle, CANSETKEYS, {
-                value: canSetKey
+            canSetKey.forEach(k => {
+                // 去除私有属性
+                if (/^_.+/.test(k)) {
+                    canSetKey.delete(k);
+                }
             });
+            let ck = xhearEle[CANSETKEYS];
+            if (!ck) {
+                Object.defineProperty(xhearEle, CANSETKEYS, {
+                    value: canSetKey
+                });
+            } else {
+                canSetKey.forEach(k => ck.add(k))
+            }
 
             // 根据attributes抽取值
-            let attributes = Array.from(ele.attributes);
-            if (attributes.length) {
-                attributes.forEach(e => {
-                    // 属性在数据列表内，进行rData数据覆盖
-                    let {
-                        name
-                    } = e;
+            // let attributes = Array.from(ele.attributes);
+            // if (attributes.length) {
+            //     attributes.forEach(e => {
+            //         // 属性在数据列表内，进行rData数据覆盖
+            //         let { name } = e;
 
-                    // 下划线的属性不能直接定义
-                    if (/^_.*/.test(name)) {
-                        return;
-                    }
+            //         // 下划线的属性不能直接定义
+            //         if (/^_.*/.test(name)) {
+            //             return;
+            //         }
 
-                    name = attrToProp(name);
-                    if (!/^xv\-/.test(name) && !/^:/.test(name) && canSetKey.has(name)) {
-                        rData[name] = e.value;
-                    }
-                });
-            }
+            //         name = attrToProp(name);
+            //         if (!/^xv\-/.test(name) && !/^:/.test(name) && canSetKey.has(name)) {
+            //             rData[name] = e.value;
+            //         }
+            //     });
+            // }
 
             // 判断是否有value，进行vaule绑定
             if (canSetKey.has("value")) {
@@ -3110,13 +3128,22 @@
             return ele ? createXhearEle(ele)[PROXYTHIS] : null;
         }
 
+        // 扩展函数（只是辅助将内部函数暴露出去而已）
+        const ext = (callback) => {
+            callback({
+                // 渲染shadow的内部方法
+                renderEle
+            });
+        }
+
         Object.assign($, {
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
             versinCode: 5000000,
             fn: XhearEleFn,
-            isXhear
+            isXhear,
+            ext
         });
 
         glo.$ = $;
@@ -4157,53 +4184,236 @@
             processors,
             main
         } = base;
+        $.ext(({
+            renderEle
+        }) => {
 
+            // 设置控件类型
+            processors.set("component", async packData => {
+                let defaults = {
+                    // 默认模板
+                    temp: false,
+                    // 加载组件样式
+                    link: false,
+                    // 与组件同域下的样式
+                    hostlink: "",
+                    // 组件初始化完毕时
+                    ready() {},
+                    // 依赖子模块
+                    use: []
+                };
 
-        // 设置控件类型
-        processors.set("component", async packData => {
-            let defaults = {
-                // 默认模板
-                temp: false,
-                // 加载组件样式
-                link: false,
-                // 与组件同域下的样式
-                hostlink: "",
-                // 组件初始化完毕时
-                ready() {},
-                // 依赖子模块
-                use: []
-            };
+                // load方法
+                const load = (...args) => main.load(main.toUrlObjs(args, packData.dir));
 
-            // load方法
-            const load = (...args) => main.load(main.toUrlObjs(args, packData.dir));
+                let options = base.tempM.d;
 
-            let options = base.tempM.d;
-
-            if (isFunction(options)) {
-                options = options(load, {
-                    DIR: packData.dir,
-                    FILE: packData.path
-                });
-                if (options instanceof Promise) {
-                    options = await options;
+                if (isFunction(options)) {
+                    options = options(load, {
+                        DIR: packData.dir,
+                        FILE: packData.path
+                    });
+                    if (options instanceof Promise) {
+                        options = await options;
+                    }
                 }
+
+                // 合并默认参数
+                Object.assign(defaults, options);
+
+                // 获取文件名
+                let fileName = packData.path.match(/.+\/(.+)/)[1];
+                fileName = fileName.replace(/\.js$/, "");
+
+                // 添加子组件
+                if (defaults.use && defaults.use.length) {
+                    await load(...defaults.use);
+                }
+
+                // 置换temp
+                let temp = "";
+                if (defaults.temp) {
+                    // 判断是否有换行
+                    if (/\n/.test(defaults.temp)) {
+                        // 拥有换行，是模板字符串
+                        temp = defaults.temp;
+                    } else {
+                        let path;
+                        if (defaults.temp === true) {
+                            path = await load(`./${fileName}.html -getPath`)
+                        } else {
+                            // path = defaults.temp;
+                            path = await load(`${defaults.temp} -getPath`);
+                        }
+                        temp = await fetch(path);
+                        temp = await temp.text();
+                    }
+
+                    // 添加link
+                    let linkPath = defaults.link;
+                    if (linkPath) {
+                        if (defaults.link === true) {
+                            linkPath = await load(`./${fileName}.css -getPath`);
+                        } else {
+                            linkPath = await load(`${defaults.link} -getPath`);
+                        }
+                        linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
+                    }
+                }
+
+                defaults.temp = temp;
+
+                // ready钩子
+                if (defaults.hostlink) {
+                    let oldReady = defaults.ready;
+
+                    defaults.ready = async function(...args) {
+                        // 添加hostlink
+                        // 获取元素域上的主
+                        let root = this.ele.getRootNode();
+
+                        let hostlink = await load(defaults.hostlink + " -getPath");
+
+                        // 查找是否已经存在该link
+                        let targetLinkEle = root.querySelector(`link[href="${hostlink}"]`)
+
+                        if (!targetLinkEle) {
+                            let linkEle = $(`<link rel="stylesheet" href="${hostlink}">`);
+                            if (root === document) {
+                                root.querySelector("head").appendChild(linkEle.ele);
+                            } else {
+                                root.appendChild(linkEle.ele);
+                            }
+                        }
+
+                        // 执行ready方法
+                        oldReady.apply(this, args);
+                    }
+                }
+
+                // 注册节点
+                $.register(defaults);
+
+                // 设置模块载入完成
+                packData.stat = 3;
+            });
+
+            // 添加新类型
+            drill.Component = (d, moduleId) => {
+                base.tempM = {
+                    type: "component",
+                    d,
+                    moduleId
+                };
             }
 
-            // 合并默认参数
-            Object.assign(defaults, options);
+            // 添加新类型
+            glo.Component || (glo.Component = drill.Component);
+            const PAGESTAT = Symbol("pageStat");
 
-            // 获取文件名
-            let fileName = packData.path.match(/.+\/(.+)/)[1];
-            fileName = fileName.replace(/\.js$/, "");
+            let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
+            $("head").push(xdpageStyle);
 
-            // 添加子组件
-            if (defaults.use && defaults.use.length) {
-                await load(...defaults.use);
-            }
+            // 定义新类型 xd-page
+            $.register({
+                tag: "xd-page",
+                // temp: `
+                // <style>:host{display:block;}.xd-page-content{width:100%;height:100%;}</style>
+                // <div class="xd-page-content" xv-tar="pageContent">xd-page-inner</div>
+                // `,
+                temp: false,
+                attrs: ["src"],
+                data: {
+                    src: "",
+                },
+                proto: {
+                    get stat() {
+                        return this[PAGESTAT];
+                    }
+                },
+                watch: {
+                    src(e, val) {
+                        if (this[PAGESTAT] != "unload") {
+                            throw {
+                                target: this,
+                                desc: `this page is ${this.stat}!`
+                            };
+                        }
 
-            // 置换temp
-            let temp = "";
-            if (defaults.temp) {
+                        if (!val) {
+                            return;
+                        }
+
+                        this[PAGESTAT] = "loading";
+
+                        // 请求文件
+                        load(val).then(opts => {
+                            renderEle(this.ele, Object.assign({}, opts, {
+                                attrs: []
+                            }));
+                            this[PAGESTAT] = "loaded";
+                        });
+                    }
+                },
+                ready() {
+                    // 自动进入unload状态
+                    this[PAGESTAT] = "unload";
+                }
+            });
+
+            processors.set("page", async packData => {
+                let defaults = {
+                    // 默认模板
+                    temp: true,
+                    // 加载组件样式
+                    link: false,
+                    // 监听属性函数
+                    watch: {},
+                    // 自有属性
+                    data: {},
+                    // 页面加载完成
+                    // onLoad() { },
+                    // 页面被激活时调用，搭配xd-app使用
+                    // onActive() { },
+                    // 页面被关闭时调用
+                    // onClose() { },
+                    // 依赖子模块
+                    use: []
+                };
+
+                // load方法
+                const load = (...args) => main.load(main.toUrlObjs(args, packData.dir));
+
+                let options = base.tempM.d;
+
+                if (isFunction(options)) {
+                    options = options(load, {
+                        DIR: packData.dir,
+                        FILE: packData.path
+                    });
+                    if (options instanceof Promise) {
+                        options = await options;
+                    }
+                }
+
+                // 合并默认参数
+                Object.assign(defaults, options);
+
+                // 获取文件名
+                let fileName = packData.path.match(/.+\/(.+)/)[1];
+                fileName = fileName.replace(/\.js$/, "");
+
+                // 添加子组件
+                if (defaults.use && defaults.use.length) {
+                    await load(...defaults.use);
+                }
+
+                // 置换temp
+                let temp = "";
+                if (!defaults.temp) {
+                    console.error("page need template!");
+                    return;
+                }
                 // 判断是否有换行
                 if (/\n/.test(defaults.temp)) {
                     // 拥有换行，是模板字符串
@@ -4230,103 +4440,27 @@
                     }
                     linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
                 }
-            }
 
-            defaults.temp = temp;
+                defaults.temp = temp;
 
-            // ready钩子
-            if (defaults.hostlink) {
-                let oldReady = defaults.ready;
+                packData.getPack = async () => defaults;
 
-                defaults.ready = async function(...args) {
-                    // 添加hostlink
-                    // 获取元素域上的主
-                    let root = this.ele.getRootNode();
+                // 设置模块载入完成
+                packData.stat = 3;
+            });
 
-                    let hostlink = await load(defaults.hostlink + " -getPath");
-
-                    // 查找是否已经存在该link
-                    let targetLinkEle = root.querySelector(`link[href="${hostlink}"]`)
-
-                    if (!targetLinkEle) {
-                        let linkEle = $(`<link rel="stylesheet" href="${hostlink}">`);
-                        if (root === document) {
-                            root.querySelector("head").appendChild(linkEle.ele);
-                        } else {
-                            root.appendChild(linkEle.ele);
-                        }
-                    }
-
-                    // 执行ready方法
-                    oldReady.apply(this, args);
-                }
-            }
-
-            // 注册节点
-            $.register(defaults);
-
-            // 设置模块载入完成
-            packData.stat = 3;
-        });
-
-        // 添加新类型
-        drill.Component = (d, moduleId) => {
-            base.tempM = {
-                type: "component",
-                d,
-                moduleId
-            };
-        }
-
-        // 添加新类型
-        glo.Component || (glo.Component = drill.Component);
-        const STAT = Symbol("stat");
-
-        // 定义新类型 xd-page
-        $.register({
-            tag: "xd-page",
-            async created() {
-                debugger
-
-
-                return {
-                    temp: `haha`,
-                    // attrs: ["src"],
-                    data: {
-                        src: "",
-                    },
-                    proto: {
-                        get stat() {
-                            return this[STAT];
-                        }
-                    },
-                    watch: {
-                        src(e, val) {
-                            if (this[STAT] != "unload") {
-                                throw {
-                                    target: this,
-                                    desc: `this page is ${this.stat}!`
-                                };
-                            }
-
-                            debugger
-
-                            if (!val) {
-                                return;
-                            }
-
-                            this[STAT] = "loading";
-
-                            // 请求文件
-                            debugger
-                        }
-                    },
-                    ready() {
-                        this[STAT] = "unload";
-                    }
+            // 添加新类型
+            drill.Page = (d, moduleId) => {
+                base.tempM = {
+                    type: "page",
+                    d,
+                    moduleId
                 };
             }
-        });
+
+            // 添加新类型
+            glo.Page || (glo.Page = drill.Page);
+        })
     });
 
     drill.config({
