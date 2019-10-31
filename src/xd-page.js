@@ -3,6 +3,31 @@ const PAGESTAT = Symbol("pageStat");
 let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
 $("head").push(xdpageStyle);
 
+// 渲染页面触发函数
+function xdpageAttached() {
+    this._isAttache = true;
+
+    let opts = this._opts;
+
+    if (!opts) {
+        return;
+    }
+
+    if (this[PAGESTAT] !== "finish") {
+        // 渲染元素
+        renderEle(this.ele, Object.assign({}, opts, {
+            attrs: [],
+            watch: {}
+        }));
+
+        // 设置渲染完成
+        this[PAGESTAT] = "finish";
+    }
+
+    // 运行ready
+    opts.ready && opts.ready.call(this);
+}
+
 // 定义新类型 xd-page
 $.register({
     tag: "xd-page",
@@ -11,13 +36,21 @@ $.register({
     // <div class="xd-page-content" xv-tar="pageContent">xd-page-inner</div>
     // `,
     temp: false,
-    attrs: ["src"],
+    attrs: ["src", "pageid", "xdPageAnime"],
     data: {
+        xdPageAnime: "",
+        pageid: "",
         src: "",
+        _isAttache: false
     },
     proto: {
+        // 获取页面状态
         get stat() {
             return this[PAGESTAT];
+        },
+        // 获取页面寄宿的app对象
+        get app() {
+            return this.parents("xd-app")[0];
         }
     },
     watch: {
@@ -37,16 +70,52 @@ $.register({
 
             // 请求文件
             load(val).then(opts => {
-                renderEle(this.ele, Object.assign({}, opts, {
-                    attrs: []
-                }));
                 this[PAGESTAT] = "loaded";
+
+                // 设置临时数据对象
+                this._opts = Object.assign({}, opts);
+
+                if (this._isAttache) {
+                    xdpageAttached.call(this);
+                }
             });
         }
     },
     ready() {
         // 自动进入unload状态
         this[PAGESTAT] = "unload";
+
+        // 设置pageParam属性
+        this.extend({
+            set pageParam(param) {
+                this._pageParam = param;
+            },
+            get pageParam() {
+                let pageParam = this._pageParam;
+
+                if (!pageParam) {
+                    let { app } = this;
+
+                    if (app) {
+                        pageParam = app.pageParam;
+                    }
+                }
+
+                return pageParam;
+            }
+        });
+        // debugger
+    },
+    attached: xdpageAttached,
+    detached() {
+        // 更新状态
+        this[PAGESTAT] = "destory";
+
+        if (this.src) {
+            load(this.src).then(opts => {
+                opts.destory.call(this);
+            });
+        }
     }
 });
 
@@ -60,14 +129,19 @@ processors.set("page", async packData => {
         watch: {},
         // 自有属性
         data: {},
-        // 页面加载完成
-        // onLoad() { },
-        // 页面被激活时调用，搭配xd-app使用
-        // onActive() { },
-        // 页面被关闭时调用
-        // onClose() { },
         // 依赖子模块
         use: []
+        // 页面渲染完成
+        // ready() { },
+        // 页面被关闭时调用
+        // destory() { },
+        // 下面需要搭配 xd-app
+        // 页面被激活时调用，搭配xd-app使用
+        // onActive() { },
+        // 被放置后台时调用
+        // onHide() { },
+        // xdapp相关pageParam属性
+        // pageParam: []
     };
 
     // load方法
@@ -115,8 +189,9 @@ processors.set("page", async packData => {
             // path = defaults.temp;
             path = await load(`${defaults.temp} -getPath`);
         }
-        temp = await fetch(path);
-        temp = await temp.text();
+        temp = await load(path);
+        // temp = await fetch(path);
+        // temp = await temp.text();
     }
 
     // 添加link

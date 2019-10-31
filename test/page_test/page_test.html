@@ -7,17 +7,33 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>xd-page test</title>
     <script src="../../dist/xdframe.js"></script>
+    <link rel="stylesheet" href="xd-page-anime.css">
+    <style>
+        body {
+            background-color: #eee;
+        }
+
+        xd-app {
+            background-color: #fff;
+        }
+    </style>
 </head>
 
 <body>
-    <xd-page id="haha" src="./apage -pack" val="valval">a</xd-page>
+    <!-- <xd-app style="width:320px;height:480px;"> -->
+    <xd-app style="position:absolute;left:0;top:0;width:100%;height:100%;">
+        <xd-page id="haha" src="./apage/apage.js?a=aaaa&b=bbbbb" val="valval" style="background-color:rgba(255,0,0,.2);">a</xd-page>
+        <!-- <xd-page id="haha" src="./apage/apage.js?c=cccc" val="valval">a</xd-page> -->
+    </xd-app>
     <script>
         let page1 = $("#haha");
-        let page2 = $({
-            tag: "xd-page",
-            id: "ha2",
-            // src: "./apage/apage"
-        });
+        // let page2 = $({
+        //     tag: "xd-page",
+        //     id: "ha2",
+        //     src: "./apage/apage"
+        // });
+
+        // $('body').push(page2);
     </script>
 </body>
 

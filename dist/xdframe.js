@@ -1770,16 +1770,30 @@
 
         // business function
         // 判断元素是否符合条件
+        // const meetsEle = (ele, expr) => {
+        //     if (ele === expr) {
+        //         return !0;
+        //     }
+        //     let fadeParent = document.createElement('div');
+        //     if (ele === document) {
+        //         return false;
+        //     }
+        //     fadeParent.appendChild(ele.cloneNode(false));
+        //     return !!fadeParent.querySelector(expr);
+        // }
+
         const meetsEle = (ele, expr) => {
             if (ele === expr) {
                 return !0;
             }
-            let fadeParent = document.createElement('div');
             if (ele === document) {
                 return false;
             }
-            fadeParent.appendChild(ele.cloneNode(false));
-            return !!fadeParent.querySelector(expr);
+            let tempEle = document.createElement('template');
+            let html = `<${ele.tagName.toLowerCase()} ${Array.from(ele.attributes).map(e => e.name + '="' + e.value + '"').join(" ")} />`
+
+            tempEle.innerHTML = html;
+            return !!tempEle.content.querySelector(expr);
         }
 
         // 转换元素
@@ -1916,10 +1930,11 @@
                         value: this
                     }
                 });
+                let tagValue = ele.tagName ? ele.tagName.toLowerCase() : '';
                 Object.defineProperties(this, {
                     tag: {
                         enumerable: true,
-                        value: ele.tagName.toLowerCase()
+                        value: tagValue
                     },
                     ele: {
                         value: ele
@@ -1942,7 +1957,7 @@
                 if (parentNode instanceof DocumentFragment) {
                     return;
                 }
-                return (!parentNode || parentNode === document) ? null : createXhearEle(parentNode);
+                return (!parentNode || parentNode === document) ? null : createXhearEle(parentNode)[PROXYTHIS];
             }
 
             get index() {
@@ -2071,6 +2086,13 @@
                 Object.assign(style, d);
             }
 
+            get $shadow() {
+                let {
+                    shadowRoot
+                } = this.ele;
+                return shadowRoot && createXhearEle(shadowRoot)[PROXYTHIS];
+            }
+
             setData(key, value) {
                 if (UnSetKeys.has(key)) {
                     console.warn(`can't set this key => `, key);
@@ -2131,7 +2153,7 @@
                 if (!/\D/.test(key)) {
                     // 纯数字，直接获取children
                     target = _this.ele.children[key];
-                    target && (target = createXhearEle(target));
+                    target && (target = createXhearEle(target)[PROXYTHIS]);
                 } else {
                     target = _this[key];
                 }
@@ -2160,7 +2182,7 @@
                     });
                 }
 
-                return parChilds.map(e => createXhearEle(e));
+                return parChilds.map(e => createXhearEle(e)[PROXYTHIS]);
             }
 
             empty() {
@@ -2231,23 +2253,20 @@
             que(expr) {
                 let tar = this.ele.querySelector(expr);
                 if (tar) {
-                    return createXhearEle(tar);
+                    return createXhearEle(tar)[PROXYTHIS];
                 }
             }
 
             queAll(expr) {
-                return queAllToArray(this.ele, expr).map(tar => createXhearEle(tar));
+                return queAllToArray(this.ele, expr).map(tar => createXhearEle(tar)[PROXYTHIS]);
             }
 
             queShadow(expr) {
                 let {
-                    shadowRoot
-                } = this.ele;
-                if (shadowRoot) {
-                    let tar = shadowRoot.querySelector(expr);
-                    if (tar) {
-                        return createXhearEle(tar);
-                    }
+                    $shadow
+                } = this;
+                if ($shadow) {
+                    return $shadow.que(expr);
                 } else {
                     throw {
                         target: this,
@@ -2258,10 +2277,10 @@
 
             queAllShadow(expr) {
                 let {
-                    shadowRoot
-                } = this.ele;
-                if (shadowRoot) {
-                    return queAllToArray(shadowRoot, expr).map(tar => createXhearEle(tar));
+                    $shadow
+                } = this;
+                if ($shadow) {
+                    return $shadow.queAll(expr);
                 } else {
                     throw {
                         target: this,
@@ -2730,7 +2749,7 @@
             Object.assign(defaults, opts);
 
             // 复制数据
-            let attrs = defaults.attrs = defaults.attrs.map(val => propToAttr(val));
+            let attrs = defaults.attrs = defaults.attrs.map(e => attrToProp(e));
             defaults.data = cloneObject(defaults.data);
             defaults.watch = Object.assign({}, defaults.watch);
 
@@ -2807,13 +2826,14 @@
 
                 attributeChangedCallback(name, oldValue, newValue) {
                     let xEle = this.__xhear__;
+                    name = attrToProp(name);
                     if (newValue != xEle[name]) {
                         xEle[name] = newValue;
                     }
                 }
 
                 static get observedAttributes() {
-                    return attrs;
+                    return attrs.map(e => propToAttr(e));
                 }
             }
 
@@ -3043,7 +3063,7 @@
                 // 绑定值
                 xhearEle.watch(attrName, d => {
                     // 绑定值
-                    ele.setAttribute(attrName, d.val);
+                    ele.setAttribute(propToAttr(attrName), d.val);
                 });
             });
 
@@ -4314,6 +4334,31 @@
             let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
             $("head").push(xdpageStyle);
 
+            // 渲染页面触发函数
+            function xdpageAttached() {
+                this._isAttache = true;
+
+                let opts = this._opts;
+
+                if (!opts) {
+                    return;
+                }
+
+                if (this[PAGESTAT] !== "finish") {
+                    // 渲染元素
+                    renderEle(this.ele, Object.assign({}, opts, {
+                        attrs: [],
+                        watch: {}
+                    }));
+
+                    // 设置渲染完成
+                    this[PAGESTAT] = "finish";
+                }
+
+                // 运行ready
+                opts.ready && opts.ready.call(this);
+            }
+
             // 定义新类型 xd-page
             $.register({
                 tag: "xd-page",
@@ -4322,13 +4367,21 @@
                 // <div class="xd-page-content" xv-tar="pageContent">xd-page-inner</div>
                 // `,
                 temp: false,
-                attrs: ["src"],
+                attrs: ["src", "pageid", "xdPageAnime"],
                 data: {
+                    xdPageAnime: "",
+                    pageid: "",
                     src: "",
+                    _isAttache: false
                 },
                 proto: {
+                    // 获取页面状态
                     get stat() {
                         return this[PAGESTAT];
+                    },
+                    // 获取页面寄宿的app对象
+                    get app() {
+                        return this.parents("xd-app")[0];
                     }
                 },
                 watch: {
@@ -4348,16 +4401,54 @@
 
                         // 请求文件
                         load(val).then(opts => {
-                            renderEle(this.ele, Object.assign({}, opts, {
-                                attrs: []
-                            }));
                             this[PAGESTAT] = "loaded";
+
+                            // 设置临时数据对象
+                            this._opts = Object.assign({}, opts);
+
+                            if (this._isAttache) {
+                                xdpageAttached.call(this);
+                            }
                         });
                     }
                 },
                 ready() {
                     // 自动进入unload状态
                     this[PAGESTAT] = "unload";
+
+                    // 设置pageParam属性
+                    this.extend({
+                        set pageParam(param) {
+                            this._pageParam = param;
+                        },
+                        get pageParam() {
+                            let pageParam = this._pageParam;
+
+                            if (!pageParam) {
+                                let {
+                                    app
+                                } = this;
+
+                                if (app) {
+                                    pageParam = app.pageParam;
+                                }
+                            }
+
+                            return pageParam;
+                        }
+                    });
+                    // debugger
+                },
+                attached: xdpageAttached,
+                detached() {
+                    // 更新状态
+                    this[PAGESTAT] = "destory";
+
+                    if (this.src) {
+                        load(this.src).then(opts => {
+                            opts.destory.call(this);
+                        });
+                    }
                 }
             });
 
@@ -4371,14 +4462,19 @@
                     watch: {},
                     // 自有属性
                     data: {},
-                    // 页面加载完成
-                    // onLoad() { },
-                    // 页面被激活时调用，搭配xd-app使用
-                    // onActive() { },
-                    // 页面被关闭时调用
-                    // onClose() { },
                     // 依赖子模块
                     use: []
+                    // 页面渲染完成
+                    // ready() { },
+                    // 页面被关闭时调用
+                    // destory() { },
+                    // 下面需要搭配 xd-app
+                    // 页面被激活时调用，搭配xd-app使用
+                    // onActive() { },
+                    // 被放置后台时调用
+                    // onHide() { },
+                    // xdapp相关pageParam属性
+                    // pageParam: []
                 };
 
                 // load方法
@@ -4426,8 +4522,9 @@
                         // path = defaults.temp;
                         path = await load(`${defaults.temp} -getPath`);
                     }
-                    temp = await fetch(path);
-                    temp = await temp.text();
+                    temp = await load(path);
+                    // temp = await fetch(path);
+                    // temp = await temp.text();
                 }
 
                 // 添加link
@@ -4460,6 +4557,170 @@
 
             // 添加新类型
             glo.Page || (glo.Page = drill.Page);
+            const APPSTAT = Symbol("appStat");
+            const CURRENTS = Symbol("currentPages");
+
+            $.register({
+                tag: "xd-app",
+                data: {
+                    src: "",
+                    xdPageAnime: "",
+                    _unBubble: ["xdPageAnime"],
+                    // 默认page数据
+                    pageParam: {
+                        // 后退中的page的样式
+                        back: ["back"],
+                        // 激活中的页面样式
+                        current: "active",
+                        front: "front",
+                        // 隐藏的页面样式
+                        hide: "hide"
+                    },
+                    // [CURRENTS]: []
+                },
+                proto: {
+                    // 当前装填
+                    get stat() {
+                        return this[APPSTAT];
+                    },
+                    // 选中的页面
+                    get currentPage() {
+                        return this[CURRENTS].slice(-1)[0];
+                    },
+                    // 处在路由中的页面
+                    get currentPages() {
+                        return this[CURRENTS].slice();
+                    },
+                    // 跳转到
+                    // 跳转路由
+                    navigate(opts) {
+                        let defaults = {
+                            // 支持类型 to/back
+                            type: "to",
+                            // back返回的级别
+                            delta: 1,
+                            // to 跳转的类型
+                            url: "",
+                            // 跳转到相应pageid的页面
+                            pageid: "",
+                            // 相应的page元素
+                            target: ""
+                        };
+
+                        let optsType = getType(opts);
+
+                        switch (optsType) {
+                            case "object":
+                                Object.assign(defaults, opts);
+                                break;
+                            case "string":
+                                defaults.url = opts;
+                                break;
+                        }
+
+                        return new Promise((res, rej) => {
+                            switch (defaults.type) {
+                                case "to":
+                                    // 确认没有target
+                                    if (!defaults.target && !defaults.id && defaults.url) {
+                                        let {
+                                            url
+                                        } = defaults;
+
+                                        // 新建page
+                                        let pageEle = $({
+                                            tag: "xd-page",
+                                            src: url
+                                        });
+
+                                        // 添加到 xd-app 内
+                                        this.push(pageEle);
+
+                                        // 先设置前置样式
+                                        // 直接设置元素 attr 比 watch attrs 更快装载
+                                        pageEle.attr("xd-page-anime", this.pageParam.front);
+
+                                        // 前一个页面后退
+                                        this.currentPage.xdPageAnime = this.pageParam.back[0];
+
+                                        // 装载当前页
+                                        this[CURRENTS].push(pageEle);
+
+                                        // 添加属性
+                                        // 直接修正属性，已经是异步操作
+                                        // setTimeout(() => {
+                                        pageEle.xdPageAnime = this.pageParam.current;
+                                        // }, 50);
+                                    }
+                                    break;
+                                case "back":
+                                    debugger
+                                    break;
+                            }
+                        });
+                    }
+                },
+                watch: {},
+                ready() {
+                    this[APPSTAT] = "unload";
+
+                    // 判断是否有页面，激活当前页
+                    $.nextTick(() => {
+                        let firstPage = this.que("xd-page");
+
+                        firstPage.xdPageAnime = firstPage.pageParam.current;
+
+                        // firstPage.attr("xd-page-anime", this.pageParam.current);
+
+                        // 添加首页，并激活
+                        this[CURRENTS] = [firstPage];
+                    });
+
+                }
+            });
+
+            processors.set("app", async packData => {
+                let defaults = {
+                    // 运行后触发的callback
+                    onLauncher() {},
+                    // 显示后触发
+                    onShow() {},
+                    // 隐藏后触发
+                    onHide() {},
+                    // 出错后触发
+                    onError() {},
+                    // 全局样式
+                    // 单行设置link类型
+                    globalCss: "",
+                    // 默认page数据
+                    page: {
+                        // 后退中的page的样式
+                        back: ["back"],
+                        // 激活中的页面样式
+                        current: "active",
+                        // 隐藏的页面样式
+                        hide: ""
+                    }
+                };
+
+                // 注册节点
+                $.register(defaults);
+
+                // 设置模块载入完成
+                packData.stat = 3;
+            });
+
+            // 添加新类型
+            drill.App = (d, moduleId) => {
+                base.tempM = {
+                    type: "app",
+                    d,
+                    moduleId
+                };
+            }
+
+            // 添加新类型
+            glo.App || (glo.App = drill.App);
         })
     });
 

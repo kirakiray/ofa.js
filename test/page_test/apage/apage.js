@@ -1,6 +1,18 @@
 Page({
     // 页面初始化
-    onLoad(d) { },
+    ready() {
+        console.log("onpage => ", this);
+
+        this.$btn.on("click", e => {
+            this.app.navigate({
+                url: "./apage -pack"
+            });
+        });
+    },
+    // 页面关闭
+    destory() {
+        console.log("destory => ", this);
+    },
     // 页面被激活
     onActive() { },
     proto: {

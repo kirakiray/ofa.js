@@ -1,0 +1,40 @@
+xd-app {
+    display: block;
+    position: relative;
+}
+
+xd-app {
+    display: block;
+}
+
+xd-app>xd-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+[xd-page-anime] {
+    transition: all ease-in-out .3s;
+}
+
+[xd-page-anime="active"] {
+    transform: translate(0, 0);
+    opacity: 1;
+    z-index: 3;
+}
+
+[xd-page-anime="hide"] {
+    display: none;
+}
+
+[xd-page-anime="back"] {
+    transform: translate(-100%, 0);
+    z-index: 1;
+}
+
+[xd-page-anime="front"] {
+    transform: translate(100%, 0);
+    z-index: 1;
+}

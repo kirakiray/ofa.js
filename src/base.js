@@ -14,6 +14,7 @@
         $.ext(({ renderEle }) => {
             //<!--xd-components-->
             //<!--xd-page-->
+            //<!--xd-app-->
         })
     });
 
