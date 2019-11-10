@@ -2068,6 +2068,11 @@
             }
 
             set style(d) {
+                if (getType(d) == "string") {
+                    this.ele.style = d;
+                    return;
+                }
+
                 let {
                     style
                 } = this;
@@ -4367,9 +4372,8 @@
                 // <div class="xd-page-content" xv-tar="pageContent">xd-page-inner</div>
                 // `,
                 temp: false,
-                attrs: ["src", "pageid", "xdPageAnime"],
+                attrs: ["src", "pageid"],
                 data: {
-                    xdPageAnime: "",
                     pageid: "",
                     src: "",
                     _isAttache: false
@@ -4474,7 +4478,7 @@
                     // 被放置后台时调用
                     // onHide() { },
                     // xdapp相关pageParam属性
-                    // pageParam: []
+                    // pageParam: {}
                 };
 
                 // load方法
@@ -4560,12 +4564,62 @@
             const APPSTAT = Symbol("appStat");
             const CURRENTS = Symbol("currentPages");
 
+            // 内置页面样式动画数据对象
+            const pageAnimes = new Map([
+                ["back", {
+                    transform: {
+                        translateX: "-100%"
+                    },
+                    transition: "all ease .3s"
+                }],
+                ["front", {
+                    transform: {
+                        translateX: "100%"
+                    },
+                    transition: "all ease .3s"
+                }],
+                ["active", {
+                    opacity: 1,
+                    transform: {
+                        translateX: "0"
+                    },
+                    transition: "all ease .3s"
+                }]
+            ]);
+
+            // 将动画数据对象转换为css样式
+            const animeToStyle = (animeObj) => {
+                if (getType(animeObj) == "string") {
+                    animeObj = pageAnimes.get(animeObj);
+                }
+
+                let styleObj = Object.assign({}, animeObj);
+
+                let {
+                    transform
+                } = styleObj;
+                if (transform) {
+                    let transformStr = "";
+                    Object.keys(transform).forEach(k => {
+                        transformStr += `${k}(${transform[k]}) `;
+                        transformStr = transformStr.slice(0, -1)
+                    });
+                    styleObj.transform = transformStr;
+                }
+
+                let str = "";
+
+                Object.keys(styleObj).forEach(name => {
+                    str += `${name}:${styleObj[name]};`;
+                });
+
+                return str;
+            }
+
             $.register({
                 tag: "xd-app",
                 data: {
                     src: "",
-                    xdPageAnime: "",
-                    _unBubble: ["xdPageAnime"],
                     // 默认page数据
                     pageParam: {
                         // 后退中的page的样式
@@ -4636,21 +4690,28 @@
                                         // 添加到 xd-app 内
                                         this.push(pageEle);
 
-                                        // 先设置前置样式
-                                        // 直接设置元素 attr 比 watch attrs 更快装载
-                                        pageEle.attr("xd-page-anime", this.pageParam.front);
+                                        // 设置前置样式
+                                        let {
+                                            front,
+                                            current
+                                        } = pageEle.pageParam;
+                                        pageEle.style = animeToStyle(front);
 
-                                        // 前一个页面后退
-                                        this.currentPage.xdPageAnime = this.pageParam.back[0];
+
+                                        // 后装载
+                                        $.nextTick(() => {
+                                            pageEle.style = animeToStyle(current);
+                                        });
+
+                                        // 旧页面后退
+                                        let beforePage = this.currentPage;
+                                        let {
+                                            back
+                                        } = beforePage.pageParam;
+                                        beforePage.style = animeToStyle(back[0]);
 
                                         // 装载当前页
                                         this[CURRENTS].push(pageEle);
-
-                                        // 添加属性
-                                        // 直接修正属性，已经是异步操作
-                                        // setTimeout(() => {
-                                        pageEle.xdPageAnime = this.pageParam.current;
-                                        // }, 50);
                                     }
                                     break;
                                 case "back":
@@ -4667,10 +4728,6 @@
                     // 判断是否有页面，激活当前页
                     $.nextTick(() => {
                         let firstPage = this.que("xd-page");
-
-                        firstPage.xdPageAnime = firstPage.pageParam.current;
-
-                        // firstPage.attr("xd-page-anime", this.pageParam.current);
 
                         // 添加首页，并激活
                         this[CURRENTS] = [firstPage];
@@ -4693,14 +4750,14 @@
                     // 单行设置link类型
                     globalCss: "",
                     // 默认page数据
-                    page: {
-                        // 后退中的page的样式
-                        back: ["back"],
-                        // 激活中的页面样式
-                        current: "active",
-                        // 隐藏的页面样式
-                        hide: ""
-                    }
+                    // page: {
+                    //     // 后退中的page的样式
+                    //     back: ["back"],
+                    //     // 激活中的页面样式
+                    //     current: "active",
+                    //     // 隐藏的页面样式
+                    //     hide: ""
+                    // }
                 };
 
                 // 注册节点

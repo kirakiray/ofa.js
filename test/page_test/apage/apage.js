@@ -4,6 +4,7 @@ Page({
         console.log("onpage => ", this);
 
         this.$btn.on("click", e => {
+            console.log("click haha ");
             this.app.navigate({
                 url: "./apage -pack"
             });

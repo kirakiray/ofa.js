@@ -36,9 +36,8 @@ $.register({
     // <div class="xd-page-content" xv-tar="pageContent">xd-page-inner</div>
     // `,
     temp: false,
-    attrs: ["src", "pageid", "xdPageAnime"],
+    attrs: ["src", "pageid"],
     data: {
-        xdPageAnime: "",
         pageid: "",
         src: "",
         _isAttache: false
@@ -141,7 +140,7 @@ processors.set("page", async packData => {
         // 被放置后台时调用
         // onHide() { },
         // xdapp相关pageParam属性
-        // pageParam: []
+        // pageParam: {}
     };
 
     // load方法
