@@ -1,6 +1,7 @@
 xd-app {
     display: block;
     position: relative;
+    overflow: hidden;
 }
 
 xd-app {

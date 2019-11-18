@@ -9,6 +9,14 @@
     <script src="../../dist/xdframe.js"></script>
     <link rel="stylesheet" href="xd-page-anime.css">
     <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         body {
             background-color: #eee;
         }
@@ -16,24 +24,39 @@
         xd-app {
             background-color: #fff;
         }
+
+        .backbtn {
+            z-index: 20;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            padding: 10px;
+            background-color: rgba(255, 0, 0, .2);
+            cursor: pointer;
+        }
+
+        .testpage {
+            background-color: rgba(255, 0, 0, .2);
+        }
     </style>
 </head>
 
 <body>
     <!-- <xd-app style="width:320px;height:480px;"> -->
     <xd-app style="position:absolute;left:0;top:0;width:100%;height:100%;">
-        <xd-page id="haha" src="./apage/apage.js?a=aaaa&b=bbbbb" val="valval" style="background-color:rgba(255,0,0,.2);">a</xd-page>
+        <xd-page id="haha" class="testpage" src="./apage/apage.js?a=aaaa&b=bbbbb" val="valval">a</xd-page>
         <!-- <xd-page id="haha" src="./apage/apage.js?c=cccc" val="valval">a</xd-page> -->
     </xd-app>
+    <div class="backbtn">返回</div>
     <script>
         let page1 = $("#haha");
-        // let page2 = $({
-        //     tag: "xd-page",
-        //     id: "ha2",
-        //     src: "./apage/apage"
-        // });
 
-        // $('body').push(page2);
+        let testapp = $("xd-app");
+
+        let backbtn = $(".backbtn");
+        backbtn.on("click", e => {
+            testapp.back();
+        });
     </script>
 </body>
 

@@ -143,9 +143,39 @@ $.register({
                         }
                         break;
                     case "back":
-                        debugger
+                        // 返回页面操作
+                        let prevPage,
+                            currentPages = this[CURRENTS],
+                            len = currentPages.length;
+
+                        let { currentPage } = this;
+
+                        // 前一页
+                        if (len >= 2) {
+                            prevPage = currentPages[len - 2];
+
+                            let { current } = prevPage.pageParam;
+                            let { front } = currentPage.pageParam;
+
+                            // 修正样式
+                            prevPage.style = animeToStyle(current);
+                            currentPage.style = animeToStyle(front);
+
+                            // 去掉前一页
+                            currentPages.splice(len - 1, 1);
+
+                            // 时间到后删除之前的页面
+                            setTimeout(() => {
+                                currentPage.remove();
+                            }, 300);
+                        }
                         break;
                 }
+            });
+        },
+        back() {
+            this.navigate({
+                type: "back"
             });
         }
     },
