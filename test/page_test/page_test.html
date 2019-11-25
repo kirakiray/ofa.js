@@ -25,7 +25,8 @@
             background-color: #fff;
         }
 
-        .backbtn {
+        .backbtn,
+        .backbtn2 {
             z-index: 20;
             position: fixed;
             left: 0;
@@ -33,6 +34,10 @@
             padding: 10px;
             background-color: rgba(255, 0, 0, .2);
             cursor: pointer;
+        }
+
+        .backbtn2 {
+            left: 100px;
         }
 
         .testpage {
@@ -48,6 +53,7 @@
         <!-- <xd-page id="haha" src="./apage/apage.js?c=cccc" val="valval">a</xd-page> -->
     </xd-app>
     <div class="backbtn">返回</div>
+    <div class="backbtn2">返回2</div>
     <script>
         let page1 = $("#haha");
 
@@ -57,6 +63,10 @@
         backbtn.on("click", e => {
             testapp.back();
         });
+
+        $(".backbtn2").on("click", e => {
+            testapp.back(2);
+        })
     </script>
 </body>
 

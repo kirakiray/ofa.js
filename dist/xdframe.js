@@ -4712,6 +4712,11 @@
 
                                         // 装载当前页
                                         this[CURRENTS].push(pageEle);
+
+                                        // 执行完成callback
+                                        setTimeout(() => {
+                                            res();
+                                        }, 300);
                                     }
                                     break;
                                 case "back":
@@ -4724,9 +4729,18 @@
                                         currentPage
                                     } = this;
 
+                                    let {
+                                        delta
+                                    } = defaults;
+
+                                    // 修正delta，保证不超过最后一页
+                                    if (len == 2) {
+                                        delta = 1;
+                                    }
+
                                     // 前一页
                                     if (len >= 2) {
-                                        prevPage = currentPages[len - 2];
+                                        prevPage = currentPages[len - (delta + 1)];
 
                                         let {
                                             current
@@ -4740,20 +4754,22 @@
                                         currentPage.style = animeToStyle(front);
 
                                         // 去掉前一页
-                                        currentPages.splice(len - 1, 1);
+                                        let needRemovePages = currentPages.splice(len - delta, delta);
 
                                         // 时间到后删除之前的页面
                                         setTimeout(() => {
-                                            currentPage.remove();
+                                            needRemovePages.forEach(page => page.remove());
+                                            res();
                                         }, 300);
                                     }
                                     break;
                             }
                         });
                     },
-                    back() {
+                    back(delta = 1) {
                         this.navigate({
-                            type: "back"
+                            type: "back",
+                            delta
                         });
                     }
                 },
