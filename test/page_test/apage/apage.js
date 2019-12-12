@@ -5,7 +5,7 @@ Page({
 
         this.$btn.on("click", e => {
             console.log("click haha ");
-            this.app.navigate({
+            this.navigate({
                 url: "./apage -pack"
             });
         });

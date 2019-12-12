@@ -1,56 +1,6 @@
 const APPSTAT = Symbol("appStat");
 const CURRENTS = Symbol("currentPages");
 
-// 内置页面样式动画数据对象
-const pageAnimes = new Map([
-    ["back", {
-        transform: {
-            translateX: "-100%"
-        },
-        transition: "all ease .3s"
-    }],
-    ["front", {
-        transform: {
-            translateX: "100%"
-        },
-        transition: "all ease .3s"
-    }],
-    ["active", {
-        opacity: 1,
-        transform: {
-            translateX: "0"
-        },
-        transition: "all ease .3s"
-    }]
-]);
-
-// 将动画数据对象转换为css样式
-const animeToStyle = (animeObj) => {
-    if (getType(animeObj) == "string") {
-        animeObj = pageAnimes.get(animeObj);
-    }
-
-    let styleObj = Object.assign({}, animeObj);
-
-    let { transform } = styleObj;
-    if (transform) {
-        let transformStr = "";
-        Object.keys(transform).forEach(k => {
-            transformStr += `${k}(${transform[k]}) `;
-            transformStr = transformStr.slice(0, -1)
-        });
-        styleObj.transform = transformStr;
-    }
-
-    let str = "";
-
-    Object.keys(styleObj).forEach(name => {
-        str += `${name}:${styleObj[name]};`;
-    });
-
-    return str;
-}
-
 $.register({
     tag: "xd-app",
     data: {
@@ -62,8 +12,6 @@ $.register({
             // 激活中的页面样式
             current: "active",
             front: "front",
-            // 隐藏的页面样式
-            hide: "hide"
         },
         // [CURRENTS]: []
     },
@@ -84,6 +32,8 @@ $.register({
         // 跳转路由
         navigate(opts) {
             let defaults = {
+                // 当前页面
+                self: "",
                 // 支持类型 to/back
                 type: "to",
                 // back返回的级别
@@ -125,18 +75,18 @@ $.register({
 
                             // 设置前置样式
                             let { front, current } = pageEle.pageParam;
-                            pageEle.style = animeToStyle(front);
+                            pageEle.attr("xd-page-anime", front);
 
 
                             // 后装载
                             $.nextTick(() => {
-                                pageEle.style = animeToStyle(current);
+                                pageEle.attr("xd-page-anime", current);
                             });
 
                             // 旧页面后退
                             let beforePage = this.currentPage;
                             let { back } = beforePage.pageParam;
-                            beforePage.style = animeToStyle(back[0]);
+                            beforePage.attr("xd-page-anime", back[0]);
 
                             // 装载当前页
                             this[CURRENTS].push(pageEle);
@@ -170,13 +120,11 @@ $.register({
                             let { front } = currentPage.pageParam;
 
                             // 修正样式
-                            prevPage.style = animeToStyle(current);
-                            currentPage.style = animeToStyle(front);
+                            prevPage.attr("xd-page-anime", current);
+                            currentPage.attr("xd-page-anime", front);
 
                             // 去掉前一页
                             let needRemovePages = currentPages.splice(len - delta, delta);
-
-                            // 时间到后删除之前的页面
                             setTimeout(() => {
                                 needRemovePages.forEach(page => page.remove());
                                 res();

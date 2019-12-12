@@ -50,6 +50,15 @@ $.register({
         // 获取页面寄宿的app对象
         get app() {
             return this.parents("xd-app")[0];
+        },
+        navigate(opts) {
+            let { app } = this;
+            if (!app) {
+                console.warn("no app =>", this);
+                return;
+            }
+            opts.self = this;
+            app.navigate(opts);
         }
     },
     watch: {
@@ -112,7 +121,7 @@ $.register({
 
         if (this.src) {
             load(this.src).then(opts => {
-                opts.destory.call(this);
+                opts.destory && opts.destory.call(this);
             });
         }
     }
@@ -189,8 +198,8 @@ processors.set("page", async packData => {
             path = await load(`${defaults.temp} -getPath`);
         }
         temp = await load(path);
-        // temp = await fetch(path);
-        // temp = await temp.text();
+        temp = await fetch(path);
+        temp = await temp.text();
     }
 
     // 添加link
