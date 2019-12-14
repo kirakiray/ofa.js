@@ -1,14 +1,7 @@
 Page({
     // 页面初始化
     ready() {
-        console.log("onpage => ", this);
-
-        this.$btn.on("click", e => {
-            console.log("click haha ");
-            this.navigate({
-                url: "./apage -pack"
-            });
-        });
+        console.log("ready => ", this);
     },
     // 页面关闭
     destory() {
@@ -19,6 +12,11 @@ Page({
     proto: {
         get haha() {
             return this.a1 + " " + this.b1;
+        },
+        gotoSelf() {
+            this.navigate({
+                url: "./apage -pack"
+            });
         }
     },
     data: {
