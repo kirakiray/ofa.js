@@ -4,7 +4,8 @@
     "versionCode": 2000000,
     "description": "no webpack,no nodejs,Back to the purest front end",
     "scripts": {
-        "watch": "node scripts/watch.js"
+        "watch": "node scripts/watch.js",
+        "server": "node --inspect scripts/server.js"
     },
     "author": "YAO",
     "license": "MIT",

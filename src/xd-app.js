@@ -59,7 +59,43 @@ $.register({
 
             return new Promise((res, rej) => {
                 switch (defaults.type) {
+                    case "back":
+                        // 返回页面操作
+                        let prevPage,
+                            currentPages = this[CURRENTS],
+                            len = currentPages.length;
+
+                        let { currentPage } = this;
+
+                        let { delta } = defaults;
+
+                        // 修正delta，保证不超过最后一页
+                        if (len == 2) {
+                            delta = 1;
+                        }
+
+                        // 前一页
+                        if (len >= 2) {
+                            prevPage = currentPages[len - (delta + 1)];
+
+                            let { current } = prevPage.pageParam;
+                            let { front } = currentPage.pageParam;
+
+                            // 修正样式
+                            prevPage.attr("xd-page-anime", current);
+                            currentPage.attr("xd-page-anime", front);
+
+                            // 去掉前一页
+                            let needRemovePages = currentPages.splice(len - delta, delta);
+                            setTimeout(() => {
+                                needRemovePages.forEach(page => page.remove());
+                                res();
+                            }, 300);
+                        }
+                        break;
+                    case "replace":
                     case "to":
+                    default:
                         // 确认没有target
                         if (!defaults.target && !defaults.id && defaults.url) {
                             let { url } = defaults;
@@ -93,40 +129,11 @@ $.register({
 
                             // 执行完成callback
                             setTimeout(() => {
-                                res();
-                            }, 300);
-                        }
-                        break;
-                    case "back":
-                        // 返回页面操作
-                        let prevPage,
-                            currentPages = this[CURRENTS],
-                            len = currentPages.length;
-
-                        let { currentPage } = this;
-
-                        let { delta } = defaults;
-
-                        // 修正delta，保证不超过最后一页
-                        if (len == 2) {
-                            delta = 1;
-                        }
-
-                        // 前一页
-                        if (len >= 2) {
-                            prevPage = currentPages[len - (delta + 1)];
-
-                            let { current } = prevPage.pageParam;
-                            let { front } = currentPage.pageParam;
-
-                            // 修正样式
-                            prevPage.attr("xd-page-anime", current);
-                            currentPage.attr("xd-page-anime", front);
-
-                            // 去掉前一页
-                            let needRemovePages = currentPages.splice(len - delta, delta);
-                            setTimeout(() => {
-                                needRemovePages.forEach(page => page.remove());
+                                if (defaults.type == "replace") {
+                                    // 替换了前一页，要删掉前一页数据
+                                    let beforePage = this[CURRENTS].splice(this[CURRENTS].length - 2, 1);
+                                    beforePage[0].remove();
+                                }
                                 res();
                             }, 300);
                         }

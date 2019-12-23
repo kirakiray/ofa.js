@@ -15,12 +15,8 @@ Page({
         },
         gotoSelf() {
             this.navigate({
+                type: "replace",
                 url: "./apage -pack"
-            });
-        },
-        gotoPage2() {
-            this.navigate({
-                url: "./apage2 -pack"
             });
         }
     },
