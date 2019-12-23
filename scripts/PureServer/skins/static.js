@@ -1,6 +1,6 @@
 
 const querystring = require("querystring");
-const url = require("url");
+const urltool = require('url');
 const path = require('path');
 const util = require('util');
 const { stat, readFile } = require('fs').promises;
@@ -31,7 +31,8 @@ module.exports = {
     },
     async skin(ctx, next) {
         let { request, respone } = ctx;
-        let url = request.url;
+        let urlObj = urltool.parse(request.url);
+        let url = urlObj.pathname;
 
         // 匹配头部
         for (let k of this.static) {
@@ -47,8 +48,6 @@ module.exports = {
                 } catch (e) {
                     return;
                 }
-
-                console.log("fileStat", fileStat);
 
                 // 获取mime类型
                 let ext = path.extname(url);
