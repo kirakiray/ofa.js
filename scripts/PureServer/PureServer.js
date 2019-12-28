@@ -3,9 +3,13 @@
  * 提供简单的接口抛出功能
  */
 const http = require('http');
+const util = require('util');
+const zlib = require('zlib');
+const gzip = util.promisify(zlib.gzip)
 
 // 静态服务器
 const staticSkin = require("./skins/static");
+const route = require("./skins/route");
 
 // 运行skin
 const runSkin = async ({ target, ctx, runned, task, id }) => {
@@ -29,17 +33,20 @@ const runSkin = async ({ target, ctx, runned, task, id }) => {
             runned.add(targetTask);
 
             await targetTask.call(target, ctx, async () => {
-                task[id + 1] && (await runSkin({ ctx, runned, task, id: id + 1 }));
+                task[id + 1] && (await runSkin({ target, ctx, runned, task, id: id + 1 }));
             });
         }
 
         // 进入下一个任务
-        runSkin({ ctx, runned, task, id: id + 1 });
+        await runSkin({ target, ctx, runned, task, id: id + 1 });
     }
 }
 
 class PureServer {
     constructor() {
+        // 添加自定义接口服务
+        this.use(route);
+
         // 添加 static 静态文件服务模块
         this.use(staticSkin);
     }
@@ -74,7 +81,9 @@ class PureServer {
                 respone,
                 body: undefined,
                 respHead: respHead,
-                code: undefined
+                code: undefined,
+                // 是否需要压缩
+                gzip: false
             };
 
             // 运行skins
@@ -89,8 +98,15 @@ class PureServer {
                 return;
             }
 
-            // 添加长度
-            ctx.body && (ctx.respHead['Content-Length'] = ctx.body.length);
+            if (ctx.body) {
+                if (ctx.gzip) {
+                    ctx.respHead['Content-Encoding'] = 'gzip';
+                    ctx.body = await gzip(ctx.body);
+                }
+
+                // 添加长度
+                ctx.respHead['Content-Length'] = ctx.body.length;
+            }
 
             // 头部文件
             respone.writeHead(code || 200, ctx.respHead);

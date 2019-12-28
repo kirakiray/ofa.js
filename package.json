@@ -5,7 +5,8 @@
     "description": "no webpack,no nodejs,Back to the purest front end",
     "scripts": {
         "watch": "node scripts/watch.js",
-        "server": "node --inspect scripts/server.js"
+        "server": "node --inspect scripts/server.js",
+        "test": "npm run server & open 'http://localhost:9669/xdframe/test/normal-test.html'"
     },
     "author": "YAO",
     "license": "MIT",
