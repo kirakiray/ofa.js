@@ -184,6 +184,7 @@ $.register({
 
             // 运行ready
             defaults.ready && defaults.ready.call(this);
+            this.emit("page-ready");
         }
     },
     ready() {
@@ -196,6 +197,7 @@ $.register({
 
         if (this._pageOptions) {
             this._pageOptions.destory && this._pageOptions.destory.call(this);
+            this.emit("page-destory");
         }
     }
 });

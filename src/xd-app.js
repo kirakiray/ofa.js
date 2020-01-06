@@ -6,16 +6,22 @@ $.register({
     data: {
         src: "",
         // 默认page数据
-        pageParam: {
+        _pageParam: {
             // 后退中的page的样式
             back: ["back"],
             // 激活中的页面样式
             current: "active",
             front: "front",
         },
-        // [CURRENTS]: []
+        _appOptions: {}
     },
     proto: {
+        get pageParam() {
+            return this._pageParam;
+        },
+        set pageParam(val) {
+            this._pageParam = val;
+        },
         // 当前装填
         get stat() {
             return this[APPSTAT];
@@ -173,7 +179,10 @@ $.register({
             let firstPage = this.que("xd-page");
 
             // 添加首页，并激活
-            this[CURRENTS] = [firstPage];
+            firstPage && (this[CURRENTS] = [firstPage]);
+
+            // 触发事件
+            this.emitHandler("launch");
         });
     }
 });

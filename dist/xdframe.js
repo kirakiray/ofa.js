@@ -567,6 +567,8 @@
             return value;
         }
 
+        const hasElement = typeof Element !== "undefined";
+
         /**
          * 事件触发器升级版，可设置父节点，会模拟冒泡操作
          * @class
@@ -589,7 +591,7 @@
                     // 值
                     let value = obj[k];
 
-                    if (/^\_/.test(k) || value instanceof Element) {
+                    if (/^\_/.test(k) || (hasElement && value instanceof Element)) {
                         // this[k] = obj[k];
                         Object.defineProperty(this, k, {
                             configurable: true,
@@ -3220,7 +3222,7 @@
             }
 
             // 合并数据后设置
-            canSetKey.forEach(k => {
+            Object.keys(rData).forEach(k => {
                 let val = rData[k];
 
                 if (!isUndefined(val)) {
@@ -4628,6 +4630,7 @@
 
                         // 运行ready
                         defaults.ready && defaults.ready.call(this);
+                        this.emit("page-ready");
                     }
                 },
                 ready() {
@@ -4640,6 +4643,7 @@
 
                     if (this._pageOptions) {
                         this._pageOptions.destory && this._pageOptions.destory.call(this);
+                        this.emit("page-destory");
                     }
                 }
             });
@@ -4651,16 +4655,22 @@
                 data: {
                     src: "",
                     // 默认page数据
-                    pageParam: {
+                    _pageParam: {
                         // 后退中的page的样式
                         back: ["back"],
                         // 激活中的页面样式
                         current: "active",
                         front: "front",
                     },
-                    // [CURRENTS]: []
+                    _appOptions: {}
                 },
                 proto: {
+                    get pageParam() {
+                        return this._pageParam;
+                    },
+                    set pageParam(val) {
+                        this._pageParam = val;
+                    },
                     // 当前装填
                     get stat() {
                         return this[APPSTAT];
@@ -4833,7 +4843,10 @@
                         let firstPage = this.que("xd-page");
 
                         // 添加首页，并激活
-                        this[CURRENTS] = [firstPage];
+                        firstPage && (this[CURRENTS] = [firstPage]);
+
+                        // 触发事件
+                        this.emitHandler("launch");
                     });
                 }
             });
