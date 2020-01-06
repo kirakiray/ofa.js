@@ -1,4 +1,4 @@
-define({
+Page({
     // 页面初始化
     ready() {
         console.log("ready => ", this);
@@ -17,8 +17,12 @@ define({
         },
         gotoSelf() {
             this.navigate({
-                type: "replace",
-                src: "../apage -pack"
+                src: "./apage"
+            });
+        },
+        gotoPage2() {
+            this.navigate({
+                src: "../apage2 -pack"
             });
         }
     },

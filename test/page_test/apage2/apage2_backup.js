@@ -1,4 +1,4 @@
-define({
+Page({
     // 页面初始化
     ready() {
         console.log("ready => ", this);
@@ -8,9 +8,7 @@ define({
         console.log("destory => ", this);
     },
     // 页面被激活
-    onActive(e) {
-        console.log("active => ", this, e);
-    },
+    onActive(e) { },
     proto: {
         get haha() {
             return this.a1 + " " + this.b1;
@@ -18,7 +16,7 @@ define({
         gotoSelf() {
             this.navigate({
                 type: "replace",
-                src: "../apage -pack"
+                src: "./apage -pack"
             });
         }
     },

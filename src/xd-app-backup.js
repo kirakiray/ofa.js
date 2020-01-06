@@ -43,9 +43,7 @@ $.register({
                 // 跳转到相应pageid的页面
                 pageid: "",
                 // 相应的page元素
-                target: "",
-                // 自定义数据
-                data: null
+                target: ""
             };
 
             let optsType = getType(opts);
@@ -107,20 +105,14 @@ $.register({
 
                             if (relativeSrc) {
                                 // 去掉后面的参数
-                                let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
-
-                                if (urlStrArr) {
-                                    let obj = main.toUrlObjs([src], urlStrArr[1]);
-                                    obj && (obj = obj[0]);
-                                    src = obj.ori;
-                                    obj.search && (src += ".js?" + obj.search);
-                                }
+                                let urlStrArr = /(.+)\?(.+)/.exec(relativeSrc);
+                                debugger
                             }
 
                             // 新建page
                             let pageEle = $({
                                 tag: "xd-page",
-                                src
+                                src: src
                             });
 
                             // 添加到 xd-app 内
@@ -129,6 +121,7 @@ $.register({
                             // 设置前置样式
                             let { front, current } = pageEle.pageParam;
                             pageEle.attr("xd-page-anime", front);
+
 
                             // 后装载
                             $.nextTick(() => {
@@ -175,5 +168,49 @@ $.register({
             // 添加首页，并激活
             this[CURRENTS] = [firstPage];
         });
+
     }
 });
+
+processors.set("app", async packData => {
+    let defaults = {
+        // 运行后触发的callback
+        onLauncher() { },
+        // 显示后触发
+        onShow() { },
+        // 隐藏后触发
+        onHide() { },
+        // 出错后触发
+        onError() { },
+        // 全局样式
+        // 单行设置link类型
+        globalCss: "",
+        // 默认page数据
+        // page: {
+        //     // 后退中的page的样式
+        //     back: ["back"],
+        //     // 激活中的页面样式
+        //     current: "active",
+        //     // 隐藏的页面样式
+        //     hide: ""
+        // }
+    };
+
+    // 注册节点
+    $.register(defaults);
+
+    // 设置模块载入完成
+    packData.stat = 3;
+});
+
+// 添加新类型
+drill.App = (d, moduleId) => {
+    base.tempM = {
+        type: "app",
+        d,
+        moduleId
+    };
+}
+
+// 添加新类型
+glo.App || (glo.App = drill.App);

@@ -4063,7 +4063,8 @@
             } else if (/^\./.test(ori)) {
                 if (urlObj.relative) {
                     // 添加相对路径
-                    path = urlObj.relative + ori;
+                    path = ori = urlObj.relative + ori
+                    // path = urlObj.relative + ori;
                 } else {
                     path = ori.replace(/^\.\//, "");
                 }
@@ -4089,10 +4090,12 @@
 
             // 修正单点
             path = path.replace(/\/\.\//, "/");
+            ori = ori.replace(/\/\.\//, "/");
 
             // 修正两点（上级目录）
             if (/\.\.\//.test(path)) {
                 path = removeParentPath(path);
+                ori = removeParentPath(ori);
             }
 
             // 添加后缀
@@ -4440,54 +4443,51 @@
             let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
             $("head").push(xdpageStyle);
 
-            // 渲染页面触发函数
-            function xdpageAttached() {
-                this._isAttache = true;
-
-                let opts = this._opts;
-
-                if (!opts) {
-                    return;
-                }
-
-                if (this[PAGESTAT] !== "finish") {
-                    // 渲染元素
-                    renderEle(this.ele, Object.assign({}, opts, {
-                        attrs: [],
-                        watch: {}
-                    }));
-
-                    // 设置渲染完成
-                    this[PAGESTAT] = "finish";
-                }
-
-                // 运行ready
-                opts.ready && opts.ready.call(this);
-            }
-
-            // 定义新类型 xd-page
             $.register({
                 tag: "xd-page",
-                // temp: `
-                // <style>:host{display:block;}.xd-page-content{width:100%;height:100%;}</style>
-                // <div class="xd-page-content" xv-tar="pageContent">xd-page-inner</div>
-                // `,
                 temp: false,
-                attrs: ["src", "pageid"],
-                data: {
-                    pageid: "",
-                    src: "",
-                    _isAttache: false
-                },
                 proto: {
-                    // 获取页面状态
                     get stat() {
                         return this[PAGESTAT];
                     },
+
                     // 获取页面寄宿的app对象
                     get app() {
                         return this.parents("xd-app")[0];
                     },
+                    set pageParam(param) {
+                        this._pageParam = param;
+                    },
+                    get pageParam() {
+                        let pageParam = this._pageParam;
+
+                        if (!pageParam) {
+                            let {
+                                app
+                            } = this;
+
+                            if (app) {
+                                pageParam = app.pageParam;
+                            }
+                        }
+
+                        return pageParam;
+                    },
+                    get params() {
+                        let paramsExprArr = /\?(.+)/.exec(this.src);
+                        if (paramsExprArr) {
+                            let obj = {};
+                            let arr = paramsExprArr[1].split("&");
+                            arr.forEach(str => {
+                                let [k, v] = str.split("=");
+                                if (k && v) {
+                                    obj[k] = v;
+                                }
+                            });
+                            return obj;
+                        }
+                    },
+                    // 页面跳转
                     navigate(opts) {
                         let {
                             app
@@ -4500,179 +4500,149 @@
                         app.navigate(opts);
                     }
                 },
+                data: {
+                    src: "",
+                    _pageOptions: null
+                },
+                attrs: ["src"],
                 watch: {
-                    src(e, val) {
-                        if (this[PAGESTAT] != "unload") {
+                    async src(e, val) {
+                        if (this[PAGESTAT] !== "unload") {
                             throw {
                                 target: this,
-                                desc: `this page is ${this.stat}!`
+                                desc: "loaded page can't set src"
                             };
                         }
 
-                        if (!val) {
-                            return;
-                        }
-
+                        // 加载页面模块数据
                         this[PAGESTAT] = "loading";
 
-                        // 请求文件
-                        load(val).then(opts => {
-                            this[PAGESTAT] = "loaded";
+                        let pageOpts = await load(val);
 
-                            // 设置临时数据对象
-                            this._opts = Object.assign({}, opts);
+                        this._pageOptions = pageOpts;
 
-                            if (this._isAttache) {
-                                xdpageAttached.call(this);
+                        let defaults = {
+                            // 默认模板
+                            temp: true,
+                            // 加载组件样式
+                            link: false,
+                            // 监听属性函数
+                            watch: {},
+                            // 自有属性
+                            data: {},
+                            // 依赖子模块
+                            // use: []
+                            // 页面渲染完成
+                            // ready() { },
+                            // 页面被关闭时调用
+                            // destory() { },
+                            // 下面需要搭配 xd-app
+                            // 页面被激活时调用，搭配xd-app使用
+                            // onActive() { },
+                            // 被放置后台时调用
+                            // onHide() { },
+                            // xdapp相关pageParam属性
+                            // pageParam: {}
+                        };
+
+                        Object.assign(defaults, pageOpts);
+
+                        // 分解初始url
+                        let path = "";
+                        let paramStr = "";
+                        let paramsExprArr = /(.+)\??(.*)/.exec(val);
+                        if (paramsExprArr) {
+                            path = paramsExprArr[1];
+                            paramStr = paramsExprArr[2];
+                        }
+
+                        // 获取组件名
+                        let fileName;
+                        let oriFileName;
+                        let fileExprArr = /.+\/(.+)/.exec(path)
+                        if (fileExprArr) {
+                            oriFileName = fileName = fileExprArr[1];
+
+                            // 去掉后缀
+                            fileName = fileName.replace(/\..+/, "");
+                        }
+
+                        let relativeDir = /.+\//.exec(path);
+                        if (relativeDir) {
+                            relativeDir = relativeDir[0];
+                        }
+
+                        // 重新制作load方法
+                        const relativeLoad = (...args) => main.load(main.toUrlObjs(args, relativeDir));
+
+                        // 加载依赖组件
+                        if (defaults.use && defaults.use.length) {
+                            await relativeLoad(...defaults.use);
+                        }
+
+                        // 获取temp内容
+                        let temp = "";
+
+                        if (!defaults.temp) {
+                            throw {
+                                desc: "page need template!"
+                            };
+                        }
+
+                        // 判断是否有换行
+                        if (/\n/.test(defaults.temp)) {
+                            // 拥有换行，是模板字符串
+                            temp = defaults.temp;
+                        } else {
+                            let path;
+                            if (defaults.temp === true) {
+                                path = await load(`${relativeDir + fileName}.html -getPath`)
+                            } else {
+                                // path = defaults.temp;
+                                path = await load(`${defaults.temp} -getPath`);
                             }
-                        });
+                            temp = await load(path);
+                            temp = await fetch(path);
+                            temp = await temp.text();
+                        }
+
+                        // 添加link
+                        let linkPath = defaults.link;
+                        if (linkPath) {
+                            if (defaults.link === true) {
+                                linkPath = await load(`${relativeDir + fileName}.css -getPath`);
+                            } else {
+                                linkPath = await load(`${defaults.link} -getPath`);
+                            }
+                            linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
+                        }
+
+                        // 渲染元素
+                        renderEle(this.ele, Object.assign({}, defaults, {
+                            temp,
+                            attrs: [],
+                            watch: {}
+                        }));
+
+                        this[PAGESTAT] = "finish";
+
+                        // 运行ready
+                        defaults.ready && defaults.ready.call(this);
                     }
                 },
                 ready() {
+                    // debugger
                     // 自动进入unload状态
                     this[PAGESTAT] = "unload";
-
-                    // 设置pageParam属性
-                    this.extend({
-                        set pageParam(param) {
-                            this._pageParam = param;
-                        },
-                        get pageParam() {
-                            let pageParam = this._pageParam;
-
-                            if (!pageParam) {
-                                let {
-                                    app
-                                } = this;
-
-                                if (app) {
-                                    pageParam = app.pageParam;
-                                }
-                            }
-
-                            return pageParam;
-                        }
-                    });
-                    // debugger
                 },
-                attached: xdpageAttached,
                 detached() {
-                    // 更新状态
                     this[PAGESTAT] = "destory";
 
-                    if (this.src) {
-                        load(this.src).then(opts => {
-                            opts.destory && opts.destory.call(this);
-                        });
+                    if (this._pageOptions) {
+                        this._pageOptions.destory && this._pageOptions.destory.call(this);
                     }
                 }
             });
-
-            processors.set("page", async packData => {
-                let defaults = {
-                    // 默认模板
-                    temp: true,
-                    // 加载组件样式
-                    link: false,
-                    // 监听属性函数
-                    watch: {},
-                    // 自有属性
-                    data: {},
-                    // 依赖子模块
-                    use: []
-                    // 页面渲染完成
-                    // ready() { },
-                    // 页面被关闭时调用
-                    // destory() { },
-                    // 下面需要搭配 xd-app
-                    // 页面被激活时调用，搭配xd-app使用
-                    // onActive() { },
-                    // 被放置后台时调用
-                    // onHide() { },
-                    // xdapp相关pageParam属性
-                    // pageParam: {}
-                };
-
-                // load方法
-                const load = (...args) => main.load(main.toUrlObjs(args, packData.dir));
-
-                let options = base.tempM.d;
-
-                if (isFunction(options)) {
-                    options = options(load, {
-                        DIR: packData.dir,
-                        FILE: packData.path
-                    });
-                    if (options instanceof Promise) {
-                        options = await options;
-                    }
-                }
-
-                // 合并默认参数
-                Object.assign(defaults, options);
-
-                // 获取文件名
-                let fileName = packData.path.match(/.+\/(.+)/)[1];
-                fileName = fileName.replace(/\.js$/, "");
-
-                // 添加子组件
-                if (defaults.use && defaults.use.length) {
-                    await load(...defaults.use);
-                }
-
-                // 置换temp
-                let temp = "";
-                if (!defaults.temp) {
-                    console.error("page need template!");
-                    return;
-                }
-                // 判断是否有换行
-                if (/\n/.test(defaults.temp)) {
-                    // 拥有换行，是模板字符串
-                    temp = defaults.temp;
-                } else {
-                    let path;
-                    if (defaults.temp === true) {
-                        path = await load(`./${fileName}.html -getPath`)
-                    } else {
-                        // path = defaults.temp;
-                        path = await load(`${defaults.temp} -getPath`);
-                    }
-                    temp = await load(path);
-                    temp = await fetch(path);
-                    temp = await temp.text();
-                }
-
-                // 添加link
-                let linkPath = defaults.link;
-                if (linkPath) {
-                    if (defaults.link === true) {
-                        linkPath = await load(`./${fileName}.css -getPath`);
-                    } else {
-                        linkPath = await load(`${defaults.link} -getPath`);
-                    }
-                    linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
-                }
-
-                defaults.temp = temp;
-
-                packData.getPack = async () => defaults;
-
-                // 设置模块载入完成
-                packData.stat = 3;
-            });
-
-            // 添加新类型
-            drill.Page = (d, moduleId) => {
-                base.tempM = {
-                    type: "page",
-                    d,
-                    moduleId
-                };
-            }
-
-            // 添加新类型
-            glo.Page || (glo.Page = drill.Page);
             const APPSTAT = Symbol("appStat");
             const CURRENTS = Symbol("currentPages");
 
@@ -4714,11 +4684,13 @@
                             // back返回的级别
                             delta: 1,
                             // to 跳转的类型
-                            url: "",
+                            src: "",
                             // 跳转到相应pageid的页面
                             pageid: "",
                             // 相应的page元素
-                            target: ""
+                            target: "",
+                            // 自定义数据
+                            data: null
                         };
 
                         let optsType = getType(opts);
@@ -4728,7 +4700,7 @@
                                 Object.assign(defaults, opts);
                                 break;
                             case "string":
-                                defaults.url = opts;
+                                defaults.src = opts;
                                 break;
                         }
 
@@ -4780,15 +4752,30 @@
                                 case "to":
                                 default:
                                     // 确认没有target
-                                    if (!defaults.target && !defaults.id && defaults.url) {
+                                    if (!defaults.target && !defaults.id && defaults.src) {
                                         let {
-                                            url
+                                            src
                                         } = defaults;
+
+                                        // 相对路径
+                                        let relativeSrc = defaults.self && defaults.self.src;
+
+                                        if (relativeSrc) {
+                                            // 去掉后面的参数
+                                            let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
+
+                                            if (urlStrArr) {
+                                                let obj = main.toUrlObjs([src], urlStrArr[1]);
+                                                obj && (obj = obj[0]);
+                                                src = obj.ori;
+                                                obj.search && (src += ".js?" + obj.search);
+                                            }
+                                        }
 
                                         // 新建page
                                         let pageEle = $({
                                             tag: "xd-page",
-                                            src: url
+                                            src
                                         });
 
                                         // 添加到 xd-app 内
@@ -4800,7 +4787,6 @@
                                             current
                                         } = pageEle.pageParam;
                                         pageEle.attr("xd-page-anime", front);
-
 
                                         // 后装载
                                         $.nextTick(() => {
@@ -4849,52 +4835,8 @@
                         // 添加首页，并激活
                         this[CURRENTS] = [firstPage];
                     });
-
                 }
             });
-
-            processors.set("app", async packData => {
-                let defaults = {
-                    // 运行后触发的callback
-                    onLauncher() {},
-                    // 显示后触发
-                    onShow() {},
-                    // 隐藏后触发
-                    onHide() {},
-                    // 出错后触发
-                    onError() {},
-                    // 全局样式
-                    // 单行设置link类型
-                    globalCss: "",
-                    // 默认page数据
-                    // page: {
-                    //     // 后退中的page的样式
-                    //     back: ["back"],
-                    //     // 激活中的页面样式
-                    //     current: "active",
-                    //     // 隐藏的页面样式
-                    //     hide: ""
-                    // }
-                };
-
-                // 注册节点
-                $.register(defaults);
-
-                // 设置模块载入完成
-                packData.stat = 3;
-            });
-
-            // 添加新类型
-            drill.App = (d, moduleId) => {
-                base.tempM = {
-                    type: "app",
-                    d,
-                    moduleId
-                };
-            }
-
-            // 添加新类型
-            glo.App || (glo.App = drill.App);
         })
     });
 

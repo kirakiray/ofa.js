@@ -1,26 +1,31 @@
-Page({
+define({
     // 页面初始化
-    ready() {
-        console.log("ready => ", this);
+    ready(e) {
+        console.log("ready => ", this, e);
     },
     // 页面关闭
     destory() {
         console.log("destory => ", this);
     },
     // 页面被激活
-    onActive(e) { },
+    onActive(e) {
+        console.log("active => ", this, e);
+    },
     proto: {
         get haha() {
             return this.a1 + " " + this.b1;
         },
         gotoSelf() {
             this.navigate({
-                url: "./apage -pack"
+                src: "./apage.js?new=haha",
+                data: {
+                    val: "I come form self"
+                }
             });
         },
         gotoPage2() {
             this.navigate({
-                url: "./apage2 -pack"
+                src: "../apage2 -pack"
             });
         }
     },
