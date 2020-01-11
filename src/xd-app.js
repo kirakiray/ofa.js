@@ -182,7 +182,12 @@ $.register({
             firstPage && (this[CURRENTS] = [firstPage]);
 
             // 触发事件
-            this.emitHandler("launch");
+            this.emitHandler("app-launch");
+        });
+
+        // 检查页面状况
+        window.addEventListener("visibilitychange", e => {
+            this.emitHandler(document.hidden ? "app-hide" : "app-show");
         });
     }
 });

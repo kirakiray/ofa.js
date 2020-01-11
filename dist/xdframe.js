@@ -16,10 +16,16 @@
             // 定位对象寄存器
             let nextTickMap = new Map();
 
+            let pnext = setTimeout;
+
+            if (typeof process === "object" && process.nextTick) {
+                pnext = process.nextTick;
+            }
+
             return (fun, key) => {
                 if (!inTick) {
                     inTick = true;
-                    setTimeout(() => {
+                    pnext(() => {
                         if (nextTickMap.size) {
                             nextTickMap.forEach(({
                                 key,
@@ -32,7 +38,7 @@
 
                         nextTickMap.clear();
                         inTick = false;
-                    }, 0);
+                    });
                 }
 
                 if (!key) {
@@ -681,6 +687,7 @@
                         }
                         _this = _this[k];
                     });
+                    _this.setData(key, value);
                     return true;
                 }
 
@@ -4512,7 +4519,7 @@
                         if (this[PAGESTAT] !== "unload") {
                             throw {
                                 target: this,
-                                desc: "loaded page can't set src"
+                                desc: "xd-page can't reset src"
                             };
                         }
 
@@ -4596,16 +4603,11 @@
                             // 拥有换行，是模板字符串
                             temp = defaults.temp;
                         } else {
-                            let path;
                             if (defaults.temp === true) {
-                                path = await load(`${relativeDir + fileName}.html -getPath`)
+                                temp = await relativeLoad(`./${fileName}.html`)
                             } else {
-                                // path = defaults.temp;
-                                path = await load(`${defaults.temp} -getPath`);
+                                temp = await relativeLoad(`${defaults.temp}`);
                             }
-                            temp = await load(path);
-                            temp = await fetch(path);
-                            temp = await temp.text();
                         }
 
                         // 添加link
@@ -4846,7 +4848,12 @@
                         firstPage && (this[CURRENTS] = [firstPage]);
 
                         // 触发事件
-                        this.emitHandler("launch");
+                        this.emitHandler("app-launch");
+                    });
+
+                    // 检查页面状况
+                    window.addEventListener("visibilitychange", e => {
+                        this.emitHandler(document.hidden ? "app-hide" : "app-show");
                     });
                 }
             });

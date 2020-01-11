@@ -66,7 +66,7 @@ $.register({
             if (this[PAGESTAT] !== "unload") {
                 throw {
                     target: this,
-                    desc: "loaded page can't set src"
+                    desc: "xd-page can't reset src"
                 };
             }
 
@@ -150,16 +150,11 @@ $.register({
                 // 拥有换行，是模板字符串
                 temp = defaults.temp;
             } else {
-                let path;
                 if (defaults.temp === true) {
-                    path = await load(`${relativeDir + fileName}.html -getPath`)
+                    temp = await relativeLoad(`./${fileName}.html`)
                 } else {
-                    // path = defaults.temp;
-                    path = await load(`${defaults.temp} -getPath`);
+                    temp = await relativeLoad(`${defaults.temp}`);
                 }
-                temp = await load(path);
-                temp = await fetch(path);
-                temp = await temp.text();
             }
 
             // 添加link
