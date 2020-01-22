@@ -169,10 +169,11 @@ $.register({
             }
 
             // 渲染元素
-            renderEle(this.ele, Object.assign({}, defaults, {
-                temp,
+            renderEle(this.ele, Object.assign({
                 attrs: [],
                 watch: {}
+            }, defaults, {
+                temp
             }));
 
             this[PAGESTAT] = "finish";
