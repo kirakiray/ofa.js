@@ -2621,9 +2621,11 @@
                             let target = event.target;
 
                             // 目标元素
-                            let delegateTarget = target.parents(selector)[0];
-                            if (!delegateTarget && target.is(selector)) {
+                            let delegateTarget;
+                            if (target.is(selector)) {
                                 delegateTarget = target;
+                            } else {
+                                delegateTarget = target.parents(selector)[0];
                             }
 
                             // 判断是否在selector内
@@ -2743,6 +2745,10 @@
 
             while (howmany > 0) {
                 let childEle = children[index];
+
+                if (!childEle) {
+                    break;
+                }
 
                 reArr.push(createXhearProxy(childEle));
 
