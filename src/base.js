@@ -25,7 +25,7 @@
     });
 
     // 配置全局变量
-    glo.XDFrame = {
+    glo.ofa = {
         drill,
         $,
         version: 2000000

@@ -7,7 +7,7 @@ setTimeout(() => {
     serverObj.listen = 9669;
 
     // 设置静态目录
-    serverObj.setStatic("/xdframe/", process.cwd() + "/");
+    serverObj.setStatic("/ofa/", process.cwd() + "/");
 
     console.log(serverObj);
 }, 2000);

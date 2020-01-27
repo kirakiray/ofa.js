@@ -43,9 +43,9 @@ let mainFun = async () => {
     basefile = jsbeautify(basefile);
 
     // 写入最终文件
-    fs.writeFile('dist/xdframe.js', basefile, 'utf8', (err) => {
+    fs.writeFile('dist/ofa.js', basefile, 'utf8', (err) => {
         if (err) throw err;
-        console.log('xdframe.js write succeed!' + count++);
+        console.log('ofa.js write succeed!' + count++);
     });
 }
 
