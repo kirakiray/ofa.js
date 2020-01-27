@@ -4921,7 +4921,7 @@
 
     drill.config({
         paths: {
-            "^\\$/": "https://kirakiray.github.io/xdframe_lib/dollar2/"
+            "^\\$/": "https://kirakiray.github.io/ofa_lib/dollar2/"
         }
     });
 
