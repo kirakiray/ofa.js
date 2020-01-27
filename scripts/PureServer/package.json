@@ -1,0 +1,9 @@
+{
+  "name": "pureserver",
+  "version": "1.0.0",
+  "description": "Simple and easily extensible server for development tools",
+  "main": "PureServer.js",
+  "scripts": {},
+  "author": "YAO",
+  "license": "MIT"
+}

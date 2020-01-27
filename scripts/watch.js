@@ -1,5 +1,6 @@
 const fs = require('fs');
 const util = require('util');
+const jsbeautify = require('js-beautify').js
 
 const readFile = util.promisify(fs.readFile);
 
@@ -17,10 +18,16 @@ let mainFun = async () => {
         let f = e.match(/\/\/<\!--(.+?)-->/);
         if (f && (1 in f)) {
             f = f[1];
+        } else {
+            return;
         }
-
-        // 读取文件
-        let code = await readFile(`src/${f}.js`, 'utf8');
+        let code = "";
+        if (/^\.\.\//.test(f)) {
+            code = await readFile(`${f}.js`, 'utf8');
+        } else {
+            // 读取文件
+            code = await readFile(`src/${f}.js`, 'utf8');
+        }
 
         // 替换记录部分
         basefile = basefile.replace(`//<!--${f}-->`, e => code);
@@ -29,12 +36,16 @@ let mainFun = async () => {
     if (beforeCode == basefile) {
         return;
     }
+
     beforeCode = basefile;
 
+    // 格式化代码
+    basefile = jsbeautify(basefile);
+
     // 写入最终文件
-    fs.writeFile('dist/xdframe.js', basefile, 'utf8', (err) => {
+    fs.writeFile('dist/ofa.js', basefile, 'utf8', (err) => {
         if (err) throw err;
-        console.log('xdframe.js write succeed!' + count++);
+        console.log('ofa.js write succeed!' + count++);
     });
 }
 

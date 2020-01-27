@@ -1,0 +1,1 @@
+define('long file01');

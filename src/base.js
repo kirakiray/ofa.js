@@ -1,11 +1,33 @@
 ((glo) => {
     "use strict";
+    //<!--../Xhear/dist/xhear-->
+    //<!--../drill.js/dist/drill-->
 
-    //<!--xhear-->
+    const getRandomId = () => Math.random().toString(32).substr(2);
+    const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
+    const isFunction = val => getType(val).includes("function");
 
-    //<!--drill-->
+    drill.ext(base => {
+        let {
+            loaders, processors, main
+        } = base;
+        $.ext(({ renderEle }) => {
+            //<!--xd-components-->
+            //<!--xd-page-->
+            //<!--xd-app-->
+        })
+    });
 
-    //<!--lib-->
+    drill.config({
+        paths: {
+            "^\\$/": "https://kirakiray.github.io/ofa_lib/dollar2/"
+        }
+    });
 
-    //<!--drill-domcode-->
+    // 配置全局变量
+    glo.ofa = {
+        drill,
+        $,
+        version: 2000000
+    };
 })(window);

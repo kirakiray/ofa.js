@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>xd-page test</title>
+    <script src="../../dist/ofa.js"></script>
+    <link rel="stylesheet" href="xd-page-anime.css">
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-color: #eee;
+        }
+
+        xd-app {
+            background-color: #fff;
+        }
+
+        .backbtn,
+        .backbtn2 {
+            z-index: 20;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, .2);
+            cursor: pointer;
+        }
+
+        .backbtn2 {
+            left: 100px;
+        }
+
+        .testpage {
+            background-color: rgba(0, 0, 0, .2);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <xd-app style="width:320px;height:480px;"> -->
+    <xd-app style="position:absolute;left:0;top:0;width:100%;height:100%;">
+        <xd-page id="haha" class="testpage" src="js/apage/apage.js?a=aaaa&b=bbbbb">a</xd-page>
+        <!-- <xd-page id="haha" src="./apage/apage.js?c=cccc" val="valval">a</xd-page> -->
+    </xd-app>
+    <div class="backbtn">返回</div>
+    <div class="backbtn2">返回2</div>
+    <script>
+        let page1 = $("#haha");
+
+        let testapp = $("xd-app");
+
+        let backbtn = $(".backbtn");
+        backbtn.on("click", e => {
+            testapp.back();
+        });
+
+        $(".backbtn2").on("click", e => {
+            testapp.back(2);
+        })
+
+        testapp.on("app-show", e => {
+            console.log("app show!")
+        });
+        testapp.on("app-hide", e => {
+            console.log("app hide!")
+        });
+    </script>
+</body>
+
+</html>
