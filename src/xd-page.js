@@ -161,9 +161,9 @@ $.register({
             let linkPath = defaults.link;
             if (linkPath) {
                 if (defaults.link === true) {
-                    linkPath = await load(`${relativeDir + fileName}.css -getPath`);
+                    linkPath = await load(`${relativeDir + fileName}.css -getPath -r`);
                 } else {
-                    linkPath = await load(`${defaults.link} -getPath`);
+                    linkPath = await load(`${relativeDir + defaults.link} -getPath -r`);
                 }
                 linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
             }
