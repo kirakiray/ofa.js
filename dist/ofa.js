@@ -872,7 +872,7 @@
                     } = event.trend;
                     if (_update === false || (_unBubble && _unBubble.includes(fromKey))) {
                         event.bubble = false;
-                        return event;
+                        // return event;
                     }
 
                     if (_unpush && _unpush.includes(fromKey)) {
