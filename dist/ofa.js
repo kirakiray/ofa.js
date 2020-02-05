@@ -4513,6 +4513,7 @@
             // 添加新类型
             glo.Component || (glo.Component = drill.Component);
             const PAGESTAT = Symbol("pageStat");
+            const NAVIGATEDATA = Symbol("navigateData");
 
             let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
             $("head").push(xdpageStyle);
@@ -4572,6 +4573,12 @@
                         }
                         opts.self = this;
                         app.navigate(opts);
+                    },
+                    // 页面返回
+                    back() {
+                        this.navigate({
+                            type: "back"
+                        });
                     }
                 },
                 data: {
@@ -4581,6 +4588,9 @@
                 attrs: ["src"],
                 watch: {
                     async src(e, val) {
+                        if (!val) {
+                            return;
+                        }
                         if (this[PAGESTAT] !== "unload") {
                             throw {
                                 target: this,
@@ -4591,7 +4601,7 @@
                         // 加载页面模块数据
                         this[PAGESTAT] = "loading";
 
-                        let pageOpts = await load(val);
+                        let pageOpts = await load(val + " -r");
 
                         this._pageOptions = pageOpts;
 
@@ -4696,8 +4706,16 @@
 
                         this[PAGESTAT] = "finish";
 
+                        let nvdata;
+                        if (this[NAVIGATEDATA]) {
+                            nvdata = this[NAVIGATEDATA];
+                            delete this[NAVIGATEDATA];
+                        }
+
                         // 运行ready
-                        defaults.ready && defaults.ready.call(this);
+                        defaults.ready && defaults.ready.call(this, {
+                            data: nvdata
+                        });
                         this.emit("page-ready");
                     }
                 },
@@ -4713,6 +4731,28 @@
                         this._pageOptions.destory && this._pageOptions.destory.call(this);
                         this.emit("page-destory");
                     }
+                }
+            });
+
+            $.fn.extend({
+                get $page() {
+                    let {
+                        $host
+                    } = this;
+                    while ($host.$host) {
+                        $host = $host.$host;
+                    }
+                    return $host;
+                },
+                get $app() {
+                    let {
+                        $page
+                    } = this;
+                    if (!$page) {
+                        console.warn("no app");
+                        return;
+                    }
+                    return $page.parents("xd-app")[0];
                 }
             });
             const APPSTAT = Symbol("appStat");
@@ -4856,6 +4896,8 @@
                                             src
                                         });
 
+                                        pageEle[NAVIGATEDATA] = defaults.data;
+
                                         // 添加到 xd-app 内
                                         this.push(pageEle);
 
@@ -4867,6 +4909,9 @@
                                         pageEle.attr("xd-page-anime", front);
 
                                         // 后装载
+                                        // setTimeout(() => {
+                                        //     pageEle.attr("xd-page-anime", current);
+                                        // }, 10);
                                         $.nextTick(() => {
                                             pageEle.attr("xd-page-anime", current);
                                         });

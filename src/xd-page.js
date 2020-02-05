@@ -1,4 +1,5 @@
 const PAGESTAT = Symbol("pageStat");
+const NAVIGATEDATA = Symbol("navigateData");
 
 let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
 $("head").push(xdpageStyle);
@@ -54,6 +55,10 @@ $.register({
             }
             opts.self = this;
             app.navigate(opts);
+        },
+        // 页面返回
+        back() {
+            this.navigate({ type: "back" });
         }
     },
     data: {
@@ -63,6 +68,9 @@ $.register({
     attrs: ["src"],
     watch: {
         async src(e, val) {
+            if (!val) {
+                return;
+            }
             if (this[PAGESTAT] !== "unload") {
                 throw {
                     target: this,
@@ -73,7 +81,7 @@ $.register({
             // 加载页面模块数据
             this[PAGESTAT] = "loading";
 
-            let pageOpts = await load(val);
+            let pageOpts = await load(val + " -r");
 
             this._pageOptions = pageOpts;
 
@@ -178,8 +186,16 @@ $.register({
 
             this[PAGESTAT] = "finish";
 
+            let nvdata;
+            if (this[NAVIGATEDATA]) {
+                nvdata = this[NAVIGATEDATA];
+                delete this[NAVIGATEDATA];
+            }
+
             // 运行ready
-            defaults.ready && defaults.ready.call(this);
+            defaults.ready && defaults.ready.call(this, {
+                data: nvdata
+            });
             this.emit("page-ready");
         }
     },
@@ -195,5 +211,23 @@ $.register({
             this._pageOptions.destory && this._pageOptions.destory.call(this);
             this.emit("page-destory");
         }
+    }
+});
+
+$.fn.extend({
+    get $page() {
+        let { $host } = this;
+        while ($host.$host) {
+            $host = $host.$host;
+        }
+        return $host;
+    },
+    get $app() {
+        let { $page } = this;
+        if (!$page) {
+            console.warn("no app");
+            return;
+        }
+        return $page.parents("xd-app")[0];
     }
 });

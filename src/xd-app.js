@@ -129,6 +129,8 @@ $.register({
                                 src
                             });
 
+                            pageEle[NAVIGATEDATA] = defaults.data;
+
                             // 添加到 xd-app 内
                             this.push(pageEle);
 
@@ -137,6 +139,9 @@ $.register({
                             pageEle.attr("xd-page-anime", front);
 
                             // 后装载
+                            // setTimeout(() => {
+                            //     pageEle.attr("xd-page-anime", current);
+                            // }, 10);
                             $.nextTick(() => {
                                 pageEle.attr("xd-page-anime", current);
                             });
