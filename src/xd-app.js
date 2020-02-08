@@ -166,6 +166,9 @@ $.register({
                         }
                         break;
                 }
+
+                // 出发navigate事件
+                this.emitHandler("navigate", Object.assign({}, defaults));
             });
         },
         back(delta = 1) {
