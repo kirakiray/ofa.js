@@ -89,7 +89,7 @@ $.register({
                 // 默认模板
                 temp: true,
                 // 加载组件样式
-                link: false,
+                css: false,
                 // 监听属性函数
                 watch: {},
                 // 自有属性
@@ -165,15 +165,19 @@ $.register({
                 }
             }
 
-            // 添加link
-            let linkPath = defaults.link;
-            if (linkPath) {
-                if (defaults.link === true) {
-                    linkPath = await load(`${relativeDir + fileName}.css -getPath -r`);
+            if (globalcss) {
+                temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
+            }
+
+            // 添加css
+            let cssPath = defaults.css;
+            if (cssPath) {
+                if (defaults.css === true) {
+                    cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
                 } else {
-                    linkPath = await load(`${relativeDir + defaults.link} -getPath -r`);
+                    cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
                 }
-                linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
+                cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
             }
 
             // 渲染元素

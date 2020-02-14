@@ -7,6 +7,8 @@
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
 
+    let globalcss = "";
+
     drill.ext(base => {
         let {
             loaders, processors, main
@@ -26,6 +28,12 @@
 
     // 配置全局变量
     glo.ofa = {
+        set globalcss(val) {
+            globalcss = val;
+        },
+        get globalcss() {
+            return globalcss;
+        },
         drill,
         $,
         version: 2000000
