@@ -54,11 +54,11 @@ $.register({
                 return;
             }
             opts.self = this;
-            app.navigate(opts);
+            return app._navigate(opts);
         },
         // 页面返回
         back() {
-            this.navigate({ type: "back" });
+            return this.navigate({ type: "back" });
         }
     },
     data: {

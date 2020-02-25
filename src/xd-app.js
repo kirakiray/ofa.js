@@ -34,9 +34,9 @@ $.register({
         get currentPages() {
             return this[CURRENTS].slice();
         },
-        // 跳转到
         // 跳转路由
-        navigate(opts) {
+        // 外部请使用page上的navigate传参
+        _navigate(opts) {
             let defaults = {
                 // 当前页面
                 self: "",
@@ -65,7 +65,7 @@ $.register({
                     break;
             }
 
-            return new Promise((res, rej) => {
+            return new Promise(async (res, rej) => {
                 switch (defaults.type) {
                     case "back":
                         // 返回页面操作
@@ -104,6 +104,16 @@ $.register({
                     case "replace":
                     case "to":
                     default:
+                        // 判断是否已经存在当前self
+                        let selfIndex = this[CURRENTS].indexOf(defaults.self);
+                        let finnalDetal = this[CURRENTS].length - selfIndex - 1;
+                        if (defaults.self && finnalDetal > 0) {
+                            await this._navigate({
+                                type: "back",
+                                delta: finnalDetal
+                            });
+                        }
+
                         // 确认没有target
                         if (!defaults.target && !defaults.id && defaults.src) {
                             let { src } = defaults;
@@ -172,7 +182,7 @@ $.register({
             });
         },
         back(delta = 1) {
-            this.navigate({
+            return this._navigate({
                 type: "back",
                 delta
             });

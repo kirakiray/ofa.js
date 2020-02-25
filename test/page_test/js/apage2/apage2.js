@@ -20,6 +20,17 @@ define({
                 type: "replace",
                 src: "../apage -pack"
             });
+        },
+        test2() {
+            this.navigate({
+                src: "../apage -pack"
+            });
+
+            setTimeout(() => {
+                this.navigate({
+                    src: "./apage2"
+                });
+            }, 1000);
         }
     },
     data: {
