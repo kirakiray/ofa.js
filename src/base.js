@@ -22,7 +22,7 @@
 
     drill.config({
         paths: {
-            "^\\$/": "https://kirakiray.github.io/ofa_lib/dollar2/"
+            "@ofa/": "https://kirakiray.github.io/ofa_lib/dollar2/"
         }
     });
 
