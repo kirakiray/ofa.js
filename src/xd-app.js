@@ -90,8 +90,10 @@ $.register({
                             let { front } = currentPage.pageParam;
 
                             // 修正样式
-                            prevPage.attr("xd-page-anime", current);
-                            currentPage.attr("xd-page-anime", front);
+                            prevPage.attrs["xd-page-anime"] = current;
+                            currentPage.attrs["xd-page-anime"] = front;
+                            // prevPage.attr("xd-page-anime", current);
+                            // currentPage.attr("xd-page-anime", front);
 
                             // 去掉前一页
                             let needRemovePages = currentPages.splice(len - delta, delta);
@@ -146,20 +148,23 @@ $.register({
 
                             // 设置前置样式
                             let { front, current } = pageEle.pageParam;
-                            pageEle.attr("xd-page-anime", front);
+                            // pageEle.attr("xd-page-anime", front);
+                            pageEle.attrs["xd-page-anime"] = front;
 
                             // 后装载
                             // setTimeout(() => {
                             //     pageEle.attr("xd-page-anime", current);
                             // }, 10);
                             $.nextTick(() => {
-                                pageEle.attr("xd-page-anime", current);
+                                pageEle.attrs["xd-page-anime"] = current;
+                                // pageEle.attr("xd-page-anime", current);
                             });
 
                             // 旧页面后退
                             let beforePage = this.currentPage;
                             let { back } = beforePage.pageParam;
-                            beforePage.attr("xd-page-anime", back[0]);
+                            beforePage.attrs["xd-page-anime"] = back[0];
+                            // beforePage.attr("xd-page-anime", back[0]);
 
                             // 装载当前页
                             this[CURRENTS].push(pageEle);
