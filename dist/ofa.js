@@ -4589,6 +4589,8 @@
             glo.Component || (glo.Component = drill.Component);
             const PAGESTAT = Symbol("pageStat");
             const NAVIGATEDATA = Symbol("navigateData");
+            const PAGEID = Symbol("pageId");
+            const PAGEOPTIONS = Symbol("pageOptions");
 
             let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
             $("head").push(xdpageStyle);
@@ -4599,6 +4601,10 @@
                 proto: {
                     get stat() {
                         return this[PAGESTAT];
+                    },
+
+                    get pageId() {
+                        return this[PAGEID];
                     },
 
                     // 获取页面寄宿的app对象
@@ -4658,7 +4664,6 @@
                 },
                 data: {
                     src: "",
-                    _pageOptions: null
                 },
                 attrs: ["src"],
                 watch: {
@@ -4678,7 +4683,7 @@
 
                         let pageOpts = await load(val + " -r");
 
-                        this._pageOptions = pageOpts;
+                        this[PAGEOPTIONS] = pageOpts;
 
                         let defaults = {
                             // 默认模板
@@ -4802,12 +4807,15 @@
                     // debugger
                     // 自动进入unload状态
                     this[PAGESTAT] = "unload";
+
+                    // 添加pageId
+                    this[PAGEID] = getRandomId();
                 },
                 detached() {
                     this[PAGESTAT] = "destory";
 
-                    if (this._pageOptions) {
-                        this._pageOptions.destory && this._pageOptions.destory.call(this);
+                    if (this[PAGEOPTIONS]) {
+                        this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);
                         this.emit("page-destory");
                     }
                 }
@@ -4849,7 +4857,11 @@
                         current: "active",
                         front: "front",
                     },
-                    _appOptions: {}
+                    _appOptions: {},
+                    // 是否已经launched
+                    launched: false,
+                    // 当前app是否隐藏
+                    visibility: document.hidden ? "hide" : "show"
                 },
                 proto: {
                     get pageParam() {
@@ -5056,12 +5068,12 @@
                         firstPage && (this[CURRENTS] = [firstPage]);
 
                         // 触发事件
-                        this.emitHandler("app-launch");
+                        this.launched = true;
                     });
 
                     // 检查页面状况
                     window.addEventListener("visibilitychange", e => {
-                        this.emitHandler(document.hidden ? "app-hide" : "app-show");
+                        this.visibility = document.hidden ? "hide" : "show";
                     });
                 }
             });

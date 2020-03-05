@@ -13,7 +13,11 @@ $.register({
             current: "active",
             front: "front",
         },
-        _appOptions: {}
+        _appOptions: {},
+        // 是否已经launched
+        launched: false,
+        // 当前app是否隐藏
+        visibility: document.hidden ? "hide" : "show"
     },
     proto: {
         get pageParam() {
@@ -205,12 +209,12 @@ $.register({
             firstPage && (this[CURRENTS] = [firstPage]);
 
             // 触发事件
-            this.emitHandler("app-launch");
+            this.launched = true;
         });
 
         // 检查页面状况
         window.addEventListener("visibilitychange", e => {
-            this.emitHandler(document.hidden ? "app-hide" : "app-show");
+            this.visibility = document.hidden ? "hide" : "show";
         });
     }
 });

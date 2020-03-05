@@ -1,5 +1,7 @@
 const PAGESTAT = Symbol("pageStat");
 const NAVIGATEDATA = Symbol("navigateData");
+const PAGEID = Symbol("pageId");
+const PAGEOPTIONS = Symbol("pageOptions");
 
 let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
 $("head").push(xdpageStyle);
@@ -10,6 +12,10 @@ $.register({
     proto: {
         get stat() {
             return this[PAGESTAT];
+        },
+
+        get pageId() {
+            return this[PAGEID];
         },
 
         // 获取页面寄宿的app对象
@@ -63,7 +69,6 @@ $.register({
     },
     data: {
         src: "",
-        _pageOptions: null
     },
     attrs: ["src"],
     watch: {
@@ -83,7 +88,7 @@ $.register({
 
             let pageOpts = await load(val + " -r");
 
-            this._pageOptions = pageOpts;
+            this[PAGEOPTIONS] = pageOpts;
 
             let defaults = {
                 // 默认模板
@@ -207,12 +212,15 @@ $.register({
         // debugger
         // 自动进入unload状态
         this[PAGESTAT] = "unload";
+
+        // 添加pageId
+        this[PAGEID] = getRandomId();
     },
     detached() {
         this[PAGESTAT] = "destory";
 
-        if (this._pageOptions) {
-            this._pageOptions.destory && this._pageOptions.destory.call(this);
+        if (this[PAGEOPTIONS]) {
+            this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);
             this.emit("page-destory");
         }
     }

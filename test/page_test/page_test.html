@@ -71,11 +71,8 @@
             testapp.back(2);
         })
 
-        testapp.on("app-show", e => {
-            console.log("app show!")
-        });
-        testapp.on("app-hide", e => {
-            console.log("app hide!")
+        testapp.watch("visibility", (e, visibility) => {
+            console.log(`app ${visibility}!`)
         });
     </script>
 </body>
