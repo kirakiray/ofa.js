@@ -3001,6 +3001,8 @@
                     renderEle(this, options);
                     options.ready && options.ready.call(_xhearThis[PROXYTHIS]);
 
+                    options.slotchange && _xhearThis.$shadow.on('slotchange', options.slotchange)
+
                     Object.defineProperties(this, {
                         [RUNARRAY]: {
                             writable: true,
@@ -4994,10 +4996,11 @@
                                         }
 
                                         // 新建page
-                                        let pageEle = $({
+                                        let pageEle = defaults.target = $({
                                             tag: "xd-page",
                                             src
                                         });
+
 
                                         pageEle[NAVIGATEDATA] = defaults.data;
 

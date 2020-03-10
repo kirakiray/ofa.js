@@ -140,10 +140,11 @@ $.register({
                             }
 
                             // 新建page
-                            let pageEle = $({
+                            let pageEle = defaults.target = $({
                                 tag: "xd-page",
                                 src
                             });
+
 
                             pageEle[NAVIGATEDATA] = defaults.data;
 
