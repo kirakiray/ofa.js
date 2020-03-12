@@ -16,7 +16,6 @@ xd-app>xd-page {
     top: 0;
     width: 100%;
     height: 100%;
-    z-index: 2;
 }
 
 [xd-page-anime] {
@@ -25,26 +24,10 @@ xd-app>xd-page {
 
 [xd-page-anime="back"] {
     transform: translate3d(-100%, 0, 0);
-    pointer-events: none;
 }
 
 [xd-page-anime="front"] {
     transform: translate3d(100%, 0, 0);
-    pointer-events: none;
-}
-
-@media screen and (min-width: 480px) {
-    [xd-page-anime="back"] {
-        opacity: 0;
-        transform: translate3d(-50px, 0, 0);
-        z-index: 1;
-    }
-
-    [xd-page-anime="front"] {
-        opacity: 0;
-        transform: translate3d(50px, 0, 0);
-        z-index: 1;
-    }
 }
 
 [xd-page-anime="active"] {}

@@ -20,10 +20,22 @@ define({
                 type: "replace",
                 src: "../apage -pack"
             });
+        },
+        test2() {
+            this.navigate({
+                src: "../apage -pack"
+            });
+
+            setTimeout(() => {
+                this.navigate({
+                    src: "./apage2"
+                });
+            }, 1000);
         }
     },
     data: {
         a1: "a111111111",
         b1: "b1111111111"
-    }
+    },
+    css: true
 });

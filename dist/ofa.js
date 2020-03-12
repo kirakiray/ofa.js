@@ -872,7 +872,7 @@
                     } = event.trend;
                     if (_update === false || (_unBubble && _unBubble.includes(fromKey))) {
                         event.bubble = false;
-                        return event;
+                        // return event;
                     }
 
                     if (_unpush && _unpush.includes(fromKey)) {
@@ -1069,6 +1069,7 @@
                     });
                     return;
                 } else if (/function/.test(arg1Type)) {
+                    ImmeOpt = callback;
                     callback = expr;
                     expr = "";
                 }
@@ -1078,6 +1079,8 @@
 
                 if (expr === "") {
                     watchType = "watchSelf";
+                } else if (expr instanceof RegExp) {
+                    watchType = "watchKeyReg";
                 } else if (/\[.+\]/.test(expr)) {
                     watchType = "seekData";
                 } else if (/\./.test(expr)) {
@@ -1131,12 +1134,13 @@
                         }
                         break;
                     case "watchKey":
+                    case "watchKeyReg":
                         // 监听key
                         updateMethod = e => {
                             let {
                                 trend
                             } = e;
-                            if (trend.fromKey == expr) {
+                            if ((watchType === "watchKeyReg" && expr.test(trend.fromKey)) || trend.fromKey == expr) {
                                 cacheObj.trends.push(e.trend);
 
                                 nextTick(() => {
@@ -1300,6 +1304,14 @@
                     return;
                 }
 
+                let {
+                    _unpull
+                } = this;
+                let fkey = getFromKey(trend);
+                if (_unpull && _unpull.includes(fkey)) {
+                    return;
+                }
+
                 if (!mid) {
                     throw {
                         text: "Illegal trend data"
@@ -1321,6 +1333,16 @@
 
                 return true;
             }
+        }
+
+        const getFromKey = (_this) => {
+            let keyOne = _this.keys[0];
+
+            if (isUndefined(keyOne) && (_this.name === "setData" || _this.name === "remove")) {
+                keyOne = _this.args[0];
+            }
+
+            return keyOne;
         }
 
         /**
@@ -1380,13 +1402,15 @@
             }
 
             get fromKey() {
-                let keyOne = this.keys[0];
+                return getFromKey(this);
 
-                if (isUndefined(keyOne) && (this.name === "setData" || this.name === "remove")) {
-                    keyOne = this.args[0];
-                }
+                // let keyOne = this.keys[0];
 
-                return keyOne;
+                // if (isUndefined(keyOne) && (this.name === "setData" || this.name === "remove")) {
+                //     keyOne = this.args[0];
+                // }
+
+                // return keyOne;
             }
 
             set fromKey(keyName) {
@@ -1812,18 +1836,6 @@
 
         // business function
         // 判断元素是否符合条件
-        // const meetsEle = (ele, expr) => {
-        //     if (ele === expr) {
-        //         return !0;
-        //     }
-        //     let fadeParent = document.createElement('div');
-        //     if (ele === document) {
-        //         return false;
-        //     }
-        //     fadeParent.appendChild(ele.cloneNode(false));
-        //     return !!fadeParent.querySelector(expr);
-        // }
-
         const meetsEle = (ele, expr) => {
             if (ele === expr) {
                 return !0;
@@ -1945,6 +1957,49 @@
                 key = key.replace(/[A-Z]/g, letter => "-" + letter.toLowerCase());
             }
             return key;
+        }
+
+        // 设置属性
+        const attrsHandler = {
+            get: function(target, prop) {
+                return target._ele.getAttribute(propToAttr(prop));
+            },
+            set: function(target, prop, value) {
+                if (value === null) {
+                    target._ele.removeAttribute(prop);
+                } else {
+                    target._ele.setAttribute(propToAttr(prop), String(value));
+                }
+
+                return true;
+            }
+        };
+
+        /**
+         * 元素 attributes 代理对象
+         */
+        class Attrs {
+            constructor(ele) {
+                Object.defineProperties(this, {
+                    _ele: {
+                        get: () => ele
+                    }
+                });
+            }
+        }
+
+        /**
+         * 生成代理attrs对象
+         * @param {HTMLElement} ele 目标html元素
+         */
+        const createProxyAttrs = (ele) => {
+            let proxyAttrs = ele.__p_attrs;
+
+            if (!proxyAttrs) {
+                ele.__p_attrs = proxyAttrs = new Proxy(new Attrs(ele), attrsHandler);
+            }
+
+            return proxyAttrs;
         }
         // 可setData的key
         const CANSETKEYS = Symbol("cansetkeys");
@@ -2153,7 +2208,11 @@
                 let {
                     $root
                 } = this;
-                return $root && $root.ele.host && createXhearProxy($root.host);
+                return $root && $root.ele.host && createXhearProxy($root.ele.host);
+            }
+
+            get attrs() {
+                return createProxyAttrs(this.ele);
             }
 
             setData(key, value) {
@@ -2302,22 +2361,22 @@
                 return meetsEle(this.ele, expr)
             }
 
-            attr(key, value) {
-                if (!isUndefined(value)) {
-                    this.ele.setAttribute(key, value);
-                } else if (key instanceof Object) {
-                    Object.keys(key).forEach(k => {
-                        this.attr(k, key[k]);
-                    });
-                } else {
-                    return this.ele.getAttribute(key);
-                }
-            }
+            // attr(key, value) {
+            //     if (!isUndefined(value)) {
+            //         this.ele.setAttribute(key, value);
+            //     } else if (key instanceof Object) {
+            //         Object.keys(key).forEach(k => {
+            //             this.attr(k, key[k]);
+            //         });
+            //     } else {
+            //         return this.ele.getAttribute(key);
+            //     }
+            // }
 
-            removeAttr(key) {
-                this.ele.removeAttribute(key);
-                return this;
-            }
+            // removeAttr(key) {
+            //     this.ele.removeAttribute(key);
+            //     return this;
+            // }
 
             que(expr) {
                 let tar = this.ele.querySelector(expr);
@@ -2378,7 +2437,7 @@
                 // 获取所有toData元素
                 this.queAll('[xv-vd]').forEach(xele => {
                     // 获取vd内容
-                    let vdvalue = xele.attr('xv-vd');
+                    let vdvalue = xele.attrs.xvVd;
 
                     if (xele.xvele) {
                         let syncObj = {};
@@ -2439,7 +2498,7 @@
                         }
                     }
 
-                    xele.removeAttr("xv-vd");
+                    xele.attrs.xvVd = null;
                 });
 
                 return xdata;
@@ -2559,6 +2618,9 @@
                         let tarEle = e.target;
                         while (tarEle !== e.currentTarget) {
                             let par = tarEle.parentNode;
+                            if (!par) {
+                                break;
+                            }
                             let tarId = Array.from(par.children).indexOf(tarEle);
                             newKeys.unshift(tarId);
                             tarEle = par;
@@ -2678,6 +2740,7 @@
                     // 原生函数注册也干掉
                     let oriFun = originEve.get(eventName);
                     oriFun && this.ele.removeEventListener(eventName, oriFun);
+                    originEve.delete(eventName);
                 }
                 return this;
             },
@@ -2743,7 +2806,9 @@
                 children
             } = tarele;
 
-            while (howmany > 0) {
+            let c_howmany = howmany;
+
+            while (c_howmany > 0) {
                 let childEle = children[index];
 
                 if (!childEle) {
@@ -2756,7 +2821,7 @@
                 tarele.removeChild(childEle);
 
                 // 数量减少
-                howmany--;
+                c_howmany--;
             }
 
             // 定位目标子元素
@@ -2926,10 +2991,17 @@
                         value: true
                     });
 
+                    let xvid = this.xvid = "xv" + getRandomId();
+
                     let options = Object.assign({}, defaults);
+
+                    // 设置xv-ele
+                    nextTick(() => this.setAttribute("xv-ele", ""), xvid);
 
                     renderEle(this, options);
                     options.ready && options.ready.call(_xhearThis[PROXYTHIS]);
+
+                    options.slotchange && _xhearThis.$shadow.on('slotchange', (e) => options.slotchange.call(_xhearThis[PROXYTHIS], e))
 
                     Object.defineProperties(this, {
                         [RUNARRAY]: {
@@ -2957,7 +3029,8 @@
                     let xEle = this.__xhear__;
                     name = attrToProp(name);
                     if (newValue != xEle[name]) {
-                        xEle[name] = newValue;
+                        xEle.setData(name, newValue);
+                        // xEle[name] = newValue;
                     }
                 }
 
@@ -2986,10 +3059,11 @@
             let {
                 temp
             } = defaults;
+            let sroot;
 
             if (temp) {
                 // 添加shadow root
-                let sroot = ele.attachShadow({
+                sroot = ele.attachShadow({
                     mode: "open"
                 });
 
@@ -3252,25 +3326,6 @@
                 canSetKey.forEach(k => ck.add(k))
             }
 
-            // 根据attributes抽取值
-            // let attributes = Array.from(ele.attributes);
-            // if (attributes.length) {
-            //     attributes.forEach(e => {
-            //         // 属性在数据列表内，进行rData数据覆盖
-            //         let { name } = e;
-
-            //         // 下划线的属性不能直接定义
-            //         if (/^_.*/.test(name)) {
-            //             return;
-            //         }
-
-            //         name = attrToProp(name);
-            //         if (!/^xv\-/.test(name) && !/^:/.test(name) && canSetKey.has(name)) {
-            //             rData[name] = e.value;
-            //         }
-            //     });
-            // }
-
             // 判断是否有value，进行vaule绑定
             if (canSetKey.has("value")) {
                 Object.defineProperty(ele, "value", {
@@ -3292,6 +3347,30 @@
                     xhearEle.setData(k, val);
                 }
             });
+
+            // 查找是否有link为完成
+            let isSetOne = 0;
+            if (sroot) {
+                let links = queAllToArray(sroot, `link`);
+                if (links.length) {
+                    Promise.all(links.map(link => new Promise(res => {
+                        if (link.sheet) {
+                            res();
+                        } else {
+                            link.onload = () => {
+                                res();
+                                link.onload = null;
+                            };
+                        }
+                    }))).then(() => nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid))
+                } else {
+                    isSetOne = 1;
+                }
+            } else {
+                isSetOne = 1;
+            }
+
+            isSetOne && nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid);
 
             xhearEle.trigger('renderend', {
                 bubbles: false
@@ -3424,7 +3503,7 @@
 
         // 获取目录名
         const getDir = url => {
-            let urlArr = url.match(/(.+\/).+/);
+            let urlArr = url.match(/(.+\/).*/);
             return urlArr && urlArr[1];
         };
 
@@ -4314,7 +4393,7 @@
             debug: {
                 bag
             },
-            version: 3002002
+            version: 3002003
         };
 
         // 挂载主体方法
@@ -4374,6 +4453,8 @@
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
 
+    let globalcss = "";
+
     drill.ext(base => {
         let {
             loaders,
@@ -4390,9 +4471,9 @@
                     // 默认模板
                     temp: false,
                     // 加载组件样式
-                    link: false,
+                    css: false,
                     // 与组件同域下的样式
-                    hostlink: "",
+                    hostcss: "",
                     // 组件初始化完毕时
                     ready() {},
                     // 依赖子模块
@@ -4445,36 +4526,40 @@
                         temp = await temp.text();
                     }
 
-                    // 添加link
-                    let linkPath = defaults.link;
-                    if (linkPath) {
-                        if (defaults.link === true) {
-                            linkPath = await load(`./${fileName}.css -getPath`);
+                    // 添加css
+                    let cssPath = defaults.css;
+                    if (cssPath) {
+                        if (defaults.css === true) {
+                            cssPath = await load(`./${fileName}.css -getPath`);
                         } else {
-                            linkPath = await load(`${defaults.link} -getPath`);
+                            cssPath = await load(`${defaults.css} -getPath`);
                         }
-                        linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
+                        cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
+                    }
+
+                    if (globalcss) {
+                        temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
                     }
                 }
 
                 defaults.temp = temp;
 
                 // ready钩子
-                if (defaults.hostlink) {
+                if (defaults.hostcss) {
                     let oldReady = defaults.ready;
 
                     defaults.ready = async function(...args) {
-                        // 添加hostlink
+                        // 添加hostcss
                         // 获取元素域上的主
                         let root = this.ele.getRootNode();
 
-                        let hostlink = await load(defaults.hostlink + " -getPath");
+                        let hostcss = await load(defaults.hostcss + " -getPath");
 
-                        // 查找是否已经存在该link
-                        let targetLinkEle = root.querySelector(`link[href="${hostlink}"]`)
+                        // 查找是否已经存在该css
+                        let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
 
-                        if (!targetLinkEle) {
-                            let linkEle = $(`<link rel="stylesheet" href="${hostlink}">`);
+                        if (!targetCssEle) {
+                            let linkEle = $(`<link rel="stylesheet" href="${hostcss}">`);
                             if (root === document) {
                                 root.querySelector("head").appendChild(linkEle.ele);
                             } else {
@@ -4506,6 +4591,9 @@
             // 添加新类型
             glo.Component || (glo.Component = drill.Component);
             const PAGESTAT = Symbol("pageStat");
+            const NAVIGATEDATA = Symbol("navigateData");
+            const PAGEID = Symbol("pageId");
+            const PAGEOPTIONS = Symbol("pageOptions");
 
             let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
             $("head").push(xdpageStyle);
@@ -4516,6 +4604,10 @@
                 proto: {
                     get stat() {
                         return this[PAGESTAT];
+                    },
+
+                    get pageId() {
+                        return this[PAGEID];
                     },
 
                     // 获取页面寄宿的app对象
@@ -4564,16 +4656,24 @@
                             return;
                         }
                         opts.self = this;
-                        app.navigate(opts);
+                        return app._navigate(opts);
+                    },
+                    // 页面返回
+                    back() {
+                        return this.navigate({
+                            type: "back"
+                        });
                     }
                 },
                 data: {
                     src: "",
-                    _pageOptions: null
                 },
                 attrs: ["src"],
                 watch: {
                     async src(e, val) {
+                        if (!val) {
+                            return;
+                        }
                         if (this[PAGESTAT] !== "unload") {
                             throw {
                                 target: this,
@@ -4584,15 +4684,15 @@
                         // 加载页面模块数据
                         this[PAGESTAT] = "loading";
 
-                        let pageOpts = await load(val);
+                        let pageOpts = await load(val + " -r");
 
-                        this._pageOptions = pageOpts;
+                        this[PAGEOPTIONS] = pageOpts;
 
                         let defaults = {
                             // 默认模板
                             temp: true,
                             // 加载组件样式
-                            link: false,
+                            css: false,
                             // 监听属性函数
                             watch: {},
                             // 自有属性
@@ -4668,15 +4768,19 @@
                             }
                         }
 
-                        // 添加link
-                        let linkPath = defaults.link;
-                        if (linkPath) {
-                            if (defaults.link === true) {
-                                linkPath = await load(`${relativeDir + fileName}.css -getPath`);
+                        if (globalcss) {
+                            temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
+                        }
+
+                        // 添加css
+                        let cssPath = defaults.css;
+                        if (cssPath) {
+                            if (defaults.css === true) {
+                                cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
                             } else {
-                                linkPath = await load(`${defaults.link} -getPath`);
+                                cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
                             }
-                            linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
+                            cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
                         }
 
                         // 渲染元素
@@ -4689,8 +4793,16 @@
 
                         this[PAGESTAT] = "finish";
 
+                        let nvdata;
+                        if (this[NAVIGATEDATA]) {
+                            nvdata = this[NAVIGATEDATA];
+                            delete this[NAVIGATEDATA];
+                        }
+
                         // 运行ready
-                        defaults.ready && defaults.ready.call(this);
+                        defaults.ready && defaults.ready.call(this, {
+                            data: nvdata
+                        });
                         this.emit("page-ready");
                     }
                 },
@@ -4698,14 +4810,39 @@
                     // debugger
                     // 自动进入unload状态
                     this[PAGESTAT] = "unload";
+
+                    // 添加pageId
+                    this[PAGEID] = getRandomId();
                 },
                 detached() {
                     this[PAGESTAT] = "destory";
 
-                    if (this._pageOptions) {
-                        this._pageOptions.destory && this._pageOptions.destory.call(this);
+                    if (this[PAGEOPTIONS]) {
+                        this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);
                         this.emit("page-destory");
                     }
+                }
+            });
+
+            $.fn.extend({
+                get $page() {
+                    let {
+                        $host
+                    } = this;
+                    while ($host.$host) {
+                        $host = $host.$host;
+                    }
+                    return $host;
+                },
+                get $app() {
+                    let {
+                        $page
+                    } = this;
+                    if (!$page) {
+                        console.warn("no app");
+                        return;
+                    }
+                    return $page.parents("xd-app")[0];
                 }
             });
             const APPSTAT = Symbol("appStat");
@@ -4723,7 +4860,11 @@
                         current: "active",
                         front: "front",
                     },
-                    _appOptions: {}
+                    _appOptions: {},
+                    // 是否已经launched
+                    launched: false,
+                    // 当前app是否隐藏
+                    visibility: document.hidden ? "hide" : "show"
                 },
                 proto: {
                     get pageParam() {
@@ -4744,9 +4885,9 @@
                     get currentPages() {
                         return this[CURRENTS].slice();
                     },
-                    // 跳转到
                     // 跳转路由
-                    navigate(opts) {
+                    // 外部请使用page上的navigate传参
+                    _navigate(opts) {
                         let defaults = {
                             // 当前页面
                             self: "",
@@ -4775,7 +4916,7 @@
                                 break;
                         }
 
-                        return new Promise((res, rej) => {
+                        return new Promise(async (res, rej) => {
                             switch (defaults.type) {
                                 case "back":
                                     // 返回页面操作
@@ -4808,8 +4949,10 @@
                                         } = currentPage.pageParam;
 
                                         // 修正样式
-                                        prevPage.attr("xd-page-anime", current);
-                                        currentPage.attr("xd-page-anime", front);
+                                        prevPage.attrs["xd-page-anime"] = current;
+                                        currentPage.attrs["xd-page-anime"] = front;
+                                        // prevPage.attr("xd-page-anime", current);
+                                        // currentPage.attr("xd-page-anime", front);
 
                                         // 去掉前一页
                                         let needRemovePages = currentPages.splice(len - delta, delta);
@@ -4822,6 +4965,16 @@
                                 case "replace":
                                 case "to":
                                 default:
+                                    // 判断是否已经存在当前self
+                                    let selfIndex = this[CURRENTS].indexOf(defaults.self);
+                                    let finnalDetal = this[CURRENTS].length - selfIndex - 1;
+                                    if (defaults.self && finnalDetal > 0) {
+                                        await this._navigate({
+                                            type: "back",
+                                            delta: finnalDetal
+                                        });
+                                    }
+
                                     // 确认没有target
                                     if (!defaults.target && !defaults.id && defaults.src) {
                                         let {
@@ -4844,10 +4997,13 @@
                                         }
 
                                         // 新建page
-                                        let pageEle = $({
+                                        let pageEle = defaults.target = $({
                                             tag: "xd-page",
                                             src
                                         });
+
+
+                                        pageEle[NAVIGATEDATA] = defaults.data;
 
                                         // 添加到 xd-app 内
                                         this.push(pageEle);
@@ -4857,11 +5013,16 @@
                                             front,
                                             current
                                         } = pageEle.pageParam;
-                                        pageEle.attr("xd-page-anime", front);
+                                        // pageEle.attr("xd-page-anime", front);
+                                        pageEle.attrs["xd-page-anime"] = front;
 
                                         // 后装载
+                                        // setTimeout(() => {
+                                        //     pageEle.attr("xd-page-anime", current);
+                                        // }, 10);
                                         $.nextTick(() => {
-                                            pageEle.attr("xd-page-anime", current);
+                                            pageEle.attrs["xd-page-anime"] = current;
+                                            // pageEle.attr("xd-page-anime", current);
                                         });
 
                                         // 旧页面后退
@@ -4869,7 +5030,8 @@
                                         let {
                                             back
                                         } = beforePage.pageParam;
-                                        beforePage.attr("xd-page-anime", back[0]);
+                                        beforePage.attrs["xd-page-anime"] = back[0];
+                                        // beforePage.attr("xd-page-anime", back[0]);
 
                                         // 装载当前页
                                         this[CURRENTS].push(pageEle);
@@ -4886,10 +5048,13 @@
                                     }
                                     break;
                             }
+
+                            // 出发navigate事件
+                            this.emitHandler("navigate", Object.assign({}, defaults));
                         });
                     },
                     back(delta = 1) {
-                        this.navigate({
+                        return this._navigate({
                             type: "back",
                             delta
                         });
@@ -4907,12 +5072,12 @@
                         firstPage && (this[CURRENTS] = [firstPage]);
 
                         // 触发事件
-                        this.emitHandler("app-launch");
+                        this.launched = true;
                     });
 
                     // 检查页面状况
                     window.addEventListener("visibilitychange", e => {
-                        this.emitHandler(document.hidden ? "app-hide" : "app-show");
+                        this.visibility = document.hidden ? "hide" : "show";
                     });
                 }
             });
@@ -4921,14 +5086,41 @@
 
     drill.config({
         paths: {
-            "^\\$/": "https://kirakiray.github.io/ofa_lib/dollar2/"
+            "@ofa/": "https://kirakiray.github.io/ofa_lib/dollar2/"
         }
     });
 
     // 配置全局变量
-    glo.ofa = {
+    const ofa = {
+        set globalcss(val) {
+            globalcss = val;
+        },
+        get globalcss() {
+            return globalcss;
+        },
         drill,
         $,
+        get config() {
+            return drill.config;
+        },
         version: 2000000
     };
+
+    let oldOfa = glo.ofa;
+
+    const runOFA = (f) => getType(f).includes("function") && f();
+
+    Object.defineProperties(glo, {
+        ofa: {
+            get() {
+                return ofa;
+            },
+            set(val) {
+                runOFA(val);
+            }
+        }
+    });
+
+    oldOfa && runOFA(oldOfa);
+
 })(window);

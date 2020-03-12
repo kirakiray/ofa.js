@@ -7,6 +7,8 @@
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
 
+    let globalcss = "";
+
     drill.ext(base => {
         let {
             loaders, processors, main
@@ -20,14 +22,41 @@
 
     drill.config({
         paths: {
-            "^\\$/": "https://kirakiray.github.io/ofa_lib/dollar2/"
+            "@ofa/": "https://kirakiray.github.io/ofa_lib/dollar2/"
         }
     });
 
     // 配置全局变量
-    glo.ofa = {
+    const ofa = {
+        set globalcss(val) {
+            globalcss = val;
+        },
+        get globalcss() {
+            return globalcss;
+        },
         drill,
         $,
+        get config() {
+            return drill.config;
+        },
         version: 2000000
     };
+
+    let oldOfa = glo.ofa;
+
+    const runOFA = (f) => getType(f).includes("function") && f();
+
+    Object.defineProperties(glo, {
+        ofa: {
+            get() {
+                return ofa;
+            },
+            set(val) {
+                runOFA(val);
+            }
+        }
+    });
+
+    oldOfa && runOFA(oldOfa);
+
 })(window);

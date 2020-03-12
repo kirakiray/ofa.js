@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>xd-page test</title>
     <script src="../../dist/ofa.js"></script>
+    <script>
+        ofa.globalcss = "testglo.css";
+    </script>
     <link rel="stylesheet" href="xd-page-anime.css">
     <style>
         html,
@@ -68,11 +71,28 @@
             testapp.back(2);
         })
 
-        testapp.on("app-show", e => {
-            console.log("app show!")
+        testapp.watch("visibility", (e, visibility) => {
+            console.log(`app ${visibility}!`)
         });
-        testapp.on("app-hide", e => {
-            console.log("app hide!")
+
+        // testapp.on("navigate", (e, naviData) => {
+        //     switch (naviData.type) {
+        //         case "to":
+        //             let pageId = naviData.target.pageId;
+
+
+        //             history.pushState({
+        //                 pageId
+        //             }, "page 2", `?pageId=${pageId}`);
+        //             break;
+        //     }
+        // });
+
+        history.replaceState({});
+
+
+        window.addEventListener("popstate", e => {
+            debugger
         });
     </script>
 </body>

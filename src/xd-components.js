@@ -5,9 +5,9 @@ processors.set("component", async packData => {
         // 默认模板
         temp: false,
         // 加载组件样式
-        link: false,
+        css: false,
         // 与组件同域下的样式
-        hostlink: "",
+        hostcss: "",
         // 组件初始化完毕时
         ready() { },
         // 依赖子模块
@@ -60,36 +60,40 @@ processors.set("component", async packData => {
             temp = await temp.text();
         }
 
-        // 添加link
-        let linkPath = defaults.link;
-        if (linkPath) {
-            if (defaults.link === true) {
-                linkPath = await load(`./${fileName}.css -getPath`);
+        // 添加css
+        let cssPath = defaults.css;
+        if (cssPath) {
+            if (defaults.css === true) {
+                cssPath = await load(`./${fileName}.css -getPath`);
             } else {
-                linkPath = await load(`${defaults.link} -getPath`);
+                cssPath = await load(`${defaults.css} -getPath`);
             }
-            linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
+            cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
+        }
+
+        if (globalcss) {
+            temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
         }
     }
 
     defaults.temp = temp;
 
     // ready钩子
-    if (defaults.hostlink) {
+    if (defaults.hostcss) {
         let oldReady = defaults.ready;
 
         defaults.ready = async function (...args) {
-            // 添加hostlink
+            // 添加hostcss
             // 获取元素域上的主
             let root = this.ele.getRootNode();
 
-            let hostlink = await load(defaults.hostlink + " -getPath");
+            let hostcss = await load(defaults.hostcss + " -getPath");
 
-            // 查找是否已经存在该link
-            let targetLinkEle = root.querySelector(`link[href="${hostlink}"]`)
+            // 查找是否已经存在该css
+            let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
 
-            if (!targetLinkEle) {
-                let linkEle = $(`<link rel="stylesheet" href="${hostlink}">`);
+            if (!targetCssEle) {
+                let linkEle = $(`<link rel="stylesheet" href="${hostcss}">`);
                 if (root === document) {
                     root.querySelector("head").appendChild(linkEle.ele);
                 } else {

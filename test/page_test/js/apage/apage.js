@@ -2,6 +2,10 @@ define({
     // 页面初始化
     ready(e) {
         console.log("ready => ", this, e);
+
+        if (e.data && e.data.pageNum) {
+            this.pageNum = e.data.pageNum;
+        }
     },
     // 页面关闭
     destory() {
@@ -19,7 +23,8 @@ define({
             this.navigate({
                 src: "./apage.js?new=haha",
                 data: {
-                    val: "I come form self"
+                    val: "I come form self",
+                    pageNum: this.pageNum + 1
                 }
             });
         },
@@ -31,6 +36,7 @@ define({
     },
     data: {
         a1: "a111111111",
-        b1: "b1111111111"
+        b1: "b1111111111",
+        pageNum: 0
     }
 });

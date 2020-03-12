@@ -1,4 +1,7 @@
 const PAGESTAT = Symbol("pageStat");
+const NAVIGATEDATA = Symbol("navigateData");
+const PAGEID = Symbol("pageId");
+const PAGEOPTIONS = Symbol("pageOptions");
 
 let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
 $("head").push(xdpageStyle);
@@ -9,6 +12,10 @@ $.register({
     proto: {
         get stat() {
             return this[PAGESTAT];
+        },
+
+        get pageId() {
+            return this[PAGEID];
         },
 
         // 获取页面寄宿的app对象
@@ -53,16 +60,22 @@ $.register({
                 return;
             }
             opts.self = this;
-            app.navigate(opts);
+            return app._navigate(opts);
+        },
+        // 页面返回
+        back() {
+            return this.navigate({ type: "back" });
         }
     },
     data: {
         src: "",
-        _pageOptions: null
     },
     attrs: ["src"],
     watch: {
         async src(e, val) {
+            if (!val) {
+                return;
+            }
             if (this[PAGESTAT] !== "unload") {
                 throw {
                     target: this,
@@ -73,15 +86,15 @@ $.register({
             // 加载页面模块数据
             this[PAGESTAT] = "loading";
 
-            let pageOpts = await load(val);
+            let pageOpts = await load(val + " -r");
 
-            this._pageOptions = pageOpts;
+            this[PAGEOPTIONS] = pageOpts;
 
             let defaults = {
                 // 默认模板
                 temp: true,
                 // 加载组件样式
-                link: false,
+                css: false,
                 // 监听属性函数
                 watch: {},
                 // 自有属性
@@ -157,15 +170,19 @@ $.register({
                 }
             }
 
-            // 添加link
-            let linkPath = defaults.link;
-            if (linkPath) {
-                if (defaults.link === true) {
-                    linkPath = await load(`${relativeDir + fileName}.css -getPath`);
+            if (globalcss) {
+                temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
+            }
+
+            // 添加css
+            let cssPath = defaults.css;
+            if (cssPath) {
+                if (defaults.css === true) {
+                    cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
                 } else {
-                    linkPath = await load(`${defaults.link} -getPath`);
+                    cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
                 }
-                linkPath && (temp = `<link rel="stylesheet" href="${linkPath}">\n` + temp);
+                cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
             }
 
             // 渲染元素
@@ -178,8 +195,16 @@ $.register({
 
             this[PAGESTAT] = "finish";
 
+            let nvdata;
+            if (this[NAVIGATEDATA]) {
+                nvdata = this[NAVIGATEDATA];
+                delete this[NAVIGATEDATA];
+            }
+
             // 运行ready
-            defaults.ready && defaults.ready.call(this);
+            defaults.ready && defaults.ready.call(this, {
+                data: nvdata
+            });
             this.emit("page-ready");
         }
     },
@@ -187,13 +212,34 @@ $.register({
         // debugger
         // 自动进入unload状态
         this[PAGESTAT] = "unload";
+
+        // 添加pageId
+        this[PAGEID] = getRandomId();
     },
     detached() {
         this[PAGESTAT] = "destory";
 
-        if (this._pageOptions) {
-            this._pageOptions.destory && this._pageOptions.destory.call(this);
+        if (this[PAGEOPTIONS]) {
+            this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);
             this.emit("page-destory");
         }
+    }
+});
+
+$.fn.extend({
+    get $page() {
+        let { $host } = this;
+        while ($host.$host) {
+            $host = $host.$host;
+        }
+        return $host;
+    },
+    get $app() {
+        let { $page } = this;
+        if (!$page) {
+            console.warn("no app");
+            return;
+        }
+        return $page.parents("xd-app")[0];
     }
 });
