@@ -2,6 +2,9 @@
 const initRouter = (app) => {
     // 监听跳转
     app.on("navigate", (e, opt) => {
+        if (!app.router) {
+            return;
+        }
         switch (opt.type) {
             case "to":
                 let defs = {
@@ -22,6 +25,10 @@ const initRouter = (app) => {
     });
 
     window.addEventListener("popstate", e => {
+        if (!app.router) {
+            return;
+        }
+
         let { state } = e;
 
         let { currentPages } = app;

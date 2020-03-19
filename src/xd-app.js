@@ -159,10 +159,7 @@ $.register({
             });
         },
         back(delta = 1) {
-            return this[APPNAVIGATE]({
-                type: "back",
-                delta
-            });
+            this.currentPage.back(delta);
         }
     },
     watch: {},

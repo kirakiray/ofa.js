@@ -4462,6 +4462,9 @@
     const initRouter = (app) => {
         // 监听跳转
         app.on("navigate", (e, opt) => {
+            if (!app.router) {
+                return;
+            }
             switch (opt.type) {
                 case "to":
                     let defs = {
@@ -4482,6 +4485,10 @@
         });
 
         window.addEventListener("popstate", e => {
+            if (!app.router) {
+                return;
+            }
+
             let {
                 state
             } = e;
@@ -4712,6 +4719,15 @@
                             return;
                         }
 
+                        if (app.router && opts.type === "back") {
+                            let delta = -1;
+                            if (opts.delta) {
+                                delta = -opts.delta;
+                            }
+                            history.go(delta);
+                            return true;
+                        }
+
                         let defs = {
                             src: ""
                         };
@@ -4745,9 +4761,10 @@
                         return app[APPNAVIGATE](defs);
                     },
                     // 页面返回
-                    back() {
+                    back(delta) {
                         return this.navigate({
-                            type: "back"
+                            type: "back",
+                            delta
                         });
                     }
                 },
@@ -5107,10 +5124,7 @@
                         });
                     },
                     back(delta = 1) {
-                        return this[APPNAVIGATE]({
-                            type: "back",
-                            delta
-                        });
+                        this.currentPage.back(delta);
                     }
                 },
                 watch: {},

@@ -60,6 +60,15 @@ $.register({
                 return;
             }
 
+            if (app.router && opts.type === "back") {
+                let delta = -1;
+                if (opts.delta) {
+                    delta = -opts.delta;
+                }
+                history.go(delta);
+                return true;
+            }
+
             let defs = {
                 src: ""
             };
@@ -93,8 +102,8 @@ $.register({
             return app[APPNAVIGATE](defs);
         },
         // 页面返回
-        back() {
-            return this.navigate({ type: "back" });
+        back(delta) {
+            return this.navigate({ type: "back", delta });
         }
     },
     data: {
