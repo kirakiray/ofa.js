@@ -9,6 +9,11 @@
 
     let globalcss = "";
 
+    const CURRENTS = Symbol("currentPages");
+    const APPNAVIGATE = "_navigate";
+
+    //<!--router-->
+
     drill.ext(base => {
         let {
             loaders, processors, main

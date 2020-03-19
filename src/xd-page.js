@@ -59,8 +59,38 @@ $.register({
                 console.warn("no app =>", this);
                 return;
             }
-            opts.self = this;
-            return app._navigate(opts);
+
+            let defs = {
+                src: ""
+            };
+
+            switch (getType(opts)) {
+                case "object":
+                    Object.assign(defs, opts);
+                    break;
+                case "string":
+                    defs.src = opts;
+                    break;
+            }
+            defs.self = this;
+
+            let relativeSrc = this.src;
+
+            if (relativeSrc) {
+                // 去掉后面的参数
+                let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
+                let src = defs.src;
+
+                if (urlStrArr) {
+                    let obj = main.toUrlObjs([src], urlStrArr[1]);
+                    obj && (obj = obj[0]);
+                    src = obj.ori;
+                    obj.search && (src += ".js?" + obj.search);
+                }
+                defs.src = src;
+            }
+
+            return app[APPNAVIGATE](defs);
         },
         // 页面返回
         back() {

@@ -1,10 +1,6 @@
-const APPSTAT = Symbol("appStat");
-const CURRENTS = Symbol("currentPages");
-
 $.register({
     tag: "xd-app",
     data: {
-        src: "",
         // 默认page数据
         _pageParam: {
             // 后退中的page的样式
@@ -13,22 +9,22 @@ $.register({
             current: "active",
             front: "front",
         },
-        _appOptions: {},
+        // _appOptions: {},
         // 是否已经launched
         launched: false,
         // 当前app是否隐藏
-        visibility: document.hidden ? "hide" : "show"
+        visibility: document.hidden ? "hide" : "show",
+        // 是否打开路由
+        router: 0
     },
+    attrs: ["router"],
     proto: {
+        // 页面参数，动画的数据存储对象
         get pageParam() {
             return this._pageParam;
         },
         set pageParam(val) {
             this._pageParam = val;
-        },
-        // 当前装填
-        get stat() {
-            return this[APPSTAT];
         },
         // 选中的页面
         get currentPage() {
@@ -40,7 +36,7 @@ $.register({
         },
         // 跳转路由
         // 外部请使用page上的navigate传参
-        _navigate(opts) {
+        [APPNAVIGATE](opts) {
             let defaults = {
                 // 当前页面
                 self: "",
@@ -55,19 +51,12 @@ $.register({
                 // 相应的page元素
                 target: "",
                 // 自定义数据
-                data: null
+                data: null,
+                // 是否前进路由
+                // forward: false
             };
 
-            let optsType = getType(opts);
-
-            switch (optsType) {
-                case "object":
-                    Object.assign(defaults, opts);
-                    break;
-                case "string":
-                    defaults.src = opts;
-                    break;
-            }
+            Object.assign(defaults, opts);
 
             return new Promise(async (res, rej) => {
                 switch (defaults.type) {
@@ -96,8 +85,6 @@ $.register({
                             // 修正样式
                             prevPage.attrs["xd-page-anime"] = current;
                             currentPage.attrs["xd-page-anime"] = front;
-                            // prevPage.attr("xd-page-anime", current);
-                            // currentPage.attr("xd-page-anime", front);
 
                             // 去掉前一页
                             let needRemovePages = currentPages.splice(len - delta, delta);
@@ -105,6 +92,8 @@ $.register({
                                 needRemovePages.forEach(page => page.remove());
                                 res();
                             }, 300);
+                        } else {
+                            return;
                         }
                         break;
                     case "replace":
@@ -114,7 +103,7 @@ $.register({
                         let selfIndex = this[CURRENTS].indexOf(defaults.self);
                         let finnalDetal = this[CURRENTS].length - selfIndex - 1;
                         if (defaults.self && finnalDetal > 0) {
-                            await this._navigate({
+                            await this[APPNAVIGATE]({
                                 type: "back",
                                 delta: finnalDetal
                             });
@@ -124,27 +113,11 @@ $.register({
                         if (!defaults.target && !defaults.id && defaults.src) {
                             let { src } = defaults;
 
-                            // 相对路径
-                            let relativeSrc = defaults.self && defaults.self.src;
-
-                            if (relativeSrc) {
-                                // 去掉后面的参数
-                                let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
-
-                                if (urlStrArr) {
-                                    let obj = main.toUrlObjs([src], urlStrArr[1]);
-                                    obj && (obj = obj[0]);
-                                    src = obj.ori;
-                                    obj.search && (src += ".js?" + obj.search);
-                                }
-                            }
-
                             // 新建page
                             let pageEle = defaults.target = $({
                                 tag: "xd-page",
                                 src
                             });
-
 
                             pageEle[NAVIGATEDATA] = defaults.data;
 
@@ -153,23 +126,17 @@ $.register({
 
                             // 设置前置样式
                             let { front, current } = pageEle.pageParam;
-                            // pageEle.attr("xd-page-anime", front);
                             pageEle.attrs["xd-page-anime"] = front;
 
                             // 后装载
-                            // setTimeout(() => {
-                            //     pageEle.attr("xd-page-anime", current);
-                            // }, 10);
                             $.nextTick(() => {
                                 pageEle.attrs["xd-page-anime"] = current;
-                                // pageEle.attr("xd-page-anime", current);
                             });
 
                             // 旧页面后退
                             let beforePage = this.currentPage;
                             let { back } = beforePage.pageParam;
                             beforePage.attrs["xd-page-anime"] = back[0];
-                            // beforePage.attr("xd-page-anime", back[0]);
 
                             // 装载当前页
                             this[CURRENTS].push(pageEle);
@@ -192,7 +159,7 @@ $.register({
             });
         },
         back(delta = 1) {
-            return this._navigate({
+            return this[APPNAVIGATE]({
                 type: "back",
                 delta
             });
@@ -200,22 +167,36 @@ $.register({
     },
     watch: {},
     ready() {
-        this[APPSTAT] = "unload";
-
         // 判断是否有页面，激活当前页
         $.nextTick(() => {
             let firstPage = this.que("xd-page");
 
-            // 添加首页，并激活
-            firstPage && (this[CURRENTS] = [firstPage]);
+            let readyFun = () => {
+                this[CURRENTS] = [firstPage];
 
-            // 触发事件
-            this.launched = true;
+                // 触发事件
+                this.launched = true;
+
+                readyFun = null;
+
+                let { currentPage } = this;
+                history.replaceState({
+                    xdapp: 1,
+                    src: currentPage.src,
+                    top: true,
+                    pageId: currentPage.pageId
+                }, currentPage.src, `?__page=${encodeURIComponent(currentPage.src)}`);
+            }
+
+            firstPage ? readyFun() : this.one("page-ready", readyFun);
         });
 
         // 检查页面状况
         window.addEventListener("visibilitychange", e => {
             this.visibility = document.hidden ? "hide" : "show";
         });
+
+        // 添加路由
+        initRouter(this);
     }
 });
