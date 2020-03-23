@@ -5,20 +5,23 @@ const initRouter = (app) => {
         if (!app.router) {
             return;
         }
+        let defs = {
+            xdapp: 1,
+            src: opt.src,
+            data: opt.data,
+            pageId: opt.target.pageId
+        };
         switch (opt.type) {
             case "to":
-                let defs = {
-                    xdapp: 1,
-                    src: opt.src,
-                    data: opt.data,
-                    pageId: opt.target.pageId
-                };
                 if (opt.forward) {
                     // 通过前进路由进入的页面
                     history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                 } else {
                     history.pushState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                 }
+                break;
+            case "replace":
+                history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                 break;
         }
         console.log(`navigate to => `, e);

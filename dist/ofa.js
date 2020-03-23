@@ -4465,20 +4465,23 @@
             if (!app.router) {
                 return;
             }
+            let defs = {
+                xdapp: 1,
+                src: opt.src,
+                data: opt.data,
+                pageId: opt.target.pageId
+            };
             switch (opt.type) {
                 case "to":
-                    let defs = {
-                        xdapp: 1,
-                        src: opt.src,
-                        data: opt.data,
-                        pageId: opt.target.pageId
-                    };
                     if (opt.forward) {
                         // 通过前进路由进入的页面
                         history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                     } else {
                         history.pushState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                     }
+                    break;
+                case "replace":
+                    history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                     break;
             }
             console.log(`navigate to => `, e);
@@ -5092,9 +5095,11 @@
                                         pageEle.attrs["xd-page-anime"] = front;
 
                                         // 后装载
-                                        $.nextTick(() => {
+                                        // $.nextTick(() => {
+                                        // safari需要一点延迟
+                                        setTimeout(() => {
                                             pageEle.attrs["xd-page-anime"] = current;
-                                        });
+                                        }, 34);
 
                                         // 旧页面后退
                                         let beforePage = this.currentPage;
@@ -5162,6 +5167,9 @@
 
                     // 添加路由
                     initRouter(this);
+
+                    // 获取当前的url
+
                 }
             });
         })

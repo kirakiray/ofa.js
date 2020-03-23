@@ -129,9 +129,11 @@ $.register({
                             pageEle.attrs["xd-page-anime"] = front;
 
                             // 后装载
-                            $.nextTick(() => {
+                            // $.nextTick(() => {
+                            // safari需要一点延迟
+                            setTimeout(() => {
                                 pageEle.attrs["xd-page-anime"] = current;
-                            });
+                            }, 34);
 
                             // 旧页面后退
                             let beforePage = this.currentPage;
@@ -195,5 +197,8 @@ $.register({
 
         // 添加路由
         initRouter(this);
+
+        // 获取当前的url
+
     }
 });
