@@ -177,14 +177,6 @@ $.register({
                 this.launched = true;
 
                 readyFun = null;
-
-                let { currentPage } = this;
-                history.replaceState({
-                    xdapp: 1,
-                    src: currentPage.src,
-                    top: true,
-                    pageId: currentPage.pageId
-                }, currentPage.src, `?__page=${encodeURIComponent(currentPage.src)}`);
             }
 
             firstPage ? readyFun() : this.one("page-ready", readyFun);
@@ -197,8 +189,5 @@ $.register({
 
         // 添加路由
         initRouter(this);
-
-        // 获取当前的url
-
     }
 });
