@@ -5,6 +5,8 @@ const initRouter = (app) => {
             // 注销监听
             app.unwatch("launched", launchFun);
 
+            // 获取当前参数
+
             // 确定router执行
             if (app.router == 1) {
                 let { currentPage } = app;

@@ -54,6 +54,8 @@ $.register({
                 data: null,
                 // 是否前进路由
                 // forward: false
+                // 切换动画页面
+                anime: true
             };
 
             Object.assign(defaults, opts);
@@ -85,6 +87,11 @@ $.register({
                             // 修正样式
                             prevPage.attrs["xd-page-anime"] = current;
                             currentPage.attrs["xd-page-anime"] = front;
+
+                            if (!defaults.anime) {
+                                currentPage.style.transition = prevPage.style.transition = "none";
+                                $.nextTick(() => currentPage.style.transition = prevPage.style.transition = "");
+                            }
 
                             // 去掉前一页
                             let needRemovePages = currentPages.splice(len - delta, delta);
@@ -129,29 +136,34 @@ $.register({
                             pageEle.attrs["xd-page-anime"] = front;
 
                             // 后装载
-                            // $.nextTick(() => {
                             // safari需要一点延迟
-                            setTimeout(() => {
-                                pageEle.attrs["xd-page-anime"] = current;
-                            }, 34);
+                            let setPageAnimeAttr = () => { pageEle.attrs["xd-page-anime"] = current; setPageAnimeAttr = null; }
+                            defaults.anime ? setTimeout(setPageAnimeAttr, 34) : setPageAnimeAttr();
+
 
                             // 旧页面后退
                             let beforePage = this.currentPage;
                             let { back } = beforePage.pageParam;
                             beforePage.attrs["xd-page-anime"] = back[0];
+                            if (!defaults.anime) {
+                                beforePage.style.transition = "none";
+                                $.nextTick(() => beforePage.style.transition = "");
+                            }
 
                             // 装载当前页
                             this[CURRENTS].push(pageEle);
 
                             // 执行完成callback
-                            setTimeout(() => {
+                            let replaceFun = () => {
                                 if (defaults.type == "replace") {
                                     // 替换了前一页，要删掉前一页数据
                                     let beforePage = this[CURRENTS].splice(this[CURRENTS].length - 2, 1);
                                     beforePage[0].remove();
                                 }
                                 res();
-                            }, 300);
+                                replaceFun = null;
+                            }
+                            defaults.anime ? setTimeout(replaceFun, 300) : replaceFun();
                         }
                         break;
                 }

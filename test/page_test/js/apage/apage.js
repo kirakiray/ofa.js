@@ -28,6 +28,16 @@ define({
                 }
             });
         },
+        gotoSelfNoAnime() {
+            this.navigate({
+                src: "./apage.js?new=haha",
+                anime: false,
+                data: {
+                    val: "I come form self",
+                    pageNum: this.pageNum + 1
+                }
+            });
+        },
         gotoPage2() {
             this.navigate({
                 src: "../apage2 -pack"
