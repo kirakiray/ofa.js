@@ -4513,7 +4513,6 @@
                             currentPage
                         } = app;
                         // 修正第一页的pageId
-                        // xdHistory[0].pageId = currentPage[PAGEID];
                         currentPage[PAGEID] = xdHistory[0].pageId;
                         currentPage.attrs["xd-page-anime"] = currentPage.pageParam.back;
 
@@ -4525,13 +4524,16 @@
                             let xdPage = $({
                                 tag: "xd-page",
                                 src: e.src
-                            })
+                            });
+
+                            if (e.data) {
+                                xdPage[NAVIGATEDATA] = e.data;
+                            }
 
                             // 加入历史列表
                             app[CURRENTS].push(xdPage);
 
                             // 还原pageId
-                            // e.pageId = xdPage[PAGEID];
                             xdPage[PAGEID] = e.pageId;
 
                             let f;
@@ -4578,7 +4580,8 @@
 
                                 xdHistory.push({
                                     src: currentPage.src,
-                                    pageId: currentPage.pageId
+                                    pageId: currentPage.pageId,
+                                    data: opt.data
                                 });
                                 saveXdHistory();
                                 break;
@@ -4586,12 +4589,12 @@
                                 history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                                 xdHistory.splice(-1, {
                                     src: currentPage.src,
-                                    pageId: currentPage.pageId
+                                    pageId: currentPage.pageId,
+                                    data: opt.data
                                 });
                                 saveXdHistory();
                                 break;
                             case "back":
-                                // xdHistory.splice(-1, 1);
                                 xdHistory.splice(-opt.delta, opt.delta);
                                 saveXdHistory();
                                 break;
@@ -4630,36 +4633,6 @@
                         console.log(`state => `, e);
                     });
                 }
-
-                // 获取当前参数
-                // let location_arr = location.search.replace(/^\?/, "").split(/=/g);
-                // if (location_arr.length == 2) {
-                // let ori_url = decodeURIComponent(location_arr[1])
-
-                // setTimeout(() => {
-                //     if (app.currentPage.src !== ori_url) {
-                //         // 跳转页面
-                //         app.currentPage.navigate({
-                //             src: ori_url
-                //         });
-                //     }
-                // }, 1000);
-
-                // let u_arr = ori_url.match(/(.+)\?(.+)/);
-                // if (u_arr.length == 3) {
-                //     let path = u_arr[1];
-                //     let seatch_str = u_arr[2];
-
-                //     // 重新组装 queryData
-                //     let queryData = {};
-                //     seatch_str.split(/\&/g).forEach(e => {
-                //         let d = e.split('=');
-                //         if (d.length === 2) {
-                //             queryData[d[0]] = d[1];
-                //         }
-                //     });
-                // }
-                // }
             }
         }
         app.watch("launched", launchFun);
