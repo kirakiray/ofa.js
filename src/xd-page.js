@@ -1,8 +1,3 @@
-const PAGESTAT = Symbol("pageStat");
-const NAVIGATEDATA = Symbol("navigateData");
-const PAGEID = Symbol("pageId");
-const PAGEOPTIONS = Symbol("pageOptions");
-
 let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
 $("head").push(xdpageStyle);
 
@@ -10,10 +5,6 @@ $.register({
     tag: "xd-page",
     temp: false,
     proto: {
-        get stat() {
-            return this[PAGESTAT];
-        },
-
         get pageId() {
             return this[PAGEID];
         },
@@ -108,6 +99,9 @@ $.register({
     },
     data: {
         src: "",
+        // 当前页面的状态
+        pageStat: "unload",
+        // [PAGELOADED]: ""
     },
     attrs: ["src"],
     watch: {
@@ -115,7 +109,7 @@ $.register({
             if (!val) {
                 return;
             }
-            if (this[PAGESTAT] !== "unload") {
+            if (this.pageStat !== "unload") {
                 throw {
                     target: this,
                     desc: "xd-page can't reset src"
@@ -123,7 +117,7 @@ $.register({
             }
 
             // 加载页面模块数据
-            this[PAGESTAT] = "loading";
+            this.pageStat = "loading";
 
             let pageOpts = await load(val + " -r");
 
@@ -232,7 +226,7 @@ $.register({
                 temp
             }));
 
-            this[PAGESTAT] = "finish";
+            this.pageStat = "finish";
 
             let nvdata;
             if (this[NAVIGATEDATA]) {
@@ -249,14 +243,11 @@ $.register({
     },
     ready() {
         // debugger
-        // 自动进入unload状态
-        this[PAGESTAT] = "unload";
-
         // 添加pageId
         this[PAGEID] = getRandomId();
     },
     detached() {
-        this[PAGESTAT] = "destory";
+        this.pageStat = "destory";
 
         if (this[PAGEOPTIONS]) {
             this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);

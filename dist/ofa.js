@@ -4458,6 +4458,11 @@
     const CURRENTS = Symbol("currentPages");
     const APPNAVIGATE = "_navigate";
 
+    // const PAGELOADED = Symbol("pageLoaded");
+    const NAVIGATEDATA = Symbol("navigateData");
+    const PAGEID = Symbol("pageId");
+    const PAGEOPTIONS = Symbol("pageOptions");
+
     // xd-app路由器初始化
     const initRouter = (app) => {
         const launchFun = (e, launched) => {
@@ -4465,19 +4470,91 @@
                 // 注销监听
                 app.unwatch("launched", launchFun);
 
-                // 获取当前参数
+                // 历史路由数组
+                let xdHistory = sessionStorage.getItem("xd-app-history");
+                if (xdHistory) {
+                    xdHistory = JSON.parse(xdHistory)
+                } else {
+                    xdHistory = [];
+                }
+
+                // 保存路由历史
+                const saveXdHistory = (opts) => {
+                    sessionStorage.setItem("xd-app-history", JSON.stringify(xdHistory));
+                }
 
                 // 确定router执行
                 if (app.router == 1) {
-                    let {
-                        currentPage
-                    } = app;
-                    history.replaceState({
-                        xdapp: 1,
-                        src: currentPage.src,
-                        top: true,
-                        pageId: currentPage.pageId
-                    }, currentPage.src, `?__page=${encodeURIComponent(currentPage.src)}`);
+                    if (xdHistory.length === 0) {
+                        // 首次修正路由
+                        let {
+                            currentPage
+                        } = app;
+                        history.replaceState({
+                            xdapp: 1,
+                            src: currentPage.src,
+                            top: true,
+                            pageId: currentPage.pageId
+                        }, currentPage.src, `?__page=${encodeURIComponent(currentPage.src)}`);
+
+                        // 加入首次路由并保存
+                        xdHistory.push({
+                            src: currentPage.src,
+                            pageId: currentPage.pageId
+                        });
+                        saveXdHistory();
+                    } else if (xdHistory.length === 1) {
+                        // 修正第一页的pageId
+                        app.currentPages[0][PAGEID] = xdHistory[0].pageId;
+                    } else {
+                        // 多页路由，修正并补充页面
+
+                        let {
+                            currentPage
+                        } = app;
+                        // 修正第一页的pageId
+                        // xdHistory[0].pageId = currentPage[PAGEID];
+                        currentPage[PAGEID] = xdHistory[0].pageId;
+                        currentPage.attrs["xd-page-anime"] = currentPage.pageParam.back;
+
+                        // 补充剩余的页面
+                        let lastId = xdHistory.length - 1;
+                        xdHistory.forEach((e, i) => {
+                            if (!i) return;
+
+                            let xdPage = $({
+                                tag: "xd-page",
+                                src: e.src
+                            })
+
+                            // 加入历史列表
+                            app[CURRENTS].push(xdPage);
+
+                            // 还原pageId
+                            // e.pageId = xdPage[PAGEID];
+                            xdPage[PAGEID] = e.pageId;
+
+                            let f;
+                            xdPage.watch("pageStat", f = (e, val) => {
+                                if (val === "finish") {
+                                    // 完成时，修正page状态
+                                    if (i == lastId) {
+                                        // 当前页
+                                        xdPage.attrs["xd-page-anime"] = xdPage.pageParam.current;
+                                        return;
+                                    } else {
+                                        // 设置为前一个页面
+                                        xdPage.attrs["xd-page-anime"] = xdPage.pageParam.back[0];
+                                    }
+
+                                    xdPage.unwatch("pageStat", f);
+                                }
+                            }, true);
+
+                            // 添加到app中
+                            app.push(xdPage);
+                        });
+                    }
 
                     // 监听跳转
                     app.on("navigate", (e, opt) => {
@@ -4487,17 +4564,36 @@
                             data: opt.data,
                             pageId: opt.target.pageId
                         };
+                        let {
+                            currentPage
+                        } = app;
                         switch (opt.type) {
                             case "to":
                                 if (opt.forward) {
-                                    // 通过前进路由进入的页面
-                                    history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
+                                    // 前进路由修正数据
+                                    currentPage[PAGEID] = opt.pageId;
                                 } else {
                                     history.pushState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
                                 }
+
+                                xdHistory.push({
+                                    src: currentPage.src,
+                                    pageId: currentPage.pageId
+                                });
+                                saveXdHistory();
                                 break;
                             case "replace":
                                 history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
+                                xdHistory.splice(-1, {
+                                    src: currentPage.src,
+                                    pageId: currentPage.pageId
+                                });
+                                saveXdHistory();
+                                break;
+                            case "back":
+                                // xdHistory.splice(-1, 1);
+                                xdHistory.splice(-opt.delta, opt.delta);
+                                saveXdHistory();
                                 break;
                         }
                         console.log(`navigate to => `, e);
@@ -4524,7 +4620,9 @@
                             // 不存在的页面，属于前进路由，跳转新页面
                             app[APPNAVIGATE]({
                                 src: state.src,
-                                forward: true
+                                forward: true,
+                                pageId: state.pageId,
+                                data: state.data
                             });
                         }
 
@@ -4532,6 +4630,36 @@
                         console.log(`state => `, e);
                     });
                 }
+
+                // 获取当前参数
+                // let location_arr = location.search.replace(/^\?/, "").split(/=/g);
+                // if (location_arr.length == 2) {
+                // let ori_url = decodeURIComponent(location_arr[1])
+
+                // setTimeout(() => {
+                //     if (app.currentPage.src !== ori_url) {
+                //         // 跳转页面
+                //         app.currentPage.navigate({
+                //             src: ori_url
+                //         });
+                //     }
+                // }, 1000);
+
+                // let u_arr = ori_url.match(/(.+)\?(.+)/);
+                // if (u_arr.length == 3) {
+                //     let path = u_arr[1];
+                //     let seatch_str = u_arr[2];
+
+                //     // 重新组装 queryData
+                //     let queryData = {};
+                //     seatch_str.split(/\&/g).forEach(e => {
+                //         let d = e.split('=');
+                //         if (d.length === 2) {
+                //             queryData[d[0]] = d[1];
+                //         }
+                //     });
+                // }
+                // }
             }
         }
         app.watch("launched", launchFun);
@@ -4672,11 +4800,6 @@
 
             // 添加新类型
             glo.Component || (glo.Component = drill.Component);
-            const PAGESTAT = Symbol("pageStat");
-            const NAVIGATEDATA = Symbol("navigateData");
-            const PAGEID = Symbol("pageId");
-            const PAGEOPTIONS = Symbol("pageOptions");
-
             let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
             $("head").push(xdpageStyle);
 
@@ -4684,10 +4807,6 @@
                 tag: "xd-page",
                 temp: false,
                 proto: {
-                    get stat() {
-                        return this[PAGESTAT];
-                    },
-
                     get pageId() {
                         return this[PAGEID];
                     },
@@ -4789,6 +4908,9 @@
                 },
                 data: {
                     src: "",
+                    // 当前页面的状态
+                    pageStat: "unload",
+                    // [PAGELOADED]: ""
                 },
                 attrs: ["src"],
                 watch: {
@@ -4796,7 +4918,7 @@
                         if (!val) {
                             return;
                         }
-                        if (this[PAGESTAT] !== "unload") {
+                        if (this.pageStat !== "unload") {
                             throw {
                                 target: this,
                                 desc: "xd-page can't reset src"
@@ -4804,7 +4926,7 @@
                         }
 
                         // 加载页面模块数据
-                        this[PAGESTAT] = "loading";
+                        this.pageStat = "loading";
 
                         let pageOpts = await load(val + " -r");
 
@@ -4913,7 +5035,7 @@
                             temp
                         }));
 
-                        this[PAGESTAT] = "finish";
+                        this.pageStat = "finish";
 
                         let nvdata;
                         if (this[NAVIGATEDATA]) {
@@ -4930,14 +5052,11 @@
                 },
                 ready() {
                     // debugger
-                    // 自动进入unload状态
-                    this[PAGESTAT] = "unload";
-
                     // 添加pageId
                     this[PAGEID] = getRandomId();
                 },
                 detached() {
-                    this[PAGESTAT] = "destory";
+                    this.pageStat = "destory";
 
                     if (this[PAGEOPTIONS]) {
                         this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);
@@ -5024,7 +5143,10 @@
                             // 是否前进路由
                             // forward: false
                             // 切换动画页面
-                            anime: true
+                            anime: true,
+                            // 触发 navigate 事件
+                            emitNavigate: true
+
                         };
 
                         Object.assign(defaults, opts);
@@ -5156,7 +5278,7 @@
                             }
 
                             // 出发navigate事件
-                            this.emitHandler("navigate", Object.assign({}, defaults));
+                            defaults.emitNavigate && this.emitHandler("navigate", Object.assign({}, defaults));
                         });
                     },
                     back(delta = 1) {

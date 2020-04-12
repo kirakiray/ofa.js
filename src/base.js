@@ -12,6 +12,11 @@
     const CURRENTS = Symbol("currentPages");
     const APPNAVIGATE = "_navigate";
 
+    // const PAGELOADED = Symbol("pageLoaded");
+    const NAVIGATEDATA = Symbol("navigateData");
+    const PAGEID = Symbol("pageId");
+    const PAGEOPTIONS = Symbol("pageOptions");
+
     //<!--router-->
 
     drill.ext(base => {

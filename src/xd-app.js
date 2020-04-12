@@ -55,7 +55,10 @@ $.register({
                 // 是否前进路由
                 // forward: false
                 // 切换动画页面
-                anime: true
+                anime: true,
+                // 触发 navigate 事件
+                emitNavigate: true
+
             };
 
             Object.assign(defaults, opts);
@@ -169,7 +172,7 @@ $.register({
                 }
 
                 // 出发navigate事件
-                this.emitHandler("navigate", Object.assign({}, defaults));
+                defaults.emitNavigate && this.emitHandler("navigate", Object.assign({}, defaults));
             });
         },
         back(delta = 1) {
