@@ -4463,6 +4463,9 @@
     const PAGEID = Symbol("pageId");
     const PAGEOPTIONS = Symbol("pageOptions");
 
+    // 返回路由提前载入量
+    let ofa_inadvance = 1;
+
     // xd-app路由器初始化
     const initRouter = (app) => {
         const launchFun = (e, launched) => {
@@ -4508,13 +4511,12 @@
                         app.currentPages[0][PAGEID] = xdHistory[0].pageId;
                     } else {
                         // 多页路由，修正并补充页面
-
                         let {
                             currentPage
                         } = app;
                         // 修正第一页的pageId
                         currentPage[PAGEID] = xdHistory[0].pageId;
-                        currentPage.attrs["xd-page-anime"] = currentPage.pageParam.back;
+                        currentPage.attrs["xd-page-anime"] = currentPage.animeParam.back;
 
                         // 补充剩余的页面
                         let lastId = xdHistory.length - 1;
@@ -4539,15 +4541,17 @@
                             let f;
                             xdPage.watch("pageStat", f = (e, val) => {
                                 if (val === "finish") {
+                                    xdPage.display = "none";
                                     // 完成时，修正page状态
                                     if (i == lastId) {
                                         // 当前页
-                                        xdPage.attrs["xd-page-anime"] = xdPage.pageParam.current;
-                                        return;
+                                        xdPage.attrs["xd-page-anime"] = xdPage.animeParam.current;
                                     } else {
                                         // 设置为前一个页面
-                                        xdPage.attrs["xd-page-anime"] = xdPage.pageParam.back[0];
+                                        xdPage.attrs["xd-page-anime"] = xdPage.animeParam.back[0];
                                     }
+
+                                    $.nextTick(() => xdPage.display = "");
 
                                     xdPage.unwatch("pageStat", f);
                                 }
@@ -4563,7 +4567,7 @@
                         let defs = {
                             xdapp: 1,
                             src: opt.src,
-                            data: opt.data,
+                            // data: opt.data,
                             pageId: opt.target.pageId
                         };
                         let {
@@ -4581,7 +4585,7 @@
                                 xdHistory.push({
                                     src: currentPage.src,
                                     pageId: currentPage.pageId,
-                                    data: opt.data
+                                    // data: opt.data
                                 });
                                 saveXdHistory();
                                 break;
@@ -4590,7 +4594,7 @@
                                 xdHistory.splice(-1, {
                                     src: currentPage.src,
                                     pageId: currentPage.pageId,
-                                    data: opt.data
+                                    // data: opt.data
                                 });
                                 saveXdHistory();
                                 break;
@@ -4625,7 +4629,7 @@
                                 src: state.src,
                                 forward: true,
                                 pageId: state.pageId,
-                                data: state.data
+                                // data: state.data
                             });
                         }
 
@@ -4788,23 +4792,23 @@
                     get app() {
                         return this.parents("xd-app")[0];
                     },
-                    set pageParam(param) {
-                        this._pageParam = param;
+                    set animeParam(param) {
+                        this._animeParam = param;
                     },
-                    get pageParam() {
-                        let pageParam = this._pageParam;
+                    get animeParam() {
+                        let animeParam = this._animeParam;
 
-                        if (!pageParam) {
+                        if (!animeParam) {
                             let {
                                 app
                             } = this;
 
                             if (app) {
-                                pageParam = app.pageParam;
+                                animeParam = app.animeParam;
                             }
                         }
 
-                        return pageParam;
+                        return animeParam;
                     },
                     get params() {
                         let paramsExprArr = /\?(.+)/.exec(this.src);
@@ -4925,8 +4929,8 @@
                             // onActive() { },
                             // 被放置后台时调用
                             // onHide() { },
-                            // xdapp相关pageParam属性
-                            // pageParam: {}
+                            // xdapp相关animeParam属性
+                            // animeParam: {}
                         };
 
                         Object.assign(defaults, pageOpts);
@@ -5063,7 +5067,7 @@
                 tag: "xd-app",
                 data: {
                     // 默认page数据
-                    _pageParam: {
+                    _animeParam: {
                         // 后退中的page的样式
                         back: ["back"],
                         // 激活中的页面样式
@@ -5081,11 +5085,11 @@
                 attrs: ["router"],
                 proto: {
                     // 页面参数，动画的数据存储对象
-                    get pageParam() {
-                        return this._pageParam;
+                    get animeParam() {
+                        return this._animeParam;
                     },
-                    set pageParam(val) {
-                        this._pageParam = val;
+                    set animeParam(val) {
+                        this._animeParam = val;
                     },
                     // 选中的页面
                     get currentPage() {
@@ -5151,10 +5155,10 @@
 
                                         let {
                                             current
-                                        } = prevPage.pageParam;
+                                        } = prevPage.animeParam;
                                         let {
                                             front
-                                        } = currentPage.pageParam;
+                                        } = currentPage.animeParam;
 
                                         // 修正样式
                                         prevPage.attrs["xd-page-anime"] = current;
@@ -5209,7 +5213,7 @@
                                         let {
                                             front,
                                             current
-                                        } = pageEle.pageParam;
+                                        } = pageEle.animeParam;
                                         pageEle.attrs["xd-page-anime"] = front;
 
                                         // 后装载
@@ -5225,7 +5229,7 @@
                                         let beforePage = this.currentPage;
                                         let {
                                             back
-                                        } = beforePage.pageParam;
+                                        } = beforePage.animeParam;
                                         beforePage.attrs["xd-page-anime"] = back[0];
                                         if (!defaults.anime) {
                                             beforePage.style.transition = "none";

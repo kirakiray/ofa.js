@@ -2,7 +2,7 @@ $.register({
     tag: "xd-app",
     data: {
         // 默认page数据
-        _pageParam: {
+        _animeParam: {
             // 后退中的page的样式
             back: ["back"],
             // 激活中的页面样式
@@ -20,11 +20,11 @@ $.register({
     attrs: ["router"],
     proto: {
         // 页面参数，动画的数据存储对象
-        get pageParam() {
-            return this._pageParam;
+        get animeParam() {
+            return this._animeParam;
         },
-        set pageParam(val) {
-            this._pageParam = val;
+        set animeParam(val) {
+            this._animeParam = val;
         },
         // 选中的页面
         get currentPage() {
@@ -84,8 +84,8 @@ $.register({
                         if (len >= 2) {
                             prevPage = currentPages[len - (delta + 1)];
 
-                            let { current } = prevPage.pageParam;
-                            let { front } = currentPage.pageParam;
+                            let { current } = prevPage.animeParam;
+                            let { front } = currentPage.animeParam;
 
                             // 修正样式
                             prevPage.attrs["xd-page-anime"] = current;
@@ -135,7 +135,7 @@ $.register({
                             this.push(pageEle);
 
                             // 设置前置样式
-                            let { front, current } = pageEle.pageParam;
+                            let { front, current } = pageEle.animeParam;
                             pageEle.attrs["xd-page-anime"] = front;
 
                             // 后装载
@@ -146,7 +146,7 @@ $.register({
 
                             // 旧页面后退
                             let beforePage = this.currentPage;
-                            let { back } = beforePage.pageParam;
+                            let { back } = beforePage.animeParam;
                             beforePage.attrs["xd-page-anime"] = back[0];
                             if (!defaults.anime) {
                                 beforePage.style.transition = "none";

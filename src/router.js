@@ -1,3 +1,6 @@
+// 返回路由提前载入量
+let ofa_inadvance = 1;
+
 // xd-app路由器初始化
 const initRouter = (app) => {
     const launchFun = (e, launched) => {
@@ -38,11 +41,10 @@ const initRouter = (app) => {
                     app.currentPages[0][PAGEID] = xdHistory[0].pageId;
                 } else {
                     // 多页路由，修正并补充页面
-
                     let { currentPage } = app;
                     // 修正第一页的pageId
                     currentPage[PAGEID] = xdHistory[0].pageId;
-                    currentPage.attrs["xd-page-anime"] = currentPage.pageParam.back;
+                    currentPage.attrs["xd-page-anime"] = currentPage.animeParam.back;
 
                     // 补充剩余的页面
                     let lastId = xdHistory.length - 1;
@@ -67,15 +69,17 @@ const initRouter = (app) => {
                         let f;
                         xdPage.watch("pageStat", f = (e, val) => {
                             if (val === "finish") {
+                                xdPage.display = "none";
                                 // 完成时，修正page状态
                                 if (i == lastId) {
                                     // 当前页
-                                    xdPage.attrs["xd-page-anime"] = xdPage.pageParam.current;
-                                    return;
+                                    xdPage.attrs["xd-page-anime"] = xdPage.animeParam.current;
                                 } else {
                                     // 设置为前一个页面
-                                    xdPage.attrs["xd-page-anime"] = xdPage.pageParam.back[0];
+                                    xdPage.attrs["xd-page-anime"] = xdPage.animeParam.back[0];
                                 }
+
+                                $.nextTick(() => xdPage.display = "");
 
                                 xdPage.unwatch("pageStat", f);
                             }
@@ -91,7 +95,7 @@ const initRouter = (app) => {
                     let defs = {
                         xdapp: 1,
                         src: opt.src,
-                        data: opt.data,
+                        // data: opt.data,
                         pageId: opt.target.pageId
                     };
                     let { currentPage } = app;
@@ -107,7 +111,7 @@ const initRouter = (app) => {
                             xdHistory.push({
                                 src: currentPage.src,
                                 pageId: currentPage.pageId,
-                                data: opt.data
+                                // data: opt.data
                             });
                             saveXdHistory();
                             break;
@@ -116,7 +120,7 @@ const initRouter = (app) => {
                             xdHistory.splice(-1, {
                                 src: currentPage.src,
                                 pageId: currentPage.pageId,
-                                data: opt.data
+                                // data: opt.data
                             });
                             saveXdHistory();
                             break;
@@ -147,7 +151,7 @@ const initRouter = (app) => {
                             src: state.src,
                             forward: true,
                             pageId: state.pageId,
-                            data: state.data
+                            // data: state.data
                         });
                     }
 

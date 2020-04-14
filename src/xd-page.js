@@ -13,21 +13,21 @@ $.register({
         get app() {
             return this.parents("xd-app")[0];
         },
-        set pageParam(param) {
-            this._pageParam = param;
+        set animeParam(param) {
+            this._animeParam = param;
         },
-        get pageParam() {
-            let pageParam = this._pageParam;
+        get animeParam() {
+            let animeParam = this._animeParam;
 
-            if (!pageParam) {
+            if (!animeParam) {
                 let { app } = this;
 
                 if (app) {
-                    pageParam = app.pageParam;
+                    animeParam = app.animeParam;
                 }
             }
 
-            return pageParam;
+            return animeParam;
         },
         get params() {
             let paramsExprArr = /\?(.+)/.exec(this.src);
@@ -143,8 +143,8 @@ $.register({
                 // onActive() { },
                 // 被放置后台时调用
                 // onHide() { },
-                // xdapp相关pageParam属性
-                // pageParam: {}
+                // xdapp相关animeParam属性
+                // animeParam: {}
             };
 
             Object.assign(defaults, pageOpts);
