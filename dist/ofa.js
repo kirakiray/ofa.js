@@ -4489,6 +4489,19 @@
                 // 确定router执行
                 if (app.router == 1) {
                     if (xdHistory.length === 0) {
+                        let startPath = "";
+                        // 判断是否有路由参数
+                        location.search.replace(/^\?/g, "").split(/\&/g).some(e => {
+                            let k_v = e.split("=");
+                            if (k_v.length == 2) {
+                                let [k, v] = k_v;
+                                if (k == "__page") {
+                                    startPath = decodeURIComponent(v);
+                                    return true;
+                                }
+                            }
+                        });
+
                         // 首次修正路由
                         let {
                             currentPage
@@ -4506,6 +4519,16 @@
                             pageId: currentPage.pageId
                         });
                         saveXdHistory();
+
+                        // 如果不是初始页，跳转到相应页面
+                        if (startPath && currentPage.src != startPath) {
+                            setTimeout(() => {
+                                debugger
+                                app.currentPage.navigate({
+                                    src: startPath
+                                });
+                            }, 1000);
+                        }
                     } else if (xdHistory.length === 1) {
                         // 修正第一页的pageId
                         app.currentPages[0][PAGEID] = xdHistory[0].pageId;
@@ -4603,7 +4626,7 @@
                                 saveXdHistory();
                                 break;
                         }
-                        console.log(`navigate to => `, e);
+                        // console.log(`navigate to => `, e);
                     });
 
                     window.addEventListener("popstate", e => {
@@ -4634,7 +4657,7 @@
                         }
 
                         // 判断是否前一页的数据
-                        console.log(`state => `, e);
+                        // console.log(`state => `, e);
                     });
                 }
             }
