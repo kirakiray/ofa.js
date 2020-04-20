@@ -4469,198 +4469,100 @@
     // xd-app路由器初始化
     const initRouter = (app) => {
         const launchFun = (e, launched) => {
-            if (launched) {
-                // 注销监听
-                app.unwatch("launched", launchFun);
-
-                // 历史路由数组
-                let xdHistory = sessionStorage.getItem("xd-app-history");
-                if (xdHistory) {
-                    xdHistory = JSON.parse(xdHistory)
-                } else {
-                    xdHistory = [];
-                }
-
-                // 保存路由历史
-                const saveXdHistory = (opts) => {
-                    sessionStorage.setItem("xd-app-history", JSON.stringify(xdHistory));
-                }
-
-                // 确定router执行
-                if (app.router == 1) {
-                    if (xdHistory.length === 0) {
-                        let startPath = "";
-                        // 判断是否有路由参数
-                        location.search.replace(/^\?/g, "").split(/\&/g).some(e => {
-                            let k_v = e.split("=");
-                            if (k_v.length == 2) {
-                                let [k, v] = k_v;
-                                if (k == "__page") {
-                                    startPath = decodeURIComponent(v);
-                                    return true;
-                                }
-                            }
-                        });
-
-                        // 首次修正路由
-                        let {
-                            currentPage
-                        } = app;
-                        history.replaceState({
-                            xdapp: 1,
-                            src: currentPage.src,
-                            top: true,
-                            pageId: currentPage.pageId
-                        }, currentPage.src, `?__page=${encodeURIComponent(currentPage.src)}`);
-
-                        // 加入首次路由并保存
-                        xdHistory.push({
-                            src: currentPage.src,
-                            pageId: currentPage.pageId
-                        });
-                        saveXdHistory();
-
-                        // 如果不是初始页，跳转到相应页面
-                        if (startPath && currentPage.src != startPath) {
-                            setTimeout(() => {
-                                debugger
-                                app.currentPage.navigate({
-                                    src: startPath
-                                });
-                            }, 1000);
-                        }
-                    } else if (xdHistory.length === 1) {
-                        // 修正第一页的pageId
-                        app.currentPages[0][PAGEID] = xdHistory[0].pageId;
-                    } else {
-                        // 多页路由，修正并补充页面
-                        let {
-                            currentPage
-                        } = app;
-                        // 修正第一页的pageId
-                        currentPage[PAGEID] = xdHistory[0].pageId;
-                        currentPage.attrs["xd-page-anime"] = currentPage.animeParam.back;
-
-                        // 补充剩余的页面
-                        let lastId = xdHistory.length - 1;
-                        xdHistory.forEach((e, i) => {
-                            if (!i) return;
-
-                            let xdPage = $({
-                                tag: "xd-page",
-                                src: e.src
-                            });
-
-                            if (e.data) {
-                                xdPage[NAVIGATEDATA] = e.data;
-                            }
-
-                            // 加入历史列表
-                            app[CURRENTS].push(xdPage);
-
-                            // 还原pageId
-                            xdPage[PAGEID] = e.pageId;
-
-                            let f;
-                            xdPage.watch("pageStat", f = (e, val) => {
-                                if (val === "finish") {
-                                    xdPage.display = "none";
-                                    // 完成时，修正page状态
-                                    if (i == lastId) {
-                                        // 当前页
-                                        xdPage.attrs["xd-page-anime"] = xdPage.animeParam.current;
-                                    } else {
-                                        // 设置为前一个页面
-                                        xdPage.attrs["xd-page-anime"] = xdPage.animeParam.back[0];
-                                    }
-
-                                    $.nextTick(() => xdPage.display = "");
-
-                                    xdPage.unwatch("pageStat", f);
-                                }
-                            }, true);
-
-                            // 添加到app中
-                            app.push(xdPage);
-                        });
-                    }
-
-                    // 监听跳转
-                    app.on("navigate", (e, opt) => {
-                        let defs = {
-                            xdapp: 1,
-                            src: opt.src,
-                            // data: opt.data,
-                            pageId: opt.target.pageId
-                        };
-                        let {
-                            currentPage
-                        } = app;
-                        switch (opt.type) {
-                            case "to":
-                                if (opt.forward) {
-                                    // 前进路由修正数据
-                                    currentPage[PAGEID] = opt.pageId;
-                                } else {
-                                    history.pushState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
-                                }
-
-                                xdHistory.push({
-                                    src: currentPage.src,
-                                    pageId: currentPage.pageId,
-                                    // data: opt.data
-                                });
-                                saveXdHistory();
-                                break;
-                            case "replace":
-                                history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
-                                xdHistory.splice(-1, {
-                                    src: currentPage.src,
-                                    pageId: currentPage.pageId,
-                                    // data: opt.data
-                                });
-                                saveXdHistory();
-                                break;
-                            case "back":
-                                xdHistory.splice(-opt.delta, opt.delta);
-                                saveXdHistory();
-                                break;
-                        }
-                        // console.log(`navigate to => `, e);
-                    });
-
-                    window.addEventListener("popstate", e => {
-                        let {
-                            state
-                        } = e;
-
-                        let {
-                            currentPages
-                        } = app;
-
-                        let targetIndex = currentPages.findIndex(e => e.pageId === state.pageId);
-
-                        if (targetIndex > -1) {
-                            // 返回操作
-                            app[APPNAVIGATE]({
-                                type: "back",
-                                delta: currentPages.length - targetIndex - 1
-                            });
-                        } else {
-                            // 不存在的页面，属于前进路由，跳转新页面
-                            app[APPNAVIGATE]({
-                                src: state.src,
-                                forward: true,
-                                pageId: state.pageId,
-                                // data: state.data
-                            });
-                        }
-
-                        // 判断是否前一页的数据
-                        // console.log(`state => `, e);
-                    });
-                }
+            if (!launched) {
+                return;
             }
+            // 注销监听
+            app.unwatch("launched", launchFun);
+
+            // 历史路由数组
+            let xdHistory = sessionStorage.getItem("xd-app-history");
+            if (xdHistory) {
+                xdHistory = JSON.parse(xdHistory)
+            } else {
+                xdHistory = [];
+            }
+
+            // 保存路由历史
+            const saveXdHistory = () => {
+                sessionStorage.setItem("xd-app-history", JSON.stringify(xdHistory));
+            }
+
+            if (app.router != 1) {
+                return;
+            }
+
+            // 监听跳转
+            app.on("navigate", (e, opt) => {
+                let defs = {
+                    xdapp: 1,
+                    src: opt.src,
+                };
+                let {
+                    currentPage
+                } = app;
+                switch (opt.type) {
+                    case "to":
+                        debugger
+                        break;
+                    case "replace":
+                        debugger
+                        break;
+                    case "back":
+                        debugger
+                        break;
+                }
+            });
+
+            // ---前进后退功能监听封装---
+            const BANDF = "xd-app-init-back-forward";
+            if (!sessionStorage.getItem(BANDF)) {
+                // fuck chrome mult pushState invalid
+                // 初次替换后退路由
+                history.pushState({
+                    __t: "back"
+                }, "back", "?back=1");
+
+                // 进一步正确路由
+                history.pushState({
+                    __t: "current"
+                }, "current", "?current=1");
+
+                // 增加一个前进路由
+                history.pushState({
+                    __t: "forward"
+                }, "forward", "?forward=1");
+
+                history.back();
+
+
+                sessionStorage.setItem(BANDF, 1)
+            }
+
+            // 延后初始化路由监听
+            // 开始监听路由
+            window.addEventListener("popstate", e => {
+                let {
+                    state
+                } = e;
+
+                switch (state.__t) {
+                    case "back":
+                        console.log("返回页");
+                        // 还原路由
+                        history.forward();
+                        alert("back");
+                        break;
+                    case "current":
+                        console.log("当前页");
+                        break;
+                    case "forward":
+                        console.log("前进ye");
+                        // 还原路由
+                        history.back();
+                        break;
+                }
+            });
         }
         app.watch("launched", launchFun);
     }
