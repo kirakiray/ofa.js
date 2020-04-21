@@ -51,15 +51,6 @@ $.register({
                 return;
             }
 
-            if (app.router && opts.type === "back") {
-                let delta = -1;
-                if (opts.delta) {
-                    delta = -opts.delta;
-                }
-                history.go(delta);
-                return true;
-            }
-
             let defs = {
                 src: ""
             };
@@ -74,26 +65,28 @@ $.register({
             }
             defs.self = this;
 
-            let relativeSrc = this.src;
+            if (defs.type !== "back") {
+                let relativeSrc = this.src;
 
-            if (relativeSrc) {
-                // 去掉后面的参数
-                let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
-                let src = defs.src;
+                if (relativeSrc) {
+                    // 去掉后面的参数
+                    let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
+                    let src = defs.src;
 
-                if (urlStrArr) {
-                    let obj = main.toUrlObjs([src], urlStrArr[1]);
-                    obj && (obj = obj[0]);
-                    src = obj.ori;
-                    obj.search && (src += ".js?" + obj.search);
+                    if (urlStrArr) {
+                        let obj = main.toUrlObjs([src], urlStrArr[1]);
+                        obj && (obj = obj[0]);
+                        src = obj.ori;
+                        obj.search && (src += ".js?" + obj.search);
+                    }
+                    defs.src = src;
                 }
-                defs.src = src;
             }
 
             return app[APPNAVIGATE](defs);
         },
         // 页面返回
-        back(delta) {
+        back(delta = 1) {
             return this.navigate({ type: "back", delta });
         }
     },
