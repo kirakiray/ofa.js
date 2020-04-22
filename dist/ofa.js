@@ -4453,6 +4453,19 @@
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
 
+    function getQueryVariable(variable) {
+        var query = location.search.substring(1);
+        let reVal = null;
+        query.split("&").some(e => {
+            var pair = e.split("=");
+            if (pair[0] == variable) {
+                reVal = pair[1];
+                return true;
+            }
+        });
+        return reVal;
+    }
+
     let globalcss = "";
 
     const CURRENTS = Symbol("currentPages");
@@ -4476,18 +4489,21 @@
             app.unwatch("launched", launchFun);
 
             // 历史路由数组
-            let xdHistoryData = sessionStorage.getItem("xd-app-history");
+            let xdHistoryData = sessionStorage.getItem("xd-app-history-" + location.pathname);
             if (xdHistoryData) {
                 xdHistoryData = JSON.parse(xdHistoryData)
             } else {
                 xdHistoryData = {
-                    history: []
+                    // 后退历史
+                    history: [],
+                    // 前进历史
+                    forwards: []
                 };
             }
 
             // 保存路由历史
             const saveXdHistory = () => {
-                sessionStorage.setItem("xd-app-history", JSON.stringify(xdHistoryData));
+                sessionStorage.setItem("xd-app-history-" + location.pathname, JSON.stringify(xdHistoryData));
             }
 
             if (app.router != 1) {
@@ -4520,7 +4536,7 @@
                                 xdPage.attrs["xd-page-anime"] = xdPage.animeParam.back[0];
                             }
 
-                            $.nextTick(() => xdPage.display = "");
+                            setTimeout(() => xdPage.display = "", 36);
 
                             xdPage.unwatch("pageStat", f);
                         }
@@ -4532,14 +4548,24 @@
                     // 加入历史列表
                     app[CURRENTS].push(xdPage);
                 });
+            } else {
+                // 判断是否
+                let path = getQueryVariable("__p");
+                if (path) {
+                    let src = decodeURIComponent(path);
+
+                    if (app.currentPage.src !== src) {
+                        setTimeout(() => {
+                            app.currentPage.navigate({
+                                src
+                            });
+                        }, 100);
+                    }
+                }
             }
 
             // 监听跳转
             app.on("navigate", (e, opt) => {
-                let defs = {
-                    xdapp: 1,
-                    src: opt.src,
-                };
                 let {
                     currentPage
                 } = app;
@@ -4547,19 +4573,21 @@
                 switch (opt.type) {
                     case "to":
                         xdHistoryData.history.push({
-                            src: defs.src
+                            src: opt.src
                         });
+                        // 不是通过前进来的话，就清空前进历史
+                        !opt.forward && (xdHistoryData.forwards.length = 0);
                         saveXdHistory();
                         break;
                     case "replace":
-                        history.replaceState(defs, opt.src, `?__page=${encodeURIComponent(opt.src)}`);
-                        xdHistory.splice(-1, {
+                        xdHistoryData.history.splice(-1, {
                             src: currentPage.src
                         });
                         saveXdHistory();
                         break;
                     case "back":
-                        xdHistoryData.history.splice(-opt.delta, opt.delta);
+                        let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
+                        xdHistoryData.forwards.push(...his);
                         saveXdHistory();
                         break;
                 }
@@ -4569,18 +4597,6 @@
             const BANDF = "xd-app-init-back-forward";
 
             if (!sessionStorage.getItem(BANDF)) {
-                // 获取当前真实路径
-                let m_arr = location.href.match(/.+\/(.+)/);
-                let current_path;
-                if (m_arr.length == 2) {
-                    current_path = m_arr[1];
-                } else {
-                    throw {
-                        desc: "path error",
-                        href: location.href
-                    };
-                }
-
                 $('body').one("mousedown", e => {
                     // 初次替换后退路由
                     history.pushState({
@@ -4603,10 +4619,15 @@
                 sessionStorage.setItem(BANDF, 1)
             }
 
-            // 返回页面
-            const backPage = () => {
-                app.currentPage.back();
+            // 修正当前页面的path
+            const fixCurrentPagePath = () => {
+                history.replaceState({
+                    __t: "current"
+                }, "current", `?__p=${encodeURIComponent(app.currentPage.src)}`);
             }
+
+            // 初次修正
+            fixCurrentPagePath();
 
             // 延后初始化路由监听
             // 开始监听路由
@@ -4621,22 +4642,29 @@
 
                 switch (state.__t) {
                     case "back":
-                        console.log("返回页");
                         // 还原路由
                         history.forward();
-                        app.emitHandler("back", validOpts);
+                        app.emitHandler("before-back", validOpts);
                         if (validOpts.valid) {
-                            backPage();
+                            app.back();
                         }
                         break;
                     case "current":
-                        console.log("当前页");
+                        fixCurrentPagePath();
                         break;
                     case "forward":
-                        console.log("前进ye");
                         // 还原路由
                         history.back();
-                        app.emitHandler("forward", validOpts);
+                        app.emitHandler("before-forward", validOpts);
+                        if (validOpts.valid) {
+                            let last = xdHistoryData.forwards.splice(-1)[0];
+
+                            // 前进路由
+                            last && app.currentPage.navigate({
+                                src: last.src,
+                                forward: true
+                            });
+                        }
                         break;
                 }
             });
