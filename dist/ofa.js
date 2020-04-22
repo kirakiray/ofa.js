@@ -4488,8 +4488,10 @@
             // 注销监听
             app.unwatch("launched", launchFun);
 
+            const HNAME = "xd-app-history-" + location.pathname;
+
             // 历史路由数组
-            let xdHistoryData = sessionStorage.getItem("xd-app-history-" + location.pathname);
+            let xdHistoryData = sessionStorage.getItem(HNAME);
             if (xdHistoryData) {
                 xdHistoryData = JSON.parse(xdHistoryData)
             } else {
@@ -4503,14 +4505,32 @@
 
             // 保存路由历史
             const saveXdHistory = () => {
-                sessionStorage.setItem("xd-app-history-" + location.pathname, JSON.stringify(xdHistoryData));
+                sessionStorage.setItem(HNAME, JSON.stringify(xdHistoryData));
             }
 
             if (app.router != 1) {
                 return;
             }
 
-            if (xdHistoryData.history.length) {
+            // 附带在location上的path路径
+            let in_path = getQueryVariable("__p");
+            if (in_path) {
+                in_path = decodeURIComponent(in_path);
+            }
+
+            // if (in_path && (!xdHistoryData.history.length || (xdHistoryData.history.slice(-1)[0].src !== in_path))) {
+            if (in_path && !xdHistoryData.history.length) {
+                // 定向到指定页面
+                let src = decodeURIComponent(in_path);
+
+                if (app.currentPage.src !== src) {
+                    setTimeout(() => {
+                        app.currentPage.navigate({
+                            src
+                        });
+                    }, 100);
+                }
+            } else if (xdHistoryData.history.length) {
                 // 第一页在返回状态
                 app.currentPage.attrs["xd-page-anime"] = app.currentPage.animeParam.back;
 
@@ -4548,20 +4568,6 @@
                     // 加入历史列表
                     app[CURRENTS].push(xdPage);
                 });
-            } else {
-                // 判断是否
-                let path = getQueryVariable("__p");
-                if (path) {
-                    let src = decodeURIComponent(path);
-
-                    if (app.currentPage.src !== src) {
-                        setTimeout(() => {
-                            app.currentPage.navigate({
-                                src
-                            });
-                        }, 100);
-                    }
-                }
             }
 
             // 监听跳转
@@ -4578,12 +4584,14 @@
                         // 不是通过前进来的话，就清空前进历史
                         !opt.forward && (xdHistoryData.forwards.length = 0);
                         saveXdHistory();
+                        fixCurrentPagePath();
                         break;
                     case "replace":
                         xdHistoryData.history.splice(-1, {
                             src: currentPage.src
                         });
                         saveXdHistory();
+                        fixCurrentPagePath();
                         break;
                     case "back":
                         let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
@@ -4594,10 +4602,13 @@
             });
 
             // ---前进后退功能监听封装---
-            const BANDF = "xd-app-init-back-forward";
+            const BANDF = "xd-app-init-back-forward-" + location.pathname;
 
             if (!sessionStorage.getItem(BANDF)) {
                 $('body').one("mousedown", e => {
+                    // 提前获取__p参数
+                    let old_p = getQueryVariable("__p");
+
                     // 初次替换后退路由
                     history.pushState({
                         __t: "back"
@@ -4606,14 +4617,14 @@
                     // 进一步正确路由
                     history.pushState({
                         __t: "current"
-                    }, "current", "?current=1");
+                    }, "current", "?" + old_p);
 
                     // 增加一个前进路由
-                    history.pushState({
-                        __t: "forward"
-                    }, "forward", "?forward=1");
+                    // history.pushState({
+                    //     __t: "forward"
+                    // }, "forward", "?forward=1");
 
-                    history.back();
+                    // history.back();
                 });
 
                 sessionStorage.setItem(BANDF, 1)
@@ -4652,20 +4663,20 @@
                     case "current":
                         fixCurrentPagePath();
                         break;
-                    case "forward":
-                        // 还原路由
-                        history.back();
-                        app.emitHandler("before-forward", validOpts);
-                        if (validOpts.valid) {
-                            let last = xdHistoryData.forwards.splice(-1)[0];
+                        // case "forward":
+                        //     // 还原路由
+                        //     history.back();
+                        //     app.emitHandler("before-forward", validOpts);
+                        //     if (validOpts.valid) {
+                        //         let last = xdHistoryData.forwards.splice(-1)[0];
 
-                            // 前进路由
-                            last && app.currentPage.navigate({
-                                src: last.src,
-                                forward: true
-                            });
-                        }
-                        break;
+                        //         // 前进路由
+                        //         last && app.currentPage.navigate({
+                        //             src: last.src,
+                        //             forward: true
+                        //         });
+                        //     }
+                        //     break;
                 }
             });
         }
