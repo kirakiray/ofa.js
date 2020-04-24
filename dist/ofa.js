@@ -4479,6 +4479,18 @@
     // 返回路由提前载入量
     let ofa_inadvance = 1;
 
+    /// 是否初始化了history
+    const BANDF = "xd-app-init-back-forward-" + location.pathname;
+
+    const createEmptyXdHistoryData = () => {
+        return {
+            // 后退历史
+            history: [],
+            // 前进历史
+            forwards: []
+        };
+    }
+
     // xd-app路由器初始化
     const initRouter = (app) => {
         const launchFun = (e, launched) => {
@@ -4495,12 +4507,7 @@
             if (xdHistoryData) {
                 xdHistoryData = JSON.parse(xdHistoryData)
             } else {
-                xdHistoryData = {
-                    // 后退历史
-                    history: [],
-                    // 前进历史
-                    forwards: []
-                };
+                xdHistoryData = createEmptyXdHistoryData();
             }
 
             // 保存路由历史
@@ -4518,19 +4525,8 @@
                 in_path = decodeURIComponent(in_path);
             }
 
-            // if (in_path && (!xdHistoryData.history.length || (xdHistoryData.history.slice(-1)[0].src !== in_path))) {
-            if (in_path && !xdHistoryData.history.length) {
-                // 定向到指定页面
-                let src = decodeURIComponent(in_path);
-
-                if (app.currentPage.src !== src) {
-                    setTimeout(() => {
-                        app.currentPage.navigate({
-                            src
-                        });
-                    }, 100);
-                }
-            } else if (xdHistoryData.history.length) {
+            // 历史页面
+            if (xdHistoryData.history.length) {
                 // 第一页在返回状态
                 app.currentPage.attrs["xd-page-anime"] = app.currentPage.animeParam.back;
 
@@ -4570,6 +4566,26 @@
                 });
             }
 
+            // 判断是否当前页，不是当前页就是重新进入的，在加载
+            if (in_path) {
+                // 定向到指定页面
+                let src = in_path;
+
+                if (app.currentPage.src !== src) {
+                    app.currentPage.watch("pageStat", (e, pageStat) => {
+                        if (pageStat == "finish") {
+                            setTimeout(() => {
+                                app.currentPage.navigate({
+                                    src
+                                });
+                            }, 36);
+                        }
+                    })
+                }
+
+                sessionStorage.setItem(BANDF, "");
+            }
+
             // 监听跳转
             app.on("navigate", (e, opt) => {
                 let {
@@ -4602,7 +4618,6 @@
             });
 
             // ---前进后退功能监听封装---
-            const BANDF = "xd-app-init-back-forward-" + location.pathname;
 
             if (!sessionStorage.getItem(BANDF)) {
                 $('body').one("mousedown", e => {
