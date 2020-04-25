@@ -4539,24 +4539,26 @@
                         src: e.src
                     });
 
-                    let f;
-                    xdPage.watch("pageStat", f = (e, val) => {
-                        if (val === "finish") {
-                            xdPage.display = "none";
-                            // 完成时，修正page状态
-                            if (i == lastId) {
-                                // 当前页
-                                xdPage.attrs["xd-page-anime"] = xdPage.animeParam.current;
-                            } else {
-                                // 设置为前一个页面
-                                xdPage.attrs["xd-page-anime"] = xdPage.animeParam.back[0];
-                            }
+                    xdPage.display = "none";
+                    // 完成时，修正page状态
+                    if (i == lastId) {
+                        // 当前页
+                        xdPage.attrs["xd-page-anime"] = e.animeParam.current;
+                    } else {
+                        // 设置为前一个页面
+                        xdPage.attrs["xd-page-anime"] = e.animeParam.back[0];
+                    }
 
-                            setTimeout(() => xdPage.display = "", 36);
+                    // 加载页前的页面，都进入缓存状态（当前页和前一页要立刻加载）
+                    if (xdHistoryData.history.length - ofa_inadvance - 1 > i) {
+                        xdPage.pageStat = "preparing";
+                        xdPage._preparing = new Promise(res => xdPage._preparing_resolve = () => {
+                            xdPage._preparing_resolve = xdPage._preparing = null;
+                            res();
+                        });
+                    }
 
-                            xdPage.unwatch("pageStat", f);
-                        }
-                    }, true);
+                    setTimeout(() => xdPage.display = "", 72);
 
                     // 添加到app中
                     app.push(xdPage);
@@ -4591,11 +4593,15 @@
                 let {
                     currentPage
                 } = app;
+                let {
+                    animeParam
+                } = currentPage;
 
                 switch (opt.type) {
                     case "to":
                         xdHistoryData.history.push({
-                            src: opt.src
+                            src: opt.src,
+                            animeParam
                         });
                         // 不是通过前进来的话，就清空前进历史
                         !opt.forward && (xdHistoryData.forwards.length = 0);
@@ -4604,7 +4610,8 @@
                         break;
                     case "replace":
                         xdHistoryData.history.splice(-1, {
-                            src: currentPage.src
+                            src: currentPage.src,
+                            animeParam
                         });
                         saveXdHistory();
                         fixCurrentPagePath();
@@ -4613,12 +4620,17 @@
                         let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
                         xdHistoryData.forwards.push(...his);
                         saveXdHistory();
+
+                        // 纠正缓存状态
+                        let before_page = app.currentPages.slice(-1 - ofa_inadvance)[0];
+                        if (before_page && before_page._preparing) {
+                            before_page._preparing_resolve();
+                        }
                         break;
                 }
             });
 
             // ---前进后退功能监听封装---
-
             if (!sessionStorage.getItem(BANDF)) {
                 $('body').one("mousedown", e => {
                     // 提前获取__p参数
@@ -4632,7 +4644,7 @@
                     // 进一步正确路由
                     history.pushState({
                         __t: "current"
-                    }, "current", "?" + old_p);
+                    }, "current", "?__p=" + old_p);
 
                     // 增加一个前进路由
                     // history.pushState({
@@ -4944,11 +4956,16 @@
                         if (!val) {
                             return;
                         }
-                        if (this.pageStat !== "unload") {
+                        if (this.pageStat !== "unload" && this.pageStat !== "preparing") {
                             throw {
                                 target: this,
                                 desc: "xd-page can't reset src"
                             };
+                        }
+
+                        // 判断是否在准备中
+                        if (this.pageStat == "preparing" && this._preparing) {
+                            await this._preparing;
                         }
 
                         // 加载页面模块数据

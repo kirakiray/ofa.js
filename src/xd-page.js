@@ -102,11 +102,16 @@ $.register({
             if (!val) {
                 return;
             }
-            if (this.pageStat !== "unload") {
+            if (this.pageStat !== "unload" && this.pageStat !== "preparing") {
                 throw {
                     target: this,
                     desc: "xd-page can't reset src"
                 };
+            }
+
+            // 判断是否在准备中
+            if (this.pageStat == "preparing" && this._preparing) {
+                await this._preparing;
             }
 
             // 加载页面模块数据
