@@ -1,8 +1,21 @@
+/*!
+ * ofa v2.0.0
+ * https://github.com/kirakiray/ofa.js
+ * 
+ * (c) 2018-2020 YAO
+ * Released under the MIT License.
+ */
 ((glo) => {
     "use strict";
+    /*!
+     * xhear v5.0.0
+     * https://github.com/kirakiray/Xhear#readme
+     * 
+     * (c) 2018-2020 YAO
+     * Released under the MIT License.
+     */
     ((glo) => {
         "use strict";
-
         const getRandomId = () => Math.random().toString(32).substr(2);
         let objectToString = Object.prototype.toString;
         const getType = value => objectToString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
@@ -1833,7 +1846,6 @@
                 }
             }
         });
-
         // business function
         // 判断元素是否符合条件
         const meetsEle = (ele, expr) => {
@@ -3409,7 +3421,8 @@
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            versinCode: 5000000,
+            v: 5000000,
+            version: "5.0.0",
             fn: XhearEleFn,
             isXhear,
             ext,
@@ -3421,6 +3434,13 @@
         glo.$ = $;
 
     })(window);
+    /*!
+     * drill.js v3.2.3
+     * https://github.com/kirakiray/drill.js#readme
+     * 
+     * (c) 2018-2020 YAO
+     * Released under the MIT License.
+     */
     ((glo) => {
         "use strict";
         // common
@@ -4393,7 +4413,8 @@
             debug: {
                 bag
             },
-            version: 3002003
+            version: "3.2.3",
+            v: 3002003
         };
 
         // 挂载主体方法
@@ -5377,7 +5398,8 @@
         get config() {
             return drill.config;
         },
-        version: 2000000
+        v: 2000000,
+        version: "2.0.0"
     };
 
     let oldOfa = glo.ofa;

@@ -61,7 +61,8 @@
         get config() {
             return drill.config;
         },
-        version: 2000000
+        v: "{{versionCode}}",
+        version: "{{version}}"
     };
 
     let oldOfa = glo.ofa;

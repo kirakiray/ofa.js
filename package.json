@@ -1,16 +1,37 @@
 {
-    "name": "ofa.js",
+    "name": "ofa",
     "version": "2.0.0",
     "versionCode": 2000000,
     "description": "no webpack,no nodejs,Back to the purest front end",
     "scripts": {
         "watch": "node scripts/watch.js",
-        "server": "node --inspect scripts/server.js",
+        "server": "node scripts/server.js",
         "test": "npm run server & open 'http://localhost:9669/ofa/test/normal-test.html'"
     },
-    "author": "YAO",
+    "author": {
+        "name": "YAO",
+        "email": "kirayao@hotmail.com",
+        "url": "https://kirakiray.com/"
+    },
     "license": "MIT",
     "devDependencies": {
-        "js-beautify": "^1.10.0"
+        "js-beautify": "^1.10.0",
+        "uglify-es": "^3.3.9"
+    },
+    "main": "dist/ofa.js",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kirakiray/ofa.js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/kirakiray/ofa.js/issues"
+    },
+    "homepage": "https://github.com/kirakiray/ofa.js",
+    "watchjs": {
+        "startyear": "2018"
     }
 }
