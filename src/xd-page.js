@@ -130,8 +130,6 @@ $.register({
                 watch: {},
                 // 自有属性
                 data: {},
-                // 依赖子模块
-                // use: []
                 // 页面渲染完成
                 // ready() { },
                 // 页面被关闭时调用
@@ -149,19 +147,16 @@ $.register({
 
             // 分解初始url
             let path = "";
-            let paramStr = "";
             let paramsExprArr = /(.+)\??(.*)/.exec(val);
             if (paramsExprArr) {
                 path = paramsExprArr[1];
-                paramStr = paramsExprArr[2];
             }
 
             // 获取组件名
             let fileName;
-            let oriFileName;
             let fileExprArr = /.+\/(.+)/.exec(path)
             if (fileExprArr) {
-                oriFileName = fileName = fileExprArr[1];
+                fileName = fileExprArr[1];
 
                 // 去掉后缀
                 fileName = fileName.replace(/\..+/, "");
@@ -170,14 +165,6 @@ $.register({
             let relativeDir = /.+\//.exec(path);
             if (relativeDir) {
                 relativeDir = relativeDir[0];
-            }
-
-            // 重新制作load方法
-            const relativeLoad = (...args) => main.load(main.toUrlObjs(args, relativeDir));
-
-            // 加载依赖组件
-            if (defaults.use && defaults.use.length) {
-                await relativeLoad(...defaults.use);
             }
 
             // 获取temp内容
@@ -195,9 +182,9 @@ $.register({
                 temp = defaults.temp;
             } else {
                 if (defaults.temp === true) {
-                    temp = await relativeLoad(`./${fileName}.html`)
+                    temp = await load(`${relativeDir + fileName}.html -r`);
                 } else {
-                    temp = await relativeLoad(`${defaults.temp}`);
+                    temp = await load(`${relativeDir + defaults.temp} -r`);
                 }
             }
 
@@ -209,9 +196,11 @@ $.register({
             let cssPath = defaults.css;
             if (cssPath) {
                 if (defaults.css === true) {
-                    cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
+                    // cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
+                    cssPath = relativeDir + fileName + ".css";
                 } else {
-                    cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
+                    // cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
+                    cssPath = relativeDir + defaults.css;
                 }
                 cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
             }
@@ -240,7 +229,6 @@ $.register({
         }
     },
     ready() {
-        // debugger
         // 添加pageId
         this[PAGEID] = getRandomId();
     },

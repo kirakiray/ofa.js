@@ -33,7 +33,7 @@
 
     drill.ext(base => {
         let {
-            loaders, processors, main
+             processors, main
         } = base;
         $.ext(({ renderEle }) => {
             //<!--xd-components-->

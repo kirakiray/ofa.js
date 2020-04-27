@@ -1,5 +1,5 @@
 /*!
- * ofa v2.0.0
+ * ofa v2.0.1
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -4733,7 +4733,6 @@
 
     drill.ext(base => {
         let {
-            loaders,
             processors,
             main
         } = base;
@@ -4752,8 +4751,6 @@
                     hostcss: "",
                     // 组件初始化完毕时
                     ready() {},
-                    // 依赖子模块
-                    use: []
                 };
 
                 // load方法
@@ -4778,11 +4775,6 @@
                 let fileName = packData.path.match(/.+\/(.+)/)[1];
                 fileName = fileName.replace(/\.js$/, "");
 
-                // 添加子组件
-                if (defaults.use && defaults.use.length) {
-                    await load(...defaults.use);
-                }
-
                 // 置换temp
                 let temp = "";
                 if (defaults.temp) {
@@ -4791,15 +4783,11 @@
                         // 拥有换行，是模板字符串
                         temp = defaults.temp;
                     } else {
-                        let path;
                         if (defaults.temp === true) {
-                            path = await load(`./${fileName}.html -getPath`)
+                            temp = await load(`./${fileName}.html`);
                         } else {
-                            // path = defaults.temp;
-                            path = await load(`${defaults.temp} -getPath`);
+                            temp = await load(`${defaults.temp}`);
                         }
-                        temp = await fetch(path);
-                        temp = await temp.text();
                     }
 
                     // 添加css
@@ -5005,8 +4993,6 @@
                             watch: {},
                             // 自有属性
                             data: {},
-                            // 依赖子模块
-                            // use: []
                             // 页面渲染完成
                             // ready() { },
                             // 页面被关闭时调用
@@ -5024,19 +5010,16 @@
 
                         // 分解初始url
                         let path = "";
-                        let paramStr = "";
                         let paramsExprArr = /(.+)\??(.*)/.exec(val);
                         if (paramsExprArr) {
                             path = paramsExprArr[1];
-                            paramStr = paramsExprArr[2];
                         }
 
                         // 获取组件名
                         let fileName;
-                        let oriFileName;
                         let fileExprArr = /.+\/(.+)/.exec(path)
                         if (fileExprArr) {
-                            oriFileName = fileName = fileExprArr[1];
+                            fileName = fileExprArr[1];
 
                             // 去掉后缀
                             fileName = fileName.replace(/\..+/, "");
@@ -5045,14 +5028,6 @@
                         let relativeDir = /.+\//.exec(path);
                         if (relativeDir) {
                             relativeDir = relativeDir[0];
-                        }
-
-                        // 重新制作load方法
-                        const relativeLoad = (...args) => main.load(main.toUrlObjs(args, relativeDir));
-
-                        // 加载依赖组件
-                        if (defaults.use && defaults.use.length) {
-                            await relativeLoad(...defaults.use);
                         }
 
                         // 获取temp内容
@@ -5070,9 +5045,9 @@
                             temp = defaults.temp;
                         } else {
                             if (defaults.temp === true) {
-                                temp = await relativeLoad(`./${fileName}.html`)
+                                temp = await load(`${relativeDir + fileName}.html -r`);
                             } else {
-                                temp = await relativeLoad(`${defaults.temp}`);
+                                temp = await load(`${relativeDir + defaults.temp} -r`);
                             }
                         }
 
@@ -5084,9 +5059,11 @@
                         let cssPath = defaults.css;
                         if (cssPath) {
                             if (defaults.css === true) {
-                                cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
+                                // cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
+                                cssPath = relativeDir + fileName + ".css";
                             } else {
-                                cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
+                                // cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
+                                cssPath = relativeDir + defaults.css;
                             }
                             cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
                         }
@@ -5115,7 +5092,6 @@
                     }
                 },
                 ready() {
-                    // debugger
                     // 添加pageId
                     this[PAGEID] = getRandomId();
                 },
@@ -5398,8 +5374,8 @@
         get config() {
             return drill.config;
         },
-        v: 2000000,
-        version: "2.0.0"
+        v: 2000001,
+        version: "2.0.1"
     };
 
     let oldOfa = glo.ofa;
