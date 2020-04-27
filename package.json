@@ -15,7 +15,8 @@
     "license": "MIT",
     "devDependencies": {
         "js-beautify": "^1.10.0",
-        "uglify-es": "^3.3.9"
+        "uglify-es": "^3.3.9",
+        "minimist": ">=0.2.1"
     },
     "main": "dist/ofa.js",
     "directories": {
