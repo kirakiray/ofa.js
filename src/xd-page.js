@@ -1,8 +1,3 @@
-const PAGESTAT = Symbol("pageStat");
-const NAVIGATEDATA = Symbol("navigateData");
-const PAGEID = Symbol("pageId");
-const PAGEOPTIONS = Symbol("pageOptions");
-
 let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
 $("head").push(xdpageStyle);
 
@@ -10,10 +5,6 @@ $.register({
     tag: "xd-page",
     temp: false,
     proto: {
-        get stat() {
-            return this[PAGESTAT];
-        },
-
         get pageId() {
             return this[PAGEID];
         },
@@ -22,21 +13,21 @@ $.register({
         get app() {
             return this.parents("xd-app")[0];
         },
-        set pageParam(param) {
-            this._pageParam = param;
+        set animeParam(param) {
+            this._animeParam = param;
         },
-        get pageParam() {
-            let pageParam = this._pageParam;
+        get animeParam() {
+            let animeParam = this._animeParam;
 
-            if (!pageParam) {
+            if (!animeParam) {
                 let { app } = this;
 
                 if (app) {
-                    pageParam = app.pageParam;
+                    animeParam = app.animeParam;
                 }
             }
 
-            return pageParam;
+            return animeParam;
         },
         get params() {
             let paramsExprArr = /\?(.+)/.exec(this.src);
@@ -59,16 +50,51 @@ $.register({
                 console.warn("no app =>", this);
                 return;
             }
-            opts.self = this;
-            return app._navigate(opts);
+
+            let defs = {
+                src: ""
+            };
+
+            switch (getType(opts)) {
+                case "object":
+                    Object.assign(defs, opts);
+                    break;
+                case "string":
+                    defs.src = opts;
+                    break;
+            }
+            defs.self = this;
+
+            if (defs.type !== "back") {
+                let relativeSrc = this.src;
+
+                if (relativeSrc) {
+                    // 去掉后面的参数
+                    let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
+                    let src = defs.src;
+
+                    if (urlStrArr) {
+                        let obj = main.toUrlObjs([src], urlStrArr[1]);
+                        obj && (obj = obj[0]);
+                        src = obj.ori;
+                        obj.search && (src += ".js?" + obj.search);
+                    }
+                    defs.src = src;
+                }
+            }
+
+            return app[APPNAVIGATE](defs);
         },
         // 页面返回
-        back() {
-            return this.navigate({ type: "back" });
+        back(delta = 1) {
+            return this.navigate({ type: "back", delta });
         }
     },
     data: {
         src: "",
+        // 当前页面的状态
+        pageStat: "unload",
+        // [PAGELOADED]: ""
     },
     attrs: ["src"],
     watch: {
@@ -76,15 +102,20 @@ $.register({
             if (!val) {
                 return;
             }
-            if (this[PAGESTAT] !== "unload") {
+            if (this.pageStat !== "unload" && this.pageStat !== "preparing") {
                 throw {
                     target: this,
                     desc: "xd-page can't reset src"
                 };
             }
 
+            // 判断是否在准备中
+            if (this.pageStat == "preparing" && this._preparing) {
+                await this._preparing;
+            }
+
             // 加载页面模块数据
-            this[PAGESTAT] = "loading";
+            this.pageStat = "loading";
 
             let pageOpts = await load(val + " -r");
 
@@ -99,8 +130,6 @@ $.register({
                 watch: {},
                 // 自有属性
                 data: {},
-                // 依赖子模块
-                // use: []
                 // 页面渲染完成
                 // ready() { },
                 // 页面被关闭时调用
@@ -110,27 +139,24 @@ $.register({
                 // onActive() { },
                 // 被放置后台时调用
                 // onHide() { },
-                // xdapp相关pageParam属性
-                // pageParam: {}
+                // xdapp相关animeParam属性
+                // animeParam: {}
             };
 
             Object.assign(defaults, pageOpts);
 
             // 分解初始url
             let path = "";
-            let paramStr = "";
             let paramsExprArr = /(.+)\??(.*)/.exec(val);
             if (paramsExprArr) {
                 path = paramsExprArr[1];
-                paramStr = paramsExprArr[2];
             }
 
             // 获取组件名
             let fileName;
-            let oriFileName;
             let fileExprArr = /.+\/(.+)/.exec(path)
             if (fileExprArr) {
-                oriFileName = fileName = fileExprArr[1];
+                fileName = fileExprArr[1];
 
                 // 去掉后缀
                 fileName = fileName.replace(/\..+/, "");
@@ -139,14 +165,6 @@ $.register({
             let relativeDir = /.+\//.exec(path);
             if (relativeDir) {
                 relativeDir = relativeDir[0];
-            }
-
-            // 重新制作load方法
-            const relativeLoad = (...args) => main.load(main.toUrlObjs(args, relativeDir));
-
-            // 加载依赖组件
-            if (defaults.use && defaults.use.length) {
-                await relativeLoad(...defaults.use);
             }
 
             // 获取temp内容
@@ -164,9 +182,9 @@ $.register({
                 temp = defaults.temp;
             } else {
                 if (defaults.temp === true) {
-                    temp = await relativeLoad(`./${fileName}.html`)
+                    temp = await load(`${relativeDir + fileName}.html -r`);
                 } else {
-                    temp = await relativeLoad(`${defaults.temp}`);
+                    temp = await load(`${relativeDir + defaults.temp} -r`);
                 }
             }
 
@@ -178,9 +196,11 @@ $.register({
             let cssPath = defaults.css;
             if (cssPath) {
                 if (defaults.css === true) {
-                    cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
+                    // cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
+                    cssPath = relativeDir + fileName + ".css";
                 } else {
-                    cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
+                    // cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
+                    cssPath = relativeDir + defaults.css;
                 }
                 cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
             }
@@ -193,7 +213,7 @@ $.register({
                 temp
             }));
 
-            this[PAGESTAT] = "finish";
+            this.pageStat = "finish";
 
             let nvdata;
             if (this[NAVIGATEDATA]) {
@@ -209,15 +229,11 @@ $.register({
         }
     },
     ready() {
-        // debugger
-        // 自动进入unload状态
-        this[PAGESTAT] = "unload";
-
         // 添加pageId
         this[PAGEID] = getRandomId();
     },
     detached() {
-        this[PAGESTAT] = "destory";
+        this.pageStat = "destory";
 
         if (this[PAGEOPTIONS]) {
             this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);

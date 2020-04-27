@@ -10,8 +10,6 @@ processors.set("component", async packData => {
         hostcss: "",
         // 组件初始化完毕时
         ready() { },
-        // 依赖子模块
-        use: []
     };
 
     // load方法
@@ -36,11 +34,6 @@ processors.set("component", async packData => {
     let fileName = packData.path.match(/.+\/(.+)/)[1];
     fileName = fileName.replace(/\.js$/, "");
 
-    // 添加子组件
-    if (defaults.use && defaults.use.length) {
-        await load(...defaults.use);
-    }
-
     // 置换temp
     let temp = "";
     if (defaults.temp) {
@@ -49,15 +42,11 @@ processors.set("component", async packData => {
             // 拥有换行，是模板字符串
             temp = defaults.temp;
         } else {
-            let path;
             if (defaults.temp === true) {
-                path = await load(`./${fileName}.html -getPath`)
+                temp = await load(`./${fileName}.html`);
             } else {
-                // path = defaults.temp;
-                path = await load(`${defaults.temp} -getPath`);
+                temp = await load(`${defaults.temp}`);
             }
-            temp = await fetch(path);
-            temp = await temp.text();
         }
 
         // 添加css

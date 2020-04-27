@@ -6,12 +6,34 @@
     const getRandomId = () => Math.random().toString(32).substr(2);
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
+    function getQueryVariable(variable) {
+        var query = location.search.substring(1);
+        let reVal = null;
+        query.split("&").some(e => {
+            var pair = e.split("=");
+            if (pair[0] == variable) {
+                reVal = pair[1];
+                return true;
+            }
+        });
+        return reVal;
+    }
 
     let globalcss = "";
 
+    const CURRENTS = Symbol("currentPages");
+    const APPNAVIGATE = "_navigate";
+
+    // const PAGELOADED = Symbol("pageLoaded");
+    const NAVIGATEDATA = Symbol("navigateData");
+    const PAGEID = Symbol("pageId");
+    const PAGEOPTIONS = Symbol("pageOptions");
+
+    //<!--router-->
+
     drill.ext(base => {
         let {
-            loaders, processors, main
+             processors, main
         } = base;
         $.ext(({ renderEle }) => {
             //<!--xd-components-->
@@ -39,7 +61,8 @@
         get config() {
             return drill.config;
         },
-        version: 2000000
+        v: "{{versionCode}}",
+        version: "{{version}}"
     };
 
     let oldOfa = glo.ofa;
