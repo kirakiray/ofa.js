@@ -4630,8 +4630,8 @@
                         fixCurrentPagePath();
                         break;
                     case "replace":
-                        xdHistoryData.history.splice(-1, {
-                            src: currentPage.src,
+                        xdHistoryData.history.splice(-1, 1, {
+                            src: opt.src,
                             animeParam
                         });
                         saveXdHistory();
