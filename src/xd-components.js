@@ -1,6 +1,4 @@
-
-// 设置控件类型
-processors.set("component", async packData => {
+main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
     let defaults = {
         // 默认模板
         temp: false,
@@ -12,13 +10,10 @@ processors.set("component", async packData => {
         ready() { },
     };
 
-    // load方法
-    const load = (...args) => main.load(main.toUrlObjs(args, packData.dir));
-
     let options = base.tempM.d;
 
     if (isFunction(options)) {
-        options = options(load, {
+        options = options(relativeLoad, {
             DIR: packData.dir,
             FILE: packData.path
         });
@@ -43,9 +38,9 @@ processors.set("component", async packData => {
             temp = defaults.temp;
         } else {
             if (defaults.temp === true) {
-                temp = await load(`./${fileName}.html`);
+                temp = await relativeLoad(`./${fileName}.html`);
             } else {
-                temp = await load(`${defaults.temp}`);
+                temp = await relativeLoad(`${defaults.temp}`);
             }
         }
 
@@ -53,9 +48,9 @@ processors.set("component", async packData => {
         let cssPath = defaults.css;
         if (cssPath) {
             if (defaults.css === true) {
-                cssPath = await load(`./${fileName}.css -getPath`);
+                cssPath = await relativeLoad(`./${fileName}.css -getPath`);
             } else {
-                cssPath = await load(`${defaults.css} -getPath`);
+                cssPath = await relativeLoad(`${defaults.css} -getPath`);
             }
             cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
         }
@@ -76,7 +71,7 @@ processors.set("component", async packData => {
             // 获取元素域上的主
             let root = this.ele.getRootNode();
 
-            let hostcss = await load(defaults.hostcss + " -getPath");
+            let hostcss = await relativeLoad(defaults.hostcss + " -getPath");
 
             // 查找是否已经存在该css
             let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
@@ -97,19 +92,4 @@ processors.set("component", async packData => {
 
     // 注册节点
     $.register(defaults);
-
-    // 设置模块载入完成
-    packData.stat = 3;
 });
-
-// 添加新类型
-drill.Component = (d, moduleId) => {
-    base.tempM = {
-        type: "component",
-        d,
-        moduleId
-    };
-}
-
-// 添加新类型
-glo.Component || (glo.Component = drill.Component);
