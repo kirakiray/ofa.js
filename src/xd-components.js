@@ -66,24 +66,30 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
     if (defaults.hostcss) {
         let oldReady = defaults.ready;
 
+        let hostcssArr = getType(defaults.hostcss) == "string" ? [defaults.hostcss] : defaults.hostcss;;
+
         defaults.ready = async function (...args) {
-            // 添加hostcss
-            // 获取元素域上的主
+            // 获取元素域上的主元素
             let root = this.ele.getRootNode();
 
-            let hostcss = await relativeLoad(defaults.hostcss + " -getPath");
+            // 添加hostcss
+            await Promise.all(hostcssArr.map(async hostcss => {
+                hostcss = await relativeLoad(hostcss + " -getPath");
 
-            // 查找是否已经存在该css
-            let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
+                debugger
 
-            if (!targetCssEle) {
-                let linkEle = $(`<link rel="stylesheet" href="${hostcss}">`);
-                if (root === document) {
-                    root.querySelector("head").appendChild(linkEle.ele);
-                } else {
-                    root.appendChild(linkEle.ele);
+                // 查找是否已经存在该css
+                let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
+
+                if (!targetCssEle) {
+                    let linkEle = $(`<link rel="stylesheet" href="${hostcss}">`);
+                    if (root === document) {
+                        root.querySelector("head").appendChild(linkEle.ele);
+                    } else {
+                        root.appendChild(linkEle.ele);
+                    }
                 }
-            }
+            }));
 
             // 执行ready方法
             oldReady.apply(this, args);
