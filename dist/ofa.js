@@ -1,5 +1,5 @@
 /*!
- * ofa v2.1.0
+ * ofa v2.1.1
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.0.0
+     * xhear v5.0.1
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2020 YAO
@@ -2390,43 +2390,15 @@
             //     return this;
             // }
 
-            que(expr) {
+            $(expr) {
                 let tar = this.ele.querySelector(expr);
                 if (tar) {
                     return createXhearProxy(tar);
                 }
             }
 
-            queAll(expr) {
+            all(expr) {
                 return queAllToArray(this.ele, expr).map(tar => createXhearProxy(tar));
-            }
-
-            queShadow(expr) {
-                let {
-                    $shadow
-                } = this;
-                if ($shadow) {
-                    return $shadow.que(expr);
-                } else {
-                    throw {
-                        target: this,
-                        msg: `it must be a customElement`
-                    };
-                }
-            }
-
-            queAllShadow(expr) {
-                let {
-                    $shadow
-                } = this;
-                if ($shadow) {
-                    return $shadow.queAll(expr);
-                } else {
-                    throw {
-                        target: this,
-                        msg: `it must be a customElement`
-                    };
-                }
             }
 
             clone() {
@@ -2447,7 +2419,7 @@
                 let xdata = createXData({});
 
                 // 获取所有toData元素
-                this.queAll('[xv-vd]').forEach(xele => {
+                this.all('[xv-vd]').forEach(xele => {
                     // 获取vd内容
                     let vdvalue = xele.attrs.xvVd;
 
@@ -3421,14 +3393,14 @@
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5000000,
-            version: "5.0.0",
+            v: 5000001,
+            version: "5.0.1",
             fn: XhearEleFn,
             isXhear,
             ext,
-            queAll(expr) {
+            all(expr) {
                 return queAllToArray(document, expr).map(tar => createXhearProxy(tar));
-            }
+            },
         });
 
         glo.$ = $;
@@ -5377,7 +5349,7 @@
                 ready() {
                     // 判断是否有页面，激活当前页
                     $.nextTick(() => {
-                        let firstPage = this.que("xd-page");
+                        let firstPage = this.$("xd-page");
 
                         let readyFun = () => {
                             this[CURRENTS] = [firstPage];
@@ -5422,8 +5394,8 @@
         get config() {
             return drill.config;
         },
-        v: 2001000,
-        version: "2.1.0"
+        v: 2001001,
+        version: "2.1.1"
     };
 
     let oldOfa = glo.ofa;

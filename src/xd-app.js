@@ -183,7 +183,7 @@ $.register({
     ready() {
         // 判断是否有页面，激活当前页
         $.nextTick(() => {
-            let firstPage = this.que("xd-page");
+            let firstPage = this.$("xd-page");
 
             let readyFun = () => {
                 this[CURRENTS] = [firstPage];

@@ -30,12 +30,12 @@
     // });
 
     // 查找多少div
-    let div = stag.queAll("div");
+    let div = stag.all("div");
 
     // 查找多少span
-    let span = stag.queAll("span");
+    let span = stag.all("span");
 
-    let shadowDiv = stag.queAllShadow("div");
+    let shadowDiv = stag.$shadow.all("div");
 
     tester.ok(div.length == 1, "length ok 1");
     tester.ok(span.length == 1, "length ok 2");
@@ -46,6 +46,6 @@
     stag.push(`<div slot="top">new top text</div>`);
 
     // // 查找多少div
-    tester.ok(stag.queAll("div").length == 2, "length ok 3");
-    tester.ok(stag.queAllShadow("div").length == 2, "length ok 5");
+    tester.ok(stag.all("div").length == 2, "length ok 3");
+    tester.ok(stag.$shadow.all("div").length == 2, "length ok 5");
 })();
