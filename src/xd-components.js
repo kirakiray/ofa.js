@@ -10,7 +10,7 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
         ready() { },
     };
 
-    let options = base.tempM.d;
+    let options = d;
 
     if (isFunction(options)) {
         options = options(relativeLoad, {
@@ -75,8 +75,6 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
             // 添加hostcss
             await Promise.all(hostcssArr.map(async hostcss => {
                 hostcss = await relativeLoad(hostcss + " -getPath");
-
-                debugger
 
                 // 查找是否已经存在该css
                 let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
