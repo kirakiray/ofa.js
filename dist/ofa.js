@@ -3407,7 +3407,7 @@
 
     })(window);
     /*!
-     * drill.js v3.4.0
+     * drill.js v3.4.1
      * https://github.com/kirakiray/drill.js
      * 
      * (c) 2018-2020 YAO
@@ -3721,7 +3721,7 @@
                     }
 
                     // 清空tempM
-                    base.tempM = {};
+                    // base.tempM = {};
 
                     resolve(getPack);
                 });
@@ -3819,7 +3819,9 @@
                         let {
                             backups
                         } = errInfo;
-                        if (backups.length) {
+                        if (!backups.length) {
+                            break;
+                        } else {
                             // 查看当前用了几个后备仓
                             let backupId = (packData.backupId != undefined) ? packData.backupId : (packData.backupId = -1);
 
@@ -3960,13 +3962,16 @@
             debug: {
                 bag
             },
-            version: "3.4.0",
-            v: 3004000
+            version: "3.4.1",
+            v: 3004001
         };
         // 设置加载器
         let setProcessor = (processName, processRunner) => {
             processors.set(processName, async (packData) => {
-                return await processRunner(packData, base.tempM.d, {
+                let tempData = base.tempM.d;
+                // 提前清空
+                base.tempM = {};
+                return await processRunner(packData, tempData, {
                     // 相对的加载函数
                     relativeLoad(...args) {
                         return load(toUrlObjs(args, packData.dir));
@@ -4791,7 +4796,7 @@
                     ready() {},
                 };
 
-                let options = base.tempM.d;
+                let options = d;
 
                 if (isFunction(options)) {
                     options = options(relativeLoad, {
@@ -4847,24 +4852,28 @@
                 if (defaults.hostcss) {
                     let oldReady = defaults.ready;
 
+                    let hostcssArr = getType(defaults.hostcss) == "string" ? [defaults.hostcss] : defaults.hostcss;;
+
                     defaults.ready = async function(...args) {
-                        // 添加hostcss
-                        // 获取元素域上的主
+                        // 获取元素域上的主元素
                         let root = this.ele.getRootNode();
 
-                        let hostcss = await relativeLoad(defaults.hostcss + " -getPath");
+                        // 添加hostcss
+                        await Promise.all(hostcssArr.map(async hostcss => {
+                            hostcss = await relativeLoad(hostcss + " -getPath");
 
-                        // 查找是否已经存在该css
-                        let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
+                            // 查找是否已经存在该css
+                            let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
 
-                        if (!targetCssEle) {
-                            let linkEle = $(`<link rel="stylesheet" href="${hostcss}">`);
-                            if (root === document) {
-                                root.querySelector("head").appendChild(linkEle.ele);
-                            } else {
-                                root.appendChild(linkEle.ele);
+                            if (!targetCssEle) {
+                                let linkEle = $(`<link rel="stylesheet" href="${hostcss}">`);
+                                if (root === document) {
+                                    root.querySelector("head").appendChild(linkEle.ele);
+                                } else {
+                                    root.appendChild(linkEle.ele);
+                                }
                             }
-                        }
+                        }));
 
                         // 执行ready方法
                         oldReady.apply(this, args);
