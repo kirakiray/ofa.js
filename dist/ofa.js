@@ -1,5 +1,5 @@
 /*!
- * ofa v2.1.1
+ * ofa v2.1.2
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -5358,10 +5358,8 @@
                 ready() {
                     // 判断是否有页面，激活当前页
                     $.nextTick(() => {
-                        let firstPage = this.$("xd-page");
-
                         let readyFun = () => {
-                            this[CURRENTS] = [firstPage];
+                            this[CURRENTS] = [this.$("xd-page")];
 
                             // 触发事件
                             this.launched = true;
@@ -5369,7 +5367,7 @@
                             readyFun = null;
                         }
 
-                        firstPage ? readyFun() : this.one("page-ready", readyFun);
+                        this.$("xd-page") ? readyFun() : this.one("page-ready", readyFun);
                     });
 
                     // 检查页面状况
@@ -5403,8 +5401,8 @@
         get config() {
             return drill.config;
         },
-        v: 2001001,
-        version: "2.1.1"
+        v: 2001002,
+        version: "2.1.2"
     };
 
     let oldOfa = glo.ofa;
