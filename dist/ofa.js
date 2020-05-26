@@ -1,5 +1,5 @@
 /*!
- * ofa v2.1.2
+ * ofa v2.1.3
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.0.1
+     * xhear v5.1.0
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2020 YAO
@@ -2918,6 +2918,30 @@
 
         const ATTRBINDINGKEY = "attr" + getRandomId();
 
+        // 是否表达式
+        const isFunctionExpr = (str) => /[ \|\&\(\)\?\:\!]/.test(str.trim());
+
+        // 获取函数
+        const exprToFunc = (expr) => {
+            return new Function("$event", `with(this){return ${expr}}`);
+        }
+
+        // 嵌入函数监听公用方法
+        const embedWatch = ({
+            target,
+            callback,
+            expr
+        }) => {
+            // 判断expr是否为函数表达式
+            if (isFunctionExpr(expr)) {
+                let func = exprToFunc(expr);
+                target.watch(e => callback(func.call(target[PROXYTHIS])))
+            } else {
+                // 先设置值，后监听塞入
+                target.watch(expr, (e, val) => callback(val));
+            }
+        }
+
         const register = (opts) => {
             let defaults = {
                 // 自定义标签名
@@ -3014,7 +3038,6 @@
                     name = attrToProp(name);
                     if (newValue != xEle[name]) {
                         xEle.setData(name, newValue);
-                        // xEle[name] = newValue;
                     }
                 }
 
@@ -3066,6 +3089,43 @@
                 // 填充默认内容
                 sroot.innerHTML = temp;
 
+                // xv-if 条件转换
+                queAllToArray(sroot, `[xv-if]`).forEach(e => {
+                    // xv-if 不能和 xv-tar 配合使用
+                    if (e.getAttribute("xv-tar")) {
+                        console.error({
+                            target: e,
+                            desc: "xv-if cannot be used with xv-tar"
+                        });
+                        return;
+                    }
+
+                    // 添加定位text
+                    var textnode = document.createTextNode("");
+                    e.parentNode.insertBefore(textnode, e);
+
+                    // 是否存在
+                    let targetEle = e;
+
+                    embedWatch({
+                        target: xhearEle,
+                        expr: e.getAttribute("xv-if"),
+                        callback(val) {
+                            if (val) {
+                                // 不存在的情况下添加一份
+                                if (!targetEle) {
+                                    targetEle = e.cloneNode();
+                                    textnode.parentNode.insertBefore(targetEle, textnode);
+                                }
+                            } else {
+                                // 不能存在就删除
+                                targetEle.parentNode.removeChild(targetEle);
+                                targetEle = null;
+                            }
+                        }
+                    });
+                });
+
                 // 设置其他 xv-tar
                 queAllToArray(sroot, `[xv-tar]`).forEach(tar => {
                     // Array.from(sroot.querySelectorAll(`[xv-tar]`)).forEach(tar => {
@@ -3082,11 +3142,29 @@
                     e.parentNode.insertBefore(textnode, e);
                     e.parentNode.removeChild(e);
 
-                    // 文本数据绑定
-                    var xvkey = e.getAttribute('xvkey');
+                    // 函数绑定
+                    embedWatch({
+                        target: xhearEle,
+                        expr: e.getAttribute('xvkey'),
+                        callback(val) {
+                            textnode.textContent = val;
+                        }
+                    });
+                });
 
-                    // 先设置值，后监听
-                    xhearEle.watch(xvkey, (e, val) => textnode.textContent = val);
+                // xv-show 条件转换
+                queAllToArray(sroot, `[xv-show]`).forEach(e => {
+                    embedWatch({
+                        target: xhearEle,
+                        expr: e.getAttribute('xv-show'),
+                        callback(val) {
+                            if (val) {
+                                e.style.display = "";
+                            } else {
+                                e.style.display = "none";
+                            }
+                        }
+                    });
                 });
 
                 // :attribute对子元素属性修正方法
@@ -3101,6 +3179,10 @@
                         let prop = value;
                         name = attrToProp(name);
 
+                        // 判断prop是否函数表达式
+                        const isExpr = isFunctionExpr(prop);
+
+                        // 属性绑定
                         let colonExecs = /^:(.+)/.exec(name);
                         if (colonExecs) {
                             let attr = colonExecs[1];
@@ -3110,29 +3192,56 @@
                             if (isEachBinding) {
                                 attr = isEachBinding[1];
                                 isEachBinding = !!isEachBinding;
+
+                                // 函数表达式不能用于双向绑定
+                                if (isExpr) {
+                                    throw {
+                                        desc: "Function expressions cannot be used for sync binding",
+                                    };
+                                }
                             }
 
-                            let watchCall;
-                            if (ele.xvele) {
-                                watchCall = (e, val) => {
-                                    if (val instanceof XhearEle) {
-                                        val = val.Object;
+                            if (!isExpr) {
+                                // 属性监听
+                                let watchCall;
+                                if (ele.xvele) {
+                                    watchCall = (e, val) => {
+                                        if (val instanceof XhearEle) {
+                                            val = val.object;
+                                        }
+                                        createXhearEle(ele).setData(attr, val);
                                     }
-                                    createXhearEle(ele).setData(attr, val);
+
+                                    if (isEachBinding) {
+                                        // 双向绑定
+                                        createXhearEle(ele).watch(attr, (e, val) => {
+                                            xhearEle.setData(prop, val);
+                                        });
+                                    }
+                                } else {
+                                    watchCall = (e, val) => {
+                                        ele.setAttribute(attr, val);
+                                    };
                                 }
 
-                                // 双向绑定
-                                if (isEachBinding) {
-                                    createXhearEle(ele).watch(attr, (e, val) => {
-                                        xhearEle.setData(prop, val);
-                                    });
-                                }
+                                xhearEle.watch(prop, watchCall)
                             } else {
-                                watchCall = (e, val) => {
-                                    ele.setAttribute(attr, val);
-                                };
+                                let func = exprToFunc(prop);
+
+                                // 表达式
+                                xhearEle.watch(e => {
+                                    let val = func.call(xhearEle[PROXYTHIS]);
+
+                                    if (ele.xvele) {
+                                        if (val instanceof XhearEle) {
+                                            val = val.object;
+                                        }
+                                        createXhearEle(ele).setData(attr, val);
+                                    } else {
+                                        ele.setAttribute(attr, val);
+                                    }
+                                });
                             }
-                            xhearEle.watch(prop, watchCall)
 
                             // 删除绑定表达属性
                             ele.removeAttribute(colonExecs[0]);
@@ -3144,6 +3253,7 @@
                             ele.setAttribute('xv-binding-expr', attrOriExpr);
                         }
 
+                        // 事件绑定
                         let atExecs = /^@(.+)/.exec(name);
                         if (atExecs) {
                             // 参数分解
@@ -3152,6 +3262,14 @@
                             let functionName = "on";
                             if (opts.includes("once")) {
                                 functionName = "one";
+                            }
+
+                            // 函数表达式的话提前生成函数，属性的话直接绑定
+                            let func;
+                            if (isExpr) {
+                                func = exprToFunc(prop);
+                            } else {
+                                func = xhearEle[prop];
                             }
 
                             // 绑定事件
@@ -3164,7 +3282,7 @@
                                     event.bubble = false;
                                 }
 
-                                xhearEle[prop].call(xhearEle[PROXYTHIS], event, data);
+                                func.call(xhearEle[PROXYTHIS], event, data);
                             });
                         }
                     });
@@ -3393,8 +3511,8 @@
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5000001,
-            version: "5.0.1",
+            v: 5001000,
+            version: "5.1.0",
             fn: XhearEleFn,
             isXhear,
             ext,
@@ -4512,7 +4630,6 @@
         // 执行全局的 drill函数
         oldDrill && nextTick(() => oldDrill(drill));
     })(window);
-
     const getRandomId = () => Math.random().toString(32).substr(2);
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
@@ -4776,7 +4893,6 @@
 
     drill.ext(base => {
         let {
-            processors,
             main
         } = base;
         $.ext(({
@@ -5401,8 +5517,8 @@
         get config() {
             return drill.config;
         },
-        v: 2001002,
-        version: "2.1.2"
+        v: 2001003,
+        version: "2.1.3"
     };
 
     let oldOfa = glo.ofa;
