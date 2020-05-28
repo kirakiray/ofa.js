@@ -48,9 +48,9 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
         let cssPath = defaults.css;
         if (cssPath) {
             if (defaults.css === true) {
-                cssPath = await relativeLoad(`./${fileName}.css -getPath`);
+                cssPath = await relativeLoad(`./${fileName}.css -getLink`);
             } else {
-                cssPath = await relativeLoad(`${defaults.css} -getPath`);
+                cssPath = await relativeLoad(`${defaults.css} -getLink`);
             }
             cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
         }
@@ -74,7 +74,7 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
 
             // 添加hostcss
             await Promise.all(hostcssArr.map(async hostcss => {
-                hostcss = await relativeLoad(hostcss + " -getPath");
+                hostcss = await relativeLoad(hostcss + " -getLink");
 
                 // 查找是否已经存在该css
                 let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)

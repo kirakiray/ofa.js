@@ -24,7 +24,8 @@ xd-app>xd-page {
 }
 
 [xd-page-anime="back"] {
-    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+    transform: translate3d(-70%, 0, 0);
     pointer-events: none;
 }
 
@@ -36,13 +37,13 @@ xd-app>xd-page {
 @media screen and (min-width: 480px) {
     [xd-page-anime="back"] {
         opacity: 0;
-        transform: translate3d(-50px, 0, 0);
+        transform: translate3d(-10%, 0, 0);
         z-index: 1;
     }
 
     [xd-page-anime="front"] {
         opacity: 0;
-        transform: translate3d(50px, 0, 0);
+        transform: translate3d(10%, 0, 0);
         z-index: 1;
     }
 }

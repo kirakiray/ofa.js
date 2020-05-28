@@ -196,10 +196,8 @@ $.register({
             let cssPath = defaults.css;
             if (cssPath) {
                 if (defaults.css === true) {
-                    // cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
                     cssPath = relativeDir + fileName + ".css";
                 } else {
-                    // cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
                     cssPath = relativeDir + defaults.css;
                 }
                 cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);

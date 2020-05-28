@@ -63,6 +63,9 @@ $.register({
 
             Object.assign(defaults, opts);
 
+            // 防止传File类的数据   
+            defaults.data && (defaults.data = JSON.parse(JSON.stringify(defaults.data)));
+
             return new Promise(async (res, rej) => {
                 switch (defaults.type) {
                     case "back":
@@ -200,7 +203,20 @@ $.register({
             this.visibility = document.hidden ? "hide" : "show";
         });
 
-        // 添加路由
-        initRouter(this);
+        // 初始路由前，app必须初始化完成
+        let launchFun = (e, launched) => {
+            if (!launched) {
+                return;
+            }
+            // 注销监听
+            this.unwatch("launched", launchFun);
+
+            // 初始化路由
+            initRouter(this);
+            initSlideRouter(this);
+
+            launchFun = null;
+        }
+        this.watch("launched", launchFun);
     }
 });

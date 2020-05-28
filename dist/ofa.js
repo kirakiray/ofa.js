@@ -1,5 +1,5 @@
 /*!
- * ofa v2.1.3
+ * ofa v2.2.0
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -3525,7 +3525,7 @@
 
     })(window);
     /*!
-     * drill.js v3.4.1
+     * drill.js v3.4.4
      * https://github.com/kirakiray/drill.js
      * 
      * (c) 2018-2020 YAO
@@ -3838,9 +3838,6 @@
                         throw "no such this processor => " + type;
                     }
 
-                    // 清空tempM
-                    // base.tempM = {};
-
                     resolve(getPack);
                 });
                 script.addEventListener('error', () => {
@@ -3852,6 +3849,18 @@
                 document.head.appendChild(script);
             });
         });
+
+        // 对es6 module 支持
+        loaders.set("mjs", async packData => {
+            let d = await import(packData.link);
+
+            return async () => {
+                return d;
+            }
+        });
+        // 直接返回缓存地址的类型
+        const returnUrlSets = new Set(["png", "jpg", "jpeg", "bmp", "gif", "webp"]);
+
         const getLoader = (fileType) => {
             // 立即请求包处理
             let loader = loaders.get(fileType);
@@ -3859,6 +3868,11 @@
             if (!loader) {
                 console.log("no such this loader => " + fileType);
                 loader = getByUtf8;
+            }
+
+            // 判断是否图片
+            if (returnUrlSets.has(fileType)) {
+                loader = getByUrl;
             }
 
             return loader;
@@ -3874,6 +3888,26 @@
             // 重置getPack
             return async () => {
                 return data;
+            }
+        }
+
+        // 返回内存的地址
+        const getByUrl = async packData => {
+            // 判断是否已经在缓存内
+            if (packData.offlineUrl) {
+                return async () => {
+                    return packData.offlineUrl;
+                }
+            }
+
+            let data = await fetch(packData.link);
+
+            let fileBlob = await data.blob();
+
+            let url = URL.createObjectURL(fileBlob);
+
+            return async () => {
+                return url;
             }
         }
 
@@ -3915,7 +3949,7 @@
                     try {
                         // 离线处理
                         if (drill.cacheInfo.offline) {
-                            packData.fileUrl = packData.link = await cacheSource(packData);
+                            packData.link = await cacheSource(packData);
                         }
 
                         // 立即请求包处理
@@ -4080,8 +4114,8 @@
             debug: {
                 bag
             },
-            version: "3.4.1",
-            v: 3004001
+            version: "3.4.4",
+            v: 3004004
         };
         // 设置加载器
         let setProcessor = (processName, processRunner) => {
@@ -4133,8 +4167,8 @@
                     // 中转加载资源
                     let d;
 
-                    // 判断是否有getPath参数
-                    if (obj.param && obj.param.includes("-getPath")) {
+                    // 判断是否有getLink参数
+                    if (obj.param && obj.param.includes("-getLink")) {
                         d = obj.link;
                     } else {
                         // 等待一次异步操作，确保post数据完整
@@ -4263,7 +4297,7 @@
             let path;
 
             // 判断是否有基于根目录参数
-            if (param.indexOf('-r') > -1 || /^.+:\/\//.test(ori)) {
+            if (param.includes('-r') || /^.+:\/\//.test(ori)) {
                 path = ori;
             } else if (/^\./.test(ori)) {
                 if (urlObj.relative) {
@@ -4311,6 +4345,11 @@
 
             // 写入最终请求资源地址
             let link = search ? (path + "?" + search) : path;
+
+            // 对 -mjs 参数修正
+            if (param.includes("-mjs")) {
+                fileType = "mjs";
+            }
 
             Object.assign(urlObj, {
                 link,
@@ -4532,8 +4571,11 @@
                 await saveFile(packData.path, file);
             }
 
+            // 挂载file文件
+            packData.offlineFile = file;
+
             // 生成url
-            let tempUrl = URL.createObjectURL(file);
+            let tempUrl = packData.offlineUrl = URL.createObjectURL(file);
 
             return tempUrl;
         }
@@ -4579,25 +4621,24 @@
         });
 
         // 挂载主体方法
-        let mainFunObj = {
-            get agent() {
-                return agent;
-            },
-            get load() {
-                return load;
-            },
-            get fixUrlObj() {
-                return fixUrlObj;
-            },
-            get toUrlObjs() {
-                return toUrlObjs;
-            },
-            get setProcessor() {
-                return setProcessor;
-            }
-        };
         Object.defineProperty(base, "main", {
-            value: mainFunObj
+            value: {
+                get agent() {
+                    return agent;
+                },
+                get load() {
+                    return load;
+                },
+                get fixUrlObj() {
+                    return fixUrlObj;
+                },
+                get toUrlObjs() {
+                    return toUrlObjs;
+                },
+                get setProcessor() {
+                    return setProcessor;
+                }
+            }
         });
 
         // init 
@@ -4663,232 +4704,489 @@
     /// 是否初始化了history
     const BANDF = "xd-app-init-back-forward-" + location.pathname;
 
-    const createEmptyXdHistoryData = () => {
-        return {
-            // 后退历史
-            history: [],
-            // 前进历史
-            forwards: []
-        };
+
+    // 修正当前页面的path
+    const fixCurrentPagePath = (app) => {
+        history.replaceState({
+            __t: "current"
+        }, "current", `?__p=${encodeURIComponent(app.currentPage.src)}`);
+    }
+
+    // 公用路由逻辑初始化
+    const commonRouter = (app) => {
+        const HNAME = "xd-app-history-" + location.pathname;
+
+        // 历史路由数组
+        let xdHistoryData = sessionStorage.getItem(HNAME);
+        if (xdHistoryData) {
+            xdHistoryData = JSON.parse(xdHistoryData)
+        } else {
+            xdHistoryData = {
+                // 后退历史
+                history: [],
+                // 前进历史
+                forwards: []
+            };
+        }
+
+        // 保存路由历史
+        const saveXdHistory = () => {
+            sessionStorage.setItem(HNAME, JSON.stringify(xdHistoryData));
+        }
+        // 附带在location上的path路径
+        let in_path = getQueryVariable("__p");
+        if (in_path) {
+            in_path = decodeURIComponent(in_path);
+        }
+
+        // 历史页面
+        if (xdHistoryData.history.length) {
+            // 第一页在返回状态
+            app.currentPage.attrs["xd-page-anime"] = app.currentPage.animeParam.back;
+
+            // 首页也要暂时不显示，不然会出现一闪的情况
+            let indexPage = app.currentPage;
+            indexPage.display = "none";
+            $.nextTick(() => indexPage.display = "");
+
+            let lastId = xdHistoryData.history.length - 1;
+
+            // 还原旧页面
+            xdHistoryData.history.forEach((e, i) => {
+                let xdPage = $({
+                    tag: "xd-page",
+                    src: e.src
+                });
+
+                if (e.data) {
+                    xdPage[NAVIGATEDATA] = e.data;
+                }
+
+                xdPage.display = "none";
+                // 完成时，修正page状态
+                if (i == lastId) {
+                    // 当前页
+                    xdPage.attrs["xd-page-anime"] = e.animeParam.current;
+                } else {
+                    // 设置为前一个页面
+                    xdPage.attrs["xd-page-anime"] = e.animeParam.back[0];
+                }
+
+                // 加载页前的页面，都进入缓存状态（当前页和前一页要立刻加载）
+                if (xdHistoryData.history.length - ofa_inadvance - 1 > i) {
+                    xdPage.pageStat = "preparing";
+                    xdPage._preparing = new Promise(res => xdPage._preparing_resolve = () => {
+                        xdPage._preparing_resolve = xdPage._preparing = null;
+                        res();
+                    });
+                }
+
+                setTimeout(() => xdPage.display = "", 72);
+
+                // 添加到app中
+                app.push(xdPage);
+
+                // 加入历史列表
+                app[CURRENTS].push(xdPage);
+            });
+        }
+
+        // 判断是否当前页，不是当前页就是重新进入的，在加载
+        if (in_path) {
+            // 定向到指定页面
+            let src = in_path;
+
+            if (app.currentPage.src !== src) {
+                app.currentPage.watch("pageStat", (e, pageStat) => {
+                    if (pageStat == "finish") {
+                        setTimeout(() => {
+                            app.currentPage.navigate({
+                                src
+                            });
+                        }, 36);
+                    }
+                })
+            }
+
+            sessionStorage.setItem(BANDF, "");
+        }
+
+        // 监听跳转
+        app.on("navigate", (e, opt) => {
+            let {
+                currentPage
+            } = app;
+            let {
+                animeParam
+            } = currentPage;
+
+            switch (opt.type) {
+                case "to":
+                    xdHistoryData.history.push({
+                        src: opt.src,
+                        data: opt.data,
+                        animeParam
+                    });
+                    // 不是通过前进来的话，就清空前进历史
+                    !opt.forward && (xdHistoryData.forwards.length = 0);
+                    saveXdHistory();
+                    fixCurrentPagePath(app);
+                    break;
+                case "replace":
+                    xdHistoryData.history.splice(-1, 1, {
+                        src: opt.src,
+                        data: opt.data,
+                        animeParam
+                    });
+                    saveXdHistory();
+                    fixCurrentPagePath(app);
+                    break;
+                case "back":
+                    console.log("back 1");
+                    let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
+                    xdHistoryData.forwards.push(...his);
+                    saveXdHistory();
+                    // $.nextTick(() => fixCurrentPagePath(app));
+                    setTimeout(() => fixCurrentPagePath(app), 100);
+
+                    // 纠正缓存状态
+                    let before_page = app.currentPages.slice(-1 - ofa_inadvance)[0];
+                    if (before_page && before_page._preparing) {
+                        before_page._preparing_resolve();
+                    }
+                    break;
+            }
+        });
+
+        // 初次修正
+        fixCurrentPagePath(app);
     }
 
     // xd-app路由器初始化
     const initRouter = (app) => {
-        const launchFun = (e, launched) => {
-            if (!launched) {
-                return;
-            }
-            // 注销监听
-            app.unwatch("launched", launchFun);
+        // router参数不能乱填，必须是1或者router
+        if (app.router != "router" && app.router != 1) {
+            return;
+        }
 
-            const HNAME = "xd-app-history-" + location.pathname;
+        // 公用路由初始化
+        commonRouter(app);
 
-            // 历史路由数组
-            let xdHistoryData = sessionStorage.getItem(HNAME);
-            if (xdHistoryData) {
-                xdHistoryData = JSON.parse(xdHistoryData)
-            } else {
-                xdHistoryData = createEmptyXdHistoryData();
-            }
+        // ---前进后退功能监听封装---
+        if (!sessionStorage.getItem(BANDF)) {
+            $('body').one("mousedown", e => {
+                // 提前获取__p参数
+                let old_p = getQueryVariable("__p");
 
-            // 保存路由历史
-            const saveXdHistory = () => {
-                sessionStorage.setItem(HNAME, JSON.stringify(xdHistoryData));
-            }
+                // 初次替换后退路由
+                history.pushState({
+                    __t: "back"
+                }, "back", "?back=1");
 
-            if (app.router != 1) {
-                return;
-            }
+                // 进一步正确路由
+                history.pushState({
+                    __t: "current"
+                }, "current", "?__p=" + old_p);
 
-            // 附带在location上的path路径
-            let in_path = getQueryVariable("__p");
-            if (in_path) {
-                in_path = decodeURIComponent(in_path);
-            }
+                // 增加一个前进路由
+                // history.pushState({
+                //     __t: "forward"
+                // }, "forward", "?forward=1");
 
-            // 历史页面
-            if (xdHistoryData.history.length) {
-                // 第一页在返回状态
-                app.currentPage.attrs["xd-page-anime"] = app.currentPage.animeParam.back;
-
-                let lastId = xdHistoryData.history.length - 1;
-
-                // 还原旧页面
-                xdHistoryData.history.forEach((e, i) => {
-                    let xdPage = $({
-                        tag: "xd-page",
-                        src: e.src
-                    });
-
-                    xdPage.display = "none";
-                    // 完成时，修正page状态
-                    if (i == lastId) {
-                        // 当前页
-                        xdPage.attrs["xd-page-anime"] = e.animeParam.current;
-                    } else {
-                        // 设置为前一个页面
-                        xdPage.attrs["xd-page-anime"] = e.animeParam.back[0];
-                    }
-
-                    // 加载页前的页面，都进入缓存状态（当前页和前一页要立刻加载）
-                    if (xdHistoryData.history.length - ofa_inadvance - 1 > i) {
-                        xdPage.pageStat = "preparing";
-                        xdPage._preparing = new Promise(res => xdPage._preparing_resolve = () => {
-                            xdPage._preparing_resolve = xdPage._preparing = null;
-                            res();
-                        });
-                    }
-
-                    setTimeout(() => xdPage.display = "", 72);
-
-                    // 添加到app中
-                    app.push(xdPage);
-
-                    // 加入历史列表
-                    app[CURRENTS].push(xdPage);
-                });
-            }
-
-            // 判断是否当前页，不是当前页就是重新进入的，在加载
-            if (in_path) {
-                // 定向到指定页面
-                let src = in_path;
-
-                if (app.currentPage.src !== src) {
-                    app.currentPage.watch("pageStat", (e, pageStat) => {
-                        if (pageStat == "finish") {
-                            setTimeout(() => {
-                                app.currentPage.navigate({
-                                    src
-                                });
-                            }, 36);
-                        }
-                    })
-                }
-
-                sessionStorage.setItem(BANDF, "");
-            }
-
-            // 监听跳转
-            app.on("navigate", (e, opt) => {
-                let {
-                    currentPage
-                } = app;
-                let {
-                    animeParam
-                } = currentPage;
-
-                switch (opt.type) {
-                    case "to":
-                        xdHistoryData.history.push({
-                            src: opt.src,
-                            animeParam
-                        });
-                        // 不是通过前进来的话，就清空前进历史
-                        !opt.forward && (xdHistoryData.forwards.length = 0);
-                        saveXdHistory();
-                        fixCurrentPagePath();
-                        break;
-                    case "replace":
-                        xdHistoryData.history.splice(-1, 1, {
-                            src: opt.src,
-                            animeParam
-                        });
-                        saveXdHistory();
-                        fixCurrentPagePath();
-                        break;
-                    case "back":
-                        let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
-                        xdHistoryData.forwards.push(...his);
-                        saveXdHistory();
-
-                        // 纠正缓存状态
-                        let before_page = app.currentPages.slice(-1 - ofa_inadvance)[0];
-                        if (before_page && before_page._preparing) {
-                            before_page._preparing_resolve();
-                        }
-                        break;
-                }
+                // history.back();
             });
 
-            // ---前进后退功能监听封装---
-            if (!sessionStorage.getItem(BANDF)) {
-                $('body').one("mousedown", e => {
-                    // 提前获取__p参数
-                    let old_p = getQueryVariable("__p");
+            sessionStorage.setItem(BANDF, 1)
+        }
+        // 初次修正
+        // fixCurrentPagePath(app);
 
-                    // 初次替换后退路由
-                    history.pushState({
-                        __t: "back"
-                    }, "back", "?back=1");
+        // 延后初始化路由监听
+        // 开始监听路由
+        window.addEventListener("popstate", e => {
+            let {
+                state
+            } = e;
 
-                    // 进一步正确路由
-                    history.pushState({
-                        __t: "current"
-                    }, "current", "?__p=" + old_p);
+            let validOpts = {
+                valid: true
+            };
 
-                    // 增加一个前进路由
-                    // history.pushState({
-                    //     __t: "forward"
-                    // }, "forward", "?forward=1");
+            switch (state.__t) {
+                case "back":
+                    // 还原路由
+                    history.forward();
+                    app.emitHandler("before-back", validOpts);
+                    if (validOpts.valid) {
+                        app.back();
+                    }
+                    break;
+                    // case "current":
+                    //     console.log("go current 1");
+                    //     fixCurrentPagePath(app);
+                    //     break;
+                    // case "forward":
+                    //     // 还原路由
+                    //     history.back();
+                    //     app.emitHandler("before-forward", validOpts);
+                    //     if (validOpts.valid) {
+                    //         let last = xdHistoryData.forwards.splice(-1)[0];
 
-                    // history.back();
-                });
+                    //         // 前进路由
+                    //         last && app.currentPage.navigate({
+                    //             src: last.src,
+                    //             forward: true
+                    //         });
+                    //     }
+                    //     break;
+            }
+        });
+    }
 
-                sessionStorage.setItem(BANDF, 1)
+
+    // 获取相应class的关键有样式
+    const getPageAnimeData = (animeName, defaultType) => {
+        let fakeDiv = animeName;
+        let appendInBody = false;
+        if (!(animeName instanceof Element)) {
+            appendInBody = true;
+            fakeDiv = document.createElement("div");
+            fakeDiv.setAttribute("xd-page-anime", animeName);
+            $("body").push(fakeDiv);
+        }
+
+        let animeData = {};
+        let complteStyle = getComputedStyle(fakeDiv);
+
+        // 提取关键元素
+        ["opacity"].forEach(k => {
+            animeData[k] = complteStyle[k];
+        });
+
+        // transform单独抽取
+        let transformData = {
+            t: defaultType || "2d"
+        };
+        if (complteStyle.transform && complteStyle.transform != "none") {
+            if (complteStyle.transform == "matrix3d") {
+                transformData.t = "3d";
             }
 
-            // 修正当前页面的path
-            const fixCurrentPagePath = () => {
-                history.replaceState({
-                    __t: "current"
-                }, "current", `?__p=${encodeURIComponent(app.currentPage.src)}`);
+            // 获取关键数据，并转换为数组
+            transformData.a = complteStyle.transform.replace(/matrix\((.+)\)/, "$1").split(",").map(e => parseFloat(e.trim()))
+        }
+
+        if (transformData.t == "2d" && !transformData.a) {
+            // 默认2维数据就是这几个
+            transformData.a = [1, 0, 0, 1, 0, 0];
+        } else if (transformData.t == "3d" && !transformData.a) {
+            transformData.a = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+            debugger
+        }
+
+        // 删除样式
+        if (appendInBody) {
+            fakeDiv.remove();
+        }
+
+        // 设置transform数据
+        animeData.transform = transformData;
+
+        return animeData;
+    }
+
+    // pageParam转css样式对象
+    const pageParamToStyle = pageParam => {
+        let reobj = Object.assign({}, pageParam);
+
+        // 主要转换transform
+        let {
+            transform
+        } = pageParam;
+        switch (transform.t) {
+            case "2d":
+                reobj.transform = `matrix(${transform.a.join(",")})`;
+                break;
+        }
+
+        return reobj;
+    }
+
+    // 根据当前页状态、下一步状态和当前进度，计算当前进度pageParam数据
+    const animeByPrecent = (nowParam, nextParam, precent) => {
+        let pageParam = {};
+
+        Object.keys(nowParam).forEach(k => {
+            if (k === "transform") {
+                // transform 单独处理
+                return;
             }
 
-            // 初次修正
-            fixCurrentPagePath();
+            let now = parseFloat(nowParam[k]);
+            let next = parseFloat(nextParam[k]);
 
-            // 延后初始化路由监听
-            // 开始监听路由
-            window.addEventListener("popstate", e => {
-                let {
-                    state
-                } = e;
+            pageParam[k] = (next - now) * precent + now;
+        });
 
-                let validOpts = {
-                    valid: true
-                };
+        let now_trans = nowParam.transform;
+        let next_trans = nextParam.transform;
 
-                switch (state.__t) {
-                    case "back":
-                        // 还原路由
-                        history.forward();
-                        app.emitHandler("before-back", validOpts);
-                        if (validOpts.valid) {
-                            app.back();
-                        }
-                        break;
-                    case "current":
-                        fixCurrentPagePath();
-                        break;
-                        // case "forward":
-                        //     // 还原路由
-                        //     history.back();
-                        //     app.emitHandler("before-forward", validOpts);
-                        //     if (validOpts.valid) {
-                        //         let last = xdHistoryData.forwards.splice(-1)[0];
+        if (now_trans && next_trans) {
+            // 确保类型一致
+            if (now_trans.t !== next_trans.t) {
+                console.error("animeByPrecent transform type unequal");
+                return;
+            }
 
-                        //         // 前进路由
-                        //         last && app.currentPage.navigate({
-                        //             src: last.src,
-                        //             forward: true
-                        //         });
-                        //     }
-                        //     break;
-                }
+            let trans = pageParam.transform = {
+                t: now_trans.t,
+                a: []
+            };
+
+            now_trans.a.forEach((now, i) => {
+                let next = next_trans.a[i];
+                trans.a.push((next - now) * precent + now);
             });
         }
-        app.watch("launched", launchFun);
+
+        return pageParam;
+    }
+
+    const getPoint = e => e.changedTouches ? e.changedTouches[0] : e.targetTouches ? e.targetTouches[0] : e.touches[0];
+
+    const initSlideRouter = (app) => {
+        if (app.router != "slide") {
+            return;
+        }
+
+        // 公用路由初始化
+        commonRouter(app);
+
+        const LEFT = "_left" + getRandomId(),
+            RIGHT = "_right" + getRandomId();
+        // 在全局加入两个边缘监听元素
+        $('head').push(`<style>#${LEFT},#${RIGHT}{position:fixed;z-index:10000;left:0;top:0;width:40px;height:100%;background-color:rgba(255,0,0,.1);}#${RIGHT}{left:auto;right:0;}</style>`);
+
+        let leftPannel = $(`<div id="${LEFT}"></div>`);
+        // let rightPannel = $(`<div id="${RIGHT}"></div>`);
+
+        $("body").push(leftPannel);
+        // $("body").push(rightPannel);
+
+        // slidePage使用的页面元素
+        let prevPage, currentPage;
+        let prevPageBackParam, prevPageActiveParam, currentPageFrontParam, currentPageActiveParam;
+        // 构建动画函数
+        const buildSlidePage = () => {
+            // 确认存在两个以上的页面
+            if (app.currentPages.length >= 2) {
+                [prevPage, currentPage] = app.currentPages.slice(-2);
+
+                prevPageBackParam = getPageAnimeData(prevPage.ele);
+                prevPageActiveParam = getPageAnimeData(prevPage.animeParam.current);
+                currentPageFrontParam = getPageAnimeData(currentPage.animeParam.front);
+                currentPageActiveParam = getPageAnimeData(currentPage.animeParam.current);
+            } else {
+                // 没有两个页面就清空
+                currentPage = prevPage = null;
+            }
+        }
+
+        // 监听滑动
+        // let count = 1000;
+        let startX, aWidth = app.width;
+        // 前一个触控点，判断方向用的
+        let beforePointX;
+        leftPannel.on("touchstart", e => {
+            e.preventDefault();
+
+            // 在存在 prevPage 的情况下才执行
+            if (!prevPage || !currentPage) {
+                return;
+            }
+
+            let point = getPoint(e.originalEvent);
+            beforePointX = startX = point.clientX;
+
+            // 提前记忆style属性
+            currentPage.data.beforeStyle = currentPage.attrs.style;
+            prevPage.data.beforeStyle = prevPage.attrs.style;
+
+            // 清空动画
+            currentPage.style.transition = "none";
+            prevPage.style.transition = "none";
+
+            // count = 1000;
+        });
+        let canNext = false;
+        leftPannel.on("touchmove", e => {
+            e.preventDefault();
+
+            // 在存在 prevPage 的情况下才执行
+            if (!prevPage || !currentPage) {
+                return;
+            }
+
+            // leftPannel.html = count++;
+            let point = getPoint(e.originalEvent);
+            let tx = point.clientX;
+
+            // 获取百分比
+            let percent = Math.abs(tx - startX) / aWidth;
+
+            let nowPagePram = animeByPrecent(currentPageActiveParam, currentPageFrontParam, percent);
+            let nowPageStyle = pageParamToStyle(nowPagePram);
+            Object.assign(currentPage.style, nowPageStyle);
+
+            let prevPagePram = animeByPrecent(prevPageBackParam, prevPageActiveParam, percent);
+            let prevPageStyle = pageParamToStyle(prevPagePram);
+            Object.assign(prevPage.style, prevPageStyle);
+
+            // 方向连贯的情况下才能下一页
+            if ((tx - beforePointX) > 0 && percent > 0.1) {
+                canNext = true;
+            } else {
+                canNext = false;
+            }
+
+            beforePointX = tx;
+        });
+        leftPannel.on("touchend", e => {
+            e.preventDefault();
+
+            // 在存在 prevPage 的情况下才执行
+            if (!prevPage || !currentPage) {
+                return;
+            }
+
+            // 清空动画和样式，默认情况下会还原操作
+            currentPage.attrs.style = currentPage.data.beforeStyle;
+            prevPage.attrs.style = prevPage.data.beforeStyle;
+
+            if (canNext) {
+                // 直接返回页面
+                app.back();
+            }
+        });
+        app.on("navigate", e => {
+            setTimeout(() => buildSlidePage(), 100);
+        })
+
+        // 启动构建
+        setTimeout(() => buildSlidePage(), 100);
+
+        // 启动构建
+        // setTimeout(() => {
+        // buildSlidePage();
+
+        // setTimeout(() => {
+        //     let nowPagePram = animeByPrecent(currentPageActiveParam, currentPageFrontParam, 0.4);
+
+        //     let styleObj = pageParamToStyle(nowPagePram);
+
+        //     debugger
+        // }, 100);
+        // }, 500);
     }
 
     drill.ext(base => {
@@ -4950,9 +5248,9 @@
                     let cssPath = defaults.css;
                     if (cssPath) {
                         if (defaults.css === true) {
-                            cssPath = await relativeLoad(`./${fileName}.css -getPath`);
+                            cssPath = await relativeLoad(`./${fileName}.css -getLink`);
                         } else {
-                            cssPath = await relativeLoad(`${defaults.css} -getPath`);
+                            cssPath = await relativeLoad(`${defaults.css} -getLink`);
                         }
                         cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
                     }
@@ -4976,7 +5274,7 @@
 
                         // 添加hostcss
                         await Promise.all(hostcssArr.map(async hostcss => {
-                            hostcss = await relativeLoad(hostcss + " -getPath");
+                            hostcss = await relativeLoad(hostcss + " -getLink");
 
                             // 查找是否已经存在该css
                             let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
@@ -5204,10 +5502,8 @@
                         let cssPath = defaults.css;
                         if (cssPath) {
                             if (defaults.css === true) {
-                                // cssPath = await load(`${relativeDir + fileName}.css -getPath -r`);
                                 cssPath = relativeDir + fileName + ".css";
                             } else {
-                                // cssPath = await load(`${relativeDir + defaults.css} -getPath -r`);
                                 cssPath = relativeDir + defaults.css;
                             }
                             cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
@@ -5335,6 +5631,9 @@
                         };
 
                         Object.assign(defaults, opts);
+
+                        // 防止传File类的数据   
+                        defaults.data && (defaults.data = JSON.parse(JSON.stringify(defaults.data)));
 
                         return new Promise(async (res, rej) => {
                             switch (defaults.type) {
@@ -5491,8 +5790,21 @@
                         this.visibility = document.hidden ? "hide" : "show";
                     });
 
-                    // 添加路由
-                    initRouter(this);
+                    // 初始路由前，app必须初始化完成
+                    let launchFun = (e, launched) => {
+                        if (!launched) {
+                            return;
+                        }
+                        // 注销监听
+                        this.unwatch("launched", launchFun);
+
+                        // 初始化路由
+                        initRouter(this);
+                        initSlideRouter(this);
+
+                        launchFun = null;
+                    }
+                    this.watch("launched", launchFun);
                 }
             });
         })
@@ -5517,8 +5829,8 @@
         get config() {
             return drill.config;
         },
-        v: 2001003,
-        version: "2.1.3"
+        v: 2002000,
+        version: "2.2.0"
     };
 
     let oldOfa = glo.ofa;
