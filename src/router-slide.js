@@ -37,7 +37,13 @@ const getPageAnimeData = (animeName, defaultType) => {
         transformData.a = [1, 0, 0, 1, 0, 0];
     } else if (transformData.t == "3d" && !transformData.a) {
         transformData.a = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-        debugger
+    }
+
+    // 强行将2d转为3d
+    if (transformData.t == "2d") {
+        let old_a = transformData.a;
+        transformData.t = "3d";
+        transformData.a = [old_a[0], old_a[1], 0, 0, old_a[2], old_a[3], 0, 0, 0, 0, 1, 0, old_a[4], old_a[5], 0, 1];
     }
 
     // 删除样式
@@ -60,6 +66,9 @@ const pageParamToStyle = pageParam => {
     switch (transform.t) {
         case "2d":
             reobj.transform = `matrix(${transform.a.join(",")})`;
+            break;
+        case "3d":
+            reobj.transform = `matrix3d(${transform.a.join(",")})`;
             break;
     }
 
@@ -227,17 +236,4 @@ const initSlideRouter = (app) => {
 
     // 启动构建
     setTimeout(() => buildSlidePage(), 100);
-
-    // 启动构建
-    // setTimeout(() => {
-    // buildSlidePage();
-
-    // setTimeout(() => {
-    //     let nowPagePram = animeByPrecent(currentPageActiveParam, currentPageFrontParam, 0.4);
-
-    //     let styleObj = pageParamToStyle(nowPagePram);
-
-    //     debugger
-    // }, 100);
-    // }, 500);
 }

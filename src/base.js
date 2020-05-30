@@ -29,7 +29,8 @@
     const PAGEOPTIONS = Symbol("pageOptions");
 
     //<!--router-->
-    //<!--slide-router-->
+    //<!--router-slide-->
+    //<!--router-jump-->
 
     drill.ext(base => {
         let {
