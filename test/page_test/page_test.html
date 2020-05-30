@@ -3,8 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="expires" content="Fri, 29 May 2020 03:30:05 GMT">
+    <meta http-equiv="cache-control" content="max-age=3600" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-title" content="ofaApp">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0096ff">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>xd-page test</title>
     <link rel="stylesheet" href="xd-page-anime.css">
     <script src="../../dist/ofa.js"></script>
@@ -53,14 +60,20 @@
 
 <body>
     <!-- <xd-app style="width:320px;height:480px;"> -->
-    <xd-app router="slide" style="position:absolute;left:0;top:0;width:100%;height:100%;">
+    <xd-app router="1">
         <xd-page id="haha" class="testpage" src="js/apage/apage.js?a=aaaa&b=bbbbb">a</xd-page>
         <!-- <xd-page id="haha" src="./apage/apage.js?c=cccc" val="valval">a</xd-page> -->
     </xd-app>
     <div class="backbtn">返回</div>
     <div class="backbtn2">返回2</div>
     <script>
-        // 
+        // document.querySelector("xd-app").addEventListener("touchmove", e => {
+        //     e.preventDefault()
+        // });
+        // 安卓切换
+        if (navigator.userAgent.includes("iPhone")) {
+            $("xd-app").router = "slide";
+        }
 
         let page1 = $("#haha");
 

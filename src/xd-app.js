@@ -52,13 +52,10 @@ $.register({
                 target: "",
                 // 自定义数据
                 data: null,
-                // 是否前进路由
-                // forward: false
                 // 切换动画页面
                 anime: true,
                 // 触发 navigate 事件
                 emitNavigate: true
-
             };
 
             Object.assign(defaults, opts);
@@ -212,8 +209,8 @@ $.register({
             this.unwatch("launched", launchFun);
 
             // 初始化路由
-            initRouter(this);
             initSlideRouter(this);
+            initJumpRouter(this);
 
             launchFun = null;
         }
