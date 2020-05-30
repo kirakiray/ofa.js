@@ -161,4 +161,16 @@ const initJumpRouter = (app) => {
         // 修正记录的当前页
         nowPageState = e.state;
     });
+
+    // 附带在location上的path路径
+    let in_path = getQueryVariable("__p");
+    if (in_path && !history.state) {
+        // 当前state没有数据，但是__p参数存在，证明是外部粘贴的地址，进行地址修正
+        history.replaceState(null, "", "?");
+        $.nextTick(() => {
+            app.currentPage.navigate({
+                src: decodeURIComponent(in_path)
+            });
+        });
+    }
 }

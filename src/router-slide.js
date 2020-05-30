@@ -123,7 +123,7 @@ const initSlideRouter = (app) => {
     }
 
     // 公用路由初始化
-    commonRouter(app, { fixCurrent: false });
+    commonRouter(app);
 
     const LEFT = "_left" + getRandomId(), RIGHT = "_right" + getRandomId();
     // 在全局加入两个边缘监听元素

@@ -4,7 +4,6 @@ let ofa_inadvance = 1;
 /// 是否初始化了history
 const BANDF = "xd-app-init-back-forward-" + location.pathname;
 
-
 // 修正当前页面的path
 const fixCurrentPagePath = (app) => {
     history.replaceState({
@@ -68,14 +67,10 @@ const renderHistory = ({ historyArr = [], app }) => {
 }
 
 // 公用路由逻辑初始化
-const commonRouter = (app, opts = {
-    fixCurrent: true
-}) => {
-    const { fixCurrent } = opts;
-
+const commonRouter = (app) => {
     const HNAME = "xd-app-history-" + location.pathname;
 
-    // 历史路由数组
+    // 虚拟历史路由数组
     let xdHistoryData = sessionStorage.getItem(HNAME);
     if (xdHistoryData) {
         xdHistoryData = JSON.parse(xdHistoryData)
@@ -92,11 +87,6 @@ const commonRouter = (app, opts = {
     const saveXdHistory = () => {
         sessionStorage.setItem(HNAME, JSON.stringify(xdHistoryData));
     }
-    // 附带在location上的path路径
-    let in_path = getQueryVariable("__p");
-    if (in_path) {
-        in_path = decodeURIComponent(in_path);
-    }
 
     // 历史页面
     renderHistory({
@@ -105,24 +95,24 @@ const commonRouter = (app, opts = {
     });
 
     // 判断是否当前页，不是当前页就是重新进入的，在加载
-    if (fixCurrent && in_path) {
-        // 定向到指定页面
-        let src = in_path;
+    // if (in_path) {
+    //     // 定向到指定页面
+    //     let src = in_path;
 
-        if (app.currentPage.src !== src) {
-            app.currentPage.watch("pageStat", (e, pageStat) => {
-                if (pageStat == "finish") {
-                    setTimeout(() => {
-                        app.currentPage.navigate({
-                            src
-                        });
-                    }, 36);
-                }
-            })
-        }
+    //     if (app.currentPage.src !== src) {
+    //         app.currentPage.watch("pageStat", (e, pageStat) => {
+    //             if (pageStat == "finish") {
+    //                 setTimeout(() => {
+    //                     app.currentPage.navigate({
+    //                         src
+    //                     });
+    //                 }, 36);
+    //             }
+    //         })
+    //     }
 
-        sessionStorage.setItem(BANDF, "");
-    }
+    //     sessionStorage.setItem(BANDF, "");
+    // }
 
     // 监听跳转
     app.on("navigate", (e, opt) => {
@@ -139,7 +129,6 @@ const commonRouter = (app, opts = {
                 // 不是通过前进来的话，就清空前进历史
                 !opt.forward && (xdHistoryData.forwards.length = 0);
                 saveXdHistory();
-                fixCurrent && fixCurrentPagePath(app);
                 break;
             case "replace":
                 xdHistoryData.history.splice(-1, 1, {
@@ -148,22 +137,16 @@ const commonRouter = (app, opts = {
                     animeParam
                 });
                 saveXdHistory();
-                fixCurrent && fixCurrentPagePath(app);
                 break;
             case "back":
                 console.log("back 1");
                 let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
                 xdHistoryData.forwards.push(...his);
                 saveXdHistory();
-                // $.nextTick(() => fixCurrentPagePath(app));
-                fixCurrent && setTimeout(() => fixCurrentPagePath(app), 100);
 
                 // 纠正缓存状态
                 app.currentPages.slice(-1 - ofa_inadvance).forEach(page => page._preparing_resolve && page._preparing_resolve());
                 break;
         }
     });
-
-    // 初次修正
-    fixCurrent && fixCurrentPagePath(app);
 }

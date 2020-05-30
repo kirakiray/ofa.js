@@ -4725,7 +4725,6 @@
     /// 是否初始化了history
     const BANDF = "xd-app-init-back-forward-" + location.pathname;
 
-
     // 修正当前页面的path
     const fixCurrentPagePath = (app) => {
         history.replaceState({
@@ -4792,16 +4791,10 @@
     }
 
     // 公用路由逻辑初始化
-    const commonRouter = (app, opts = {
-        fixCurrent: true
-    }) => {
-        const {
-            fixCurrent
-        } = opts;
-
+    const commonRouter = (app) => {
         const HNAME = "xd-app-history-" + location.pathname;
 
-        // 历史路由数组
+        // 虚拟历史路由数组
         let xdHistoryData = sessionStorage.getItem(HNAME);
         if (xdHistoryData) {
             xdHistoryData = JSON.parse(xdHistoryData)
@@ -4818,11 +4811,6 @@
         const saveXdHistory = () => {
             sessionStorage.setItem(HNAME, JSON.stringify(xdHistoryData));
         }
-        // 附带在location上的path路径
-        let in_path = getQueryVariable("__p");
-        if (in_path) {
-            in_path = decodeURIComponent(in_path);
-        }
 
         // 历史页面
         renderHistory({
@@ -4831,24 +4819,24 @@
         });
 
         // 判断是否当前页，不是当前页就是重新进入的，在加载
-        if (fixCurrent && in_path) {
-            // 定向到指定页面
-            let src = in_path;
+        // if (in_path) {
+        //     // 定向到指定页面
+        //     let src = in_path;
 
-            if (app.currentPage.src !== src) {
-                app.currentPage.watch("pageStat", (e, pageStat) => {
-                    if (pageStat == "finish") {
-                        setTimeout(() => {
-                            app.currentPage.navigate({
-                                src
-                            });
-                        }, 36);
-                    }
-                })
-            }
+        //     if (app.currentPage.src !== src) {
+        //         app.currentPage.watch("pageStat", (e, pageStat) => {
+        //             if (pageStat == "finish") {
+        //                 setTimeout(() => {
+        //                     app.currentPage.navigate({
+        //                         src
+        //                     });
+        //                 }, 36);
+        //             }
+        //         })
+        //     }
 
-            sessionStorage.setItem(BANDF, "");
-        }
+        //     sessionStorage.setItem(BANDF, "");
+        // }
 
         // 监听跳转
         app.on("navigate", (e, opt) => {
@@ -4869,7 +4857,6 @@
                     // 不是通过前进来的话，就清空前进历史
                     !opt.forward && (xdHistoryData.forwards.length = 0);
                     saveXdHistory();
-                    fixCurrent && fixCurrentPagePath(app);
                     break;
                 case "replace":
                     xdHistoryData.history.splice(-1, 1, {
@@ -4878,24 +4865,18 @@
                         animeParam
                     });
                     saveXdHistory();
-                    fixCurrent && fixCurrentPagePath(app);
                     break;
                 case "back":
                     console.log("back 1");
                     let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
                     xdHistoryData.forwards.push(...his);
                     saveXdHistory();
-                    // $.nextTick(() => fixCurrentPagePath(app));
-                    fixCurrent && setTimeout(() => fixCurrentPagePath(app), 100);
 
                     // 纠正缓存状态
                     app.currentPages.slice(-1 - ofa_inadvance).forEach(page => page._preparing_resolve && page._preparing_resolve());
                     break;
             }
         });
-
-        // 初次修正
-        fixCurrent && fixCurrentPagePath(app);
     }
 
 
@@ -5024,9 +5005,7 @@
         }
 
         // 公用路由初始化
-        commonRouter(app, {
-            fixCurrent: false
-        });
+        commonRouter(app);
 
         const LEFT = "_left" + getRandomId(),
             RIGHT = "_right" + getRandomId();
@@ -5308,6 +5287,18 @@
             // 修正记录的当前页
             nowPageState = e.state;
         });
+
+        // 附带在location上的path路径
+        let in_path = getQueryVariable("__p");
+        if (in_path && !history.state) {
+            // 当前state没有数据，但是__p参数存在，证明是外部粘贴的地址，进行地址修正
+            history.replaceState(null, "", "?");
+            $.nextTick(() => {
+                app.currentPage.navigate({
+                    src: decodeURIComponent(in_path)
+                });
+            });
+        }
     }
 
     drill.ext(base => {
