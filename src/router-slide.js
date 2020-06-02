@@ -126,7 +126,7 @@ const initSlideRouter = (app) => {
 
     const LEFT = "_left" + getRandomId(), RIGHT = "_right" + getRandomId();
     // 在全局加入两个边缘监听元素
-    $('head').push(`<style>#${LEFT},#${RIGHT}{position:fixed;z-index:10000;left:0;top:0;width:40px;height:100%;background-color:rgba(255,0,0,.1);}#${RIGHT}{left:auto;right:0;}</style>`);
+    $('head').push(`<style>#${LEFT},#${RIGHT}{position:fixed;z-index:10000;left:0;top:0;width:40px;height:100%;background-color:rgba(255,0,0,0);}#${RIGHT}{left:auto;right:0;}</style>`);
 
     let leftPannel = $(`<div id="${LEFT}"></div>`);
     // let rightPannel = $(`<div id="${RIGHT}"></div>`);
