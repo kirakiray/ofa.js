@@ -30,7 +30,6 @@
 
     //<!--router-->
     //<!--router-slide-->
-    //<!--router-jump-->
 
     drill.ext(base => {
         let {

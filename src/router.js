@@ -1,118 +1,145 @@
-// 返回路由提前载入量
-let ofa_inadvance = 1;
+// 默认跳转型路由
+// 跳转路由，跟普通页面跳转的体验一样
+const initJumpRouter = (app) => {
+    if (app.router != "router" && app.router != 1) {
+        return;
+    }
 
-/// 是否初始化了history
-const BANDF = "xd-app-init-back-forward-" + location.pathname;
+    let nowPageState;
 
-// 修正当前页面的path
-const fixCurrentPagePath = (app) => {
-    history.replaceState({
-        __t: "current"
-    }, "current", `?__p=${encodeURIComponent(app.currentPage.src)}`);
-}
+    if (history.state) {
+        nowPageState = history.state;
 
-// 渲染历史列表数据
-const renderHistory = ({ historyArr = [], app }) => {
-    // 历史页面
-    if (historyArr.length) {
-        // 第一页在返回状态
-        app.currentPage.attrs["xd-page-anime"] = app.currentPage.animeParam.back;
+        // 发现历史数据，添加回软路由
+        renderHistory(nowPageState.history, app);
+        // app.currents.push(...nowPageState.history);
+    }
 
-        // 首页也要暂时不显示，不然会出现一闪的情况
-        let indexPage = app.currentPage;
-        indexPage.display = "none";
-        $.nextTick(() => indexPage.display = "");
+    app.on("navigate", (e, opt) => {
+        console.log("navigate => ", e, opt)
 
-        let lastId = historyArr.length - 1;
+        let { currentPage } = app;
+        let { animeParam, src } = currentPage;
 
-        // 还原旧页面
-        historyArr.forEach((e, i) => {
-            let xdPage = $({
-                tag: "xd-page",
-                src: e.src
+        let historyObj = [];
+        app.currents.object.forEach((e, i) => {
+            if (i == 0) {
+                return;
+            }
+            delete e.pageId;
+
+            historyObj.push(e);
+        });
+
+        switch (opt.type) {
+            case "to":
+                nowPageState = {
+                    history: historyObj
+                }
+                // 前进url本来就记录了state，不需要重新记录
+                if (!opt._popstate_forward) {
+                    history.pushState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                }
+                break;
+            case "replace":
+                nowPageState = {
+                    history: historyObj
+                }
+                history.replaceState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                break;
+            case "back":
+                // 不是通过popstate的返回，要重新修正history的路由
+                if (!opt._popstate_back) {
+                    navigateBacked = 1;
+                    history.go(-opt.delta);
+                }
+                break;
+        }
+
+        console.log("navigate =>", opt);
+    });
+
+    // 返回动作是否已经执行完成
+    let navigateBacked = 0;
+
+    // 监听路由变动
+    window.addEventListener("popstate", e => {
+        // 对比 nowPageState 缺失是前进还是后退，修正app
+        let beforeHistory = (nowPageState && nowPageState.history) || [];
+        let nowHistory = (e.state && e.state.history) || [];
+
+        if (beforeHistory.length > nowHistory.length) {
+            if (navigateBacked) {
+                // 通过app.navigate返回的路由，复原 navigateBacked
+                navigateBacked = 0;
+                return;
+            }
+            // 页面后退
+            app[APPNAVIGATE]({
+                type: "back",
+                delta: beforeHistory.length - nowHistory.length,
+                // 标识
+                _popstate_back: true
             });
+        } else {
+            // 添加到currents队列
+            let fList = nowHistory.slice(-(nowHistory.length - beforeHistory.length));
+            app.currents.push(...fList);
 
-            if (e.data) {
-                xdPage[NAVIGATEDATA] = e.data;
-            }
+            // 页面前进
+            let nextPage = nowHistory.slice(-1)[0];
 
-            xdPage.display = "none";
-            // 完成时，修正page状态
-            if (i == lastId) {
-                // 当前页
-                xdPage.attrs["xd-page-anime"] = e.animeParam.current;
-            } else {
-                // 设置为前一个页面
-                xdPage.attrs["xd-page-anime"] = e.animeParam.back[0];
-            }
+            // 修正事件
+            $.nextTick(() => app.emitHandler("navigate", { type: "to", src: nextPage.src, _popstate_forward: true }));
+        }
 
-            // 加载页前的页面，都进入缓存状态（当前页和前一页要立刻加载）
-            if (historyArr.length - ofa_inadvance - 1 > i) {
-                xdPage.pageStat = "preparing";
-                xdPage._preparing = new Promise(res => xdPage._preparing_resolve = () => {
-                    xdPage._preparing_resolve = xdPage._preparing = null;
-                    res();
-                });
-            }
+        // 修正 nowPageState
+        nowPageState = e.state;
+    });
 
-            setTimeout(() => xdPage.display = "", 72);
 
-            // 添加到app中
-            app.push(xdPage);
-
-            // 加入历史列表
-            app[CURRENTS].push(xdPage);
+    // 附带在location上的path路径
+    let in_path = getQueryVariable("__p");
+    if (in_path && !history.state) {
+        // 当前state没有数据，但是__p参数存在，证明是外部粘贴的地址，进行地址修正
+        history.replaceState(null, "", "?");
+        $.nextTick(() => {
+            app[APPNAVIGATE]({
+                src: decodeURIComponent(in_path)
+            });
         });
     }
 }
 
-// 公用路由逻辑初始化
-const commonRouter = (app) => {
+// 渲染历史页面
+function renderHistory(hisData, app) {
+    // 渲染历史页面
+    app.currents.push(...hisData);
+    $.nextTick(() => {
+        app.currentPages.forEach(page => page.style.transition = "none");
+        setTimeout(() => app.currentPages.forEach(page => page.style.transition = ""), 100);
+    });
+}
+
+// 公用路由软路由初始化逻辑
+const fakeRouter = (app) => {
     const HNAME = "xd-app-history-" + location.pathname;
 
     // 虚拟历史路由数组
-    let xdHistoryData = sessionStorage.getItem(HNAME);
-    if (xdHistoryData) {
-        xdHistoryData = JSON.parse(xdHistoryData)
+    let fakeState = sessionStorage.getItem(HNAME);
+    if (fakeState) {
+        fakeState = JSON.parse(fakeState)
     } else {
-        xdHistoryData = {
+        fakeState = {
             // 后退历史
-            history: [],
-            // 前进历史
-            forwards: []
+            history: []
         };
     }
-
-    // 保存路由历史
-    const saveXdHistory = () => {
-        sessionStorage.setItem(HNAME, JSON.stringify(xdHistoryData));
+    if (fakeState.history.length) {
+        // 渲染历史页面
+        // app.currents.push(...fakeState.history);
+        renderHistory(fakeState.history, app);
     }
-
-    // 历史页面
-    renderHistory({
-        app,
-        historyArr: xdHistoryData.history
-    });
-
-    // 判断是否当前页，不是当前页就是重新进入的，在加载
-    // if (in_path) {
-    //     // 定向到指定页面
-    //     let src = in_path;
-
-    //     if (app.currentPage.src !== src) {
-    //         app.currentPage.watch("pageStat", (e, pageStat) => {
-    //             if (pageStat == "finish") {
-    //                 setTimeout(() => {
-    //                     app.currentPage.navigate({
-    //                         src
-    //                     });
-    //                 }, 36);
-    //             }
-    //         })
-    //     }
-
-    //     sessionStorage.setItem(BANDF, "");
-    // }
 
     // 监听跳转
     app.on("navigate", (e, opt) => {
@@ -121,32 +148,24 @@ const commonRouter = (app) => {
 
         switch (opt.type) {
             case "to":
-                xdHistoryData.history.push({
+                fakeState.history.push({
                     src: opt.src,
                     data: opt.data,
                     animeParam
                 });
-                // 不是通过前进来的话，就清空前进历史
-                !opt.forward && (xdHistoryData.forwards.length = 0);
-                saveXdHistory();
                 break;
             case "replace":
-                xdHistoryData.history.splice(-1, 1, {
+                fakeState.history.splice(-1, 1, {
                     src: opt.src,
                     data: opt.data,
                     animeParam
                 });
-                saveXdHistory();
                 break;
             case "back":
-                console.log("back 1");
-                let his = xdHistoryData.history.splice(-opt.delta, opt.delta);
-                xdHistoryData.forwards.push(...his);
-                saveXdHistory();
-
-                // 纠正缓存状态
-                app.currentPages.slice(-1 - ofa_inadvance).forEach(page => page._preparing_resolve && page._preparing_resolve());
+                fakeState.history.splice(-opt.delta);
                 break;
         }
+
+        sessionStorage.setItem(HNAME, JSON.stringify(fakeState));
     });
 }

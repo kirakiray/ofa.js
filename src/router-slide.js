@@ -1,5 +1,4 @@
-
-
+// 滑动型虚拟路由，仿apple系操作
 // 获取相应class的关键有样式
 const getPageAnimeData = (animeName, defaultType) => {
     let fakeDiv = animeName;
@@ -122,8 +121,8 @@ const initSlideRouter = (app) => {
         return;
     }
 
-    // 公用路由初始化
-    commonRouter(app);
+    // 公用软路由初始化
+    fakeRouter(app);
 
     const LEFT = "_left" + getRandomId(), RIGHT = "_right" + getRandomId();
     // 在全局加入两个边缘监听元素
@@ -171,8 +170,8 @@ const initSlideRouter = (app) => {
         beforePointX = startX = point.clientX;
 
         // 提前记忆style属性
-        currentPage.data.beforeStyle = currentPage.attrs.style;
-        prevPage.data.beforeStyle = prevPage.attrs.style;
+        currentPage._beforeStyle = currentPage.attrs.style;
+        prevPage._beforeStyle = prevPage.attrs.style;
 
         // 清空动画
         currentPage.style.transition = "none";
@@ -222,8 +221,8 @@ const initSlideRouter = (app) => {
         }
 
         // 清空动画和样式，默认情况下会还原操作
-        currentPage.attrs.style = currentPage.data.beforeStyle;
-        prevPage.attrs.style = prevPage.data.beforeStyle;
+        currentPage.attrs.style = currentPage._beforeStyle;
+        prevPage.attrs.style = prevPage._beforeStyle;
 
         if (canNext) {
             // 直接返回页面
