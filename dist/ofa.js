@@ -1,5 +1,5 @@
 /*!
- * ofa v2.3.0
+ * ofa v2.3.1
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -24,6 +24,22 @@
         const cloneObject = obj => JSON.parse(JSON.stringify(obj));
 
         const nextTick = (() => {
+            if (document.currentScript.getAttribute("debug") !== null) {
+                let nMap = new Map();
+                return (fun, key) => {
+                    if (!key) {
+                        key = getRandomId();
+                    }
+
+                    let timer = nMap.get(key);
+                    clearTimeout(timer);
+                    nMap.set(key, setTimeout(() => {
+                        fun();
+                        nMap.delete(key);
+                    }));
+                };
+            }
+
             let inTick = false;
 
             // 定位对象寄存器
@@ -3605,6 +3621,14 @@
 
         //改良异步方法
         const nextTick = (() => {
+            if (document.currentScript.getAttribute("debug") !== null) {
+                return setTimeout;
+            }
+
+            if (typeof process === "object" && process.nextTick) {
+                return process.nextTick;
+            }
+
             let isTick = false;
             let nextTickArr = [];
             return (fun) => {
@@ -3636,6 +3660,7 @@
 
         // 获取目录名
         const getDir = url => {
+            url = url.replace(/(.+)#.+/, "$1");
             url = url.replace(/(.+)\?.+/, "$1");
             let urlArr = url.match(/(.+\/).*/);
             return urlArr && urlArr[1];
@@ -3985,12 +4010,10 @@
 
                 while (true) {
                     try {
-                        // 离线处理
-                        if (drill.cacheInfo.offline) {
-                            packData.link = await cacheSource({
-                                packData
-                            });
-                        }
+                        // 文件link中转
+                        packData.link = await cacheSource({
+                            packData
+                        });
 
                         // 立即请求包处理
                         packData.getPack = (await getLoader(urlObj.fileType)(packData)) || (async () => {});
@@ -4146,6 +4169,10 @@
                         case "agent":
                             oldFunc = agent;
                             agent = middlewareFunc;
+                            break;
+                        case "cacheSource":
+                            oldFunc = cacheSource;
+                            cacheSource = middlewareFunc;
                             break;
                     }
                 }
@@ -4575,9 +4602,13 @@
         // 每个路径文件，要确保只加载一次
         // blobCall 用于扩展程序二次更改使用
         let cacheSource = async ({
-            packData,
-            blobCall
+            packData
         }) => {
+            // 离线处理
+            if (!drill.cacheInfo.offline) {
+                return packData.link;
+            }
+
             // 等待数据库初始化完成
             await isInitDB;
 
@@ -4605,10 +4636,6 @@
 
                 // 生成file格式
                 let blob = await p.blob();
-
-                if (blobCall) {
-                    blob = await blobCall(blob);
-                }
 
                 // 生成file
                 file = new File([blob], fileName, {
@@ -4721,19 +4748,18 @@
     const getRandomId = () => Math.random().toString(32).substr(2);
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
-
-    function getQueryVariable(variable) {
-        var query = location.search.substring(1);
-        let reVal = null;
-        query.split("&").some(e => {
-            var pair = e.split("=");
-            if (pair[0] == variable) {
-                reVal = pair[1];
-                return true;
-            }
-        });
-        return reVal;
-    }
+    // function getQueryVariable(variable, query) {
+    //     query = query || location.search.substring(1);
+    //     let reVal = null;
+    //     query.split("&").some(e => {
+    //         var pair = e.split("=");
+    //         if (pair[0] == variable) {
+    //             reVal = pair[1];
+    //             return true;
+    //         }
+    //     });
+    //     return reVal;
+    // }
 
     let globalcss = "";
 
@@ -4790,14 +4816,16 @@
                     }
                     // 前进url本来就记录了state，不需要重新记录
                     if (!opt._popstate_forward) {
-                        history.pushState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                        // history.pushState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                        history.pushState(nowPageState, "", `#${src}`);
                     }
                     break;
                 case "replace":
                     nowPageState = {
                         history: historyObj
                     }
-                    history.replaceState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                    // history.replaceState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                    history.replaceState(nowPageState, "", `#${src}`);
                     break;
                 case "back":
                     // 不是通过popstate的返回，要重新修正history的路由
@@ -4855,13 +4883,14 @@
 
 
         // 附带在location上的path路径
-        let in_path = getQueryVariable("__p");
+        let in_path = location.hash.slice(1);
         if (in_path && !history.state) {
             // 当前state没有数据，但是__p参数存在，证明是外部粘贴的地址，进行地址修正
-            history.replaceState(null, "", "?");
+            history.replaceState(null, "", "");
             $.nextTick(() => {
                 app[APPNAVIGATE]({
-                    src: decodeURIComponent(in_path)
+                    // src: decodeURIComponent(in_path)
+                    src: in_path
                 });
             });
         }
@@ -5866,8 +5895,8 @@
         get config() {
             return drill.config;
         },
-        v: 2003000,
-        version: "2.3.0"
+        v: 2003001,
+        version: "2.3.1"
     };
 
     let oldOfa = glo.ofa;

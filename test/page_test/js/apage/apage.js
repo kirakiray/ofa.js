@@ -3,6 +3,8 @@ define({
     ready(e) {
         console.log("ready => ", this, e);
 
+        this.ua = navigator.userAgent;
+
         if (e.data && e.data.pageNum) {
             this.pageNum = e.data.pageNum;
         }
@@ -47,6 +49,7 @@ define({
     data: {
         a1: "a111111111",
         b1: "b1111111111",
-        pageNum: 0
+        pageNum: 0,
+        ua: ""
     }
 });

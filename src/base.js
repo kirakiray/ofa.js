@@ -5,18 +5,18 @@
     const getRandomId = () => Math.random().toString(32).substr(2);
     const getType = value => Object.prototype.toString.call(value).toLowerCase().replace(/(\[object )|(])/g, '');
     const isFunction = val => getType(val).includes("function");
-    function getQueryVariable(variable) {
-        var query = location.search.substring(1);
-        let reVal = null;
-        query.split("&").some(e => {
-            var pair = e.split("=");
-            if (pair[0] == variable) {
-                reVal = pair[1];
-                return true;
-            }
-        });
-        return reVal;
-    }
+    // function getQueryVariable(variable, query) {
+    //     query = query || location.search.substring(1);
+    //     let reVal = null;
+    //     query.split("&").some(e => {
+    //         var pair = e.split("=");
+    //         if (pair[0] == variable) {
+    //             reVal = pair[1];
+    //             return true;
+    //         }
+    //     });
+    //     return reVal;
+    // }
 
     let globalcss = "";
 

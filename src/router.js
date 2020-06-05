@@ -38,14 +38,16 @@ const initJumpRouter = (app) => {
                 }
                 // 前进url本来就记录了state，不需要重新记录
                 if (!opt._popstate_forward) {
-                    history.pushState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                    // history.pushState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                    history.pushState(nowPageState, "", `#${src}`);
                 }
                 break;
             case "replace":
                 nowPageState = {
                     history: historyObj
                 }
-                history.replaceState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                // history.replaceState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
+                history.replaceState(nowPageState, "", `#${src}`);
                 break;
             case "back":
                 // 不是通过popstate的返回，要重新修正history的路由
@@ -99,13 +101,14 @@ const initJumpRouter = (app) => {
 
 
     // 附带在location上的path路径
-    let in_path = getQueryVariable("__p");
+    let in_path = location.hash.slice(1);
     if (in_path && !history.state) {
         // 当前state没有数据，但是__p参数存在，证明是外部粘贴的地址，进行地址修正
-        history.replaceState(null, "", "?");
+        history.replaceState(null, "", "");
         $.nextTick(() => {
             app[APPNAVIGATE]({
-                src: decodeURIComponent(in_path)
+                // src: decodeURIComponent(in_path)
+                src: in_path
             });
         });
     }
