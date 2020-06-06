@@ -124,7 +124,27 @@ $.register({
             // 加载页面模块数据
             this[PAGE_STATE] = "loading";
 
-            let pageOpts = await load(val + " -r");
+            let pageOpts;
+            try {
+                pageOpts = await load(val + " -r");
+            } catch (e) {
+                // 错误页面
+                let errObj = e[0].descript;
+                this[PAGE_STATE] = "error";
+
+                let errorPath = await load(val + " -r -getLink");
+
+                renderEle(this.ele, {
+                    temp: ofa.get404({
+                        path: errorPath,
+                        src: val
+                    }),
+                    attrs: [],
+                    watch: {}
+                });
+
+                throw errObj;
+            }
 
             this[PAGEOPTIONS] = pageOpts;
 

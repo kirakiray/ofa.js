@@ -61,6 +61,19 @@
         get config() {
             return drill.config;
         },
+        // 获取40页面的内容
+        get404(e) {
+            return `
+            <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:300px;">
+                <div style="margin-bottom:16px;width:45px;height:45px;font-size:30px;line-height:45px;border-radius:32px;text-align:center;font-weight:bold;background-color:#fb4747;color:#fff;">!</div>
+                <div style="font-size:13px;color:#888;text-align:center;">
+                Failed to load<br>
+                path: <a style="color:#477efd;text-decoration: underline;" href="${e.path}" target="_blank">${e.path}</a> <br>
+                src: <span style="color:#477efd;text-decoration: underline;">${e.src}</span>
+                </div>
+            </div>
+            `;
+        },
         v: "{{versionCode}}",
         version: "{{version}}"
     };

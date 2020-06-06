@@ -38,7 +38,6 @@ const initJumpRouter = (app) => {
                 }
                 // 前进url本来就记录了state，不需要重新记录
                 if (!opt._popstate_forward) {
-                    // history.pushState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
                     history.pushState(nowPageState, "", `#${src}`);
                 }
                 break;
@@ -46,7 +45,6 @@ const initJumpRouter = (app) => {
                 nowPageState = {
                     history: historyObj
                 }
-                // history.replaceState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
                 history.replaceState(nowPageState, "", `#${src}`);
                 break;
             case "back":

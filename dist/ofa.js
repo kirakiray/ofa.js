@@ -1,5 +1,5 @@
 /*!
- * ofa v2.3.1
+ * ofa v2.3.2
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -3567,7 +3567,7 @@
 
     })(window);
     /*!
-     * drill.js v3.4.5
+     * drill.js v3.4.6
      * https://github.com/kirakiray/drill.js
      * 
      * (c) 2018-2020 YAO
@@ -3691,8 +3691,16 @@
                 linkEle.rel = "stylesheet";
                 linkEle.href = packData.link;
 
+                let isAddLink = false;
+
                 linkEle.onload = () => {
+                    document.head.removeChild(linkEle);
                     res(async (e) => {
+                        // 在有获取内容的情况下，才重新加入link
+                        if (!isAddLink && !e.param.includes("-getPath")) {
+                            isAddLink = true;
+                            document.head.appendChild(linkEle);
+                        }
                         return linkEle
                     });
                 }
@@ -4008,6 +4016,18 @@
                 // 设置包数据
                 bag.set(urlObj.path, packData);
 
+                // 存储错误资源地址
+                let errPaths = [packData.link];
+
+                const errCall = () => {
+                    packData.stat = 4;
+                    packData._passReject({
+                        desc: `load source error`,
+                        link: errPaths,
+                        packData
+                    });
+                }
+
                 while (true) {
                     try {
                         // 文件link中转
@@ -4023,7 +4043,7 @@
                         packData._passResolve();
                         break;
                     } catch (e) {
-                        console.error("load error =>", e);
+                        // console.error("load error =>", e);
 
                         packData.stat = 2;
                         if (isHttpFront(urlObj.str)) {
@@ -4035,6 +4055,7 @@
                             backups
                         } = errInfo;
                         if (!backups.length) {
+                            errCall();
                             break;
                         } else {
                             // 查看当前用了几个后备仓
@@ -4059,8 +4080,7 @@
 
                                 if (!nextBaseUrl) {
                                     // 没有下一个就跳出
-                                    packData.stat = 4;
-                                    packData._passReject();
+                                    errCall();
                                     break;
                                 }
 
@@ -4070,9 +4090,12 @@
 
                                 // 替换packData
                                 packData.link = packData.link.replace(new RegExp("^" + oldBaseUrl), nextBaseUrl);
+                                errPaths.push(packData.link);
 
                                 await new Promise(res => setTimeout(res, errInfo.time));
                             } else {
+                                packData.stat = 4;
+                                errCall();
                                 break;
                             }
                         }
@@ -4186,8 +4209,8 @@
             debug: {
                 bag
             },
-            version: "3.4.5",
-            v: 3004005
+            version: "3.4.6",
+            v: 3004006
         };
         // 设置加载器
         let setProcessor = (processName, processRunner) => {
@@ -4816,7 +4839,6 @@
                     }
                     // 前进url本来就记录了state，不需要重新记录
                     if (!opt._popstate_forward) {
-                        // history.pushState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
                         history.pushState(nowPageState, "", `#${src}`);
                     }
                     break;
@@ -4824,7 +4846,6 @@
                     nowPageState = {
                         history: historyObj
                     }
-                    // history.replaceState(nowPageState, "", `?__p=${encodeURIComponent(src)}`);
                     history.replaceState(nowPageState, "", `#${src}`);
                     break;
                 case "back":
@@ -5441,7 +5462,27 @@
                         // 加载页面模块数据
                         this[PAGE_STATE] = "loading";
 
-                        let pageOpts = await load(val + " -r");
+                        let pageOpts;
+                        try {
+                            pageOpts = await load(val + " -r");
+                        } catch (e) {
+                            // 错误页面
+                            let errObj = e[0].descript;
+                            this[PAGE_STATE] = "error";
+
+                            let errorPath = await load(val + " -r -getLink");
+
+                            renderEle(this.ele, {
+                                temp: ofa.get404({
+                                    path: errorPath,
+                                    src: val
+                                }),
+                                attrs: [],
+                                watch: {}
+                            });
+
+                            throw errObj;
+                        }
 
                         this[PAGEOPTIONS] = pageOpts;
 
@@ -5694,13 +5735,14 @@
 
                             if (index < lastId) {
                                 // 属于前面的页面
-                                pageEle.attrs["xd-page-anime"] = back[0];
+                                // pageEle.attrs["xd-page-anime"] = index + "-" + lastId;
+                                pageEle.attrs["xd-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
                             } else if (lastId == index) {
                                 // 当前页不存在动画样式的情况下，就是前进式的页面
                                 // 当前只有首页的情况，不需要进场动画
                                 if (!pageEle.attrs["xd-page-anime"] && currents.length != 1) {
                                     pageEle.attrs["xd-page-anime"] = front;
-                                    pageData._nextPageAnimeTimer = setTimeout(() => pageEle.attrs["xd-page-anime"] = current, 34);
+                                    pageData._nextPageAnimeTimer = setTimeout(() => pageEle.attrs["xd-page-anime"] = current, 50);
                                 } else {
                                     // 有动画属性下，直接修正
                                     pageEle.attrs["xd-page-anime"] = current;
@@ -5786,6 +5828,15 @@
 
                         // 防止传File类的数据   
                         defaults.data && (defaults.data = JSON.parse(JSON.stringify(defaults.data)));
+
+                        // 判断self对currents的修正
+                        if (defaults.self) {
+                            // 查找是否存在currents上
+                            let target_id = this.currents.findIndex(e => e._page === defaults.self);
+                            if (target_id > -1 && target_id < this.currents.length - 1) {
+                                this.currents.splice(target_id + 1);
+                            }
+                        }
 
                         return new Promise((resolve, reject) => {
                             switch (defaults.type) {
@@ -5895,8 +5946,21 @@
         get config() {
             return drill.config;
         },
-        v: 2003001,
-        version: "2.3.1"
+        // 获取40页面的内容
+        get404(e) {
+            return `
+            <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:300px;">
+                <div style="margin-bottom:16px;width:45px;height:45px;font-size:30px;line-height:45px;border-radius:32px;text-align:center;font-weight:bold;background-color:#fb4747;color:#fff;">!</div>
+                <div style="font-size:13px;color:#888;text-align:center;">
+                Failed to load<br>
+                path: <a style="color:#477efd;text-decoration: underline;" href="${e.path}" target="_blank">${e.path}</a> <br>
+                src: <span style="color:#477efd;text-decoration: underline;">${e.src}</span>
+                </div>
+            </div>
+            `;
+        },
+        v: 2003002,
+        version: "2.3.2"
     };
 
     let oldOfa = glo.ofa;

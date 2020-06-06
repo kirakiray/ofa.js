@@ -102,13 +102,14 @@ $.register({
 
                 if (index < lastId) {
                     // 属于前面的页面
-                    pageEle.attrs["xd-page-anime"] = back[0];
+                    // pageEle.attrs["xd-page-anime"] = index + "-" + lastId;
+                    pageEle.attrs["xd-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
                 } else if (lastId == index) {
                     // 当前页不存在动画样式的情况下，就是前进式的页面
                     // 当前只有首页的情况，不需要进场动画
                     if (!pageEle.attrs["xd-page-anime"] && currents.length != 1) {
                         pageEle.attrs["xd-page-anime"] = front;
-                        pageData._nextPageAnimeTimer = setTimeout(() => pageEle.attrs["xd-page-anime"] = current, 34);
+                        pageData._nextPageAnimeTimer = setTimeout(() => pageEle.attrs["xd-page-anime"] = current, 50);
                     } else {
                         // 有动画属性下，直接修正
                         pageEle.attrs["xd-page-anime"] = current;
@@ -192,6 +193,15 @@ $.register({
 
             // 防止传File类的数据   
             defaults.data && (defaults.data = JSON.parse(JSON.stringify(defaults.data)));
+
+            // 判断self对currents的修正
+            if (defaults.self) {
+                // 查找是否存在currents上
+                let target_id = this.currents.findIndex(e => e._page === defaults.self);
+                if (target_id > -1 && target_id < this.currents.length - 1) {
+                    this.currents.splice(target_id + 1);
+                }
+            }
 
             return new Promise((resolve, reject) => {
                 switch (defaults.type) {
