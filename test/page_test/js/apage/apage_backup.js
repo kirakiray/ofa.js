@@ -8,7 +8,7 @@ Page({
         console.log("destory => ", this);
     },
     // 页面被激活
-    onActive(e) {
+    onShow(e) {
         console.log("active => ", this, e);
     },
     proto: {

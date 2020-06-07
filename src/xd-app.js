@@ -43,8 +43,6 @@ $.register({
                 return;
             }
 
-            console.log("currents =>", currents);
-
             // 旧的页面
             let oldCurrents = e.old;
 
@@ -104,15 +102,20 @@ $.register({
                     // 属于前面的页面
                     // pageEle.attrs["xd-page-anime"] = index + "-" + lastId;
                     pageEle.attrs["xd-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
+                    pageEle.show = false;
                 } else if (lastId == index) {
                     // 当前页不存在动画样式的情况下，就是前进式的页面
                     // 当前只有首页的情况，不需要进场动画
                     if (!pageEle.attrs["xd-page-anime"] && currents.length != 1) {
                         pageEle.attrs["xd-page-anime"] = front;
-                        pageData._nextPageAnimeTimer = setTimeout(() => pageEle.attrs["xd-page-anime"] = current, 50);
+                        pageData._nextPageAnimeTimer = setTimeout(() => {
+                            pageEle.attrs["xd-page-anime"] = current;
+                            pageEle.show = true;
+                        }, 50);
                     } else {
                         // 有动画属性下，直接修正
                         pageEle.attrs["xd-page-anime"] = current;
+                        pageEle.show = true;
                     }
                 }
             });
@@ -148,7 +151,6 @@ $.register({
                     }
                 }
             }
-
         }
     },
     attrs: ["router"],

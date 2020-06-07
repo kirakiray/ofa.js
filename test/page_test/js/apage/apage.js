@@ -14,8 +14,11 @@ define({
         console.log("destory => ", this);
     },
     // 页面被激活
-    onActive(e) {
-        console.log("active => ", this, e);
+    onShow(e) {
+        console.log("onShow apage => ", this);
+    },
+    onHide(e) {
+        console.log("onHide apage => ", this);
     },
     proto: {
         get haha() {
@@ -47,8 +50,8 @@ define({
         }
     },
     data: {
-        a1: "a111111111",
-        b1: "b1111111111",
+        // a1: "a111111111",
+        // b1: "b1111111111",
         pageNum: 0,
         ua: ""
     }

@@ -117,10 +117,13 @@ $.register({
         }
     },
     data: {
+        // 当前页面的链接地址
         src: "",
         // 当前页面的状态
         // pageStat: "unload",
         // [PAGELOADED]: "",
+        // 页面是否展示，主要是在xd-app内的关键属性
+        show: true
     },
     attrs: ["src"],
     watch: {
@@ -182,7 +185,7 @@ $.register({
                 // destory() { },
                 // 下面需要搭配 xd-app
                 // 页面被激活时调用，搭配xd-app使用
-                // onActive() { },
+                // onShow() { },
                 // 被放置后台时调用
                 // onHide() { },
                 // xdapp相关animeParam属性
@@ -270,6 +273,14 @@ $.register({
                 data: nvdata
             });
             this.emit("page-ready");
+
+            this.watch("show", (e, show) => {
+                if (show) {
+                    pageOpts.onShow && pageOpts.onShow.call(this);
+                } else {
+                    pageOpts.onHide && pageOpts.onHide.call(this);
+                }
+            }, true)
         }
     },
     ready() {

@@ -8,8 +8,8 @@ define({
         console.log("destory => ", this);
     },
     // 页面被激活
-    onActive(e) {
-        console.log("active => ", this, e);
+    onShow(e) {
+        console.log("onShow apage2 => ", this, e);
     },
     proto: {
         get haha() {

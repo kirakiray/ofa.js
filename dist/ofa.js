@@ -1,5 +1,5 @@
 /*!
- * ofa v2.3.2
+ * ofa v2.3.3
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -5453,10 +5453,13 @@
                     }
                 },
                 data: {
+                    // 当前页面的链接地址
                     src: "",
                     // 当前页面的状态
                     // pageStat: "unload",
                     // [PAGELOADED]: "",
+                    // 页面是否展示，主要是在xd-app内的关键属性
+                    show: true
                 },
                 attrs: ["src"],
                 watch: {
@@ -5518,7 +5521,7 @@
                             // destory() { },
                             // 下面需要搭配 xd-app
                             // 页面被激活时调用，搭配xd-app使用
-                            // onActive() { },
+                            // onShow() { },
                             // 被放置后台时调用
                             // onHide() { },
                             // xdapp相关animeParam属性
@@ -5606,6 +5609,14 @@
                             data: nvdata
                         });
                         this.emit("page-ready");
+
+                        this.watch("show", (e, show) => {
+                            if (show) {
+                                pageOpts.onShow && pageOpts.onShow.call(this);
+                            } else {
+                                pageOpts.onHide && pageOpts.onHide.call(this);
+                            }
+                        }, true)
                     }
                 },
                 ready() {
@@ -5689,8 +5700,6 @@
                             return;
                         }
 
-                        console.log("currents =>", currents);
-
                         // 旧的页面
                         let oldCurrents = e.old;
 
@@ -5754,15 +5763,20 @@
                                 // 属于前面的页面
                                 // pageEle.attrs["xd-page-anime"] = index + "-" + lastId;
                                 pageEle.attrs["xd-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
+                                pageEle.show = false;
                             } else if (lastId == index) {
                                 // 当前页不存在动画样式的情况下，就是前进式的页面
                                 // 当前只有首页的情况，不需要进场动画
                                 if (!pageEle.attrs["xd-page-anime"] && currents.length != 1) {
                                     pageEle.attrs["xd-page-anime"] = front;
-                                    pageData._nextPageAnimeTimer = setTimeout(() => pageEle.attrs["xd-page-anime"] = current, 50);
+                                    pageData._nextPageAnimeTimer = setTimeout(() => {
+                                        pageEle.attrs["xd-page-anime"] = current;
+                                        pageEle.show = true;
+                                    }, 50);
                                 } else {
                                     // 有动画属性下，直接修正
                                     pageEle.attrs["xd-page-anime"] = current;
+                                    pageEle.show = true;
                                 }
                             }
                         });
@@ -5800,7 +5814,6 @@
                                 }
                             }
                         }
-
                     }
                 },
                 attrs: ["router"],
@@ -5976,8 +5989,8 @@
             </div>
             `;
         },
-        v: 2003002,
-        version: "2.3.2"
+        v: 2003003,
+        version: "2.3.3"
     };
 
     let oldOfa = glo.ofa;
