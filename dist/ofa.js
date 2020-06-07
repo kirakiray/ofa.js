@@ -5385,13 +5385,30 @@
                     },
                     // 页面跳转
                     navigate(opts) {
-                        let {
-                            app
-                        } = this;
-                        if (!app) {
-                            console.warn("no app =>", this);
-                            return;
-                        }
+                        let targetPage = this;
+
+                        let app;
+
+                        do {
+                            app = targetPage.app;
+
+                            if (!app) {
+                                let hostEle = targetPage.$host;
+                                if (hostEle && hostEle.is("xd-page")) {
+                                    targetPage = targetPage.$host;
+                                } else {
+                                    console.warn("this page no app =>", this);
+                                    return;
+                                }
+                            } else {
+                                if (targetPage.ele !== this.ele) {
+                                    targetPage.navigate(opts);
+                                    return;
+                                }
+                                break;
+                            }
+
+                        } while (targetPage)
 
                         let defs = {
                             src: ""
