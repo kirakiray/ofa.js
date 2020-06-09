@@ -1,17 +1,4 @@
-main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
-    let defaults = {
-        // 默认模板
-        temp: false,
-        // 加载组件样式
-        css: false,
-        // 与组件同域下的样式
-        hostcss: "",
-        // 组件初始化完毕时
-        ready() { },
-    };
-
-    let options = d;
-
+const componentBuildDefault = async ({ defaults, packData, options, relativeLoad }) => {
     if (isFunction(options)) {
         options = options(relativeLoad, {
             DIR: packData.dir,
@@ -61,6 +48,21 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
     }
 
     defaults.temp = temp;
+}
+
+main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
+    let defaults = {
+        // 默认模板
+        temp: false,
+        // 加载组件样式
+        css: false,
+        // 与组件同域下的样式
+        hostcss: "",
+        // 组件初始化完毕时
+        ready() { },
+    };
+
+    await componentBuildDefault({ defaults, packData, options:d, relativeLoad });
 
     // ready钩子
     if (defaults.hostcss) {

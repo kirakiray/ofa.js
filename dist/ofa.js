@@ -5228,22 +5228,12 @@
         $.ext(({
             renderEle
         }) => {
-            main.setProcessor("Component", async (packData, d, {
+            const componentBuildDefault = async ({
+                defaults,
+                packData,
+                options,
                 relativeLoad
             }) => {
-                let defaults = {
-                    // 默认模板
-                    temp: false,
-                    // 加载组件样式
-                    css: false,
-                    // 与组件同域下的样式
-                    hostcss: "",
-                    // 组件初始化完毕时
-                    ready() {},
-                };
-
-                let options = d;
-
                 if (isFunction(options)) {
                     options = options(relativeLoad, {
                         DIR: packData.dir,
@@ -5293,6 +5283,28 @@
                 }
 
                 defaults.temp = temp;
+            }
+
+            main.setProcessor("Component", async (packData, d, {
+                relativeLoad
+            }) => {
+                let defaults = {
+                    // 默认模板
+                    temp: false,
+                    // 加载组件样式
+                    css: false,
+                    // 与组件同域下的样式
+                    hostcss: "",
+                    // 组件初始化完毕时
+                    ready() {},
+                };
+
+                await componentBuildDefault({
+                    defaults,
+                    packData,
+                    options: d,
+                    relativeLoad
+                });
 
                 // ready钩子
                 if (defaults.hostcss) {
@@ -5361,67 +5373,12 @@
                     // animeParam: {}
                 };
 
-                let options = d;
-
-                if (isFunction(options)) {
-                    options = options(relativeLoad, {
-                        DIR: packData.dir,
-                        FILE: packData.path
-                    });
-                    if (options instanceof Promise) {
-                        options = await options;
-                    }
-                }
-
-                Object.assign(defaults, options);
-
-                // 获取temp内容
-                let temp = "";
-
-                if (!defaults.temp) {
-                    throw {
-                        desc: "page need template!"
-                    };
-                }
-
-                // 获取组件名
-                let fileName;
-                let fileExprArr = /.+\/(.+)/.exec(packData.path)
-                if (fileExprArr) {
-                    fileName = fileExprArr[1];
-
-                    // 去掉后缀
-                    fileName = fileName.replace(/\..+/, "");
-                }
-
-                // 判断是否有换行
-                if (/\n/.test(defaults.temp)) {
-                    // 拥有换行，是模板字符串
-                    temp = defaults.temp;
-                } else {
-                    if (defaults.temp === true) {
-                        temp = await relativeLoad(`./${fileName}.html`);
-                    } else {
-                        temp = await relativeLoad(`${defaults.temp}`);
-                    }
-                }
-
-                if (globalcss) {
-                    temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
-                }
-
-                // 添加css
-                let cssPath = defaults.css;
-                if (cssPath) {
-                    if (defaults.css === true) {
-                        cssPath = await relativeLoad(`./${fileName}.css`);
-                    } else {
-                        cssPath = await relativeLoad(defaults.css + " -getLink");
-                    }
-                    cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
-                }
-
-                defaults.temp = temp;
+                await componentBuildDefault({
+                    defaults,
+                    packData,
+                    options: d,
+                    relativeLoad
+                });
 
                 return async () => defaults;
             });
