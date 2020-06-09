@@ -1,4 +1,4 @@
-define({
+Page({
     ready() {
         console.log("inPage ready!!!");
     }

@@ -1,4 +1,4 @@
-define({
+Page({
     // 页面初始化
     ready(e) {
         console.log("ready => ", this, e);

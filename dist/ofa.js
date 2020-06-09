@@ -1,5 +1,5 @@
 /*!
- * ofa v2.3.3
+ * ofa v2.4.0
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -5336,6 +5336,96 @@
             const PAGE_PREPARING_RESOLVE = Symbol("_preparing_resolve");
             const PAGE_STATE = Symbol("page_state");
 
+            main.setProcessor("Page", async (packData, d, {
+                relativeLoad
+            }) => {
+                let defaults = {
+                    // 默认模板
+                    temp: true,
+                    // 加载组件样式
+                    css: false,
+                    // 监听属性函数
+                    watch: {},
+                    // 自有属性
+                    data: {},
+                    // 页面渲染完成
+                    // ready() { },
+                    // 页面被关闭时调用
+                    // destory() { },
+                    // 下面需要搭配 xd-app
+                    // 页面被激活时调用，搭配xd-app使用
+                    // onShow() { },
+                    // 被放置后台时调用
+                    // onHide() { },
+                    // xdapp相关animeParam属性
+                    // animeParam: {}
+                };
+
+                let options = d;
+
+                if (isFunction(options)) {
+                    options = options(relativeLoad, {
+                        DIR: packData.dir,
+                        FILE: packData.path
+                    });
+                    if (options instanceof Promise) {
+                        options = await options;
+                    }
+                }
+
+                Object.assign(defaults, options);
+
+                // 获取temp内容
+                let temp = "";
+
+                if (!defaults.temp) {
+                    throw {
+                        desc: "page need template!"
+                    };
+                }
+
+                // 获取组件名
+                let fileName;
+                let fileExprArr = /.+\/(.+)/.exec(packData.path)
+                if (fileExprArr) {
+                    fileName = fileExprArr[1];
+
+                    // 去掉后缀
+                    fileName = fileName.replace(/\..+/, "");
+                }
+
+                // 判断是否有换行
+                if (/\n/.test(defaults.temp)) {
+                    // 拥有换行，是模板字符串
+                    temp = defaults.temp;
+                } else {
+                    if (defaults.temp === true) {
+                        temp = await relativeLoad(`./${fileName}.html`);
+                    } else {
+                        temp = await relativeLoad(`${defaults.temp}`);
+                    }
+                }
+
+                if (globalcss) {
+                    temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
+                }
+
+                // 添加css
+                let cssPath = defaults.css;
+                if (cssPath) {
+                    if (defaults.css === true) {
+                        cssPath = await relativeLoad(`./${fileName}.css`);
+                    } else {
+                        cssPath = await relativeLoad(defaults.css + " -getLink");
+                    }
+                    cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
+                }
+
+                defaults.temp = temp;
+
+                return async () => defaults;
+            });
+
             $.register({
                 tag: "xd-page",
                 temp: false,
@@ -5506,95 +5596,11 @@
 
                         this[PAGEOPTIONS] = pageOpts;
 
-                        let defaults = {
-                            // 默认模板
-                            temp: true,
-                            // 加载组件样式
-                            css: false,
-                            // 监听属性函数
-                            watch: {},
-                            // 自有属性
-                            data: {},
-                            // 页面渲染完成
-                            // ready() { },
-                            // 页面被关闭时调用
-                            // destory() { },
-                            // 下面需要搭配 xd-app
-                            // 页面被激活时调用，搭配xd-app使用
-                            // onShow() { },
-                            // 被放置后台时调用
-                            // onHide() { },
-                            // xdapp相关animeParam属性
-                            // animeParam: {}
-                        };
-
-                        Object.assign(defaults, pageOpts);
-
-                        // 分解初始url
-                        let path = "";
-                        let paramsExprArr = /(.+)\??(.*)/.exec(val);
-                        if (paramsExprArr) {
-                            path = paramsExprArr[1];
-                        }
-
-                        // 获取组件名
-                        let fileName;
-                        let fileExprArr = /.+\/(.+)/.exec(path)
-                        if (fileExprArr) {
-                            fileName = fileExprArr[1];
-
-                            // 去掉后缀
-                            fileName = fileName.replace(/\..+/, "");
-                        }
-
-                        let relativeDir = /.+\//.exec(path);
-                        if (relativeDir) {
-                            relativeDir = relativeDir[0];
-                        }
-
-                        // 获取temp内容
-                        let temp = "";
-
-                        if (!defaults.temp) {
-                            throw {
-                                desc: "page need template!"
-                            };
-                        }
-
-                        // 判断是否有换行
-                        if (/\n/.test(defaults.temp)) {
-                            // 拥有换行，是模板字符串
-                            temp = defaults.temp;
-                        } else {
-                            if (defaults.temp === true) {
-                                temp = await load(`${relativeDir + fileName}.html -r`);
-                            } else {
-                                temp = await load(`${relativeDir + defaults.temp} -r`);
-                            }
-                        }
-
-                        if (globalcss) {
-                            temp = `<link rel="stylesheet" href="${globalcss}" />` + temp;
-                        }
-
-                        // 添加css
-                        let cssPath = defaults.css;
-                        if (cssPath) {
-                            if (defaults.css === true) {
-                                cssPath = relativeDir + fileName + ".css";
-                            } else {
-                                cssPath = relativeDir + defaults.css;
-                            }
-                            cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
-                        }
-
                         // 渲染元素
                         renderEle(this.ele, Object.assign({
                             attrs: [],
                             watch: {}
-                        }, defaults, {
-                            temp
-                        }));
+                        }, pageOpts));
 
                         this[PAGE_STATE] = "finish";
 
@@ -5605,7 +5611,7 @@
                         }
 
                         // 运行ready
-                        defaults.ready && defaults.ready.call(this, {
+                        pageOpts.ready && pageOpts.ready.call(this, {
                             data: nvdata
                         });
                         this.emit("page-ready");
@@ -5989,8 +5995,8 @@
             </div>
             `;
         },
-        v: 2003003,
-        version: "2.3.3"
+        v: 2004000,
+        version: "2.4.0"
     };
 
     let oldOfa = glo.ofa;
