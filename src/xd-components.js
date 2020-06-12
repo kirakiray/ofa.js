@@ -19,8 +19,8 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
     // 置换temp
     let temp = "";
     if (defaults.temp) {
-        // 判断是否有换行
-        if (/\n/.test(defaults.temp)) {
+        // 判断是否有标签
+        if (/\</.test(defaults.temp)) {
             // 拥有换行，是模板字符串
             temp = defaults.temp;
         } else {

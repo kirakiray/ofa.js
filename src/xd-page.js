@@ -85,6 +85,7 @@ $.register({
             let app;
 
             do {
+                // 修正xd-page内嵌xd-page找不到app的问题
                 app = targetPage.app;
 
                 if (!app) {

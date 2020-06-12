@@ -21,15 +21,7 @@ const initJumpRouter = (app) => {
         let { currentPage } = app;
         let { animeParam, src } = currentPage;
 
-        let historyObj = [];
-        app.currents.object.forEach((e, i) => {
-            if (i == 0) {
-                return;
-            }
-            delete e.pageId;
-
-            historyObj.push(e);
-        });
+        let historyObj = getHistoryObj(app);
 
         switch (opt.type) {
             case "to":
@@ -45,7 +37,9 @@ const initJumpRouter = (app) => {
                 nowPageState = {
                     history: historyObj
                 }
-                history.replaceState(nowPageState, "", `#${src}`);
+                if (!opt._popstate_replace) {
+                    history.replaceState(nowPageState, "", `#${src}`);
+                }
                 break;
             case "back":
                 // 不是通过popstate的返回，要重新修正history的路由
@@ -68,6 +62,25 @@ const initJumpRouter = (app) => {
         let beforeHistory = (nowPageState && nowPageState.history) || [];
         let nowHistory = (e.state && e.state.history) || [];
 
+        if (location.hash.replace(/^\#/, "") && !e.state) {
+            // 直接粘贴链接进入的，重构单级路由前进
+            let src = location.hash.replace(/^\#/, "");
+
+            // 递进路由
+            app.currents.push({
+                src
+            });
+
+            // 修正路由历史
+            history.replaceState({
+                history: getHistoryObj(app)
+            }, "", `#${src}`);
+
+            // 修正事件
+            $.nextTick(() => app.emitHandler("navigate", { type: "to", src, _popstate_forward: true }));
+            return;
+        }
+
         if (beforeHistory.length > nowHistory.length) {
             if (navigateBacked) {
                 // 通过app.navigate返回的路由，复原 navigateBacked
@@ -82,15 +95,23 @@ const initJumpRouter = (app) => {
                 _popstate_back: true
             });
         } else {
+            // 重构多级前进路由
             // 添加到currents队列
             let fList = nowHistory.slice(-(nowHistory.length - beforeHistory.length));
-            app.currents.push(...fList);
 
-            // 页面前进
-            let nextPage = nowHistory.slice(-1)[0];
+            if (fList.length) {
+                // 页面前进
+                app.currents.push(...fList);
 
-            // 修正事件
-            $.nextTick(() => app.emitHandler("navigate", { type: "to", src: nextPage.src, _popstate_forward: true }));
+                // 页面前进
+                let nextPage = nowHistory.slice(-1)[0];
+
+                // 修正事件
+                $.nextTick(() => app.emitHandler("navigate", { type: "to", src: nextPage.src, _popstate_forward: true }));
+            } else {
+                // 跑到这里就有问题了，看看哪里逻辑出问题了
+                debugger
+            }
         }
 
         // 修正 nowPageState
@@ -110,6 +131,20 @@ const initJumpRouter = (app) => {
             });
         });
     }
+}
+
+// 获取待存储的历史数据
+function getHistoryObj(app) {
+    let historyObj = [];
+    app.currents.object.forEach((e, i) => {
+        if (i == 0) {
+            return;
+        }
+        delete e.pageId;
+
+        historyObj.push(e);
+    });
+    return historyObj;
 }
 
 // 渲染历史页面

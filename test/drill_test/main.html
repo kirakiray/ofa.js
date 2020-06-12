@@ -28,7 +28,7 @@
             baseUrl: "js/",
             paths: {
                 // 映射目录
-                "long/": "long1/long2/long3/",
+                "@long/": "long1/long2/long3/",
                 // 映射文件
                 fileL2: "long1/long2/long3/l2"
             }
@@ -84,7 +84,7 @@
         g1.ok(1, 'task test ok');
 
         // 映射目录测试
-        let fileL1 = await load('long/l1');
+        let fileL1 = await load('@long/l1');
         if (fileL1 == 'long file01') {
             g3.ok(1, '映射目录成功');
         }

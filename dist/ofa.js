@@ -4150,7 +4150,7 @@
                 //配置paths
                 let oPaths = options.paths;
                 oPaths && Object.keys(oPaths).forEach(i => {
-                    if (/\/$/.test(i)) {
+                    if (/^@.+\/$/.test(i)) {
                         //属于目录类型
                         dirpaths[i] = {
                             // 正则
@@ -4822,15 +4822,7 @@
                 src
             } = currentPage;
 
-            let historyObj = [];
-            app.currents.object.forEach((e, i) => {
-                if (i == 0) {
-                    return;
-                }
-                delete e.pageId;
-
-                historyObj.push(e);
-            });
+            let historyObj = getHistoryObj(app);
 
             switch (opt.type) {
                 case "to":
@@ -4846,7 +4838,9 @@
                     nowPageState = {
                         history: historyObj
                     }
-                    history.replaceState(nowPageState, "", `#${src}`);
+                    if (!opt._popstate_replace) {
+                        history.replaceState(nowPageState, "", `#${src}`);
+                    }
                     break;
                 case "back":
                     // 不是通过popstate的返回，要重新修正history的路由
@@ -4869,6 +4863,29 @@
             let beforeHistory = (nowPageState && nowPageState.history) || [];
             let nowHistory = (e.state && e.state.history) || [];
 
+            if (location.hash.replace(/^\#/, "") && !e.state) {
+                // 直接粘贴链接进入的，重构单级路由前进
+                let src = location.hash.replace(/^\#/, "");
+
+                // 递进路由
+                app.currents.push({
+                    src
+                });
+
+                // 修正路由历史
+                history.replaceState({
+                    history: getHistoryObj(app)
+                }, "", `#${src}`);
+
+                // 修正事件
+                $.nextTick(() => app.emitHandler("navigate", {
+                    type: "to",
+                    src,
+                    _popstate_forward: true
+                }));
+                return;
+            }
+
             if (beforeHistory.length > nowHistory.length) {
                 if (navigateBacked) {
                     // 通过app.navigate返回的路由，复原 navigateBacked
@@ -4883,19 +4900,27 @@
                     _popstate_back: true
                 });
             } else {
+                // 重构多级前进路由
                 // 添加到currents队列
                 let fList = nowHistory.slice(-(nowHistory.length - beforeHistory.length));
-                app.currents.push(...fList);
 
-                // 页面前进
-                let nextPage = nowHistory.slice(-1)[0];
+                if (fList.length) {
+                    // 页面前进
+                    app.currents.push(...fList);
 
-                // 修正事件
-                $.nextTick(() => app.emitHandler("navigate", {
-                    type: "to",
-                    src: nextPage.src,
-                    _popstate_forward: true
-                }));
+                    // 页面前进
+                    let nextPage = nowHistory.slice(-1)[0];
+
+                    // 修正事件
+                    $.nextTick(() => app.emitHandler("navigate", {
+                        type: "to",
+                        src: nextPage.src,
+                        _popstate_forward: true
+                    }));
+                } else {
+                    // 跑到这里就有问题了，看看哪里逻辑出问题了
+                    debugger
+                }
             }
 
             // 修正 nowPageState
@@ -4915,6 +4940,20 @@
                 });
             });
         }
+    }
+
+    // 获取待存储的历史数据
+    function getHistoryObj(app) {
+        let historyObj = [];
+        app.currents.object.forEach((e, i) => {
+            if (i == 0) {
+                return;
+            }
+            delete e.pageId;
+
+            historyObj.push(e);
+        });
+        return historyObj;
     }
 
     // 渲染历史页面
@@ -5254,8 +5293,8 @@
                 // 置换temp
                 let temp = "";
                 if (defaults.temp) {
-                    // 判断是否有换行
-                    if (/\n/.test(defaults.temp)) {
+                    // 判断是否有标签
+                    if (/\</.test(defaults.temp)) {
                         // 拥有换行，是模板字符串
                         temp = defaults.temp;
                     } else {
@@ -5437,6 +5476,7 @@
                         let app;
 
                         do {
+                            // 修正xd-page内嵌xd-page找不到app的问题
                             app = targetPage.app;
 
                             if (!app) {
