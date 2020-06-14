@@ -10,7 +10,8 @@ xd-app {
     height: 100%;
 }
 
-xd-app>xd-page {
+xd-app>xd-page,
+xd-app>.xdpage {
     display: none;
     position: absolute;
     left: 0;

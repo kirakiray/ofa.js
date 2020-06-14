@@ -37,6 +37,43 @@
             background-color: #fff;
         }
 
+        xd-page {
+            box-shadow: rgba(255, 0, 0, 1) 0 0 2px;
+        }
+
+        [xd-page-anime="back"],
+        [xd-page-anime="back2"] {
+            opacity: 0;
+            transform: translate3d(-70%, 0, 0);
+            pointer-events: none;
+        }
+
+/* 
+        @media screen and (min-width: 480px) {
+            [xd-page-anime="front"] {
+                opacity: 1;
+                transform: translate3d(90%, 0, 0);
+                z-index: 1;
+            }
+
+            [xd-page-anime="back2"] {
+                opacity: 1;
+                transform: translate3d(-10%, 0, 0);
+                z-index: 1;
+            }
+
+            [xd-page-anime="back"] {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+                width: 30%;
+            }
+
+            [xd-page-anime="active"] {
+                transform: translate(43%, 0);
+                width: 70%;
+            }
+        } */
+
         .backbtn,
         .backbtn2 {
             z-index: 20;
@@ -78,6 +115,9 @@
         let page1 = $("#haha");
 
         let testapp = $("xd-app");
+
+        // 添加二级animeParam
+        // testapp.animeParam.back.push("back2")
 
         let backbtn = $(".backbtn");
         backbtn.on("click", e => {
