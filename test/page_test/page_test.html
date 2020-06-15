@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="expires" content="Fri, 29 May 2020 03:30:05 GMT">
     <meta http-equiv="cache-control" content="max-age=3600" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -48,18 +47,20 @@
             pointer-events: none;
         }
 
-/* 
-        @media screen and (min-width: 480px) {
+
+        /* @media screen and (min-width: 480px) {
             [xd-page-anime="front"] {
                 opacity: 1;
                 transform: translate3d(90%, 0, 0);
                 z-index: 1;
+                width: 70%;
             }
 
             [xd-page-anime="back2"] {
                 opacity: 1;
                 transform: translate3d(-10%, 0, 0);
                 z-index: 1;
+                width: 30%;
             }
 
             [xd-page-anime="back"] {
@@ -112,12 +113,12 @@
             $("xd-app").router = "slide";
         }
 
-        let page1 = $("#haha");
+        // let page1 = $("#haha");
 
         let testapp = $("xd-app");
 
         // 添加二级animeParam
-        // testapp.animeParam.back.push("back2")
+        testapp.animeParam.back.push("back2")
 
         let backbtn = $(".backbtn");
         backbtn.on("click", e => {

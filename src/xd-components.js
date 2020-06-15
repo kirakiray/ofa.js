@@ -39,6 +39,7 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
             } else {
                 cssPath = await relativeLoad(`${defaults.css} -getLink`);
             }
+
             cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
         }
 
@@ -62,7 +63,7 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
         ready() { },
     };
 
-    await componentBuildDefault({ defaults, packData, options:d, relativeLoad });
+    await componentBuildDefault({ defaults, packData, options: d, relativeLoad });
 
     // ready钩子
     if (defaults.hostcss) {

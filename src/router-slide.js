@@ -87,7 +87,7 @@ const animeByPrecent = (nowParam, nextParam, precent) => {
         }
 
         // 后缀
-        let suffix = nowParam[k].replace(/\d+(\D*)/, "$1");
+        let suffix = nowParam[k].replace(/[\d\.]+(\D*)/, "$1");
 
         // 带px的修正px
         let now = parseFloat(nowParam[k]);
@@ -173,7 +173,7 @@ const initSlideRouter = (app) => {
             // 当前页动画数据获取
             if (index == lastId) {
                 needFixPages.push({
-                    currentAnimeParam: getPageAnimeData(page.ele),
+                    currentAnimeParam: getPageAnimeData(page.animeParam.current),
                     nextAnimeParam: getPageAnimeData(page.animeParam.front),
                     page
                 });
@@ -183,26 +183,13 @@ const initSlideRouter = (app) => {
                 let targetAnimeName = lastId - index - 2 < 0 ? animeParam.current : backAnimes[lastId - index - 2];
                 if (targetAnimeName) {
                     needFixPages.push({
-                        currentAnimeParam: getPageAnimeData(page.ele),
+                        currentAnimeParam: getPageAnimeData(backAnimes[lastId - index - 1]),
                         nextAnimeParam: getPageAnimeData(targetAnimeName),
                         page
                     });
                 }
             }
         });
-
-        // 确认存在两个以上的页面
-        // if (app.currentPages.length >= 2) {
-        //     [prevPage, currentPage] = app.currentPages.slice(-2);
-
-        //     prevPageBackParam = getPageAnimeData(prevPage.ele);
-        //     prevPageActiveParam = getPageAnimeData(prevPage.animeParam.current);
-        //     currentPageFrontParam = getPageAnimeData(currentPage.animeParam.front);
-        //     currentPageActiveParam = getPageAnimeData(currentPage.animeParam.current);
-        // } else {
-        //     // 没有两个页面就清空
-        //     currentPage = prevPage = null;
-        // }
     }
 
     // 监听滑动
@@ -214,39 +201,22 @@ const initSlideRouter = (app) => {
 
         if (!needFixPages.length) return;
 
-        // 在存在 prevPage 的情况下才执行
-        // if (!prevPage || !currentPage) {
-        //     return;
-        // }
-
         let point = getPoint(e.originalEvent);
         beforePointX = startX = point.clientX;
 
         needFixPages.forEach(e => {
+            // 提前记忆style属性
             e._beforeStyle = e.page.attrs.style;
+            // 清空动画，避免影响touchmove的操作
             e.page.style.transition = "none";
         });
-
-        // 提前记忆style属性
-        // currentPage._beforeStyle = currentPage.attrs.style;
-        // prevPage._beforeStyle = prevPage.attrs.style;
-
-        // // 清空动画
-        // currentPage.style.transition = "none";
-        // prevPage.style.transition = "none";
-
     });
-    let canNext = false;
+    let canBack = false;
     leftPannel.on("touchmove", e => {
         e.preventDefault();
 
         if (!needFixPages.length) return;
-        // 在存在 prevPage 的情况下才执行
-        // if (!prevPage || !currentPage) {
-        //     return;
-        // }
 
-        // leftPannel.html = count++;
         let point = getPoint(e.originalEvent);
         let tx = point.clientX;
 
@@ -260,20 +230,11 @@ const initSlideRouter = (app) => {
             Object.assign(e.page.style, nowPageStyle)
         });
 
-        // 修正实时样式
-        // let nowPagePram = animeByPrecent(currentPageActiveParam, currentPageFrontParam, percent);
-        // let nowPageStyle = pageParamToStyle(nowPagePram);
-        // Object.assign(currentPage.style, nowPageStyle);
-
-        // let prevPagePram = animeByPrecent(prevPageBackParam, prevPageActiveParam, percent);
-        // let prevPageStyle = pageParamToStyle(prevPagePram);
-        // Object.assign(prevPage.style, prevPageStyle);
-
         // 方向连贯的情况下才能下一页
         if ((tx - beforePointX) > 0 && percent > 0.1) {
-            canNext = true;
+            canBack = true;
         } else {
-            canNext = false;
+            canBack = false;
         }
 
         beforePointX = tx;
@@ -282,30 +243,23 @@ const initSlideRouter = (app) => {
         e.preventDefault();
 
         if (!needFixPages.length) return;
-        // 在存在 prevPage 的情况下才执行
-        // if (!prevPage || !currentPage) {
-        //     return;
-        // }
 
         // 还原style
         needFixPages.forEach(e => {
+            // 清空动画和样式，默认情况下会还原操作
             e.page.attrs.style = e._beforeStyle;
         });
 
-        // 清空动画和样式，默认情况下会还原操作
-        // currentPage.attrs.style = currentPage._beforeStyle;
-        // prevPage.attrs.style = prevPage._beforeStyle;
-
-        if (canNext) {
+        if (canBack) {
             // 直接返回页面
             app.back();
         }
     });
 
     app.watch("currents", e => {
-        setTimeout(() => buildSlidePage(), 500);
+        setTimeout(() => buildSlidePage(), 100);
     });
 
     // 启动构建
-    setTimeout(() => buildSlidePage(), 500);
+    setTimeout(() => buildSlidePage(), 100);
 }

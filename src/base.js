@@ -61,6 +61,12 @@
         get config() {
             return drill.config;
         },
+        get offline() {
+            return drill.offline;
+        },
+        set offline(val) {
+            this.drill.offline = val;
+        },
         // 获取40页面的内容
         get404(e) {
             return `
