@@ -34,11 +34,13 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
         // 添加css
         let cssPath = defaults.css;
         if (cssPath) {
+            let needLoadUrl = `${defaults.css} -getLink`;
             if (defaults.css === true) {
-                cssPath = await relativeLoad(`./${fileName}.css -getLink`);
-            } else {
-                cssPath = await relativeLoad(`${defaults.css} -getLink`);
+                needLoadUrl = `./${fileName}.css -getLink`;
             }
+            // 缓存文件，并获取地址
+            await relativeLoad(needLoadUrl + " -unAppend");
+            cssPath = await relativeLoad(needLoadUrl);
 
             cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
         }

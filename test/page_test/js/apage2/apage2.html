@@ -1,12 +1,23 @@
+<style>
+    xd-link {
+        margin: 6px;
+        padding: 2px 6px;
+        font-size: 12px;
+        border: rgb(175, 175, 175) solid 1px;
+        color: rgb(27, 27, 27);
+        background-color: #eee;
+        border-radius: 3px;
+    }
+</style>
 <h1>Page2</h1>
 <div>I am a page2</div>
 <div>a1 => {{a1}}</div>
 <button @click="gotoSelf">替换跳转</button>
 <br>
-<button @click="navigate({src:'js/apage/apage'})">跳转apage</button>
+<xd-link src="js/apage/apage">跳转apage</xd-link>
 <br>
 <input type="text" xv-model="a1">
 <br>
 <button @click="navigate({src:'asdasd'})">跳转到错误页面</button>
 <br>
-<button @click="navigate({src:'js/apage3/apage3'})">跳转到apage3</button>
+<xd-link src="js/apage3/apage3">跳转到apage3</xd-link>

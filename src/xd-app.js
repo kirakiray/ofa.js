@@ -69,7 +69,6 @@ $.register({
                         src
                     });
 
-
                     // 设置传输数据
                     pageEle[NAVIGATEDATA] = data;
 

@@ -1,0 +1,14 @@
+<style>
+    :host {
+        display: inline-block;
+    }
+
+    .xdlink {
+        display: contents;
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
+<a class="xdlink" @click="linkTo" :href="src">
+    <slot></slot>
+</a>

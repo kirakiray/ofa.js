@@ -1,4 +1,6 @@
-Page(async () => {
+Page(async (load) => {
+    await load("@ofa/xd-link -p");
+
     return {
         // 页面初始化
         ready() {
