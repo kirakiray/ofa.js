@@ -5369,7 +5369,7 @@
                     animeParam
                 } = page;
                 let backAnimes = animeParam.back.slice();
-                backAnimes.reverse();
+                let currentAnimeParam, nextAnimeParam;
 
                 // 当前页动画数据获取
                 if (index == lastId) {
@@ -5379,16 +5379,22 @@
                         page
                     });
                     return;
+                } else if (index + 1 == lastId) {
+                    needFixPages.push({
+                        currentAnimeParam: getPageAnimeData(backAnimes[0]),
+                        nextAnimeParam: getPageAnimeData(page.animeParam.current),
+                        page
+                    });
                 } else {
                     // 相应页面前一页的动画设定
-                    let targetAnimeName = lastId - index - 2 < 0 ? animeParam.current : backAnimes[lastId - index - 1];
-                    if (targetAnimeName) {
-                        needFixPages.push({
-                            currentAnimeParam: getPageAnimeData(backAnimes[lastId - index - 2]),
-                            nextAnimeParam: getPageAnimeData(targetAnimeName),
-                            page
-                        });
-                    }
+                    let nowAnime = backAnimes[lastId - 1 - index] || backAnimes.slice(-1)[0];
+                    let nextAnime = backAnimes[lastId - 2 - index] || backAnimes.slice(-1)[0];
+
+                    needFixPages.push({
+                        currentAnimeParam: getPageAnimeData(nowAnime),
+                        nextAnimeParam: getPageAnimeData(nextAnime),
+                        page
+                    });
                 }
             });
         }
