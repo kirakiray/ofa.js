@@ -11,8 +11,8 @@
     <meta name="theme-color" content="#0096ff">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>xd-page test</title>
-    <link rel="stylesheet" href="xd-page-anime.css">
+    <title>o-page test</title>
+    <link rel="stylesheet" href="o-page-anime.css">
     <script src="../../dist/ofa.js"></script>
     <script>
         ofa.globalcss = "testglo.css";
@@ -37,49 +37,49 @@
             background-color: #eee;
         }
 
-        xd-app,
-        xd-page {
+        o-app,
+        o-page {
             background-color: #fff;
         }
 
-        xd-page {
+        o-page {
             box-shadow: rgba(255, 0, 0, 1) 0 0 2px;
         }
 
-        [xd-page-anime="back"],
-        [xd-page-anime="back2"] {
+        [o-page-anime="back"],
+        [o-page-anime="back2"] {
             opacity: 0;
             transform: translate3d(-70%, 0, 0);
             pointer-events: none;
         }
 
 
-        /* @media screen and (min-width: 480px) {
-            [xd-page-anime="front"] {
+        @media screen and (min-width: 480px) {
+            [o-page-anime="front"] {
                 opacity: 1;
                 transform: translate3d(90%, 0, 0);
                 z-index: 1;
                 width: 70%;
             }
 
-            [xd-page-anime="back2"] {
+            [o-page-anime="back2"] {
                 opacity: 1;
                 transform: translate3d(-10%, 0, 0);
                 z-index: 1;
                 width: 30%;
             }
 
-            [xd-page-anime="back"] {
+            [o-page-anime="back"] {
                 opacity: 1;
                 transform: translate3d(0, 0, 0);
                 width: 30%;
             }
 
-            [xd-page-anime="active"] {
+            [o-page-anime="active"] {
                 transform: translate(43%, 0);
                 width: 70%;
             }
-        } */
+        }
 
         .backbtn,
         .backbtn2 {
@@ -103,25 +103,25 @@
 </head>
 
 <body>
-    <!-- <xd-app style="width:320px;height:480px;"> -->
-    <xd-app router="1">
-        <xd-page id="haha" class="testpage" src="js/apage/apage.js?a=aaaa&b=bbbbb">a</xd-page>
-        <!-- <xd-page id="haha" src="./apage/apage.js?c=cccc" val="valval">a</xd-page> -->
-    </xd-app>
+    <!-- <o-app style="width:320px;height:480px;"> -->
+    <o-app router="1">
+        <o-page id="haha" class="testpage" src="js/apage/apage.js?a=aaaa&b=bbbbb">a</o-page>
+        <!-- <o-page id="haha" src="./apage/apage.js?c=cccc" val="valval">a</o-page> -->
+    </o-app>
     <div class="backbtn">返回</div>
     <div class="backbtn2">返回2</div>
     <script>
-        // document.querySelector("xd-app").addEventListener("touchmove", e => {
+        // document.querySelector("o-app").addEventListener("touchmove", e => {
         //     e.preventDefault()
         // });
         // 安卓切换
         if (navigator.userAgent.includes("iPhone") || navigator.userAgent.includes("iPad")) {
-            $("xd-app").router = "slide";
+            $("o-app").router = "slide";
         }
 
         // let page1 = $("#haha");
 
-        let testapp = $("xd-app");
+        let testapp = $("o-app");
 
         // 添加二级animeParam
         testapp.animeParam.back.push("back2")

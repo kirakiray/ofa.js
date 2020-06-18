@@ -1,5 +1,5 @@
 <style>
-    xd-link {
+    o-link {
         margin: 6px;
         padding: 2px 6px;
         font-size: 12px;
@@ -14,10 +14,10 @@
 <div>a1 => {{a1}}</div>
 <button @click="gotoSelf">替换跳转</button>
 <br>
-<xd-link src="js/apage/apage">跳转apage</xd-link>
+<o-link to="js/apage/apage">跳转apage</o-link>
 <br>
 <input type="text" xv-model="a1">
 <br>
 <button @click="navigate({src:'asdasd'})">跳转到错误页面</button>
 <br>
-<xd-link src="js/apage3/apage3">跳转到apage3</xd-link>
+<o-link to="js/apage3/apage3">跳转到apage3</o-link>

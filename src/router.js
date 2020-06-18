@@ -159,7 +159,7 @@ function renderHistory(hisData, app) {
 
 // 公用路由软路由初始化逻辑
 const fakeRouter = (app) => {
-    const HNAME = "xd-app-history-" + location.pathname;
+    const HNAME = "o-app-history-" + location.pathname;
 
     // 虚拟历史路由数组
     let fakeState = sessionStorage.getItem(HNAME);

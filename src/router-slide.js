@@ -7,8 +7,8 @@ const getPageAnimeData = (animeName, defaultType) => {
         appendInBody = true;
         fakeDiv = document.createElement("div");
         // fakeDiv.classList.add("xdpage");
-        fakeDiv.setAttribute("xd-page-anime", animeName);
-        // $("xd-app").push(fakeDiv);
+        fakeDiv.setAttribute("o-page-anime", animeName);
+        // $("o-app").push(fakeDiv);
         $("body").push(fakeDiv);
     }
 
@@ -168,7 +168,8 @@ const initSlideRouter = (app) => {
         curs.forEach((pageData, index) => {
             let { page } = pageData;
             let { animeParam } = page;
-            let backAnimes = animeParam.back;
+            let backAnimes = animeParam.back.slice();
+            backAnimes.reverse();
 
             // 当前页动画数据获取
             if (index == lastId) {
@@ -180,10 +181,10 @@ const initSlideRouter = (app) => {
                 return;
             } else {
                 // 相应页面前一页的动画设定
-                let targetAnimeName = lastId - index - 2 < 0 ? animeParam.current : backAnimes[lastId - index - 2];
+                let targetAnimeName = lastId - index - 2 < 0 ? animeParam.current : backAnimes[lastId - index - 1];
                 if (targetAnimeName) {
                     needFixPages.push({
-                        currentAnimeParam: getPageAnimeData(backAnimes[lastId - index - 1]),
+                        currentAnimeParam: getPageAnimeData(backAnimes[lastId - index - 2]),
                         nextAnimeParam: getPageAnimeData(targetAnimeName),
                         page
                     });

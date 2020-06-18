@@ -1,19 +1,19 @@
 @import "./testglo.css";
 
-xd-app {
+o-app {
     display: block;
     position: relative;
     overflow: hidden;
 }
 
-xd-app {
+o-app {
     display: block;
     width: 100%;
     height: 100%;
 }
 
-xd-app>xd-page,
-xd-app>.xdpage {
+o-app>o-page,
+o-app>.xdpage {
     display: none;
     position: absolute;
     left: 0;
@@ -24,34 +24,34 @@ xd-app>.xdpage {
     transition: none;
 }
 
-[xd-page-anime] {
+[o-page-anime] {
     display: block;
     transition: all ease .3s;
 }
 
-[xd-page-anime="back"] {
+[o-page-anime="back"] {
     opacity: 0;
     transform: translate3d(-70%, 0, 0);
     pointer-events: none;
 }
 
-[xd-page-anime="front"] {
+[o-page-anime="front"] {
     transform: translate3d(100%, 0, 0);
     pointer-events: none;
 }
 
 @media screen and (min-width: 480px) {
-    [xd-page-anime="back"] {
+    [o-page-anime="back"] {
         opacity: 0;
         transform: translate3d(-10%, 0, 0);
         z-index: 1;
     }
 
-    [xd-page-anime="front"] {
+    [o-page-anime="front"] {
         opacity: 0;
         transform: translate3d(10%, 0, 0);
         z-index: 1;
     }
 }
 
-[xd-page-anime="active"] {}
+[o-page-anime="active"] {}

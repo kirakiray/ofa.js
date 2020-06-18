@@ -1,5 +1,5 @@
 Page(async (load) => {
-    await load("@ofa/xd-link -p");
+    await load("@ofa/o-link -p");
 
     return {
         // 页面初始化

@@ -36,9 +36,9 @@
             main
         } = base;
         $.ext(({ renderEle }) => {
-            //<!--xd-components-->
-            //<!--xd-page-->
-            //<!--xd-app-->
+            //<!--o-components-->
+            //<!--o-page-->
+            //<!--o-app-->
         })
     });
 

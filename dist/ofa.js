@@ -1,5 +1,5 @@
 /*!
- * ofa v2.4.3
+ * ofa v2.5.0
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -5141,7 +5141,7 @@
 
     // 公用路由软路由初始化逻辑
     const fakeRouter = (app) => {
-        const HNAME = "xd-app-history-" + location.pathname;
+        const HNAME = "o-app-history-" + location.pathname;
 
         // 虚拟历史路由数组
         let fakeState = sessionStorage.getItem(HNAME);
@@ -5200,8 +5200,8 @@
             appendInBody = true;
             fakeDiv = document.createElement("div");
             // fakeDiv.classList.add("xdpage");
-            fakeDiv.setAttribute("xd-page-anime", animeName);
-            // $("xd-app").push(fakeDiv);
+            fakeDiv.setAttribute("o-page-anime", animeName);
+            // $("o-app").push(fakeDiv);
             $("body").push(fakeDiv);
         }
 
@@ -5368,7 +5368,8 @@
                 let {
                     animeParam
                 } = page;
-                let backAnimes = animeParam.back;
+                let backAnimes = animeParam.back.slice();
+                backAnimes.reverse();
 
                 // 当前页动画数据获取
                 if (index == lastId) {
@@ -5380,10 +5381,10 @@
                     return;
                 } else {
                     // 相应页面前一页的动画设定
-                    let targetAnimeName = lastId - index - 2 < 0 ? animeParam.current : backAnimes[lastId - index - 2];
+                    let targetAnimeName = lastId - index - 2 < 0 ? animeParam.current : backAnimes[lastId - index - 1];
                     if (targetAnimeName) {
                         needFixPages.push({
-                            currentAnimeParam: getPageAnimeData(backAnimes[lastId - index - 1]),
+                            currentAnimeParam: getPageAnimeData(backAnimes[lastId - index - 2]),
                             nextAnimeParam: getPageAnimeData(targetAnimeName),
                             page
                         });
@@ -5587,8 +5588,8 @@
                 // 注册节点
                 $.register(defaults);
             });
-            let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
-            $("head").push(xdpageStyle);
+            let opageStyle = $(`<style>o-page{display:block;}</style>`);
+            $("head").push(opageStyle);
 
             const PAGE_PREPARING = Symbol("_preparing");
             const PAGE_PREPARING_RESOLVE = Symbol("_preparing_resolve");
@@ -5610,12 +5611,12 @@
                     // ready() { },
                     // 页面被关闭时调用
                     // destory() { },
-                    // 下面需要搭配 xd-app
-                    // 页面被激活时调用，搭配xd-app使用
+                    // 下面需要搭配 o-app
+                    // 页面被激活时调用，搭配o-app使用
                     // onShow() { },
                     // 被放置后台时调用
                     // onHide() { },
-                    // xdapp相关animeParam属性
+                    // ofa app相关animeParam属性
                     // animeParam: {}
                 };
 
@@ -5630,7 +5631,7 @@
             });
 
             $.register({
-                tag: "xd-page",
+                tag: "o-page",
                 temp: false,
                 proto: {
                     get pageStat() {
@@ -5642,7 +5643,7 @@
 
                     // 获取页面寄宿的app对象
                     get app() {
-                        return this.parents("xd-app")[0];
+                        return this.parents("o-app")[0];
                     },
                     set animeParam(param) {
                         this._animeParam = param;
@@ -5683,12 +5684,12 @@
                         let app;
 
                         do {
-                            // 修正xd-page内嵌xd-page找不到app的问题
+                            // 修正o-page内嵌o-page找不到app的问题
                             app = targetPage.app;
 
                             if (!app) {
                                 let hostEle = targetPage.$host;
-                                if (hostEle && hostEle.is("xd-page")) {
+                                if (hostEle && hostEle.is("o-page")) {
                                     targetPage = targetPage.$host;
                                 } else {
                                     console.warn("this page no app =>", this);
@@ -5752,7 +5753,7 @@
                     // 当前页面的状态
                     // pageStat: "unload",
                     // [PAGELOADED]: "",
-                    // 页面是否展示，主要是在xd-app内的关键属性
+                    // 页面是否展示，主要是在o-app内的关键属性
                     show: true
                 },
                 attrs: ["src"],
@@ -5764,7 +5765,7 @@
                         if (this.pageStat !== "unload" && this.pageStat !== "preparing") {
                             throw {
                                 target: this,
-                                desc: "xd-page can't reset src"
+                                desc: "o-page can't reset src"
                             };
                         }
 
@@ -5862,14 +5863,14 @@
                         console.warn("no app");
                         return;
                     }
-                    return $page.parents("xd-app")[0];
+                    return $page.parents("o-app")[0];
                 }
             });
             // currents路由提前载入页面的数量
             let preloadLen = 1;
 
             $.register({
-                tag: "xd-app",
+                tag: "o-app",
                 data: {
                     // 当前页面的路由数据
                     currents: [],
@@ -5887,7 +5888,15 @@
                     // 当前app是否隐藏
                     visibility: document.hidden ? "hide" : "show",
                     // 是否打开路由
-                    router: 0
+                    router: 0,
+                    // 屏幕尺寸数据
+                    screen: {
+                        width: "",
+                        height: "",
+                        // 旋转角度
+                        angle: ""
+                    }
+
                 },
                 watch: {
                     // 当前app的路由数据
@@ -5932,7 +5941,7 @@
                             // 判断是否有页面元素，没有的话添加页面元素
                             if (!pageEle) {
                                 pageData._page = pageEle = $({
-                                    tag: "xd-page",
+                                    tag: "o-page",
                                     src
                                 });
 
@@ -5970,21 +5979,21 @@
 
                             if (index < lastId) {
                                 // 属于前面的页面
-                                // pageEle.attrs["xd-page-anime"] = index + "-" + lastId;
-                                pageEle.attrs["xd-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
+                                // pageEle.attrs["o-page-anime"] = index + "-" + lastId;
+                                pageEle.attrs["o-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
                                 pageEle.show = false;
                             } else if (lastId == index) {
                                 // 当前页不存在动画样式的情况下，就是前进式的页面
                                 // 当前只有首页的情况，不需要进场动画
-                                if (!pageEle.attrs["xd-page-anime"] && currents.length != 1) {
-                                    pageEle.attrs["xd-page-anime"] = front;
+                                if (!pageEle.attrs["o-page-anime"] && currents.length != 1) {
+                                    pageEle.attrs["o-page-anime"] = front;
                                     pageData._nextPageAnimeTimer = setTimeout(() => {
-                                        pageEle.attrs["xd-page-anime"] = current;
+                                        pageEle.attrs["o-page-anime"] = current;
                                         pageEle.show = true;
                                     }, 50);
                                 } else {
                                     // 有动画属性下，直接修正
-                                    pageEle.attrs["xd-page-anime"] = current;
+                                    pageEle.attrs["o-page-anime"] = current;
                                     pageEle.show = true;
                                 }
                             }
@@ -6008,7 +6017,7 @@
                                         let {
                                             front
                                         } = pageEle.animeParam;
-                                        pageEle.attrs["xd-page-anime"] = front;
+                                        pageEle.attrs["o-page-anime"] = front;
 
                                         // 动画结束后删除
                                         let endfun = e => {
@@ -6109,14 +6118,21 @@
                     },
                     back(delta = 1) {
                         this.currentPage.back(delta);
+                    },
+                    // 更新尺寸信息
+                    fixSize() {
+                        // 修正屏幕数据
+                        this.screen.width = screen.width;
+                        this.screen.height = screen.height;
+                        this.screen.angle = screen.orientation ? screen.orientation.angle : "";
                     }
                 },
                 ready() {
                     // 判断是否有页面，激活当前页
                     $.nextTick(() => {
                         let readyFun = () => {
-                            // this[CURRENTS] = [this.$("xd-page")];
-                            let firstPage = this.$("xd-page");
+                            // this[CURRENTS] = [this.$("o-page")];
+                            let firstPage = this.$("o-page");
 
                             // 设置第一页
                             this.currents = [{
@@ -6138,7 +6154,7 @@
                             readyFun = null;
                         }
 
-                        this.$("xd-page") ? readyFun() : this.one("page-ready", readyFun);
+                        this.$("o-page") ? readyFun() : this.one("page-ready", readyFun);
                     });
 
                     // 检查页面状况
@@ -6161,6 +6177,14 @@
                         launchFun = null;
                     }
                     this.watch("launched", launchFun);
+
+                    this.fixSize();
+                    // 尺寸修改的时候也设置
+                    let resizeTimer;
+                    window.addEventListener("resize", e => {
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(() => this.fixSize(), 500);
+                    });
                 }
             });
         })
@@ -6204,8 +6228,8 @@
             </div>
             `;
         },
-        v: 2004003,
-        version: "2.4.3"
+        v: 2005000,
+        version: "2.5.0"
     };
 
     let oldOfa = glo.ofa;

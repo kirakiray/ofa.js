@@ -1,5 +1,5 @@
-let xdpageStyle = $(`<style>xd-page{display:block;}</style>`);
-$("head").push(xdpageStyle);
+let opageStyle = $(`<style>o-page{display:block;}</style>`);
+$("head").push(opageStyle);
 
 const PAGE_PREPARING = Symbol("_preparing");
 const PAGE_PREPARING_RESOLVE = Symbol("_preparing_resolve");
@@ -19,12 +19,12 @@ main.setProcessor("Page", async (packData, d, { relativeLoad }) => {
         // ready() { },
         // 页面被关闭时调用
         // destory() { },
-        // 下面需要搭配 xd-app
-        // 页面被激活时调用，搭配xd-app使用
+        // 下面需要搭配 o-app
+        // 页面被激活时调用，搭配o-app使用
         // onShow() { },
         // 被放置后台时调用
         // onHide() { },
-        // xdapp相关animeParam属性
+        // ofa app相关animeParam属性
         // animeParam: {}
     };
 
@@ -34,7 +34,7 @@ main.setProcessor("Page", async (packData, d, { relativeLoad }) => {
 });
 
 $.register({
-    tag: "xd-page",
+    tag: "o-page",
     temp: false,
     proto: {
         get pageStat() {
@@ -46,7 +46,7 @@ $.register({
 
         // 获取页面寄宿的app对象
         get app() {
-            return this.parents("xd-app")[0];
+            return this.parents("o-app")[0];
         },
         set animeParam(param) {
             this._animeParam = param;
@@ -85,12 +85,12 @@ $.register({
             let app;
 
             do {
-                // 修正xd-page内嵌xd-page找不到app的问题
+                // 修正o-page内嵌o-page找不到app的问题
                 app = targetPage.app;
 
                 if (!app) {
                     let hostEle = targetPage.$host;
-                    if (hostEle && hostEle.is("xd-page")) {
+                    if (hostEle && hostEle.is("o-page")) {
                         targetPage = targetPage.$host;
                     } else {
                         console.warn("this page no app =>", this);
@@ -151,7 +151,7 @@ $.register({
         // 当前页面的状态
         // pageStat: "unload",
         // [PAGELOADED]: "",
-        // 页面是否展示，主要是在xd-app内的关键属性
+        // 页面是否展示，主要是在o-app内的关键属性
         show: true
     },
     attrs: ["src"],
@@ -163,7 +163,7 @@ $.register({
             if (this.pageStat !== "unload" && this.pageStat !== "preparing") {
                 throw {
                     target: this,
-                    desc: "xd-page can't reset src"
+                    desc: "o-page can't reset src"
                 };
             }
 
@@ -257,6 +257,6 @@ $.fn.extend({
             console.warn("no app");
             return;
         }
-        return $page.parents("xd-app")[0];
+        return $page.parents("o-app")[0];
     }
 });

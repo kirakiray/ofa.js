@@ -2,7 +2,7 @@
 let preloadLen = 1;
 
 $.register({
-    tag: "xd-app",
+    tag: "o-app",
     data: {
         // 当前页面的路由数据
         currents: [],
@@ -20,7 +20,15 @@ $.register({
         // 当前app是否隐藏
         visibility: document.hidden ? "hide" : "show",
         // 是否打开路由
-        router: 0
+        router: 0,
+        // 屏幕尺寸数据
+        screen: {
+            width: "",
+            height: "",
+            // 旋转角度
+            angle: ""
+        }
+
     },
     watch: {
         // 当前app的路由数据
@@ -65,7 +73,7 @@ $.register({
                 // 判断是否有页面元素，没有的话添加页面元素
                 if (!pageEle) {
                     pageData._page = pageEle = $({
-                        tag: "xd-page",
+                        tag: "o-page",
                         src
                     });
 
@@ -99,21 +107,21 @@ $.register({
 
                 if (index < lastId) {
                     // 属于前面的页面
-                    // pageEle.attrs["xd-page-anime"] = index + "-" + lastId;
-                    pageEle.attrs["xd-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
+                    // pageEle.attrs["o-page-anime"] = index + "-" + lastId;
+                    pageEle.attrs["o-page-anime"] = back[lastId - 1 - index] || back.slice(-1)[0];
                     pageEle.show = false;
                 } else if (lastId == index) {
                     // 当前页不存在动画样式的情况下，就是前进式的页面
                     // 当前只有首页的情况，不需要进场动画
-                    if (!pageEle.attrs["xd-page-anime"] && currents.length != 1) {
-                        pageEle.attrs["xd-page-anime"] = front;
+                    if (!pageEle.attrs["o-page-anime"] && currents.length != 1) {
+                        pageEle.attrs["o-page-anime"] = front;
                         pageData._nextPageAnimeTimer = setTimeout(() => {
-                            pageEle.attrs["xd-page-anime"] = current;
+                            pageEle.attrs["o-page-anime"] = current;
                             pageEle.show = true;
                         }, 50);
                     } else {
                         // 有动画属性下，直接修正
-                        pageEle.attrs["xd-page-anime"] = current;
+                        pageEle.attrs["o-page-anime"] = current;
                         pageEle.show = true;
                     }
                 }
@@ -135,7 +143,7 @@ $.register({
                         // 以动画回退的方式干掉页面
                         unneedPages.forEach(pageEle => {
                             let { front } = pageEle.animeParam;
-                            pageEle.attrs["xd-page-anime"] = front;
+                            pageEle.attrs["o-page-anime"] = front;
 
                             // 动画结束后删除
                             let endfun = e => {
@@ -236,14 +244,21 @@ $.register({
         },
         back(delta = 1) {
             this.currentPage.back(delta);
+        },
+        // 更新尺寸信息
+        fixSize() {
+            // 修正屏幕数据
+            this.screen.width = screen.width;
+            this.screen.height = screen.height;
+            this.screen.angle = screen.orientation ? screen.orientation.angle : "";
         }
     },
     ready() {
         // 判断是否有页面，激活当前页
         $.nextTick(() => {
             let readyFun = () => {
-                // this[CURRENTS] = [this.$("xd-page")];
-                let firstPage = this.$("xd-page");
+                // this[CURRENTS] = [this.$("o-page")];
+                let firstPage = this.$("o-page");
 
                 // 设置第一页
                 this.currents = [{
@@ -265,7 +280,7 @@ $.register({
                 readyFun = null;
             }
 
-            this.$("xd-page") ? readyFun() : this.one("page-ready", readyFun);
+            this.$("o-page") ? readyFun() : this.one("page-ready", readyFun);
         });
 
         // 检查页面状况
@@ -288,5 +303,13 @@ $.register({
             launchFun = null;
         }
         this.watch("launched", launchFun);
+
+        this.fixSize();
+        // 尺寸修改的时候也设置
+        let resizeTimer;
+        window.addEventListener("resize", e => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => this.fixSize(), 500);
+        });
     }
 });
