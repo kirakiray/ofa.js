@@ -67,6 +67,9 @@
         set offline(val) {
             this.drill.offline = val;
         },
+        get cacheInfo() {
+            return this.drill.cacheInfo;
+        },
         // 获取40页面的内容
         get404(e) {
             return `

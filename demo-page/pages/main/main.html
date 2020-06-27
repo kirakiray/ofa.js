@@ -12,11 +12,14 @@
     }
 
     .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin-bottom: 10px;
         width: 80px;
         height: 80px;
         border-radius: 42px;
-        background-color: #eee;
+        font-size: 14px;
     }
 
     h2 {
@@ -35,10 +38,10 @@
     }
 </style>
 <div class="main">
-    <div class="logo"></div>
+    <div class="logo">
+        <img src="img/ofa_log.svg" width="60" alt="">
+    </div>
     <h2>Hellow OFA App</h2>
     <p>你的下一个app，何必是app。</p>
-    <div>
-        <o-link to="pages/start -p">入手</o-link>
-    </div>
+    <o-link to="pages/info -p">查看当前设备信息</o-link>
 </div>

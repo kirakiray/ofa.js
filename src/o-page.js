@@ -157,6 +157,8 @@ $.register({
     attrs: ["src"],
     watch: {
         async src(e, val) {
+            this.attrs.oLoading = "1";
+            
             if (!val) {
                 return;
             }
@@ -205,6 +207,7 @@ $.register({
                 watch: {}
             }, pageOpts));
 
+            this.attrs.oLoading = null;
             this[PAGE_STATE] = "finish";
 
             let nvdata;

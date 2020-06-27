@@ -6,9 +6,7 @@ const getPageAnimeData = (animeName, defaultType) => {
     if (!(animeName instanceof Element)) {
         appendInBody = true;
         fakeDiv = document.createElement("div");
-        // fakeDiv.classList.add("xdpage");
         fakeDiv.setAttribute("o-page-anime", animeName);
-        // $("o-app").push(fakeDiv);
         $("body").push(fakeDiv);
     }
 

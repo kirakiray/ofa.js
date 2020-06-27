@@ -2020,7 +2020,7 @@
             },
             set: function(target, prop, value) {
                 if (value === null) {
-                    target._ele.removeAttribute(prop);
+                    target._ele.removeAttribute(propToAttr(prop));
                 } else {
                     target._ele.setAttribute(propToAttr(prop), String(value));
                 }
@@ -5199,9 +5199,7 @@
         if (!(animeName instanceof Element)) {
             appendInBody = true;
             fakeDiv = document.createElement("div");
-            // fakeDiv.classList.add("xdpage");
             fakeDiv.setAttribute("o-page-anime", animeName);
-            // $("o-app").push(fakeDiv);
             $("body").push(fakeDiv);
         }
 
@@ -5765,6 +5763,8 @@
                 attrs: ["src"],
                 watch: {
                     async src(e, val) {
+                        this.attrs.oLoading = "1";
+
                         if (!val) {
                             return;
                         }
@@ -5813,6 +5813,7 @@
                             watch: {}
                         }, pageOpts));
 
+                        this.attrs.oLoading = null;
                         this[PAGE_STATE] = "finish";
 
                         let nvdata;
@@ -5901,6 +5902,10 @@
                         height: "",
                         // 旋转角度
                         angle: ""
+                    },
+                    inner: {
+                        width: "",
+                        height: ""
                     }
 
                 },
@@ -6131,6 +6136,8 @@
                         this.screen.width = screen.width;
                         this.screen.height = screen.height;
                         this.screen.angle = screen.orientation ? screen.orientation.angle : "";
+                        this.inner.width = innerWidth;
+                        this.inner.height = innerHeight;
                     }
                 },
                 ready() {
@@ -6220,6 +6227,9 @@
         },
         set offline(val) {
             this.drill.offline = val;
+        },
+        get cacheInfo() {
+            return this.drill.cacheInfo;
         },
         // 获取40页面的内容
         get404(e) {

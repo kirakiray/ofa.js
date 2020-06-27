@@ -27,6 +27,10 @@ $.register({
             height: "",
             // 旋转角度
             angle: ""
+        },
+        inner: {
+            width: "",
+            height: ""
         }
 
     },
@@ -251,6 +255,8 @@ $.register({
             this.screen.width = screen.width;
             this.screen.height = screen.height;
             this.screen.angle = screen.orientation ? screen.orientation.angle : "";
+            this.inner.width = innerWidth;
+            this.inner.height = innerHeight;
         }
     },
     ready() {

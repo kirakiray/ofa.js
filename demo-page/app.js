@@ -5,10 +5,24 @@ ofa = async () => {
         }
     });
 
+    // ofa.offline = true;
+
     let oapp = $("o-app");
 
-    // 添加首页前设置路由
+    let isSlideMode = false;
+
+    // iPhone
     if (navigator.userAgent.includes("iPhone") && innerHeight === screen.availHeight) {
+        isSlideMode = true;
+    }
+
+    // iPad
+    if (navigator.userAgent.includes("Mac OS X") && (window.screen.width == 768 || window.screen.height == 1024)) {
+        isSlideMode = true;
+    }
+
+    // 添加首页前设置路由
+    if (isSlideMode) {
         // 判断是iPhone，并且全屏的状态下，启动slider模式
         oapp.router = "slide";
     } else {

@@ -6,8 +6,7 @@ o-app {
     height: 100%;
 }
 
-o-app>o-page,
-o-app>.xdpage {
+o-app>o-page {
     display: none;
     position: absolute;
     left: 0;
@@ -16,6 +15,26 @@ o-app>.xdpage {
     height: 100%;
     z-index: 2;
     transition: none;
+}
+
+o-page[o-loading="1"]:before {
+    display: block;
+    content: "";
+    width: 36px;
+    height: 36px;
+    background-image: url(../img/loading.svg);
+    background-size: 36px 36px;
+    animation: loading_icon_anime linear 1s infinite;
+}
+
+@keyframes loading_icon_anime {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 [o-page-anime] {
@@ -48,4 +67,8 @@ o-app>.xdpage {
     }
 }
 
-[o-page-anime="active"] {}
+[o-page-anime="active"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -12,8 +12,7 @@ o-app {
     height: 100%;
 }
 
-o-app>o-page,
-o-app>.xdpage {
+o-app>o-page {
     display: none;
     position: absolute;
     left: 0;
