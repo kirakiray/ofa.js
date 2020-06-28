@@ -12,7 +12,7 @@ ofa = async () => {
     let isSlideMode = false;
 
     // iPhone
-    if (navigator.userAgent.includes("iPhone") && innerHeight === screen.availHeight) {
+    if (navigator.userAgent.includes("iPhone")) {
         isSlideMode = true;
     }
 
