@@ -38,7 +38,7 @@ o-page[o-loading="1"]:before {
 }
 
 [o-page-anime] {
-    display: block;
+    display: flex;
     transition: all ease .3s;
 }
 
@@ -53,7 +53,7 @@ o-page[o-loading="1"]:before {
     pointer-events: none;
 }
 
-@media screen and (min-width: 480px) {
+/* @media screen and (min-width: 480px) {
     [o-page-anime="back"] {
         opacity: 0;
         transform: translate3d(-10%, 0, 0);
@@ -65,10 +65,12 @@ o-page[o-loading="1"]:before {
         transform: translate3d(10%, 0, 0);
         z-index: 1;
     }
-}
+} */
 
 [o-page-anime="active"] {
     display: flex;
     justify-content: center;
     align-items: center;
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
 }
