@@ -17,20 +17,6 @@ o-app>o-page {
     transition: none;
 }
 
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-o-page:not([o-loading="1"]) {
-    animation: fadeIn ease .3s;
-}
-
 o-page[o-loading="1"]:before {
     display: block;
     content: "";
