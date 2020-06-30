@@ -1,5 +1,5 @@
 /*!
- * ofa v2.5.0
+ * ofa v2.5.1
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -3700,30 +3700,7 @@
 
                 linkEle.onload = async () => {
                     // import rule 的文件也要缓存起来
-                    // 离线模式下不需要这个操作，因为offline模块已经会对内部修改并缓存
-                    // let rules = linkEle.sheet.rules ? Array.from(linkEle.sheet.rules) : linkEle.sheet.cssRules ? Array.from(linkEle.sheet.cssRules) : [];
                     document.head.removeChild(linkEle);
-
-                    // // 貌似内部import已经加载完成才会触发onLoad
-                    // let relativeLoad = (...args) => {
-                    //     return load(toUrlObjs(args, packData.dir));
-                    // }
-
-                    // if (!offline) {
-                    //     let arr = [];
-                    //     rules.forEach(e => {
-                    //         if (e instanceof CSSImportRule) {
-                    //             arr.push(e.href + ' -unAppend -unCacheSearch');
-                    //         }
-                    //     });
-
-                    //     // 加载子样式，确保所有样式文件被缓存
-                    //     if (arr.length) {
-                    //         await relativeLoad(...arr);
-                    //     }
-                    // }
-
-                    // relativeLoad = null;
 
                     res(async (e) => {
                         // 在有获取内容的情况下，才重新加入link
@@ -5521,6 +5498,58 @@
                             temp = await relativeLoad(`${defaults.temp}`);
                         }
                     }
+                    // 去除备注代码
+                    temp = temp.replace(/<\!--[\s\S]+?-->/g, "");
+
+                    // 修正src属性的值
+                    let srcs = temp.match(/( src=".+?"| src='.+')/g);
+                    if (srcs) {
+                        await Promise.all(srcs.map(async str => {
+                            // 获取src属性内的值
+                            let src = str.replace(/ src=['"](.+)['"]$/, "$1");
+                            try {
+                                let relativeSrc = await relativeLoad(`${src} -getLink`);
+
+                                // 修正路径
+                                let fixStr = str.replace(src, relativeSrc);
+                                temp = temp.replace(str, fixStr);
+                            } catch (err) {
+                                console.error(`src request failed =>`, {
+                                    src,
+                                    path: err[0].path
+                                });
+                            }
+                        }));
+                    }
+
+                    // 修正style内url的值
+                    let styles = temp.match(/<style>[\s\S]+?<\/style>/g);
+                    if (styles) {
+                        await Promise.all(styles.map(async (styleStr) => {
+                            let backupStyleStr = styleStr;
+                            let urlArr = styleStr.match(/url\(.+?\)/g);
+
+                            if (urlArr) {
+                                await Promise.all(urlArr.map(async urlStr => {
+                                    let url = urlStr.replace(/url\((.+?)\)/, "$1");
+
+                                    try {
+                                        let relativeUrl = await relativeLoad(url.replace(/['"']/g, "") + " -getLink");
+
+                                        let fixurlStr = urlStr.replace(url, relativeUrl);
+                                        styleStr = styleStr.replace(urlStr, fixurlStr);
+                                    } catch (err) {
+                                        console.error(`style url request failed =>`, {
+                                            url,
+                                            path: err[0].path
+                                        });
+                                    }
+                                }));
+                            }
+
+                            temp = temp.replace(backupStyleStr, styleStr);
+                        }));
+                    }
 
                     // 添加css
                     let cssPath = defaults.css;
@@ -6252,8 +6281,8 @@
             </div>
             `;
         },
-        v: 2005000,
-        version: "2.5.0"
+        v: 2005001,
+        version: "2.5.1"
     };
 
     let oldOfa = glo.ofa;

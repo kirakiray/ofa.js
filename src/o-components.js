@@ -30,6 +30,58 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
                 temp = await relativeLoad(`${defaults.temp}`);
             }
         }
+        // 去除备注代码
+        temp = temp.replace(/<\!--[\s\S]+?-->/g, "");
+
+        // 修正src属性的值
+        let srcs = temp.match(/( src=".+?"| src='.+')/g);
+        if (srcs) {
+            await Promise.all(srcs.map(async str => {
+                // 获取src属性内的值
+                let src = str.replace(/ src=['"](.+)['"]$/, "$1");
+                try {
+                    let relativeSrc = await relativeLoad(`${src} -getLink`);
+
+                    // 修正路径
+                    let fixStr = str.replace(src, relativeSrc);
+                    temp = temp.replace(str, fixStr);
+                } catch (err) {
+                    console.error(`src request failed =>`, {
+                        src,
+                        path: err[0].path
+                    });
+                }
+            }));
+        }
+
+        // 修正style内url的值
+        let styles = temp.match(/<style>[\s\S]+?<\/style>/g);
+        if (styles) {
+            await Promise.all(styles.map(async (styleStr) => {
+                let backupStyleStr = styleStr;
+                let urlArr = styleStr.match(/url\(.+?\)/g);
+
+                if (urlArr) {
+                    await Promise.all(urlArr.map(async urlStr => {
+                        let url = urlStr.replace(/url\((.+?)\)/, "$1");
+
+                        try {
+                            let relativeUrl = await relativeLoad(url.replace(/['"']/g, "") + " -getLink");
+
+                            let fixurlStr = urlStr.replace(url, relativeUrl);
+                            styleStr = styleStr.replace(urlStr, fixurlStr);
+                        } catch (err) {
+                            console.error(`style url request failed =>`, {
+                                url,
+                                path: err[0].path
+                            });
+                        }
+                    }));
+                }
+
+                temp = temp.replace(backupStyleStr, styleStr);
+            }));
+        }
 
         // 添加css
         let cssPath = defaults.css;
