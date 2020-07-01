@@ -5839,7 +5839,14 @@
                                 watch: {}
                             });
 
+                            this.attrs.oLoading = null;
+
                             throw errObj;
+                        }
+
+                        // 页面被删除就不折腾
+                        if (this[PAGE_STATE] == "destory") {
+                            return;
                         }
 
                         this[PAGEOPTIONS] = pageOpts;

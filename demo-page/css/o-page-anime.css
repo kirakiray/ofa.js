@@ -39,6 +39,8 @@ o-page[o-loading="1"]:before {
 
 [o-page-anime] {
     display: flex;
+    justify-content: center;
+    align-items: center;
     transition: all ease .3s;
 }
 
@@ -69,8 +71,6 @@ o-page[o-loading="1"]:before {
 
 [o-page-anime="active"] {
     display: flex;
-    justify-content: center;
-    align-items: center;
     transform: translate3d(0, 0, 0);
     opacity: 1;
 }

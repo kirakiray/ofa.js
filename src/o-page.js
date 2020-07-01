@@ -158,7 +158,7 @@ $.register({
     watch: {
         async src(e, val) {
             this.attrs.oLoading = "1";
-            
+
             if (!val) {
                 return;
             }
@@ -196,7 +196,14 @@ $.register({
                     watch: {}
                 });
 
+                this.attrs.oLoading = null;
+
                 throw errObj;
+            }
+
+            // 页面被删除就不折腾
+            if (this[PAGE_STATE] == "destory") {
+                return;
             }
 
             this[PAGEOPTIONS] = pageOpts;
