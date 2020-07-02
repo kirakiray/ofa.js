@@ -3925,13 +3925,20 @@
         });
 
         // 对es6 module 支持
-        loaders.set("mjs", async packData => {
-            let d = await import(packData.link);
+        // 必须只是 async import 才可以使用
+        try {
+            eval(`
+    loaders.set("mjs", async packData => {
+        let d = await import(packData.link);
 
-            return async () => {
-                return d;
-            }
-        });
+        return async () => {
+            return d;
+        }
+    });
+    `)
+        } catch (e) {
+            console.warn(`browser does not support asynchronous es module`);
+        }
         // 直接返回缓存地址的类型
         const returnUrlSets = new Set(["png", "jpg", "jpeg", "bmp", "gif", "webp"]);
 
