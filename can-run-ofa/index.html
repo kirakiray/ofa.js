@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>查看是否支持 ofa </title>
+    <style>
+        can-run-ofa {
+            display: none;
+        }
+
+        /* can-run-ofa[support="0"] { */
+        can-run-ofa[support] {
+            display: block;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <script src="can-run-ofa.js"></script>
+</head>
+
+<body>
+    <can-run-ofa>
+        <div>支持 ofa.js : <span id="cro_0">loading</span></div>
+        <div>支持 customElements : <span id="cro_1">loading</span></div>
+        <div>支持 Proxy API : <span id="cro_2">loading</span></div>
+        <div>支持 async function : <span id="cro_3">loading</span></div>
+        <div>支持 let(const) : <span id="cro_4">loading</span></div>
+        <div id="cro_ua"></div>
+    </can-run-ofa>
+    <script>
+        document.querySelector("can-run-ofa").addEventListener("loaded", function (e) {
+            let data = e.data;
+            document.getElementById("cro_0").innerHTML = data.support;
+            document.getElementById("cro_1").innerHTML = data.hasCustomEle;
+            document.getElementById("cro_2").innerHTML = data.hasProxy;
+            document.getElementById("cro_3").innerHTML = data.supportAsyncFunc;
+            document.getElementById("cro_4").innerHTML = data.supportLet;
+            document.getElementById("cro_ua").innerHTML = navigator.userAgent;
+            console.log("关键api支持情况", data);
+        });
+    </script>
+</body>
+
+</html>
