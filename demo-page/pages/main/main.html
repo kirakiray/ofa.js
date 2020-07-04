@@ -37,6 +37,36 @@
         font-size: 14px;
         color: rgb(65, 65, 65);
         background-color: #eee;
+        cursor: pointer;
+    }
+
+    .f_tr {
+        display: flex;
+    }
+
+    .f_td {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        margin: 10px;
+    }
+
+    .f_td img {
+        width: 20px;
+        height: auto;
+    }
+
+    .f_td .f_title {
+        margin-top: 3px;
+        font-size: 14px;
+        color: rgb(87, 87, 87);
+    }
+
+    .f_td .f_time {
+        font-size: 12px;
+        color: rgb(128, 128, 128);
     }
 </style>
 <div class="main">
@@ -50,5 +80,27 @@
     <br>
     <o-link to="pages/frameInfo -p">设备屏幕刷新率</o-link>
     <br>
-    <a href="http://cn.bing.com/" target="_blank">打开Bing</a>
+    <div style="font-size:14px;font-weight:bold;">支持 ofa app 的浏览器</div>
+    <div class="f_tr">
+        <div class="f_td">
+            <img src="./img/Chrome.svg" alt="">
+            <div class="f_title">≥55</div>
+            <div class="f_time">2016-12</div>
+        </div>
+        <div class="f_td">
+            <img src="./img/safari.svg" alt="">
+            <div class="f_title">≥11</div>
+            <div class="f_time">2017-09</div>
+        </div>
+        <div class="f_td">
+            <img src="./img/firefox.svg" alt="">
+            <div class="f_title">≥63</div>
+            <div class="f_time">2018-10</div>
+        </div>
+        <div class="f_td">
+            <img src="./img/edge_chrome.svg" alt="">
+            <div class="f_title">≥79</div>
+            <div class="f_time">2020-01</div>
+        </div>
+    </div>
 </div>

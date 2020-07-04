@@ -29,7 +29,7 @@ Page(async (load) => {
         },
         ready() {
             this._app = this.app;
-            this._app.watch("inner", () => this.updataInfo(), true);
+            this._app.watch("inner", this._wfun = () => this.updataInfo(), true);
         },
         destory() {
             this._app.unwatch("inner", this._wfun);
