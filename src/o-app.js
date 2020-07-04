@@ -235,7 +235,7 @@ $.register({
                             return;
                         }
                         // 干掉相应delta的页，确保必须至少剩一页
-                        if (defaults.delta >= this.currents.length) {
+                        if (defaults.delta == "home" || defaults.delta >= this.currents.length) {
                             defaults.delta = this.currents.length - 1;
                         }
 

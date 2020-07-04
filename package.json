@@ -1,6 +1,6 @@
 {
     "name": "ofa",
-    "version": "2.5.1",
+    "version": "2.5.2",
     "description": "no webpack,no nodejs,Back to the purest front end",
     "scripts": {
         "watch": "node scripts/watch.js",

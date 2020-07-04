@@ -18,6 +18,7 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
 
     // 置换temp
     let temp = "";
+    let tempUrl = "";
     if (defaults.temp) {
         // 判断是否有标签
         if (/\</.test(defaults.temp)) {
@@ -25,10 +26,15 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
             temp = defaults.temp;
         } else {
             if (defaults.temp === true) {
-                temp = await relativeLoad(`./${fileName}.html`);
+                tempUrl = `./${fileName}.html`;
             } else {
-                temp = await relativeLoad(`${defaults.temp}`);
+                tempUrl = defaults.temp;
             }
+
+            // 添加模板加载的地址
+            tempUrl = await relativeLoad(tempUrl + " -getLink");
+
+            temp = await relativeLoad(tempUrl);
         }
         // 去除备注代码
         temp = temp.replace(/<\!--[\s\S]+?-->/g, "");
@@ -103,6 +109,18 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
     }
 
     defaults.temp = temp;
+
+    if (defaults.ready) {
+        let old_ready = defaults.ready;
+        defaults.ready = function (...args) {
+            this.ele.__xInfo.tempUrl = tempUrl;
+            return old_ready.apply(this, args);
+        }
+    } else {
+        defaults.ready = function () {
+            this.ele.__xInfo.tempUrl = tempUrl;
+        }
+    }
 }
 
 main.setProcessor("Component", async (packData, d, { relativeLoad }) => {

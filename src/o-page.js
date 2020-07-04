@@ -177,19 +177,25 @@ $.register({
             // 加载页面模块数据
             this[PAGE_STATE] = "loading";
 
+            // 相应资源地址
+            // let sourcePath = await load(val + " -r -getLink");
+            let sourcePath = await load(val + " -getLink");
+
+            // 修正记录信息
+            this.ele.__xInfo.scriptSrc = sourcePath;
+
             let pageOpts;
             try {
-                pageOpts = await load(val + " -r");
+                // pageOpts = await load(val + " -r");
+                pageOpts = await load(val);
             } catch (e) {
                 // 错误页面
                 let errObj = e[0].descript;
                 this[PAGE_STATE] = "error";
 
-                let errorPath = await load(val + " -r -getLink");
-
                 renderEle(this.ele, {
                     temp: ofa.get404({
-                        path: errorPath,
+                        path: sourcePath,
                         src: val
                     }),
                     attrs: [],
@@ -205,6 +211,10 @@ $.register({
             if (this[PAGE_STATE] == "destory") {
                 return;
             }
+
+            // if (pageOpts.tempUrl) {
+            //     this.ele.__xInfo.tempUrl = pageOpts.tempUrl
+            // }
 
             this[PAGEOPTIONS] = pageOpts;
 

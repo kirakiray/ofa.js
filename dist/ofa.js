@@ -1,5 +1,5 @@
 /*!
- * ofa v2.5.1
+ * ofa v2.5.2
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.1.1
+     * xhear v5.1.2
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2020 YAO
@@ -2965,7 +2965,19 @@
 
         // 获取函数
         const exprToFunc = (expr) => {
-            return new Function("$event", `with(this){return ${expr}}`);
+            return new Function("$event", `
+with(this){
+    try{
+        return ${expr}
+    }catch(e){
+        let errObj = {
+            expr:'${expr}',
+        }
+        ele.__xInfo && Object.assign(errObj,ele.__xInfo);
+        console.error(errObj,e);
+    }
+}
+    `);
         }
 
         // 嵌入函数监听公用方法
@@ -3024,12 +3036,20 @@
 
             defaults.proto && CustomXhearEle.prototype.extend(defaults.proto);
 
+            // 注册组件的地址
+            let scriptSrc = document.currentScript && document.currentScript.src;
+
             // 注册自定义元素
             const XhearElement = class extends HTMLElement {
                 constructor() {
                     super();
 
-                    // 删除旧依赖
+                    // 设置相关数据
+                    this.__xInfo = {
+                        scriptSrc
+                    };
+
+                    // 删除旧依赖，防止组件注册前的xhear实例缓存
                     delete this.__xhear__;
                     let _xhearThis = new CustomXhearEle(this);
 
@@ -3553,8 +3573,8 @@
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5001001,
-            version: "5.1.1",
+            v: 5001002,
+            version: "5.1.2",
             fn: XhearEleFn,
             isXhear,
             ext,
@@ -3626,6 +3646,9 @@
 
         //改良异步方法
         const nextTick = (() => {
+            if ((typeof $ !== "undefined") && (typeof $.nextTick !== "undefined")) {
+                return $.nextTick;
+            }
             if (document.currentScript.getAttribute("debug") !== null) {
                 return setTimeout;
             }
@@ -5493,6 +5516,7 @@
 
                 // 置换temp
                 let temp = "";
+                let tempUrl = "";
                 if (defaults.temp) {
                     // 判断是否有标签
                     if (/\</.test(defaults.temp)) {
@@ -5500,10 +5524,15 @@
                         temp = defaults.temp;
                     } else {
                         if (defaults.temp === true) {
-                            temp = await relativeLoad(`./${fileName}.html`);
+                            tempUrl = `./${fileName}.html`;
                         } else {
-                            temp = await relativeLoad(`${defaults.temp}`);
+                            tempUrl = defaults.temp;
                         }
+
+                        // 添加模板加载的地址
+                        tempUrl = await relativeLoad(tempUrl + " -getLink");
+
+                        temp = await relativeLoad(tempUrl);
                     }
                     // 去除备注代码
                     temp = temp.replace(/<\!--[\s\S]+?-->/g, "");
@@ -5578,6 +5607,18 @@
                 }
 
                 defaults.temp = temp;
+
+                if (defaults.ready) {
+                    let old_ready = defaults.ready;
+                    defaults.ready = function(...args) {
+                        this.ele.__xInfo.tempUrl = tempUrl;
+                        return old_ready.apply(this, args);
+                    }
+                } else {
+                    defaults.ready = function() {
+                        this.ele.__xInfo.tempUrl = tempUrl;
+                    }
+                }
             }
 
             main.setProcessor("Component", async (packData, d, {
@@ -5827,19 +5868,25 @@
                         // 加载页面模块数据
                         this[PAGE_STATE] = "loading";
 
+                        // 相应资源地址
+                        // let sourcePath = await load(val + " -r -getLink");
+                        let sourcePath = await load(val + " -getLink");
+
+                        // 修正记录信息
+                        this.ele.__xInfo.scriptSrc = sourcePath;
+
                         let pageOpts;
                         try {
-                            pageOpts = await load(val + " -r");
+                            // pageOpts = await load(val + " -r");
+                            pageOpts = await load(val);
                         } catch (e) {
                             // 错误页面
                             let errObj = e[0].descript;
                             this[PAGE_STATE] = "error";
 
-                            let errorPath = await load(val + " -r -getLink");
-
                             renderEle(this.ele, {
                                 temp: ofa.get404({
-                                    path: errorPath,
+                                    path: sourcePath,
                                     src: val
                                 }),
                                 attrs: [],
@@ -5855,6 +5902,10 @@
                         if (this[PAGE_STATE] == "destory") {
                             return;
                         }
+
+                        // if (pageOpts.tempUrl) {
+                        //     this.ele.__xInfo.tempUrl = pageOpts.tempUrl
+                        // }
 
                         this[PAGEOPTIONS] = pageOpts;
 
@@ -6167,7 +6218,7 @@
                                         return;
                                     }
                                     // 干掉相应delta的页，确保必须至少剩一页
-                                    if (defaults.delta >= this.currents.length) {
+                                    if (defaults.delta == "home" || defaults.delta >= this.currents.length) {
                                         defaults.delta = this.currents.length - 1;
                                     }
 
@@ -6295,8 +6346,8 @@
             </div>
             `;
         },
-        v: 2005001,
-        version: "2.5.1"
+        v: 2005002,
+        version: "2.5.2"
     };
 
     let oldOfa = glo.ofa;
