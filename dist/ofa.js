@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.1.2
+     * xhear v5.1.3
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2020 YAO
@@ -2348,7 +2348,7 @@
             }
 
             siblings(expr) {
-                // 获取父层的所有子元素
+                // 获取相邻元素
                 let parChilds = Array.from(this.ele.parentElement.children);
 
                 // 删除自身
@@ -2415,23 +2415,6 @@
                 return meetsEle(this.ele, expr)
             }
 
-            // attr(key, value) {
-            //     if (!isUndefined(value)) {
-            //         this.ele.setAttribute(key, value);
-            //     } else if (key instanceof Object) {
-            //         Object.keys(key).forEach(k => {
-            //             this.attr(k, key[k]);
-            //         });
-            //     } else {
-            //         return this.ele.getAttribute(key);
-            //     }
-            // }
-
-            // removeAttr(key) {
-            //     this.ele.removeAttribute(key);
-            //     return this;
-            // }
-
             $(expr) {
                 let tar = this.ele.querySelector(expr);
                 if (tar) {
@@ -2456,79 +2439,6 @@
                 return cloneEle;
             }
 
-            // 根据xv-vd生成xdata实例
-            viewData() {
-                let xdata = createXData({});
-
-                // 获取所有toData元素
-                this.all('[xv-vd]').forEach(xele => {
-                    // 获取vd内容
-                    let vdvalue = xele.attrs.xvVd;
-
-                    if (xele.xvele) {
-                        let syncObj = {};
-
-                        if (/ to /.test(vdvalue)) {
-                            // 获取分组
-                            let vGroup = vdvalue.split(",");
-                            vGroup.forEach(g => {
-                                // 拆分 to 两边的值
-                                let toGroup = g.split("to");
-                                if (toGroup.length == 2) {
-                                    let key = toGroup[0].trim();
-                                    let toKey = toGroup[1].trim();
-                                    xdata[toKey] = xele[key];
-                                    syncObj[toKey] = key;
-                                }
-                            });
-                        } else {
-                            vdvalue = vdvalue.trim();
-                            // 设置同步数据
-                            xdata[vdvalue] = xele.value;
-                            syncObj[vdvalue] = "value";
-                        }
-
-                        // 数据同步
-                        xdata.sync(xele, syncObj);
-                    } else {
-                        // 普通元素
-                        let {
-                            ele
-                        } = xele;
-
-                        if ('checked' in ele) {
-                            // 设定值
-                            xdata[vd] = ele.checked;
-
-                            // 修正Input
-                            xdata.watch(vd, e => {
-                                ele.checked = xdata[vd];
-                            });
-                            ele.addEventListener("change", e => {
-                                xdata[vd] = ele.checked;
-                            });
-                        } else {
-                            // 设定值
-                            xdata[vd] = ele.value;
-
-                            // 修正Input
-                            xdata.watch(vd, e => {
-                                ele.value = xdata[vd];
-                            });
-                            ele.addEventListener("change", e => {
-                                xdata[vd] = ele.value;
-                            });
-                            ele.addEventListener("input", e => {
-                                xdata[vd] = ele.value;
-                            });
-                        }
-                    }
-
-                    xele.attrs.xvVd = null;
-                });
-
-                return xdata;
-            }
             extend(proto) {
                 Object.keys(proto).forEach(k => {
                     // 获取描述
@@ -3282,7 +3192,11 @@ with(this){
                                     }
                                 } else {
                                     watchCall = (e, val) => {
-                                        ele.setAttribute(attr, val);
+                                        if (val === undefined || val === null) {
+                                            ele.removeAttribute(attr);
+                                        } else {
+                                            ele.setAttribute(attr, val);
+                                        }
                                     };
                                 }
 
@@ -3300,7 +3214,11 @@ with(this){
                                         }
                                         createXhearEle(ele).setData(attr, val);
                                     } else {
-                                        ele.setAttribute(attr, val);
+                                        if (val === undefined || val === null) {
+                                            ele.removeAttribute(attr);
+                                        } else {
+                                            ele.setAttribute(attr, val);
+                                        }
                                     }
                                 });
                             }
@@ -3465,8 +3383,12 @@ with(this){
             defaults.attrs.forEach(attrName => {
                 // 绑定值
                 xhearEle.watch(attrName, d => {
-                    // 绑定值
-                    ele.setAttribute(propToAttr(attrName), d.val);
+                    if (d.val === null || d.val === undefined) {
+                        ele.removeAttribute(propToAttr(attrName));
+                    } else {
+                        // 绑定值
+                        ele.setAttribute(propToAttr(attrName), d.val);
+                    }
                 });
             });
 
@@ -3573,8 +3495,8 @@ with(this){
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5001002,
-            version: "5.1.2",
+            v: 5001003,
+            version: "5.1.3",
             fn: XhearEleFn,
             isXhear,
             ext,
