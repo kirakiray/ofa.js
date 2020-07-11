@@ -1,28 +1,16 @@
 (() => {
     let tester = expect(4, 'view test');
 
-    let testEle = $('#view_test');
-
-    // 注册两个自定义元素
-    $.register({
-        tag: "a-one",
-        data: {
-            value: "I am a1"
-        },
-        temp: `
-            <div>{{value}}</div>        
-            <input xv-module="value" />
-            <div xv-content></div>
-        `
-    });
-
     $.register({
         tag: "a-two",
         data: {
             x: "100",
-            y: "200"
+            y: "200",
+            test: null,
+            test2: "",
+            test3: undefined,
         },
-        attrs: ["x", "y"],
+        attrs: ["x", "y", "test", "test2"],
         temp: `
         <div style="font-size:12px;">
             <div style="color:#ffcc00;">x:{{x}}</div>
@@ -32,16 +20,14 @@
         `
     });
 
-    // 创建viewData
-    let vData = testEle.viewData();
+    $("body").push(`
+        <a-two id="v_target"></a-two>
+    `);
 
-    tester.ok(vData.a1 == "I am a1", "vData ok 1");
-    tester.ok(vData.a2X == 300, "vData ok 2");
-    tester.ok(vData.a2Y == 200, "vData ok 3");
-
-    // 后续变动
-    $("a-two").y = 400;
     $.nextTick(() => {
-        tester.ok(vData.a2Y == 400, "vData ok 4");
+        tester.ok($("#v_target").ele.getAttribute("x") === '100', "data attribute1 ok");
+        tester.ok($("#v_target").ele.getAttribute("test") === null, "data attribute2 ok");
+        tester.ok($("#v_target").ele.getAttribute("test2") === '', "data attribute3 ok");
+        tester.ok($("#v_target").ele.getAttribute("test3") === null, "data attribute4 ok");
     });
 })();

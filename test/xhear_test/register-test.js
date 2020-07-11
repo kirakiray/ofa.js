@@ -12,7 +12,7 @@
         temp: `
         <div>
             <br>
-            <input type="text" xv-tar="dInput" xv-model="itext" />
+            <input type="text" $="dInput" xv-model="itext" />
             <br>
         </div>
         `,
@@ -36,10 +36,10 @@
             tarimg: "https://www.baidu.com/img/baidu_jgylogo3.gif"
         },
         temp: `
-        <div xv-tar="mtitle">reg-ele-title -- {{titleName}}</div>
+        <div $="mtitle">reg-ele-title -- {{titleName}}</div>
         <img :src="tarimg" :width="imgwidth" :height="imgheight" />
-        <reg-sub-ele xv-tar="sub1" :#itext="titleName" :icolor="color"></reg-sub-ele>
-        <reg-sub-ele xv-tar="sub2"></reg-sub-ele>
+        <reg-sub-ele $="sub1" :#itext="titleName" :icolor="color"></reg-sub-ele>
+        <reg-sub-ele $="sub2"></reg-sub-ele>
         <slot></slot>
         `,
         proto: {

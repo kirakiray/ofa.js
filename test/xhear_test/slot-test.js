@@ -9,7 +9,7 @@
             <div><span>stag-test测试 也是shadow ele</span></div>
             <slot name="top" style="color:red"></slot>
             <slot style="color:green"></slot>
-            <div xv-tar="shaEle"></div>
+            <div $="shaEle"></div>
         <br>
         <br>
         `

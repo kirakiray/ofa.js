@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.1.3
+     * xhear v5.1.4
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2020 YAO
@@ -3063,11 +3063,11 @@ with(this){
 
                 // xv-if 条件转换
                 queAllToArray(sroot, `[xv-if]`).forEach(e => {
-                    // xv-if 不能和 xv-tar 配合使用
-                    if (e.getAttribute("xv-tar")) {
+                    // xv-if 不能和 $ 配合使用
+                    if (e.getAttribute("$")) {
                         console.error({
                             target: e,
-                            desc: "xv-if cannot be used with xv-tar"
+                            desc: "xv-if cannot be used with $element"
                         });
                         return;
                     }
@@ -3099,13 +3099,12 @@ with(this){
                 });
 
                 // 设置其他 xv-tar
-                queAllToArray(sroot, `[xv-tar]`).forEach(tar => {
-                    // Array.from(sroot.querySelectorAll(`[xv-tar]`)).forEach(tar => {
-                    let tarKey = tar.getAttribute('xv-tar');
-                    Object.defineProperty(xhearEle, "$" + tarKey, {
-                        get: () => createXhearProxy(tar)
-                    });
-                });
+                // queAllToArray(sroot, `[xv-tar]`).forEach(tar => {
+                //     let tarKey = tar.getAttribute('xv-tar');
+                //     Object.defineProperty(xhearEle, "$" + tarKey, {
+                //         get: () => createXhearProxy(tar)
+                //     });
+                // });
 
                 // 转换 xv-span 元素
                 queAllToArray(sroot, `xv-span`).forEach(e => {
@@ -3150,6 +3149,13 @@ with(this){
                         } = obj;
                         let prop = value;
                         name = attrToProp(name);
+
+                        if (name === "$") {
+                            Object.defineProperty(xhearEle, "$" + value, {
+                                get: () => createXhearProxy(ele)
+                            });
+                            return;
+                        }
 
                         // 判断prop是否函数表达式
                         const isExpr = isFunctionExpr(prop);
@@ -3495,8 +3501,8 @@ with(this){
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5001003,
-            version: "5.1.3",
+            v: 5001004,
+            version: "5.1.4",
             fn: XhearEleFn,
             isXhear,
             ext,
