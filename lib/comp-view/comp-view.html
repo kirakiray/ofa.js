@@ -3,10 +3,16 @@
         <div class="preview" $="preview">
             <slot></slot>
         </div>
+        <div class="code" $="codeEle"></div>
     </div>
     <div class="prop_container">
         <div class="prop_title">Props</div>
-        <div class="props_con" $="propsCon" @change="selectChange">
+        <div class="p_line" xv-show="showSlotInput">
+            <div class="p_name">slot text</div>
+            <div class="p_input">
+                <input type="text" $="slotInput" @input="_slotInputChange">
+            </div>
         </div>
+        <div class="props_con" $="propsCon" @change="_selectChange"></div>
     </div>
 </div>
