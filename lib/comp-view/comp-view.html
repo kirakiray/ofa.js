@@ -2,8 +2,14 @@
     <div class="left">
         <div class="preview" $="preview">
             <slot></slot>
+            <div class="preview_tool">
+                <div class="bg_tool" $="bgTool">
+                    <!-- <div class="bg_btn"></div> -->
+                </div>
+            </div>
         </div>
-        <div class="code" $="codeEle"></div>
+        <div class="code" $="codeEle">
+        </div>
     </div>
     <div class="prop_container">
         <div class="prop_title">Props</div>
