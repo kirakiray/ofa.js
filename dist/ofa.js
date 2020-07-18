@@ -2875,13 +2875,16 @@
 
         // 获取函数
         const exprToFunc = (expr) => {
+            let n_expr = expr.replace(/'/g, "\\'")
+            n_expr = n_expr.replace(/"/g, '\\"')
+
             return new Function("$event", `
 with(this){
     try{
         return ${expr}
     }catch(e){
         let errObj = {
-            expr:'${expr}',
+            expr:'${n_expr}',
         }
         ele.__xInfo && Object.assign(errObj,ele.__xInfo);
         console.error(errObj,e);
