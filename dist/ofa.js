@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.1.4
+     * xhear v5.1.5
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2020 YAO
@@ -2871,7 +2871,7 @@
         const ATTRBINDINGKEY = "attr" + getRandomId();
 
         // 是否表达式
-        const isFunctionExpr = (str) => /[ \|\&\(\)\?\:\!]/.test(str.trim());
+        const isFunctionExpr = (str) => /[ \|\&\(\)\?\:\!;]/.test(str.trim());
 
         // 获取函数
         const exprToFunc = (expr) => {
@@ -2929,8 +2929,23 @@ with(this){
             };
             Object.assign(defaults, opts);
 
-            // 复制数据
-            let attrs = defaults.attrs = defaults.attrs.map(e => attrToProp(e));
+            let attrs = defaults.attrs;
+
+            let attrsType = getType(attrs);
+            if (attrsType == "object") {
+                // 修正数据
+                let n_attrs = Object.keys(attrs);
+
+                n_attrs.forEach(attrName => {
+                    defaults.data[attrToProp(attrName)] = attrs[attrName];
+                });
+
+                attrs = defaults.attrs = n_attrs.map(e => attrToProp(e));
+            } else if (attrsType == "array") {
+                // 修正属性值
+                attrs = defaults.attrs = attrs.map(e => attrToProp(e));
+            }
+
             defaults.data = cloneObject(defaults.data);
             defaults.watch = Object.assign({}, defaults.watch);
 
@@ -3501,8 +3516,8 @@ with(this){
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5001004,
-            version: "5.1.4",
+            v: 5001005,
+            version: "5.1.5",
             fn: XhearEleFn,
             isXhear,
             ext,
