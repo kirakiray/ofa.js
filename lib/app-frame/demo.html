@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>app-frame</title>
+    <script src="../../dist/ofa.js"></script>
+    <script>
+        load("./app-frame");
+    </script>
+</head>
+
+<body>
+    <app-frame src="../../../demo-page/" id="targetFrame" style="width: 360px;height: 640px;border:#aaa solid 1px;">
+    </app-frame>
+    <br>
+    <br>
+    <button onclick="appback()">返回</button>
+    <button onclick="appforward()">前进</button>
+    <script>
+        function appback() {
+            $("#targetFrame").back();
+        }
+
+        function appforward() {
+            $("#targetFrame").forward();
+
+        }
+    </script>
+</body>
+
+</html>

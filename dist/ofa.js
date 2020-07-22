@@ -6179,7 +6179,7 @@ with(this){
                         this.currentPage.back(delta);
                     },
                     // 更新尺寸信息
-                    fixSize() {
+                    _fixSize() {
                         // 修正屏幕数据
                         this.screen.width = screen.width;
                         this.screen.height = screen.height;
@@ -6239,12 +6239,12 @@ with(this){
                     }
                     this.watch("launched", launchFun);
 
-                    this.fixSize();
+                    this._fixSize();
                     // 尺寸修改的时候也设置
                     let resizeTimer;
                     window.addEventListener("resize", e => {
                         clearTimeout(resizeTimer);
-                        resizeTimer = setTimeout(() => this.fixSize(), 500);
+                        resizeTimer = setTimeout(() => this._fixSize(), 300);
                     });
                 }
             });
