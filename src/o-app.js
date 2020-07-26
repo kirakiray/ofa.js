@@ -249,6 +249,9 @@ $.register({
         back(delta = 1) {
             this.currentPage.back(delta);
         },
+        navigate(...args) {
+            this.currentPage.navigate(...args);
+        },
         // 更新尺寸信息
         _fixSize() {
             // 修正屏幕数据

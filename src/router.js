@@ -16,8 +16,6 @@ const initJumpRouter = (app) => {
     }
 
     app.on("navigate", (e, opt) => {
-        console.log("navigate => ", e, opt)
-
         let { currentPage } = app;
         let { animeParam, src } = currentPage;
 
@@ -49,8 +47,6 @@ const initJumpRouter = (app) => {
                 }
                 break;
         }
-
-        console.log("navigate =>", opt);
     });
 
     // 返回动作是否已经执行完成

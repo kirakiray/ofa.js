@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.1.5
+     * xhear v5.1.6
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2020 YAO
@@ -2269,6 +2269,41 @@
                 return createProxyAttrs(this.ele);
             }
 
+            // 监听指定元素的变动
+            moni(queStr, func) {
+                let olds;
+                this.watch(() => {
+                    let eles = this.all(queStr);
+                    let isSame = true;
+
+                    // 确保数据一致
+                    if (olds && olds.length == eles.length) {
+                        eles.some(e => {
+                            if (!olds.includes(e)) {
+                                isSame = false;
+                                return true;
+                            }
+                        });
+                    } else {
+                        isSame = false;
+                    }
+
+                    if (isSame) {
+                        return;
+                    }
+
+                    let obj = {
+                        old: olds,
+                        val: eles
+                    };
+
+                    olds = eles;
+
+                    func(eles, obj);
+                }, true);
+            }
+
+
             setData(key, value) {
                 if (UnSetKeys.has(key)) {
                     console.warn(`can't set this key => `, key);
@@ -3519,8 +3554,8 @@ with(this){
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5001005,
-            version: "5.1.5",
+            v: 5001006,
+            version: "5.1.6",
             fn: XhearEleFn,
             isXhear,
             ext,
@@ -4938,8 +4973,6 @@ with(this){
         }
 
         app.on("navigate", (e, opt) => {
-            console.log("navigate => ", e, opt)
-
             let {
                 currentPage
             } = app;
@@ -4976,8 +5009,6 @@ with(this){
                     }
                     break;
             }
-
-            console.log("navigate =>", opt);
         });
 
         // 返回动作是否已经执行完成
@@ -6177,6 +6208,9 @@ with(this){
                     },
                     back(delta = 1) {
                         this.currentPage.back(delta);
+                    },
+                    navigate(...args) {
+                        this.currentPage.navigate(...args);
                     },
                     // 更新尺寸信息
                     _fixSize() {
