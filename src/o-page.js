@@ -9,8 +9,6 @@ main.setProcessor("Page", async (packData, d, { relativeLoad }) => {
     let defaults = {
         // 默认模板
         temp: true,
-        // 加载组件样式
-        css: false,
         // 监听属性函数
         watch: {},
         // 自有属性

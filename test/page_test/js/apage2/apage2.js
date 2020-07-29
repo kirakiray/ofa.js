@@ -2,6 +2,7 @@ Page(async (load) => {
     await load("@ofa/o-link -p");
 
     return {
+        temp: "./static/apage2.html",
         // 页面初始化
         ready() {
             console.log("ready => ", this);
@@ -39,7 +40,6 @@ Page(async (load) => {
         data: {
             a1: "a111111111",
             b1: "b1111111111"
-        },
-        css: true
+        }
     };
 });

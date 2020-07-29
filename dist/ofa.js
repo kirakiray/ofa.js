@@ -1,5 +1,5 @@
 /*!
- * ofa v2.5.2
+ * ofa v2.5.3
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -24,7 +24,8 @@
         const cloneObject = obj => JSON.parse(JSON.stringify(obj));
 
         const nextTick = (() => {
-            if (document.currentScript.getAttribute("debug") !== null) {
+            let isDebug = document.currentScript.getAttribute("debug") !== null;
+            if (isDebug) {
                 let nMap = new Map();
                 return (fun, key) => {
                     if (!key) {
@@ -60,7 +61,11 @@
                                 key,
                                 fun
                             }) => {
-                                fun();
+                                try {
+                                    fun();
+                                } catch (e) {
+                                    console.error(e);
+                                }
                                 nextTickMap.delete(key);
                             });
                         }
@@ -3029,7 +3034,12 @@ with(this){
                     let options = Object.assign({}, defaults);
 
                     // 设置xv-ele
-                    nextTick(() => this.setAttribute("xv-ele", ""), xvid);
+                    // nextTick(() => this.setAttribute("xv-ele", ""), xvid);
+                    if (this.parentElement) {
+                        this.setAttribute("xv-ele", "");
+                    } else {
+                        nextTick(() => this.setAttribute("xv-ele", ""), xvid);
+                    }
 
                     renderEle(this, options);
                     options.ready && options.ready.call(_xhearThis[PROXYTHIS]);
@@ -3084,6 +3094,9 @@ with(this){
         const renderEle = (ele, defaults) => {
             // 初始化元素
             let xhearEle = createXhearEle(ele);
+
+            // 存储promise队列
+            let renderTasks = [];
 
             // 合并 proto
             defaults.proto && xhearEle.extend(defaults.proto);
@@ -3494,32 +3507,46 @@ with(this){
             });
 
             // 查找是否有link为完成
-            let isSetOne = 0;
             if (sroot) {
                 let links = queAllToArray(sroot, `link`);
                 if (links.length) {
-                    Promise.all(links.map(link => new Promise(res => {
-                        if (link.sheet) {
-                            res();
-                        } else {
-                            link.onload = () => {
-                                res();
-                                link.onload = null;
-                            };
-                        }
-                    }))).then(() => nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid))
-                } else {
-                    isSetOne = 1;
+                    links.forEach(link => {
+                        renderTasks.push(new Promise((resolve, reject) => {
+                            if (link.sheet) {
+                                resolve();
+                            } else {
+                                link.addEventListener("load", e => {
+                                    resolve();
+                                });
+                                link.addEventListener("error", e => {
+                                    reject({
+                                        desc: "link load error",
+                                        error: e,
+                                        target: ele
+                                    });
+                                });
+                            }
+                        }));
+                    });
                 }
-            } else {
-                isSetOne = 1;
             }
 
-            isSetOne && nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid);
+            // 设置渲染完毕
+            let setRenderend = () => {
+                nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid)
+                xhearEle.trigger('renderend', {
+                    bubbles: false
+                });
+                setRenderend = null;
+            }
 
-            xhearEle.trigger('renderend', {
-                bubbles: false
-            });
+            if (renderTasks.length) {
+                Promise.all(renderTasks).then(() => {
+                    setRenderend();
+                });
+            } else {
+                setRenderend();
+            }
         }
 
         const createXhearEle = ele => (ele.__xhear__ || new XhearEle(ele));
@@ -5494,6 +5521,10 @@ with(this){
                 // 置换temp
                 let temp = "";
                 let tempUrl = "";
+
+                // 模板用的加载方法
+                let tempLoad = relativeLoad;
+
                 if (defaults.temp) {
                     // 判断是否有标签
                     if (/\</.test(defaults.temp)) {
@@ -5508,32 +5539,66 @@ with(this){
 
                         // 添加模板加载的地址
                         tempUrl = await relativeLoad(tempUrl + " -getLink");
-
                         temp = await relativeLoad(tempUrl);
+
+                        // 重构temp用的Load方法
+                        const rUrl = tempUrl.replace(/(^.+\/).+/, "$1");
+                        tempLoad = (...args) => {
+                            return main.load(main.toUrlObjs(args, rUrl));
+                        }
                     }
                     // 去除备注代码
                     temp = temp.replace(/<\!--[\s\S]+?-->/g, "");
 
                     // 修正src属性的值
-                    let srcs = temp.match(/( src=".+?"| src='.+')/g);
-                    if (srcs) {
-                        await Promise.all(srcs.map(async str => {
-                            // 获取src属性内的值
-                            let src = str.replace(/ src=['"](.+)['"]$/, "$1");
-                            try {
-                                let relativeSrc = await relativeLoad(`${src} -getLink`);
+                    // let srcs = temp.match(/( src=".+?"| src='.+')/g);
+                    // if (srcs) {
+                    //     await Promise.all(srcs.map(async str => {
+                    //         // 获取src属性内的值
+                    //         let src = str.replace(/ src=['"](.+)['"]$/, "$1");
+                    //         try {
+                    //             let relativeSrc = await relativeLoad(`${src} -getLink`);
 
-                                // 修正路径
-                                let fixStr = str.replace(src, relativeSrc);
-                                temp = temp.replace(str, fixStr);
-                            } catch (err) {
-                                console.error(`src request failed =>`, {
-                                    src,
-                                    path: err[0].path
-                                });
-                            }
-                        }));
-                    }
+                    //             // 修正路径
+                    //             let fixStr = str.replace(src, relativeSrc);
+                    //             temp = temp.replace(str, fixStr);
+                    //         } catch (err) {
+                    //             console.error(`src request failed =>`, {
+                    //                 src,
+                    //                 path: err[0].path
+                    //             });
+                    //         }
+                    //     }));
+                    // }
+
+                    // 修正指定的属性值
+                    // 主要修复 href 和 src 的值
+                    await Promise.all(["href", "src"].map(async attr => {
+                        const reg1 = new RegExp(`<[\\w\\d\\-]+[\\w\\d '"=]+?${attr}=['"].+['"][\\w\\d '"=]*>`, "g");
+                        const reg2 = new RegExp(`<[\\w\\d\\-]+[\\w\\d '"=]+${attr}=['"](.+?)['"][\\w\\d '"=]*>`);
+
+                        // 修正href属性的值
+                        let hrefs = temp.match(reg1);
+
+                        if (hrefs) {
+                            await Promise.all(hrefs.map(async str => {
+                                // 获取href属性内的值
+                                let href = str.replace(reg2, "$1");
+                                try {
+                                    let relativeSrc = await tempLoad(`${href} -getLink`);
+
+                                    // 修正路径
+                                    let fixStr = str.replace(new RegExp(` ${attr}=['"]${href}['"]`), ` ${attr}="${relativeSrc}"`);
+                                    temp = temp.replace(str, fixStr);
+                                } catch (err) {
+                                    console.error(`${attr} request failed =>`, {
+                                        [attr]: attr,
+                                        path: err[0].path
+                                    });
+                                }
+                            }));
+                        }
+                    }));
 
                     // 修正style内url的值
                     let styles = temp.match(/<style>[\s\S]+?<\/style>/g);
@@ -5547,7 +5612,7 @@ with(this){
                                     let url = urlStr.replace(/url\((.+?)\)/, "$1");
 
                                     try {
-                                        let relativeUrl = await relativeLoad(url.replace(/['"']/g, "") + " -getLink");
+                                        let relativeUrl = await tempLoad(url.replace(/['"']/g, "") + " -getLink");
 
                                         let fixurlStr = urlStr.replace(url, relativeUrl);
                                         styleStr = styleStr.replace(urlStr, fixurlStr);
@@ -5562,20 +5627,6 @@ with(this){
 
                             temp = temp.replace(backupStyleStr, styleStr);
                         }));
-                    }
-
-                    // 添加css
-                    let cssPath = defaults.css;
-                    if (cssPath) {
-                        let needLoadUrl = `${defaults.css} -getLink`;
-                        if (defaults.css === true) {
-                            needLoadUrl = `./${fileName}.css -getLink`;
-                        }
-                        // 缓存文件，并获取地址
-                        await relativeLoad(needLoadUrl + " -unAppend");
-                        cssPath = await relativeLoad(needLoadUrl);
-
-                        cssPath && (temp = `<link rel="stylesheet" href="${cssPath}">\n` + temp);
                     }
 
                     if (globalcss) {
@@ -5604,8 +5655,6 @@ with(this){
                 let defaults = {
                     // 默认模板
                     temp: false,
-                    // 加载组件样式
-                    css: false,
                     // 与组件同域下的样式
                     hostcss: "",
                     // 组件初始化完毕时
@@ -5667,8 +5716,6 @@ with(this){
                 let defaults = {
                     // 默认模板
                     temp: true,
-                    // 加载组件样式
-                    css: false,
                     // 监听属性函数
                     watch: {},
                     // 自有属性
@@ -6326,8 +6373,8 @@ with(this){
             </div>
             `;
         },
-        v: 2005002,
-        version: "2.5.2"
+        v: 2005003,
+        version: "2.5.3"
     };
 
     let oldOfa = glo.ofa;
