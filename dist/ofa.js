@@ -2908,6 +2908,11 @@
 
         const RUNARRAY = Symbol("runArray");
 
+        // 渲染结束标记
+        const RENDEREND = Symbol("renderend"),
+            RENDEREND_RESOLVE = Symbol("renderend_resove"),
+            RENDEREND_REJECT = Symbol("renderend_reject");
+
         const ATTRBINDINGKEY = "attr" + getRandomId();
 
         // 是否表达式
@@ -2999,6 +3004,16 @@ with(this){
             const CustomXhearEle = class extends XhearEle {
                 constructor(...args) {
                     super(...args);
+
+                    // 挂载渲染状态机
+                    this[RENDEREND] = new Promise((resolve, reject) => {
+                        this[RENDEREND_RESOLVE] = resolve;
+                        // this[RENDEREND_REJECT] = reject;
+                    });
+                }
+
+                get finish() {
+                    return this[RENDEREND];
                 }
             }
 
@@ -3533,7 +3548,8 @@ with(this){
 
             // 设置渲染完毕
             let setRenderend = () => {
-                nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid)
+                nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid);
+                xhearEle[RENDEREND_RESOLVE]();
                 xhearEle.trigger('renderend', {
                     bubbles: false
                 });
