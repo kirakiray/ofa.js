@@ -48,32 +48,12 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
         // 去除备注代码
         temp = temp.replace(/<\!--[\s\S]+?-->/g, "");
 
-        // 修正src属性的值
-        // let srcs = temp.match(/( src=".+?"| src='.+')/g);
-        // if (srcs) {
-        //     await Promise.all(srcs.map(async str => {
-        //         // 获取src属性内的值
-        //         let src = str.replace(/ src=['"](.+)['"]$/, "$1");
-        //         try {
-        //             let relativeSrc = await relativeLoad(`${src} -getLink`);
-
-        //             // 修正路径
-        //             let fixStr = str.replace(src, relativeSrc);
-        //             temp = temp.replace(str, fixStr);
-        //         } catch (err) {
-        //             console.error(`src request failed =>`, {
-        //                 src,
-        //                 path: err[0].path
-        //             });
-        //         }
-        //     }));
-        // }
-
         // 修正指定的属性值
         // 主要修复 href 和 src 的值
         await Promise.all(["href", "src"].map(async attr => {
-            const reg1 = new RegExp(`<[\\w\\d\\-]+[\\w\\d '"=]+?${attr}=['"].+['"][\\w\\d '"=]*>`, "g");
-            const reg2 = new RegExp(`<[\\w\\d\\-]+[\\w\\d '"=]+${attr}=['"](.+?)['"][\\w\\d '"=]*>`);
+            let tagAttrsKeyReg = `[\\w\\d '"=:#@]`;
+            const reg1 = new RegExp(`<[\\w\\d\\-]+${tagAttrsKeyReg}+?${attr}=['"].+['"]${tagAttrsKeyReg}*>`, "g");
+            const reg2 = new RegExp(`<[\\w\\d\\-]+${tagAttrsKeyReg}+${attr}=['"](.+?)['"]${tagAttrsKeyReg}*>`);
 
             // 修正href属性的值
             let hrefs = temp.match(reg1);

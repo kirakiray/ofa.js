@@ -258,8 +258,8 @@ $.register({
             this.screen.width = screen.width;
             this.screen.height = screen.height;
             this.screen.angle = screen.orientation ? screen.orientation.angle : "";
-            this.inner.width = innerWidth;
-            this.inner.height = innerHeight;
+            this.inner.width = this.ele.clientWidth;
+            this.inner.height = this.ele.clientHeight;
         }
     },
     ready() {

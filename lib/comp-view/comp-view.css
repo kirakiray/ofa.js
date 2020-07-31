@@ -1,12 +1,16 @@
 :host {
   display: block;
   margin: 20px;
+  height: 400px;
 }
 .container {
+  width: 100%;
+  height: 100%;
   display: flex;
   font-family: Roboto, "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 .left {
+  flex: 1;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 3px;
   background-color: #fff;
 }
