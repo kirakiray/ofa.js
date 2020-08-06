@@ -1,5 +1,5 @@
 /*!
- * ofa v2.5.3
+ * ofa v2.6.0
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -6330,7 +6330,10 @@ with(this){
 
     drill.config({
         paths: {
-            "@ofa/": "https://kirakiray.github.io/ofa.js/lib/"
+            // 有功能和质量要求的官方仓库
+            "@ofa/": "https://kirakiray.github.io/ofa.js/lib/",
+            // 无功能和质量限制的官方仓库
+            "@libs/": "https://kirakiray.github.io/ofa_lib/v2/"
         }
     });
 
@@ -6369,8 +6372,8 @@ with(this){
             </div>
             `;
         },
-        v: 2005003,
-        version: "2.5.3"
+        v: 2006000,
+        version: "2.6.0"
     };
 
     let oldOfa = glo.ofa;

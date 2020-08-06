@@ -44,7 +44,10 @@
 
     drill.config({
         paths: {
-            "@ofa/": "https://kirakiray.github.io/ofa.js/lib/"
+            // 有功能和质量要求的官方仓库
+            "@ofa/": "https://kirakiray.github.io/ofa.js/lib/",
+            // 无功能和质量限制的官方仓库
+            "@libs/": "https://kirakiray.github.io/ofa_lib/v2/"
         }
     });
 
