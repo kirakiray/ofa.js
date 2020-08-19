@@ -4024,7 +4024,7 @@ with(this){
             let loader = loaders.get(fileType);
 
             if (!loader) {
-                console.log("no such this loader => " + fileType);
+                // console.log("no such this loader => " + fileType);
                 loader = getByUtf8;
             }
 
@@ -4538,11 +4538,14 @@ with(this){
             // 判断是否有基于根目录参数
             if (param.includes('-r') || /^.+:\/\//.test(ori)) {
                 path = ori;
+            } else if (/^\//.test(ori)) {
+                // /开头的修正为host目录
+                path = location.origin + ori;
             } else if (/^\./.test(ori)) {
                 if (urlObj.relative) {
                     // 添加相对路径
-                    path = ori = urlObj.relative + ori
-                    // path = urlObj.relative + ori;
+                    // path = ori = urlObj.relative + ori
+                    path = urlObj.relative + ori;
                 } else {
                     path = ori.replace(/^\.\//, "");
                 }
@@ -4555,9 +4558,11 @@ with(this){
             if (param.includes('-pack') || param.includes('-p')) {
                 let pathArr = path.match(/(.+)\/(.+)/);
                 if (pathArr && (2 in pathArr)) {
-                    ori = path = `${pathArr[1]}/${pathArr[2]}/${pathArr[2]}`;
+                    // ori = path = `${pathArr[1]}/${pathArr[2]}/${pathArr[2]}`;
+                    path = `${pathArr[1]}/${pathArr[2]}/${pathArr[2]}`;
                 } else {
-                    ori = path = `${path}/${path}`
+                    // ori = path = `${path}/${path}`
+                    path = `${path}/${path}`
                 }
             }
 
@@ -4568,16 +4573,19 @@ with(this){
 
             // 修正单点
             path = path.replace(/\/\.\//, "/");
-            ori = ori.replace(/\/\.\//, "/");
+            // ori = ori.replace(/\/\.\//, "/");
 
             // 修正两点（上级目录）
             if (/\.\.\//.test(path)) {
                 path = removeParentPath(path);
-                ori = removeParentPath(ori);
+                // ori = removeParentPath(ori);
             }
 
-            // 添加后缀
-            path += "." + fileType;
+            // 没有 / 结尾的情况下，才进行修正模块名
+            if (!/\/$/.test(path)) {
+                // 添加后缀
+                path += "." + fileType;
+            }
 
             // 根据资源地址计算资源目录
             let dir = getDir(path);
@@ -4593,7 +4601,7 @@ with(this){
             Object.assign(urlObj, {
                 link,
                 search,
-                ori,
+                // ori,
                 fileType,
                 path,
                 dir,
