@@ -45,7 +45,7 @@ Page({
         },
         gotoPage2() {
             this.navigate({
-                src: "../apage2 -pack"
+                src: "../apage2 -p"
             });
         }
     },

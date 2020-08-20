@@ -22,12 +22,12 @@ Page(async (load) => {
             gotoSelf() {
                 this.navigate({
                     type: "replace",
-                    src: "../apage -pack"
+                    src: "../apage -p"
                 });
             },
             test2() {
                 this.navigate({
-                    src: "../apage -pack"
+                    src: "../apage -p"
                 });
 
                 setTimeout(() => {

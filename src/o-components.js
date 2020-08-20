@@ -40,9 +40,9 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
             temp = await relativeLoad(tempUrl);
 
             // 重构temp用的Load方法
-            const rUrl = tempUrl.replace(/(^.+\/).+/, "$1");
+            const relativeDir = tempUrl.replace(/(^.+\/).+/, "$1");
             tempLoad = (...args) => {
-                return main.load(main.toUrlObjs(args, rUrl));
+                return main.load(main.toUrlObjs(args, relativeDir));
             }
         }
         // 去除备注代码

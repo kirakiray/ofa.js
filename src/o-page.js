@@ -119,21 +119,13 @@ $.register({
             defs.self = this;
 
             if (defs.type !== "back") {
-                let relativeSrc = this.src;
+                let relativeDir = this.source.replace(/(.+\/).+/, "$1");
 
-                if (relativeSrc) {
-                    // 去掉后面的参数
-                    let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
-                    let src = defs.src;
+                // 去掉后面的参数
+                let src = defs.src;
 
-                    if (urlStrArr) {
-                        let obj = main.toUrlObjs([src], urlStrArr[1]);
-                        obj && (obj = obj[0]);
-                        src = obj.ori;
-                        obj.search && (src += ".js?" + obj.search);
-                    }
-                    defs.src = src;
-                }
+                let obj = main.toUrlObjs([src], relativeDir)[0];
+                defs.src = encodeURIComponent(obj.search ? `${obj.path}?${obj.search}` : obj.path);
             }
 
             return app[APPNAVIGATE](defs);
@@ -144,18 +136,24 @@ $.register({
         }
     },
     data: {
-        // 当前页面的链接地址
-        src: "",
+        // 当前页面的真实地址
+        source: "",
         // 当前页面的状态
         // pageStat: "unload",
         // [PAGELOADED]: "",
         // 页面是否展示，主要是在o-app内的关键属性
         show: true
     },
-    attrs: ["src"],
+    attrs: {
+        // 当前页面的链接地址
+        src: ""
+    },
     watch: {
         async src(e, val) {
             this.attrs.oLoading = "1";
+
+            // 解码地址
+            val = decodeURIComponent(val);
 
             if (!val) {
                 return;
@@ -178,6 +176,9 @@ $.register({
             // 相应资源地址
             // let sourcePath = await load(val + " -r -getLink");
             let sourcePath = await load(val + " -getLink");
+
+            // 设置真实地址
+            this.source = sourcePath;
 
             // 修正记录信息
             this.ele.__xInfo.scriptSrc = sourcePath;

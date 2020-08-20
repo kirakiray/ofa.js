@@ -1,5 +1,5 @@
 /*!
- * ofa v2.6.0
+ * ofa v2.6.1
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -3641,7 +3641,7 @@ with(this){
 
     })(window);
     /*!
-     * drill.js v3.5.1
+     * drill.js v3.5.2
      * https://github.com/kirakiray/drill.js
      * 
      * (c) 2018-2020 YAO
@@ -4327,8 +4327,8 @@ with(this){
             debug: {
                 bag
             },
-            version: "3.5.1",
-            v: 3005001
+            version: "3.5.2",
+            v: 3005002
         };
         // 设置类型加载器的函数
         const setProcessor = (processName, processRunner) => {
@@ -4468,10 +4468,42 @@ with(this){
             return p;
         }
 
+        /**
+         * 将相对路径写法改为绝对路径（协议开头）
+         * @param {String} path 需要修正的路径
+         * @param {String} relativeDir 相对目录
+         */
+        const getFullPath = (path, relativeDir) => {
+            !relativeDir && (relativeDir = getDir(document.location.href));
+
+            let new_path = path;
+
+            // 如果不是协议开头，修正relativeDir
+            if (!/^.+:\/\//.test(relativeDir)) {
+                relativeDir = getDir(getFullPath(relativeDir));
+            }
+
+            // 不是绝对路径（协议+地址）的话进行修正
+            if (!/^.+:\/\//.test(path)) {
+                if (/^\/.+/.test(path)) {
+                    // 基于根目录
+                    new_path = location.origin + path;
+                } else {
+                    // 基于相对路径
+                    new_path = relativeDir + path;
+                }
+            }
+
+            return new_path;
+        }
+
         // 转换出url字符串对象
         let fixUrlObj = (urlObj) => {
             let {
-                str
+                // 最初的输入文本，千万不能覆盖这个值
+                str,
+                // 相对目录
+                relative
             } = urlObj;
 
             // 判断是否注册在bag上的直接的id
@@ -4485,113 +4517,99 @@ with(this){
                 return urlObj;
             }
 
+            let
+                // 挂载在bag上的链接key
+                path,
+                // 最终加载的链接
+                link,
+                // 链接上的search数据
+                search,
+                // 加载文件的类型
+                fileType,
+                // 空格拆分后的参数
+                param;
+
             // 拆分空格数据
-            let ndata = str.split(/\s/).filter(e => e && e);
+            [path, ...param] = str.split(/\s/).filter(e => e && e);
 
-            let param = ndata.slice(1);
-
-            // 第一个参数是路径名
-            let ori = ndata[0];
-
-            // 拆分问号(?)后面的 url param
-            let search = ori.match(/(.+)\?(\S+)$/) || "";
+            // 抽离search数据
+            search = path.match(/(.+)\?(\S+)$/) || "";
             if (search) {
-                ori = search[1];
+                path = search[1];
                 search = search[2];
             }
 
-            // 判断是否要加版本号
-            let {
-                k,
-                v
-            } = drill.cacheInfo;
-            if (k && v && !param.includes("-unCacheSearch")) {
-                search && (search += "&");
-                search += k + '=' + v;
-            }
-
             // 查看是否有映射路径
-            let tarpath = paths.get(ori);
-            if (tarpath) {
-                ori = tarpath;
+            let tarPath = paths.get(path);
+            if (tarPath) {
+                // 映射路径修正
+                path = tarPath;
             } else {
-                // 查看是否有映射目录
-                // 判断是否注册目录
+                // 映射目录修正
                 for (let i in dirpaths) {
                     let tar = dirpaths[i];
-                    if (tar.reg.test(ori)) {
-                        ori = ori.replace(tar.reg, tar.value);
+                    if (tar.reg.test(path)) {
+                        path = path.replace(tar.reg, tar.value);
                         break
                     }
                 }
             }
 
-            // 得出fileType
-            let fileType = getFileType(ori) || "js";
-
-            // ori去掉后缀
-            ori = ori.replace(new RegExp('\\.' + fileType + "$"), "");
-
-            // 主体path
-            let path;
-
-            // 判断是否有基于根目录参数
-            if (param.includes('-r') || /^.+:\/\//.test(ori)) {
-                path = ori;
-            } else if (/^\//.test(ori)) {
-                // /开头的修正为host目录
-                path = location.origin + ori;
-            } else if (/^\./.test(ori)) {
-                if (urlObj.relative) {
-                    // 添加相对路径
-                    // path = ori = urlObj.relative + ori
-                    path = urlObj.relative + ori;
-                } else {
-                    path = ori.replace(/^\.\//, "");
-                }
-            } else {
-                // 添加相对目录，得出资源地址
-                path = base.baseUrl + ori;
-            }
-
-            // 判断是否带有 -pack 参数
-            if (param.includes('-pack') || param.includes('-p')) {
-                let pathArr = path.match(/(.+)\/(.+)/);
-                if (pathArr && (2 in pathArr)) {
-                    // ori = path = `${pathArr[1]}/${pathArr[2]}/${pathArr[2]}`;
-                    path = `${pathArr[1]}/${pathArr[2]}/${pathArr[2]}`;
-                } else {
-                    // ori = path = `${path}/${path}`
-                    path = `${path}/${path}`
-                }
-            }
-
-            // 判断不是协议开头的，加上当前的根目录
+            // 确保是绝对路径
             if (!/^.+:\/\//.test(path)) {
-                path = rootHref + path;
+                // 判断是否有基于根目录参数
+                if (param.includes('-r')) {
+                    path = getFullPath(path);
+                } else if (/^\./.test(path)) {
+                    // 获取修正后的地址
+                    path = getFullPath(path, relative || base.baseUrl);
+                } else {
+                    path = getFullPath(path, base.baseUrl);
+                }
             }
 
-            // 修正单点
+            // 修正无用单点路径
             path = path.replace(/\/\.\//, "/");
-            // ori = ori.replace(/\/\.\//, "/");
 
             // 修正两点（上级目录）
             if (/\.\.\//.test(path)) {
                 path = removeParentPath(path);
-                // ori = removeParentPath(ori);
             }
 
-            // 没有 / 结尾的情况下，才进行修正模块名
-            if (!/\/$/.test(path)) {
-                // 添加后缀
-                path += "." + fileType;
-            }
+            // 得出fileType
+            fileType = getFileType(path);
 
-            // 根据资源地址计算资源目录
-            let dir = getDir(path);
+            if (!fileType) {
+                // 空的情况下
+                if (!/\/$/.test(path)) {
+                    if (param.includes('-p')) {
+                        // 带包修正
+                        path = path + "/" + path.replace(/.+\/(.+)/, "$1");
+                    }
+
+                    // 判断不是 / 结尾的，加上js修正
+                    path += ".js";
+                    fileType = "js";
+                }
+            }
 
             // 写入最终请求资源地址
-            let link = search ? (path + "?" + search) : path;
+            link = search ? (path + "?" + search) : path;
+
+            {
+                // 判断是否要加版本号
+                let {
+                    k,
+                    v
+                } = drill.cacheInfo;
+                if (k && v && !param.includes("-unCacheSearch")) {
+                    if (link.includes("?")) {
+                        link = `${link}&${k}=${v}`;
+                    } else {
+                        link = `${link}?${k}=${v}`;
+                    }
+                }
+            }
 
             // 对 -mjs 参数修正
             if (param.includes("-mjs")) {
@@ -4601,10 +4619,9 @@ with(this){
             Object.assign(urlObj, {
                 link,
                 search,
-                // ori,
                 fileType,
                 path,
-                dir,
+                dir: getDir(path),
                 param
             });
 
@@ -5596,9 +5613,9 @@ with(this){
                         temp = await relativeLoad(tempUrl);
 
                         // 重构temp用的Load方法
-                        const rUrl = tempUrl.replace(/(^.+\/).+/, "$1");
+                        const relativeDir = tempUrl.replace(/(^.+\/).+/, "$1");
                         tempLoad = (...args) => {
-                            return main.load(main.toUrlObjs(args, rUrl));
+                            return main.load(main.toUrlObjs(args, relativeDir));
                         }
                     }
                     // 去除备注代码
@@ -5867,21 +5884,13 @@ with(this){
                         defs.self = this;
 
                         if (defs.type !== "back") {
-                            let relativeSrc = this.src;
+                            let relativeDir = this.source.replace(/(.+\/).+/, "$1");
 
-                            if (relativeSrc) {
-                                // 去掉后面的参数
-                                let urlStrArr = /(.+\/)(.+)/.exec(relativeSrc);
-                                let src = defs.src;
+                            // 去掉后面的参数
+                            let src = defs.src;
 
-                                if (urlStrArr) {
-                                    let obj = main.toUrlObjs([src], urlStrArr[1]);
-                                    obj && (obj = obj[0]);
-                                    src = obj.ori;
-                                    obj.search && (src += ".js?" + obj.search);
-                                }
-                                defs.src = src;
-                            }
+                            let obj = main.toUrlObjs([src], relativeDir)[0];
+                            defs.src = encodeURIComponent(obj.search ? `${obj.path}?${obj.search}` : obj.path);
                         }
 
                         return app[APPNAVIGATE](defs);
@@ -5895,18 +5904,24 @@ with(this){
                     }
                 },
                 data: {
-                    // 当前页面的链接地址
-                    src: "",
+                    // 当前页面的真实地址
+                    source: "",
                     // 当前页面的状态
                     // pageStat: "unload",
                     // [PAGELOADED]: "",
                     // 页面是否展示，主要是在o-app内的关键属性
                     show: true
                 },
-                attrs: ["src"],
+                attrs: {
+                    // 当前页面的链接地址
+                    src: ""
+                },
                 watch: {
                     async src(e, val) {
                         this.attrs.oLoading = "1";
+
+                        // 解码地址
+                        val = decodeURIComponent(val);
 
                         if (!val) {
                             return;
@@ -5929,6 +5944,9 @@ with(this){
                         // 相应资源地址
                         // let sourcePath = await load(val + " -r -getLink");
                         let sourcePath = await load(val + " -getLink");
+
+                        // 设置真实地址
+                        this.source = sourcePath;
 
                         // 修正记录信息
                         this.ele.__xInfo.scriptSrc = sourcePath;
@@ -6410,8 +6428,8 @@ with(this){
             </div>
             `;
         },
-        v: 2006000,
-        version: "2.6.0"
+        v: 2006001,
+        version: "2.6.1"
     };
 
     let oldOfa = glo.ofa;
