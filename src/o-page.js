@@ -95,6 +95,7 @@ $.register({
                         return;
                     }
                 } else {
+                    // 让外层的Page进行跳转逻辑
                     if (targetPage.ele !== this.ele) {
                         targetPage.navigate(opts);
                         return;
@@ -119,13 +120,15 @@ $.register({
             defs.self = this;
 
             if (defs.type !== "back") {
+                // 当前地址的相对目录
                 let relativeDir = this.source.replace(/(.+\/).+/, "$1");
 
                 // 去掉后面的参数
                 let src = defs.src;
 
                 let obj = main.toUrlObjs([src], relativeDir)[0];
-                defs.src = encodeURIComponent(obj.search ? `${obj.path}?${obj.search}` : obj.path);
+                let path = obj.path;
+                defs.src = (obj.search ? `${path}?${obj.search}` : path);
             }
 
             return app[APPNAVIGATE](defs);
@@ -151,9 +154,6 @@ $.register({
     watch: {
         async src(e, val) {
             this.attrs.oLoading = "1";
-
-            // 解码地址
-            val = decodeURIComponent(val);
 
             if (!val) {
                 return;

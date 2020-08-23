@@ -3641,7 +3641,7 @@ with(this){
 
     })(window);
     /*!
-     * drill.js v3.5.2
+     * drill.js v3.5.3
      * https://github.com/kirakiray/drill.js
      * 
      * (c) 2018-2020 YAO
@@ -3649,46 +3649,7 @@ with(this){
      */
     ((glo) => {
         "use strict";
-        // common
-        // 处理器（针对js类型）
-        const processors = new Map();
-        // 加载器（针对文件类型）
-        const loaders = new Map();
-        // 地址寄存器
-        const bag = new Map();
 
-        // 映射资源
-        const paths = new Map();
-
-        // 映射目录
-        const dirpaths = {};
-
-        // 是否离线
-        let offline = false;
-        // offline模式下，对文件的特殊处理
-        const cacheDress = new Map();
-
-        // 错误处理数据
-        let errInfo = {
-            // 加载错误之后，再次加载的间隔时间(毫秒)
-            time: 100,
-            // baseUrl后备仓
-            backups: []
-        };
-
-        // 基础数据对象
-        let base = {
-            processors,
-            loaders,
-            bag,
-            paths,
-            dirpaths,
-            errInfo,
-            // 根目录
-            baseUrl: "",
-            // 临时挂起的模块对象
-            tempM: {}
-        };
 
         // function
         // 获取随机id
@@ -3748,6 +3709,37 @@ with(this){
             return urlArr && urlArr[1];
         };
 
+
+
+        /**
+         * 将相对路径写法改为绝对路径（协议开头）
+         * @param {String} path 需要修正的路径
+         * @param {String} relativeDir 相对目录
+         */
+        const getFullPath = (path, relativeDir) => {
+            !relativeDir && (relativeDir = getDir(document.location.href));
+
+            let new_path = path;
+
+            // 如果不是协议开头，修正relativeDir
+            if (!/^.+:\/\//.test(relativeDir)) {
+                relativeDir = getDir(getFullPath(relativeDir));
+            }
+
+            // 不是绝对路径（协议+地址）的话进行修正
+            if (!/^.+:\/\//.test(path)) {
+                if (/^\/.+/.test(path)) {
+                    // 基于根目录
+                    new_path = location.origin + path;
+                } else {
+                    // 基于相对路径
+                    new_path = relativeDir + path;
+                }
+            }
+
+            return new_path;
+        }
+
         //修正字符串路径
         const removeParentPath = (url) => {
             let urlArr = url.split(/\//g);
@@ -3762,9 +3754,49 @@ with(this){
             return newArr.join('/');
         };
 
-        // 获取根目录地址
-        const rootHref = getDir(document.location.href);
+        // common
+        // 处理器（针对js类型）
+        const processors = new Map();
+        // 加载器（针对文件类型）
+        const loaders = new Map();
+        // 地址寄存器
+        const bag = new Map();
 
+        // 映射资源
+        const paths = new Map();
+
+        // 映射目录
+        const dirpaths = {};
+
+        // 是否离线
+        let offline = false;
+        // offline模式下，对文件的特殊处理
+        const cacheDress = new Map();
+
+        // 错误处理数据
+        let errInfo = {
+            // 加载错误之后，再次加载的间隔时间(毫秒)
+            time: 100,
+            // baseUrl后备仓
+            backups: []
+        };
+
+        // 资源根路径
+        let baseUrl = getDir(location.href);
+
+        // 基础数据对象
+        let base = {
+            processors,
+            loaders,
+            bag,
+            paths,
+            dirpaths,
+            errInfo,
+            // 根目录
+            baseUrl: "",
+            // 临时挂起的模块对象
+            tempM: {}
+        };
         // loaders添加css
         loaders.set("css", (packData) => {
             return new Promise((res, rej) => {
@@ -4071,6 +4103,91 @@ with(this){
 
         const isHttpFront = str => /^http/.test(str);
 
+        /**
+         * 加载包
+         */
+        class PackData {
+            constructor(props) {
+                Object.assign(this, props);
+
+                // 包的getter函数
+                // 包加载完成时候，有特殊功能的，请替换掉async getPack函数
+                // async getPack(urlObj) { }
+
+                // 加载状态
+                // 1加载中
+                // 2加载错误，重新装载中
+                // 3加载完成
+                // 4彻底加载错误，别瞎折腾了
+                this.stat = 1;
+
+                // 等待通行的令牌
+                this.passPromise = new Promise((res, rej) => {
+                    this._passResolve = res;
+                    this._passReject = rej;
+                });
+
+                // 错误路径地址
+                this.errPaths = [];
+            }
+
+            // 获取当前path的目录
+            get dir() {
+                return getDir(this.path);
+            }
+
+            // 获取备份path
+            get nextLink() {
+                // 获取备份path的同时，相当于进入等待重载的状态
+                this.stat = 2;
+
+                let backupId = (this._backupId != undefined) ? ++this._backupId : (this._backupId = 0);
+
+
+                let {
+                    backups
+                } = errInfo;
+
+                // 获取旧的base
+                let oldBase = backups[backupId - 1] || base.baseUrl;
+
+                // 获取下一个backup地址
+                let nextBase = backups[backupId];
+
+                if (!nextBase) {
+                    return;
+                }
+
+                let oldBaseStr = getFullPath(oldBase);
+                let nextBaseStr = getFullPath(nextBase);
+
+                this.errPaths.push(this.link);
+
+                let link = this.link.replace(oldBaseStr, nextBaseStr);
+
+                this.link = link;
+
+                return link;
+            }
+
+            // 设置成功
+            resolve(getPack) {
+                this.getPack = getPack;
+                this.stat = 3;
+                this._passResolve();
+            }
+
+            // 通告pack错误
+            reject() {
+                this.stat = 4;
+                this._passReject({
+                    desc: `load source error`,
+                    link: this.errPaths,
+                    packData: this
+                });
+            }
+        }
+
         let agent = async (urlObj) => {
             // getLink直接返回
             if (urlObj.param && (urlObj.param.includes("-getLink")) && !offline) {
@@ -4081,45 +4198,17 @@ with(this){
             let packData = bag.get(urlObj.path);
 
             if (!packData) {
-                packData = {
-                    // 加载状态
-                    // 1加载中
-                    // 2加载错误，重新装载中
-                    // 3加载完成
-                    // 4彻底加载错误，别瞎折腾了
-                    stat: 1,
-                    // 路径相关信息
-                    dir: urlObj.dir,
+                packData = new PackData({
                     path: urlObj.path,
                     link: urlObj.link,
                     // 记录装载状态
                     fileType: urlObj.fileType,
-                    // 包的getter函数
-                    // 包加载完成时候，有特殊功能的，请替换掉async getPack函数
-                    // async getPack(urlObj) { }
-                };
-
-                // 等待通行的令牌
-                packData.passPromise = new Promise((res, rej) => {
-                    packData._passResolve = res;
-                    packData._passReject = rej;
                 });
 
                 // 设置包数据
                 bag.set(urlObj.path, packData);
 
                 // 存储错误资源地址
-                let errPaths = [packData.link];
-
-                const errCall = (e) => {
-                    packData.stat = 4;
-                    packData._passReject({
-                        desc: `load source error`,
-                        link: errPaths,
-                        packData
-                    });
-                }
-
                 while (true) {
                     try {
                         // 文件link中转
@@ -4127,70 +4216,28 @@ with(this){
                             packData
                         });
 
-                        // 立即请求包处理
-                        packData.getPack = (await getLoader(urlObj.fileType)(packData)) || (async () => {});
-
-                        packData.stat = 3;
-
-                        packData._passResolve();
+                        // 返回获取函数
+                        let getPack = (await getLoader(urlObj.fileType)(packData)) || (async () => {});
+                        packData.resolve(getPack);
                         break;
                     } catch (e) {
-                        // console.error("load error =>", e);
-
                         packData.stat = 2;
                         if (isHttpFront(urlObj.str)) {
                             // http引用的就别折腾
+                            packData.reject();
                             break;
                         }
-                        // 查看后备仓
-                        let {
-                            backups
-                        } = errInfo;
-                        if (!backups.length) {
-                            errCall();
+
+                        // 获取下一个链接
+                        let nextBackupLink = packData.nextLink;
+
+                        if (!nextBackupLink) {
+                            packData.reject();
                             break;
-                        } else {
-                            // 查看当前用了几个后备仓
-                            let backupId = (packData.backupId != undefined) ? packData.backupId : (packData.backupId = -1);
-
-                            // 重新加载包
-                            if (backupId < backups.length) {
-                                // 获取旧的地址
-                                let oldBaseUrl = backups[backupId] || base.baseUrl;
-                                let frontUrl = location.href.replace(/(.+\/).+/, "$1")
-
-                                if (!isHttpFront(oldBaseUrl)) {
-                                    // 补充地址
-                                    oldBaseUrl = frontUrl + oldBaseUrl;
-                                }
-
-                                // 下一个地址
-                                backupId = ++packData.backupId;
-
-                                // 补充下一个地址
-                                let nextBaseUrl = backups[backupId];
-
-                                if (!nextBaseUrl) {
-                                    // 没有下一个就跳出
-                                    errCall();
-                                    break;
-                                }
-
-                                if (!isHttpFront(nextBaseUrl)) {
-                                    nextBaseUrl = frontUrl + nextBaseUrl;
-                                }
-
-                                // 替换packData
-                                packData.link = packData.link.replace(new RegExp("^" + oldBaseUrl), nextBaseUrl);
-                                errPaths.push(packData.link);
-
-                                await new Promise(res => setTimeout(res, errInfo.time));
-                            } else {
-                                packData.stat = 4;
-                                errCall();
-                                break;
-                            }
                         }
+
+                        // 等待重试
+                        await new Promise(res => setTimeout(res, errInfo.time));
                     }
                 }
             }
@@ -4251,7 +4298,7 @@ with(this){
 
                         // 如果修正相对目录 
                         if (/^\.\./.test(val)) {
-                            val = removeParentPath(rootHref + base.baseUrl + val);
+                            val = removeParentPath(getDir(document.location.href) + base.baseUrl + val);
                         } else if (/^\//.test(val)) {
                             val = location.origin + val;
                         }
@@ -4327,8 +4374,8 @@ with(this){
             debug: {
                 bag
             },
-            version: "3.5.2",
-            v: 3005002
+            version: "3.5.3",
+            v: 3005003
         };
         // 设置类型加载器的函数
         const setProcessor = (processName, processRunner) => {
@@ -4468,35 +4515,6 @@ with(this){
             return p;
         }
 
-        /**
-         * 将相对路径写法改为绝对路径（协议开头）
-         * @param {String} path 需要修正的路径
-         * @param {String} relativeDir 相对目录
-         */
-        const getFullPath = (path, relativeDir) => {
-            !relativeDir && (relativeDir = getDir(document.location.href));
-
-            let new_path = path;
-
-            // 如果不是协议开头，修正relativeDir
-            if (!/^.+:\/\//.test(relativeDir)) {
-                relativeDir = getDir(getFullPath(relativeDir));
-            }
-
-            // 不是绝对路径（协议+地址）的话进行修正
-            if (!/^.+:\/\//.test(path)) {
-                if (/^\/.+/.test(path)) {
-                    // 基于根目录
-                    new_path = location.origin + path;
-                } else {
-                    // 基于相对路径
-                    new_path = relativeDir + path;
-                }
-            }
-
-            return new_path;
-        }
-
         // 转换出url字符串对象
         let fixUrlObj = (urlObj) => {
             let {
@@ -4512,7 +4530,6 @@ with(this){
                 Object.assign(urlObj, {
                     path: tarBag.path,
                     link: tarBag.link,
-                    dir: tarBag.dir
                 });
                 return urlObj;
             }
@@ -4617,11 +4634,15 @@ with(this){
             }
 
             Object.assign(urlObj, {
+                // 真正的访问地址
                 link,
+                // 后置参数
                 search,
+                // 加载类型
                 fileType,
-                path,
-                dir: getDir(path),
+                // 挂载地址
+                path: path.replace(location.origin, ""),
+                // 空格参数
                 param
             });
 
@@ -5860,6 +5881,7 @@ with(this){
                                     return;
                                 }
                             } else {
+                                // 让外层的Page进行跳转逻辑
                                 if (targetPage.ele !== this.ele) {
                                     targetPage.navigate(opts);
                                     return;
@@ -5884,13 +5906,15 @@ with(this){
                         defs.self = this;
 
                         if (defs.type !== "back") {
+                            // 当前地址的相对目录
                             let relativeDir = this.source.replace(/(.+\/).+/, "$1");
 
                             // 去掉后面的参数
                             let src = defs.src;
 
                             let obj = main.toUrlObjs([src], relativeDir)[0];
-                            defs.src = encodeURIComponent(obj.search ? `${obj.path}?${obj.search}` : obj.path);
+                            let path = obj.path;
+                            defs.src = (obj.search ? `${path}?${obj.search}` : path);
                         }
 
                         return app[APPNAVIGATE](defs);
@@ -5919,9 +5943,6 @@ with(this){
                 watch: {
                     async src(e, val) {
                         this.attrs.oLoading = "1";
-
-                        // 解码地址
-                        val = decodeURIComponent(val);
 
                         if (!val) {
                             return;
@@ -6262,6 +6283,13 @@ with(this){
                         };
 
                         Object.assign(defaults, opts);
+
+                        // 跳转链接不能是协议开头的
+                        if (/^.+:\/\//.test(defaults.src)) {
+                            throw {
+                                desc: "navigate can't use protocol path"
+                            };
+                        }
 
                         // 防止传File类的数据   
                         defaults.data && (defaults.data = JSON.parse(JSON.stringify(defaults.data)));

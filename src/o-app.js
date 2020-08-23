@@ -204,6 +204,13 @@ $.register({
 
             Object.assign(defaults, opts);
 
+            // 跳转链接不能是协议开头的
+            if (/^.+:\/\//.test(defaults.src)) {
+                throw {
+                    desc: "navigate can't use protocol path"
+                };
+            }
+
             // 防止传File类的数据   
             defaults.data && (defaults.data = JSON.parse(JSON.stringify(defaults.data)));
 
