@@ -20,6 +20,7 @@ ofa = async () => {
     if (navigator.userAgent.includes("Mac OS X") && (window.screen.width == 768 || window.screen.height == 1024)) {
         isSlideMode = true;
     }
+    
 
     // 添加首页前设置路由
     if (isSlideMode) {
