@@ -146,12 +146,13 @@ main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
         let hostcssArr = getType(defaults.hostcss) == "string" ? [defaults.hostcss] : defaults.hostcss;;
 
         defaults.ready = async function (...args) {
-            // 获取元素域上的主元素
-            let root = this.ele.getRootNode();
 
             // 添加hostcss
             await Promise.all(hostcssArr.map(async hostcss => {
                 hostcss = await relativeLoad(hostcss + " -getLink");
+                
+                // 获取元素域上的主元素
+                let root = this.ele.getRootNode();
 
                 // 查找是否已经存在该css
                 let targetCssEle = root.querySelector(`link[href="${hostcss}"]`)
