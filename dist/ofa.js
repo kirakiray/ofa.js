@@ -1,5 +1,5 @@
 /*!
- * ofa v2.6.1
+ * ofa v2.6.2
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2020 YAO
@@ -1369,6 +1369,29 @@
             }
 
             /**
+             * 监听表达式为正确时就返回成功
+             * @param {String} expr 监听表达式
+             */
+            watchUntil(expr) {
+                if (/[^=]=[^=]/.test(expr)) {
+                    throw 'cannot use single =';
+                }
+                return new Promise(resolve => {
+                    let f;
+                    let exprFun = new Function(`with(this){
+                return ${expr}
+            }`).bind(this);
+                    this.watch(f = () => {
+                        let reVal = exprFun();
+                        if (reVal) {
+                            this.unwatch(f);
+                            resolve(reVal);
+                        }
+                    });
+                });
+            }
+
+            /**
              * 趋势数据的入口，用于同步数据
              * @param {Object} trend 趋势数据
              */
@@ -2096,8 +2119,8 @@
         // 可直接设置的Key
         const xEleDefaultSetKeys = new Set(["text", "html", "display", "style"]);
 
-        // 可直接设置的Key并且能冒泡
-        const xEleDefaultSetKeysCanUpdate = new Set(["text", "html"]);
+        // 可直接设置的Key并且能冒泡（在普通元素下，非组件）
+        // const xEleDefaultSetKeysCanUpdate = new Set(["text", "html"]);
 
         // 不可设置的key
         const UnSetKeys = new Set(["parent", "index", "slot"]);
@@ -2356,11 +2379,11 @@
                     // 直接设置
                     _this[key] = value;
 
-                    if (xEleDefaultSetKeysCanUpdate.has(key)) {
-                        emitUpdate(_this, "setData", [key, value], {
-                            oldValue: oldVal
-                        });
-                    }
+                    // if (xEleDefaultSetKeysCanUpdate.has(key)) {
+                    //     emitUpdate(_this, "setData", [key, value], {
+                    //         oldValue: oldVal
+                    //     });
+                    // }
                     return true;
                 } else if ((canSetKey && canSetKey.has(key)) || /^_.+/.test(key)) {
                     // 直接走xdata的逻辑
@@ -5081,7 +5104,6 @@ with(this){
     const CURRENTS = Symbol("currentPages");
     const APPNAVIGATE = "_navigate";
 
-    // const PAGELOADED = Symbol("pageLoaded");
     const NAVIGATEDATA = Symbol("navigateData");
     const PAGEID = Symbol("pageId");
     const PAGEOPTIONS = Symbol("pageOptions");
@@ -5794,6 +5816,9 @@ with(this){
             const PAGE_PREPARING = Symbol("_preparing");
             const PAGE_PREPARING_RESOLVE = Symbol("_preparing_resolve");
             const PAGE_STATE = Symbol("page_state");
+            const PAGE_LOADED = Symbol("page_loaded");
+            const PAGE_LOADED_RESOLVE = Symbol("page_loaded_resolve");
+            const PAGE_LOADED_REJECT = Symbol("page_loaded_reject");
 
             main.setProcessor("Page", async (packData, d, {
                 relativeLoad
@@ -5832,13 +5857,16 @@ with(this){
                 tag: "o-page",
                 temp: false,
                 proto: {
+                    // 当前页面的状态
                     get pageStat() {
                         return this[PAGE_STATE];
                     },
                     get pageId() {
                         return this[PAGEID];
                     },
-
+                    get loaded() {
+                        return this[PAGE_LOADED];
+                    },
                     // 获取页面寄宿的app对象
                     get app() {
                         return this.parents("o-app")[0];
@@ -5943,9 +5971,6 @@ with(this){
                 data: {
                     // 当前页面的真实地址
                     source: "",
-                    // 当前页面的状态
-                    // pageStat: "unload",
-                    // [PAGELOADED]: "",
                     // 页面是否展示，主要是在o-app内的关键属性
                     show: true
                 },
@@ -6005,6 +6030,11 @@ with(this){
 
                             this.attrs.oLoading = null;
 
+                            // 修正loaded Promise 状态
+                            this[PAGE_LOADED_REJECT]();
+                            this[PAGE_LOADED_RESOLVE] = null;
+                            this[PAGE_LOADED_REJECT] = null;
+
                             throw errObj;
                         }
 
@@ -6040,6 +6070,11 @@ with(this){
                         });
                         this.emit("page-ready");
 
+                        // 修正loaded Promise 状态
+                        this[PAGE_LOADED_RESOLVE]();
+                        this[PAGE_LOADED_RESOLVE] = null;
+                        this[PAGE_LOADED_REJECT] = null;
+
                         this.watch("show", (e, show) => {
                             if (show) {
                                 pageOpts.onShow && pageOpts.onShow.call(this);
@@ -6053,6 +6088,12 @@ with(this){
                     // 添加pageId
                     this[PAGEID] = getRandomId();
                     this[PAGE_STATE] = "unload";
+
+                    // 添加loaded Promise
+                    this[PAGE_LOADED] = new Promise((res, rej) => {
+                        this[PAGE_LOADED_RESOLVE] = res;
+                        this[PAGE_LOADED_REJECT] = rej;
+                    });
                 },
                 detached() {
                     this[PAGE_STATE] = "destory";
@@ -6469,8 +6510,8 @@ with(this){
             </div>
             `;
         },
-        v: 2006001,
-        version: "2.6.1"
+        v: 2006002,
+        version: "2.6.2"
     };
 
     let oldOfa = glo.ofa;

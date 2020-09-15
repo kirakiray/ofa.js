@@ -4,6 +4,9 @@ $("head").push(opageStyle);
 const PAGE_PREPARING = Symbol("_preparing");
 const PAGE_PREPARING_RESOLVE = Symbol("_preparing_resolve");
 const PAGE_STATE = Symbol("page_state");
+const PAGE_LOADED = Symbol("page_loaded");
+const PAGE_LOADED_RESOLVE = Symbol("page_loaded_resolve");
+const PAGE_LOADED_REJECT = Symbol("page_loaded_reject");
 
 main.setProcessor("Page", async (packData, d, { relativeLoad }) => {
     let defaults = {
@@ -35,13 +38,16 @@ $.register({
     tag: "o-page",
     temp: false,
     proto: {
+        // 当前页面的状态
         get pageStat() {
             return this[PAGE_STATE];
         },
         get pageId() {
             return this[PAGEID];
         },
-
+        get loaded() {
+            return this[PAGE_LOADED];
+        },
         // 获取页面寄宿的app对象
         get app() {
             return this.parents("o-app")[0];
@@ -141,9 +147,6 @@ $.register({
     data: {
         // 当前页面的真实地址
         source: "",
-        // 当前页面的状态
-        // pageStat: "unload",
-        // [PAGELOADED]: "",
         // 页面是否展示，主要是在o-app内的关键属性
         show: true
     },
@@ -203,6 +206,11 @@ $.register({
 
                 this.attrs.oLoading = null;
 
+                // 修正loaded Promise 状态
+                this[PAGE_LOADED_REJECT]();
+                this[PAGE_LOADED_RESOLVE] = null;
+                this[PAGE_LOADED_REJECT] = null;
+
                 throw errObj;
             }
 
@@ -238,6 +246,11 @@ $.register({
             });
             this.emit("page-ready");
 
+            // 修正loaded Promise 状态
+            this[PAGE_LOADED_RESOLVE]();
+            this[PAGE_LOADED_RESOLVE] = null;
+            this[PAGE_LOADED_REJECT] = null;
+
             this.watch("show", (e, show) => {
                 if (show) {
                     pageOpts.onShow && pageOpts.onShow.call(this);
@@ -251,6 +264,12 @@ $.register({
         // 添加pageId
         this[PAGEID] = getRandomId();
         this[PAGE_STATE] = "unload";
+
+        // 添加loaded Promise
+        this[PAGE_LOADED] = new Promise((res, rej) => {
+            this[PAGE_LOADED_RESOLVE] = res;
+            this[PAGE_LOADED_REJECT] = rej;
+        });
     },
     detached() {
         this[PAGE_STATE] = "destory";
