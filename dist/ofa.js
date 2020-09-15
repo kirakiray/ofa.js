@@ -1378,16 +1378,18 @@
                 }
                 return new Promise(resolve => {
                     let f;
-                    let exprFun = new Function(`with(this){
+                    // 忽略错误
+                    let exprFun = new Function(`
+            try{with(this){
                 return ${expr}
-            }`).bind(this);
+            }}catch(e){}`).bind(this);
                     this.watch(f = () => {
                         let reVal = exprFun();
                         if (reVal) {
                             this.unwatch(f);
                             resolve(reVal);
                         }
-                    });
+                    }, true);
                 });
             }
 
