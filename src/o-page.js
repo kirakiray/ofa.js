@@ -3,10 +3,6 @@ $("head").push(opageStyle);
 
 const PAGE_PREPARING = Symbol("_preparing");
 const PAGE_PREPARING_RESOLVE = Symbol("_preparing_resolve");
-const PAGE_STATE = Symbol("page_state");
-const PAGE_LOADED = Symbol("page_loaded");
-const PAGE_LOADED_RESOLVE = Symbol("page_loaded_resolve");
-const PAGE_LOADED_REJECT = Symbol("page_loaded_reject");
 
 main.setProcessor("Page", async (packData, d, { relativeLoad }) => {
     let defaults = {
@@ -37,16 +33,17 @@ main.setProcessor("Page", async (packData, d, { relativeLoad }) => {
 $.register({
     tag: "o-page",
     temp: false,
-    proto: {
+    data: {
+        // 当前页面的真实地址
+        source: "",
+        // 页面是否展示，主要是在o-app内的关键属性
+        show: true,
         // 当前页面的状态
-        get pageStat() {
-            return this[PAGE_STATE];
-        },
+        status: ""
+    },
+    proto: {
         get pageId() {
             return this[PAGEID];
-        },
-        get loaded() {
-            return this[PAGE_LOADED];
         },
         // 获取页面寄宿的app对象
         get app() {
@@ -144,12 +141,6 @@ $.register({
             return this.navigate({ type: "back", delta });
         }
     },
-    data: {
-        // 当前页面的真实地址
-        source: "",
-        // 页面是否展示，主要是在o-app内的关键属性
-        show: true
-    },
     attrs: {
         // 当前页面的链接地址
         src: ""
@@ -161,7 +152,7 @@ $.register({
             if (!val) {
                 return;
             }
-            if (this.pageStat !== "unload" && this.pageStat !== "preparing") {
+            if (this.status !== "unload" && this.status !== "preparing") {
                 throw {
                     target: this,
                     desc: "o-page can't reset src"
@@ -174,7 +165,7 @@ $.register({
             }
 
             // 加载页面模块数据
-            this[PAGE_STATE] = "loading";
+            this.status = "loading";
 
             // 相应资源地址
             // let sourcePath = await load(val + " -r -getLink");
@@ -193,7 +184,7 @@ $.register({
             } catch (e) {
                 // 错误页面
                 let errObj = e[0].descript;
-                this[PAGE_STATE] = "error";
+                this.status = "error";
 
                 renderEle(this.ele, {
                     temp: ofa.get404({
@@ -206,16 +197,11 @@ $.register({
 
                 this.attrs.oLoading = null;
 
-                // 修正loaded Promise 状态
-                this[PAGE_LOADED_REJECT]();
-                this[PAGE_LOADED_RESOLVE] = null;
-                this[PAGE_LOADED_REJECT] = null;
-
                 throw errObj;
             }
 
             // 页面被删除就不折腾
-            if (this[PAGE_STATE] == "destory") {
+            if (this.status == "destory") {
                 return;
             }
 
@@ -232,7 +218,7 @@ $.register({
             }, pageOpts));
 
             this.attrs.oLoading = null;
-            this[PAGE_STATE] = "finish";
+            this.status = "finish";
 
             let nvdata;
             if (this[NAVIGATEDATA]) {
@@ -246,11 +232,6 @@ $.register({
             });
             this.emit("page-ready");
 
-            // 修正loaded Promise 状态
-            this[PAGE_LOADED_RESOLVE]();
-            this[PAGE_LOADED_RESOLVE] = null;
-            this[PAGE_LOADED_REJECT] = null;
-
             this.watch("show", (e, show) => {
                 if (show) {
                     pageOpts.onShow && pageOpts.onShow.call(this);
@@ -263,16 +244,10 @@ $.register({
     ready() {
         // 添加pageId
         this[PAGEID] = getRandomId();
-        this[PAGE_STATE] = "unload";
-
-        // 添加loaded Promise
-        this[PAGE_LOADED] = new Promise((res, rej) => {
-            this[PAGE_LOADED_RESOLVE] = res;
-            this[PAGE_LOADED_REJECT] = rej;
-        });
+        this.status = "unload";
     },
     detached() {
-        this[PAGE_STATE] = "destory";
+        this.status = "destory";
 
         if (this[PAGEOPTIONS]) {
             this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);

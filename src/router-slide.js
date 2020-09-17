@@ -276,3 +276,52 @@ const initSlideRouter = (app) => {
     // 启动构建
     setTimeout(() => buildSlidePage(), 100);
 }
+
+// 公用路由软路由初始化逻辑
+const fakeRouter = (app) => {
+    const HNAME = "o-app-history-" + location.pathname;
+
+    // 虚拟历史路由数组
+    let fakeState = sessionStorage.getItem(HNAME);
+    if (fakeState) {
+        fakeState = JSON.parse(fakeState)
+    } else {
+        fakeState = {
+            // 后退历史
+            history: []
+        };
+    }
+    if (fakeState.history.length) {
+        // 渲染历史页面
+        // app.currents.push(...fakeState.history);
+        renderHistory(fakeState.history, app);
+    }
+
+    // 监听跳转
+    app.on("navigate", (e, opt) => {
+        let { currentPage } = app;
+        let { animeParam } = currentPage;
+
+        switch (opt.type) {
+            case "to":
+                fakeState.history.push({
+                    src: opt.src,
+                    data: opt.data,
+                    animeParam
+                });
+                break;
+            case "replace":
+                fakeState.history.splice(-1, 1, {
+                    src: opt.src,
+                    data: opt.data,
+                    animeParam
+                });
+                break;
+            case "back":
+                fakeState.history.splice(-opt.delta);
+                break;
+        }
+
+        sessionStorage.setItem(HNAME, JSON.stringify(fakeState));
+    });
+}

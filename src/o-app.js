@@ -88,9 +88,9 @@ $.register({
                 }
 
                 // unload状态全部都准备在预加载下
-                if (pageEle.pageStat === "unload" && !pageEle._preparing) {
+                if (pageEle.status === "unload" && !pageEle._preparing) {
                     // 属于缓存进来的页面，进行等待操作
-                    pageEle[PAGE_STATE] = "preparing";
+                    pageEle.status = "preparing";
                     pageEle[PAGE_PREPARING] = new Promise(res => pageEle[PAGE_PREPARING_RESOLVE] = () => {
                         pageEle[PAGE_PREPARING_RESOLVE] = pageEle[PAGE_PREPARING] = null;
                         res();
@@ -304,21 +304,11 @@ $.register({
             this.visibility = document.hidden ? "hide" : "show";
         });
 
-        // 初始路由前，app必须初始化完成
-        let launchFun = (e, launched) => {
-            if (!launched) {
-                return;
-            }
-            // 注销监听
-            this.unwatch("launched", launchFun);
-
+        this.watchUntil("launched").then(e => {
             // 初始化路由
             initSlideRouter(this);
             initJumpRouter(this);
-
-            launchFun = null;
-        }
-        this.watch("launched", launchFun);
+        });
 
         this._fixSize();
         // 尺寸修改的时候也设置

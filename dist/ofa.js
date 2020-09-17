@@ -3245,14 +3245,6 @@ with(this){
                     });
                 });
 
-                // 设置其他 xv-tar
-                // queAllToArray(sroot, `[xv-tar]`).forEach(tar => {
-                //     let tarKey = tar.getAttribute('xv-tar');
-                //     Object.defineProperty(xhearEle, "$" + tarKey, {
-                //         get: () => createXhearProxy(tar)
-                //     });
-                // });
-
                 // 转换 xv-span 元素
                 queAllToArray(sroot, `xv-span`).forEach(e => {
                     // 替换xv-span
@@ -3424,6 +3416,38 @@ with(this){
                         }
                     });
                 });
+
+                // 修正 style 内的动态值变动
+                // queAllToArray(sroot, `style`).forEach(styleEle => {
+                //     let oriStyleHTML = styleEle.innerHTML;
+
+                //     // 匹配到动态值
+                //     let sarr = oriStyleHTML.match(/<xv-span xvkey=".+?"><\/xv-span>/g);
+                //     if (sarr && sarr.length) {
+                //         // 去重
+                //         let s_key = Array.from(new Set(sarr)).map(e => e.replace(/<xv-span xvkey="(.+)"><\/xv-span>/, "$1"));
+
+                //         // 抽取关键元素并监听
+                //         s_key.forEach(expr => {
+                //             // 监听内容，根据值变动去更新style内部的所有Html
+                //             embedWatch({
+                //                 target: xhearEle,
+                //                 expr,
+                //                 callback(val) {
+                //                     // 重新渲染样式内容
+                //                     let b_style = oriStyleHTML;
+
+                //                     s_key.forEach(key => {
+                //                         let reg = new RegExp(`<xv-span xvkey="${key}"><\/xv-span>`, "g");
+                //                         b_style = b_style.replace(reg, xhearEle[key]);
+                //                     });
+
+                //                     styleEle.innerHTML = b_style;
+                //                 }
+                //             });
+                //         });
+                //     }
+                // });
 
                 // 需要跳过的元素列表
                 let xvModelJump = new Set();
@@ -5277,59 +5301,6 @@ with(this){
             setTimeout(() => app.currentPages.forEach(page => page.style.transition = ""), 100);
         });
     }
-
-    // 公用路由软路由初始化逻辑
-    const fakeRouter = (app) => {
-        const HNAME = "o-app-history-" + location.pathname;
-
-        // 虚拟历史路由数组
-        let fakeState = sessionStorage.getItem(HNAME);
-        if (fakeState) {
-            fakeState = JSON.parse(fakeState)
-        } else {
-            fakeState = {
-                // 后退历史
-                history: []
-            };
-        }
-        if (fakeState.history.length) {
-            // 渲染历史页面
-            // app.currents.push(...fakeState.history);
-            renderHistory(fakeState.history, app);
-        }
-
-        // 监听跳转
-        app.on("navigate", (e, opt) => {
-            let {
-                currentPage
-            } = app;
-            let {
-                animeParam
-            } = currentPage;
-
-            switch (opt.type) {
-                case "to":
-                    fakeState.history.push({
-                        src: opt.src,
-                        data: opt.data,
-                        animeParam
-                    });
-                    break;
-                case "replace":
-                    fakeState.history.splice(-1, 1, {
-                        src: opt.src,
-                        data: opt.data,
-                        animeParam
-                    });
-                    break;
-                case "back":
-                    fakeState.history.splice(-opt.delta);
-                    break;
-            }
-
-            sessionStorage.setItem(HNAME, JSON.stringify(fakeState));
-        });
-    }
     // 滑动型虚拟路由，仿apple系操作
     // 获取相应class的关键有样式
     const getPageAnimeData = (animeName, defaultType) => {
@@ -5616,6 +5587,59 @@ with(this){
         setTimeout(() => buildSlidePage(), 100);
     }
 
+    // 公用路由软路由初始化逻辑
+    const fakeRouter = (app) => {
+        const HNAME = "o-app-history-" + location.pathname;
+
+        // 虚拟历史路由数组
+        let fakeState = sessionStorage.getItem(HNAME);
+        if (fakeState) {
+            fakeState = JSON.parse(fakeState)
+        } else {
+            fakeState = {
+                // 后退历史
+                history: []
+            };
+        }
+        if (fakeState.history.length) {
+            // 渲染历史页面
+            // app.currents.push(...fakeState.history);
+            renderHistory(fakeState.history, app);
+        }
+
+        // 监听跳转
+        app.on("navigate", (e, opt) => {
+            let {
+                currentPage
+            } = app;
+            let {
+                animeParam
+            } = currentPage;
+
+            switch (opt.type) {
+                case "to":
+                    fakeState.history.push({
+                        src: opt.src,
+                        data: opt.data,
+                        animeParam
+                    });
+                    break;
+                case "replace":
+                    fakeState.history.splice(-1, 1, {
+                        src: opt.src,
+                        data: opt.data,
+                        animeParam
+                    });
+                    break;
+                case "back":
+                    fakeState.history.splice(-opt.delta);
+                    break;
+            }
+
+            sessionStorage.setItem(HNAME, JSON.stringify(fakeState));
+        });
+    }
+
     drill.ext(base => {
         let {
             main
@@ -5817,10 +5841,6 @@ with(this){
 
             const PAGE_PREPARING = Symbol("_preparing");
             const PAGE_PREPARING_RESOLVE = Symbol("_preparing_resolve");
-            const PAGE_STATE = Symbol("page_state");
-            const PAGE_LOADED = Symbol("page_loaded");
-            const PAGE_LOADED_RESOLVE = Symbol("page_loaded_resolve");
-            const PAGE_LOADED_REJECT = Symbol("page_loaded_reject");
 
             main.setProcessor("Page", async (packData, d, {
                 relativeLoad
@@ -5858,16 +5878,17 @@ with(this){
             $.register({
                 tag: "o-page",
                 temp: false,
-                proto: {
+                data: {
+                    // 当前页面的真实地址
+                    source: "",
+                    // 页面是否展示，主要是在o-app内的关键属性
+                    show: true,
                     // 当前页面的状态
-                    get pageStat() {
-                        return this[PAGE_STATE];
-                    },
+                    status: ""
+                },
+                proto: {
                     get pageId() {
                         return this[PAGEID];
-                    },
-                    get loaded() {
-                        return this[PAGE_LOADED];
                     },
                     // 获取页面寄宿的app对象
                     get app() {
@@ -5970,12 +5991,6 @@ with(this){
                         });
                     }
                 },
-                data: {
-                    // 当前页面的真实地址
-                    source: "",
-                    // 页面是否展示，主要是在o-app内的关键属性
-                    show: true
-                },
                 attrs: {
                     // 当前页面的链接地址
                     src: ""
@@ -5987,7 +6002,7 @@ with(this){
                         if (!val) {
                             return;
                         }
-                        if (this.pageStat !== "unload" && this.pageStat !== "preparing") {
+                        if (this.status !== "unload" && this.status !== "preparing") {
                             throw {
                                 target: this,
                                 desc: "o-page can't reset src"
@@ -6000,7 +6015,7 @@ with(this){
                         }
 
                         // 加载页面模块数据
-                        this[PAGE_STATE] = "loading";
+                        this.status = "loading";
 
                         // 相应资源地址
                         // let sourcePath = await load(val + " -r -getLink");
@@ -6019,7 +6034,7 @@ with(this){
                         } catch (e) {
                             // 错误页面
                             let errObj = e[0].descript;
-                            this[PAGE_STATE] = "error";
+                            this.status = "error";
 
                             renderEle(this.ele, {
                                 temp: ofa.get404({
@@ -6032,16 +6047,11 @@ with(this){
 
                             this.attrs.oLoading = null;
 
-                            // 修正loaded Promise 状态
-                            this[PAGE_LOADED_REJECT]();
-                            this[PAGE_LOADED_RESOLVE] = null;
-                            this[PAGE_LOADED_REJECT] = null;
-
                             throw errObj;
                         }
 
                         // 页面被删除就不折腾
-                        if (this[PAGE_STATE] == "destory") {
+                        if (this.status == "destory") {
                             return;
                         }
 
@@ -6058,7 +6068,7 @@ with(this){
                         }, pageOpts));
 
                         this.attrs.oLoading = null;
-                        this[PAGE_STATE] = "finish";
+                        this.status = "finish";
 
                         let nvdata;
                         if (this[NAVIGATEDATA]) {
@@ -6072,11 +6082,6 @@ with(this){
                         });
                         this.emit("page-ready");
 
-                        // 修正loaded Promise 状态
-                        this[PAGE_LOADED_RESOLVE]();
-                        this[PAGE_LOADED_RESOLVE] = null;
-                        this[PAGE_LOADED_REJECT] = null;
-
                         this.watch("show", (e, show) => {
                             if (show) {
                                 pageOpts.onShow && pageOpts.onShow.call(this);
@@ -6089,16 +6094,10 @@ with(this){
                 ready() {
                     // 添加pageId
                     this[PAGEID] = getRandomId();
-                    this[PAGE_STATE] = "unload";
-
-                    // 添加loaded Promise
-                    this[PAGE_LOADED] = new Promise((res, rej) => {
-                        this[PAGE_LOADED_RESOLVE] = res;
-                        this[PAGE_LOADED_REJECT] = rej;
-                    });
+                    this.status = "unload";
                 },
                 detached() {
-                    this[PAGE_STATE] = "destory";
+                    this.status = "destory";
 
                     if (this[PAGEOPTIONS]) {
                         this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);
@@ -6218,9 +6217,9 @@ with(this){
                             }
 
                             // unload状态全部都准备在预加载下
-                            if (pageEle.pageStat === "unload" && !pageEle._preparing) {
+                            if (pageEle.status === "unload" && !pageEle._preparing) {
                                 // 属于缓存进来的页面，进行等待操作
-                                pageEle[PAGE_STATE] = "preparing";
+                                pageEle.status = "preparing";
                                 pageEle[PAGE_PREPARING] = new Promise(res => pageEle[PAGE_PREPARING_RESOLVE] = () => {
                                     pageEle[PAGE_PREPARING_RESOLVE] = pageEle[PAGE_PREPARING] = null;
                                     res();
@@ -6440,21 +6439,11 @@ with(this){
                         this.visibility = document.hidden ? "hide" : "show";
                     });
 
-                    // 初始路由前，app必须初始化完成
-                    let launchFun = (e, launched) => {
-                        if (!launched) {
-                            return;
-                        }
-                        // 注销监听
-                        this.unwatch("launched", launchFun);
-
+                    this.watchUntil("launched").then(e => {
                         // 初始化路由
                         initSlideRouter(this);
                         initJumpRouter(this);
-
-                        launchFun = null;
-                    }
-                    this.watch("launched", launchFun);
+                    });
 
                     this._fixSize();
                     // 尺寸修改的时候也设置
