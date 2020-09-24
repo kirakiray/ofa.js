@@ -166,6 +166,8 @@ $.register({
     },
     attrs: ["router"],
     proto: {
+        // 更新currents
+        _uploadCurrents() { },
         // 页面参数，动画的数据存储对象
         get animeParam() {
             return this._animeParam;
@@ -228,13 +230,15 @@ $.register({
                     case "to":
                         this.currents.push({
                             src: defaults.src,
-                            data: defaults.data
+                            data: defaults.data,
+                            // _page: defaults.self
                         });
                         break;
                     case "replace":
                         this.currents.splice(-1, 1, {
                             src: defaults.src,
-                            data: defaults.data
+                            data: defaults.data,
+                            // _page: defaults.self
                         });
                         break;
                     case "back":

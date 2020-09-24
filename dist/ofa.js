@@ -420,7 +420,11 @@
                     let tarId = evesArr.findIndex(e => e.callback == callback);
                     (tarId > -1) && evesArr.splice(tarId, 1);
                 } else {
-                    this[EVENTS] && this[EVENTS].delete(eventName);
+                    // this[EVENTS] && this[EVENTS].delete(eventName);
+                    // 防止误操作，必须填入event
+                    throw {
+                        desc: `off must have callback`
+                    };
                 }
             }
 
@@ -1359,7 +1363,7 @@
 
                     // 清除数据绑定
                     if (cacheObj) {
-                        this.off("update", cacheObj.updateMethod);
+                        cacheObj.updateMethod && this.off("update", cacheObj.updateMethod);
                         targetHostObj.delete(cacheObj);
                         (!targetHostObj.size) && (getXDataProp(this, WATCHHOST).delete(expr));
                     }
@@ -6301,6 +6305,8 @@ with(this){
                 },
                 attrs: ["router"],
                 proto: {
+                    // 更新currents
+                    _uploadCurrents() {},
                     // 页面参数，动画的数据存储对象
                     get animeParam() {
                         return this._animeParam;
@@ -6363,13 +6369,15 @@ with(this){
                                 case "to":
                                     this.currents.push({
                                         src: defaults.src,
-                                        data: defaults.data
+                                        data: defaults.data,
+                                        // _page: defaults.self
                                     });
                                     break;
                                 case "replace":
                                     this.currents.splice(-1, 1, {
                                         src: defaults.src,
-                                        data: defaults.data
+                                        data: defaults.data,
+                                        // _page: defaults.self
                                     });
                                     break;
                                 case "back":
