@@ -28,15 +28,17 @@ $.register({
             // 旋转角度
             angle: ""
         },
-        inner: {
+        // 元素的尺寸信息
+        rect: {
             width: "",
             height: ""
         }
-
     },
-    watch: {
-        // 当前app的路由数据
-        currents(e, currents) {
+    attrs: ["router"],
+    proto: {
+        // 更新currents
+        _updateCurrents(e) {
+            let { currents } = this;
             // 单个page页面数据如下
             // let pageData = {
             //     // 路由地址
@@ -162,12 +164,7 @@ $.register({
                     }
                 }
             }
-        }
-    },
-    attrs: ["router"],
-    proto: {
-        // 更新currents
-        _uploadCurrents() { },
+        },
         // 页面参数，动画的数据存储对象
         get animeParam() {
             return this._animeParam;
@@ -265,12 +262,9 @@ $.register({
         },
         // 更新尺寸信息
         _fixSize() {
-            // 修正屏幕数据
-            this.screen.width = screen.width;
-            this.screen.height = screen.height;
-            this.screen.angle = screen.orientation ? screen.orientation.angle : "";
-            this.inner.width = this.ele.clientWidth;
-            this.inner.height = this.ele.clientHeight;
+            // 修正尺寸数据
+            this.rect.width = this.ele.clientWidth;
+            this.rect.height = this.ele.clientHeight;
         }
     },
     ready() {
@@ -314,12 +308,31 @@ $.register({
             initJumpRouter(this);
         });
 
-        this._fixSize();
-        // 尺寸修改的时候也设置
-        let resizeTimer;
-        window.addEventListener("resize", e => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => this._fixSize(), 300);
+        // currents 对实时性比较高，所以要同步刷新路由
+        let old_currents = [];
+        this.on("update", e => {
+            if ((e.keys.length == 1 && e.keys[0] == 'currents') || (e.keys.length === 0 && e.modify.name === 'setData' && e.modify.args[0] === "currents")) {
+                this._updateCurrents({ old: old_currents });
+                old_currents = this.currents.object;
+            }
         });
+        // 首次刷新路由
+        $.nextTick(() => this._updateCurrents({ old: [] }));
+
+
+        // 元素尺寸监听
+        this._fixSize();
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(entries => {
+                this._fixSize();
+            });
+            resizeObserver.observe(this.ele);
+        } else {
+            let resizeTimer;
+            window.addEventListener("resize", e => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => this._fixSize(), 300);
+            });
+        }
     }
 });
