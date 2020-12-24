@@ -34,7 +34,7 @@
         let {
             main
         } = base;
-        $.ext(({ renderEle }) => {
+        $.ext(({ renderComponent }) => {
             //<!--o-components-->
             //<!--o-page-->
             //<!--o-app-->

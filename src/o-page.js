@@ -186,7 +186,7 @@ $.register({
                 let errObj = e[0].descript;
                 this.status = "error";
 
-                renderEle(this.ele, {
+                renderComponent(this.ele, {
                     temp: ofa.get404({
                         path: sourcePath,
                         src: val
@@ -212,7 +212,7 @@ $.register({
             this[PAGEOPTIONS] = pageOpts;
 
             // 渲染元素
-            renderEle(this.ele, Object.assign({
+            renderComponent(this.ele, Object.assign({
                 attrs: [],
                 watch: {}
             }, pageOpts));
