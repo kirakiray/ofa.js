@@ -2,7 +2,7 @@
  * ofa v2.7.0
  * https://github.com/kirakiray/ofa.js
  * 
- * (c) 2018-2020 YAO
+ * (c) 2018-2021 YAO
  * Released under the MIT License.
  */
 ((glo) => {
@@ -11,7 +11,7 @@
      * xhear v5.2.1
      * https://github.com/kirakiray/Xhear#readme
      * 
-     * (c) 2018-2020 YAO
+     * (c) 2018-2021 YAO
      * Released under the MIT License.
      */
     ((glo) => {
@@ -1991,8 +1991,11 @@
         // business function
         // 判断元素是否符合条件
         const meetsEle = (ele, expr) => {
+            if (!ele.tagName) {
+                return false;
+            }
             if (ele === expr) {
-                return !0;
+                return true;
             }
             if (ele === document) {
                 return false;
@@ -2060,6 +2063,8 @@
 
             return ele;
         }
+
+        const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 
         const parseToDom = (expr) => {
             let ele;
@@ -2473,7 +2478,23 @@
                     target = _this.ele.children[key];
                     target && (target = createXhearProxy(target));
                 } else {
-                    target = _this[key];
+                    let descriptor = getOwnPropertyDescriptor(_this, key);
+
+                    if (!descriptor) {
+                        target = _this[key];
+                    } else if (descriptor) {
+                        let {
+                            get,
+                            value
+                        } = descriptor;
+                        if (!isUndefined(value)) {
+                            target = value;
+                        } else if (get) {
+                            target = get.call(this[PROXYTHIS], key);
+                        }
+                    }
+
+                    // target = _this[key];
                 }
 
                 if (target instanceof XData) {
@@ -2519,7 +2540,7 @@
                     }
                 } else {
                     if (getType(expr) == "string") {
-                        while (tempTar) {
+                        while (tempTar && tempTar) {
                             if (meetsEle(tempTar.ele, expr)) {
                                 pars.push(tempTar);
                             }
@@ -2588,7 +2609,7 @@
                         get,
                         set,
                         value
-                    } = Object.getOwnPropertyDescriptor(proto, k);
+                    } = getOwnPropertyDescriptor(proto, k);
 
                     if (value) {
                         if (this.hasOwnProperty(k)) {
@@ -2599,6 +2620,9 @@
                             });
                         }
                     } else {
+                        // debugger
+                        // get && (get = get.bind(this))
+
                         Object.defineProperty(this, k, {
                             get,
                             set
@@ -3054,12 +3078,44 @@
         const isFunctionExpr = (str) => argsWReg.test(str.trim());
 
         // 转化为指向this的函数表达式
-        const argsWReg = /(\|\||\&\&|\(|\)|\?|\!|\:| |\,|".+?"|'.+?')/g;
-        const ignoreArgKeysReg = /(^\$event$|^\$args$|^debugger$|^console\.|^Number$|^String$|^parseInt$|^parseFloat$|^undefined$|^null$|^true$|^false$|^[\d])/;
+        const argsWReg = /(".*?"|'.*?'|\(|\)|\[|\]|\{|\}|\|\||\&\&|\?|\!|:| |\+|\-|\*|%|\,|\<|\>)/g;
+        const argsWReg_c = /(".*?"|'.*?'|\(|\)|\[|\]|\{|\}|\|\||\&\&|\?|\!|:| |\+|\-|\*|%|\,|\<|\>)/;
+        const ignoreArgKeysReg = /(^\$event$|^\$args$|^debugger$|^console\.|^Number$|^String$|^Object$|^Array$|^parseInt$|^parseFloat$|^undefined$|^null$|^true$|^false$|^[\d])/;
+
         const argsWithThis = (expr) => {
+            // 替换字符串用的唯一key
+            const sKey = "$$" + getRandomId() + "_";
+
+            let jump_strs = [];
+
+            // 规避操作
+            let before_expr = expr.replace(/\? *[\w]+?:/g, e => {
+                let replace_key = "__" + getRandomId() + "__";
+
+                jump_strs.push({
+                    k: replace_key,
+                    v: e
+                });
+
+                return replace_key;
+            });
+
+            // 先抽取json结构的Key，防止添加this，后面再补充回去
+            let after_expr = before_expr.replace(/[\w]+? *:/g, (e) => {
+                return `${sKey}${e}`;
+            });
+
+            // 还原规避字符串
+            jump_strs.forEach(e => {
+                after_expr = after_expr.replace(e.k, e.v);
+            });
+
             // 针对性的进行拆分
-            let argsSpArr = expr.split(argsWReg).map(e => {
-                if (argsWReg.test(e) || !e.trim() || ignoreArgKeysReg.test(e)) {
+            let argsSpArr = after_expr.split(argsWReg).map(e => {
+                if (e.includes(sKey)) {
+                    return e.replace(sKey, "");
+                }
+                if (argsWReg_c.test(e) || !e.trim() || /^\./.test(e) || ignoreArgKeysReg.test(e)) {
                     return e;
                 }
                 return `this.${e}`;
@@ -3067,6 +3123,95 @@
 
             return argsSpArr.join("");
         }
+
+        // 类json翻译方式进行转换
+        // const correspObj = [["{", "}"], ["[", "]"], ["(", ")"]];
+        // const argsWithThis = (expr) => {
+        //     // 针对性的进行拆分
+        //     let stree_arr = expr.split(argsWReg);
+
+        //     // 进入区域的符号
+        //     let area_arr = [];
+        //     let argsSpArr = [];
+
+        //     let inJSONhaspoint = false;
+
+        //     stree_arr.some(e => {
+        //         let val = e.trim();
+
+        //         if (!val || ignoreArgKeysReg.test(val)) {
+        //             argsSpArr.push(e);
+        //             return;
+        //         }
+
+        //         let last_area_desc = area_arr.slice(-1)[0];
+
+        //         // 进入区域的话增加一个区域符
+        //         if (/[\(\{\[]/.test(val)) {
+        //             area_arr.push(val);
+        //             argsSpArr.push(e);
+        //             return;
+        //         } else if (/[\)\}\]]/.test(val)) {
+        //             if (!last_area_desc) {
+        //                 console.error({
+        //                     expr,
+        //                     desc: `the expression is missing ${correspObj.find(e => e[1] == val)[0]}`
+        //                 });
+        //                 return true;
+        //             }
+
+        //             let isBreak = true;
+        //             correspObj.forEach(corObj => {
+        //                 if (last_area_desc == corObj[0]) {
+        //                     if (val == corObj[1]) {
+        //                         area_arr.splice(-1);
+        //                         argsSpArr.push(e);
+        //                         isBreak = false;
+
+        //                         if (val == "}") {
+        //                             // 清空Json解析数据
+        //                             inJSONhaspoint = false;
+        //                             debugger;
+        //                         }
+        //                     } else {
+        //                         console.error({
+        //                             expr,
+        //                             desc: `the expression is missing ${correspObj.find(e => e[0] == last_area_desc)[1]}`
+        //                         });
+        //                     }
+        //                 }
+        //             });
+        //             return isBreak;
+        //         }
+
+        //         if (argsWReg.test(e) || /('.*?'|".*?")/.test(e)) {
+        //             switch (val) {
+        //                 case ":":
+        //                     inJSONhaspoint = true;
+        //                     break;
+        //                 case ",":
+        //                     inJSONhaspoint = false;
+        //                     break;
+        //             }
+        //             argsSpArr.push(e);
+        //             return;
+        //         }
+
+        //         // 判断是否在json内
+        //         if (last_area_desc == "{") {
+        //             if (inJSONhaspoint) {
+        //                 // debugger
+        //             } else {
+        //                 argsSpArr.push(e);
+        //                 return;
+        //             }
+        //         }
+
+        //         argsSpArr.push(`this.${e}`);
+        //     });
+
+        //     return argsSpArr.join("");
+        // }
 
         // 使用with性能不好，所以将内部函数变量转为指向this的函数
         const funcExprWithThis = (expr) => {
@@ -3583,7 +3728,11 @@
                         if (ele.xvele) {
                             createXhearEle(ele).setData(attrName, val);
                         } else {
-                            ele.setAttribute(attrName, val);
+                            if (val === undefined || val === null) {
+                                ele.removeAttribute(attrName);
+                            } else {
+                                ele.setAttribute(attrName, val);
+                            }
                         }
                     });
                 });
@@ -3727,7 +3876,6 @@
                         calls.forEach(d => d.change(val, trends));
 
                         if (val instanceof XData) {
-                            debugger
                             old_val = val.string;
                         } else {
                             old_val = val;
@@ -6234,6 +6382,8 @@
                 return async () => defaults;
             });
 
+            const $SetData = $.fn.setData;
+
             $.register({
                 tag: "o-page",
                 temp: false,
@@ -6251,7 +6401,14 @@
                     },
                     // 获取页面寄宿的app对象
                     get app() {
-                        return this.parents("o-app")[0];
+                        let app = this.parents("o-app");
+                        if (app && app.length) {
+                            app = app[0];
+                        } else if (this.$host) {
+                            app = this.$host.app;
+                        }
+
+                        return app;
                     },
                     set animeParam(param) {
                         this._animeParam = param;
@@ -6454,9 +6611,16 @@
                     // 添加pageId
                     this[PAGEID] = getRandomId();
                     this.status = "unload";
+
+                    this.on("update", e => {
+                        if (e.modify.name == "setData" && e.modify.args[0] == "status" && e.modify.args[1] == "destory") {
+                            e.cancel = true;
+                        }
+                    });
                 },
                 detached() {
                     this.status = "destory";
+                    // this[XDATASELF].status = "destory";
 
                     if (this[PAGEOPTIONS]) {
                         this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);

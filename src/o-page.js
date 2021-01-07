@@ -30,6 +30,8 @@ main.setProcessor("Page", async (packData, d, { relativeLoad }) => {
     return async () => defaults;
 });
 
+const $SetData = $.fn.setData;
+
 $.register({
     tag: "o-page",
     temp: false,
@@ -47,7 +49,14 @@ $.register({
         },
         // 获取页面寄宿的app对象
         get app() {
-            return this.parents("o-app")[0];
+            let app = this.parents("o-app");
+            if (app && app.length) {
+                app = app[0];
+            } else if (this.$host) {
+                app = this.$host.app;
+            }
+
+            return app;
         },
         set animeParam(param) {
             this._animeParam = param;
@@ -245,9 +254,16 @@ $.register({
         // 添加pageId
         this[PAGEID] = getRandomId();
         this.status = "unload";
+
+        this.on("update", e => {
+            if (e.modify.name == "setData" && e.modify.args[0] == "status" && e.modify.args[1] == "destory") {
+                e.cancel = true;
+            }
+        });
     },
     detached() {
         this.status = "destory";
+        // this[XDATASELF].status = "destory";
 
         if (this[PAGEOPTIONS]) {
             this[PAGEOPTIONS].destory && this[PAGEOPTIONS].destory.call(this);
