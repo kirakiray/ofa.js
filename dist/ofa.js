@@ -2425,10 +2425,17 @@
                 // 只有在允许列表里才能进行set操作
                 let canSetKey = this[CANSETKEYS];
                 if (xEleDefaultSetKeys.has(key)) {
-                    let oldVal = _this[key];
+                    // let oldVal = _this[key];
 
-                    // 直接设置
-                    _this[key] = value;
+                    let descriptor = getOwnPropertyDescriptor(_this, key);
+
+                    if (!descriptor || !descriptor.set) {
+                        // 直接设置
+                        _this[key] = value;
+                    } else {
+                        descriptor.set.call(this[PROXYTHIS], value);
+                    }
+
 
                     // if (xEleDefaultSetKeysCanUpdate.has(key)) {
                     //     emitUpdate(_this, "setData", [key, value], {
@@ -2484,7 +2491,7 @@
 
                     if (!descriptor) {
                         target = _this[key];
-                    } else if (descriptor) {
+                    } else {
                         let {
                             get,
                             value
@@ -3476,6 +3483,21 @@
                 xvFills.forEach(ele => {
                     let contentName = ele.getAttribute("fill-content");
                     let attrName = ele.getAttribute('xv-fill');
+
+                    let matchAttr = attrName.match(/(.+?) +use +(.+)/);
+                    if (matchAttr) {
+                        contentName = matchAttr[2]
+                        attrName = matchAttr[1];
+                    }
+
+                    if (!contentName || !attrName) {
+                        throw {
+                            desc: "No fill attribute",
+                            target: ele,
+                            attr: attrName,
+                            content: contentName
+                        };
+                    }
 
                     // 禁止fill元素的update事件，影响主体组件数据
                     createXhearEle(ele).on("update", e => e.bubble = false);
