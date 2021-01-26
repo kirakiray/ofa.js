@@ -2425,7 +2425,6 @@
                 // 只有在允许列表里才能进行set操作
                 let canSetKey = this[CANSETKEYS];
                 if (xEleDefaultSetKeys.has(key)) {
-                    // let oldVal = _this[key];
 
                     let descriptor = getOwnPropertyDescriptor(_this, key);
 
@@ -2435,7 +2434,6 @@
                     } else {
                         descriptor.set.call(this[PROXYTHIS], value);
                     }
-
 
                     // if (xEleDefaultSetKeysCanUpdate.has(key)) {
                     //     emitUpdate(_this, "setData", [key, value], {
@@ -3946,14 +3944,25 @@
                 rootParentProxy = rootParentProxy._parentProxy;
             }
             let regData = regDatabase.get(rootParentProxy.tag);
-            Object.keys(regData.proto).forEach(funcName => {
-                let func = regData.proto[funcName];
+            let protoDescs = Object.getOwnPropertyDescriptors(regData.proto);
+            Object.keys(protoDescs).forEach(funcName => {
+                let descData = protoDescs[funcName];
+                let func = descData.value;
                 if (isFunction(func)) {
                     Object.defineProperty(wrapProxyEle, funcName, {
                         value: func.bind(rootParentProxy)
                     });
                 }
+
             });
+            // Object.keys(regData.proto).forEach(funcName => {
+            //     let func = regData.proto[funcName];
+            //     if (isFunction(func)) {
+            //         Object.defineProperty(wrapProxyEle, funcName, {
+            //             value: func.bind(rootParentProxy)
+            //         });
+            //     }
+            // });
 
             // 设置父层
             wrapProxyEle._parentProxy = parentProxyEle;
@@ -5614,12 +5623,25 @@
     const PAGEID = Symbol("pageId");
     const PAGEOPTIONS = Symbol("pageOptions");
 
+    let routerTarget;
+
     // 默认跳转型路由
     // 跳转路由，跟普通页面跳转的体验一样
     const initJumpRouter = (app) => {
         if (app.router != "router" && app.router != 1) {
             return;
         }
+
+        if (routerTarget) {
+            console.warn({
+                desc: "Only one app can route",
+                target: app,
+                routerTarget
+            });
+            return;
+        }
+
+        routerTarget = app;
 
         let nowPageState;
 
@@ -5733,10 +5755,11 @@
                         src: nextPage.src,
                         _popstate_forward: true
                     }));
-                } else {
-                    // 跑到这里就有问题了，看看哪里逻辑出问题了
-                    debugger
                 }
+                // else {
+                //     // 跑到这里就有问题了，看看哪里逻辑出问题了
+                //     debugger
+                // }
             }
 
             // 修正 nowPageState

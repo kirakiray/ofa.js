@@ -1,9 +1,22 @@
+let routerTarget;
+
 // 默认跳转型路由
 // 跳转路由，跟普通页面跳转的体验一样
 const initJumpRouter = (app) => {
     if (app.router != "router" && app.router != 1) {
         return;
     }
+
+    if (routerTarget) {
+        console.warn({
+            desc: "Only one app can route",
+            target: app,
+            routerTarget
+        });
+        return;
+    }
+
+    routerTarget = app;
 
     let nowPageState;
 
@@ -104,10 +117,11 @@ const initJumpRouter = (app) => {
 
                 // 修正事件
                 $.nextTick(() => app.emitHandler("navigate", { type: "to", src: nextPage.src, _popstate_forward: true }));
-            } else {
-                // 跑到这里就有问题了，看看哪里逻辑出问题了
-                debugger
             }
+            // else {
+            //     // 跑到这里就有问题了，看看哪里逻辑出问题了
+            //     debugger
+            // }
         }
 
         // 修正 nowPageState
