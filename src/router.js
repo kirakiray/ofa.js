@@ -28,6 +28,20 @@ const initJumpRouter = (app) => {
         // app.currents.push(...nowPageState.history);
     }
 
+    // 附带在location上的path路径
+    let in_path = location.hash.slice(1);
+    if (in_path && !history.state) {
+        // 当前state没有数据，但是__p参数存在，证明是外部粘贴的地址，进行地址修正
+        history.replaceState(null, "", "");
+        // window.location.hash = "";
+        $.nextTick(() => {
+            app[APPNAVIGATE]({
+                // src: decodeURIComponent(in_path)
+                src: in_path
+            });
+        });
+    }
+
     app.on("navigate", (e, opt) => {
         let { currentPage } = app;
         let { animeParam, src } = currentPage;
@@ -71,7 +85,22 @@ const initJumpRouter = (app) => {
         let beforeHistory = (nowPageState && nowPageState.history) || [];
         let nowHistory = (e.state && e.state.history) || [];
 
-        if (location.hash.replace(/^\#/, "") && !e.state) {
+
+
+        if (beforeHistory.length > nowHistory.length) {
+            if (navigateBacked) {
+                // 通过app.navigate返回的路由，复原 navigateBacked
+                navigateBacked = 0;
+                return;
+            }
+            // 页面后退
+            app[APPNAVIGATE]({
+                type: "back",
+                delta: beforeHistory.length - nowHistory.length,
+                // 标识
+                _popstate_back: true
+            });
+        } else if (location.hash.replace(/^\#/, "") && !e.state) {
             // 直接粘贴链接进入的，重构单级路由前进
             let src = location.hash.replace(/^\#/, "");
 
@@ -88,21 +117,6 @@ const initJumpRouter = (app) => {
             // 修正事件
             $.nextTick(() => app.emitHandler("navigate", { type: "to", src, _popstate_forward: true }));
             return;
-        }
-
-        if (beforeHistory.length > nowHistory.length) {
-            if (navigateBacked) {
-                // 通过app.navigate返回的路由，复原 navigateBacked
-                navigateBacked = 0;
-                return;
-            }
-            // 页面后退
-            app[APPNAVIGATE]({
-                type: "back",
-                delta: beforeHistory.length - nowHistory.length,
-                // 标识
-                _popstate_back: true
-            });
         } else {
             // 重构多级前进路由
             // 添加到currents队列
@@ -127,20 +141,6 @@ const initJumpRouter = (app) => {
         // 修正 nowPageState
         nowPageState = e.state;
     });
-
-
-    // 附带在location上的path路径
-    let in_path = location.hash.slice(1);
-    if (in_path && !history.state) {
-        // 当前state没有数据，但是__p参数存在，证明是外部粘贴的地址，进行地址修正
-        history.replaceState(null, "", "");
-        $.nextTick(() => {
-            app[APPNAVIGATE]({
-                // src: decodeURIComponent(in_path)
-                src: in_path
-            });
-        });
-    }
 }
 
 // 获取待存储的历史数据

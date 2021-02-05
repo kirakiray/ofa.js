@@ -125,6 +125,17 @@ const initSlideRouter = (app) => {
         return;
     }
 
+    if (routerTarget) {
+        console.warn({
+            desc: "Only one app can route",
+            target: app,
+            routerTarget
+        });
+        return;
+    }
+
+    routerTarget = app;
+
     // 公用软路由初始化
     fakeRouter(app);
 
@@ -293,7 +304,6 @@ const fakeRouter = (app) => {
     }
     if (fakeState.history.length) {
         // 渲染历史页面
-        // app.currents.push(...fakeState.history);
         renderHistory(fakeState.history, app);
     }
 
