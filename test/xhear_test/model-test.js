@@ -7,9 +7,9 @@
         temp: `
         {{v}}
         <br>
-        <input type="text" xv-model="v" />
+        <input type="text" x-model="v" />
         <br>
-        <textarea xv-model="v"></textarea>
+        <textarea x-model="v"></textarea>
         `
     });
 
@@ -20,14 +20,14 @@
         },
         temp: `
         {{n}}
-        <select xv-model="n">
+        <select x-model="n">
             <option>1</option>
             <option>2</option>
             <option>3</option>
             <option>4</option>
             <option>5</option>
         </select>
-        <input type="number" step="1" min="1" max="5" xv-model="n" />
+        <input type="number" step="1" min="1" max="5" x-model="n" />
         `
     });
 
@@ -46,22 +46,22 @@
         },
         temp: `
         <div>
-            <label for="icheckebox">{{iChecked}}</label> -- <input type="checkbox" xv-model="iChecked" id="icheckebox" />
+            <label for="icheckebox">{{iChecked}}</label> -- <input type="checkbox" x-model="iChecked" id="icheckebox" />
         </div>
         <br>
         <div>
             {{ichecksStr}} -- 
             <div>
                 <label for="red">red</label>
-                <input type="checkbox" xv-model="ichecks" value="red" id="red" /> 
+                <input type="checkbox" x-model="ichecks" value="red" id="red" /> 
             </div>
             <div>
                 <label for="blue">blue</label>
-                <input type="checkbox" xv-model="ichecks" value="blue" id="blue" /> 
+                <input type="checkbox" x-model="ichecks" value="blue" id="blue" /> 
             </div>
             <div>
                 <label for="green">green</label>
-                <input type="checkbox" xv-model="ichecks" value="green" id="green" /> 
+                <input type="checkbox" x-model="ichecks" value="green" id="green" /> 
             </div>
         </div>
         <br>
@@ -69,15 +69,15 @@
             {{iradio}} -- 
             <div>
                 <label for="s_10000">10000</label>
-                <input type="radio" id="s_10000" value="10000" xv-model="iradio" />
+                <input type="radio" id="s_10000" value="10000" x-model="iradio" />
             </div>
             <div>
                 <label for="s_20000">20000</label>
-                <input type="radio" id="s_20000" value="20000" xv-model="iradio" />
+                <input type="radio" id="s_20000" value="20000" x-model="iradio" />
             </div>
             <div>
                 <label for="s_30000">30000</label>
-                <input type="radio" id="s_30000" value="30000" xv-model="iradio" />
+                <input type="radio" id="s_30000" value="30000" x-model="iradio" />
             </div>
         </div>
         `

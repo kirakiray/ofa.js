@@ -15,7 +15,7 @@
         <div style="font-size:12px;">
             <div style="color:#ffcc00;">x:{{x}}</div>
             <div style="color:#8a8aff;">y:{{y}}</div>
-            <div xv-content></div>
+            <div x-content></div>
         </div>
         `
     });

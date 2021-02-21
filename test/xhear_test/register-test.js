@@ -12,7 +12,7 @@
         temp: `
         <div>
             <br>
-            <input type="text" $="dInput" xv-model="itext" />
+            <input type="text" $="dInput" x-model="itext" />
             <br>
         </div>
         `,

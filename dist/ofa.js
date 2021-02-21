@@ -1,5 +1,5 @@
 /*!
- * ofa v2.7.1
+ * ofa v2.8.0
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2021 YAO
@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.2.3
+     * xhear v5.3.0
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2021 YAO
@@ -3300,11 +3300,11 @@
 
                     let options = Object.assign({}, defaults);
 
-                    // 设置xv-ele
+                    // 设置x-ele
                     if (this.parentElement) {
-                        this.setAttribute("xv-ele", "");
+                        this.setAttribute("x-ele", "");
                     } else {
-                        nextTick(() => this.setAttribute("xv-ele", ""), xvid);
+                        nextTick(() => this.setAttribute("x-ele", ""), xvid);
                     }
 
                     renderComponent(this, options);
@@ -3459,12 +3459,12 @@
 
                 let bindEventStr = JSON.stringify(bindEvent);
                 if (bindEventStr != "{}") {
-                    ele.setAttribute("xv-on", bindEventStr);
+                    ele.setAttribute("x-on", bindEventStr);
                 }
 
                 let bindAttrStr = JSON.stringify(bindAttr);
                 if (bindAttrStr != "{}") {
-                    ele.setAttribute("xv-bind", bindAttrStr);
+                    ele.setAttribute("x-bind", bindAttrStr);
                 }
 
                 attrsRemoveKeys.forEach(k => {
@@ -3472,9 +3472,9 @@
                 });
             });
 
-            // xv-fill 填充数组，概念上相当于数组在html中的slot元素
-            // xv-fill 相比 for 更能发挥 stanz 数据结构的优势；更好的理解多重嵌套的数据结构；
-            let xvFills = getCanRenderEles(sroot, '[xv-fill]');
+            // x-fill 填充数组，概念上相当于数组在html中的slot元素
+            // x-fill 相比 for 更能发挥 stanz 数据结构的优势；更好的理解多重嵌套的数据结构；
+            let xvFills = getCanRenderEles(sroot, '[x-fill]');
             if (xvFills.length) {
                 let xvFillObj = {};
                 Object.defineProperty(proxyEle, "$fillElements", {
@@ -3483,7 +3483,7 @@
 
                 xvFills.forEach(ele => {
                     let contentName = ele.getAttribute("fill-content");
-                    let attrName = ele.getAttribute('xv-fill');
+                    let attrName = ele.getAttribute('x-fill');
 
                     let matchAttr = attrName.match(/(.+?) +use +(.+)/);
                     if (matchAttr) {
@@ -3562,14 +3562,14 @@
                 Object.freeze(xvFillObj);
             }
 
-            // xv-if判断
-            // if会重新渲染组件，滥用导致性能差， 5.2之后不允许使用if，请改用xv-show
-            // queAllToArray(sroot, "[xv-if]").forEach(e => {
+            // x-if判断
+            // if会重新渲染组件，滥用导致性能差， 5.2之后不允许使用if，请改用x-show
+            // queAllToArray(sroot, "[x-if]").forEach(e => {
             // });
 
-            // xv-show
-            getCanRenderEles(sroot, "[xv-show]").forEach(e => {
-                addProcess(e.getAttribute("xv-show"), val => {
+            // x-show
+            getCanRenderEles(sroot, "[x-show]").forEach(e => {
+                addProcess(e.getAttribute("x-show"), val => {
                     if (val) {
                         e.style.display = "";
                     } else {
@@ -3579,7 +3579,7 @@
             });
 
             // 文本渲染
-            getCanRenderEles(sroot, "xv-span").forEach(e => {
+            getCanRenderEles(sroot, "x-span").forEach(e => {
                 // 定位元素
                 let {
                     textnode,
@@ -3599,8 +3599,8 @@
             });
 
             // 事件修正
-            getCanRenderEles(sroot, `[xv-on]`).forEach(e => {
-                let data = JSON.parse(e.getAttribute("xv-on"));
+            getCanRenderEles(sroot, `[x-on]`).forEach(e => {
+                let data = JSON.parse(e.getAttribute("x-on"));
 
                 let $ele = createXhearEle(e);
 
@@ -3645,8 +3645,8 @@
             });
 
             // 属性修正
-            getCanRenderEles(sroot, `[xv-bind]`).forEach(ele => {
-                let data = JSON.parse(ele.getAttribute("xv-bind"));
+            getCanRenderEles(sroot, `[x-bind]`).forEach(ele => {
+                let data = JSON.parse(ele.getAttribute("x-bind"));
 
                 Object.keys(data).forEach(attrName => {
                     let expr = data[attrName];
@@ -3699,13 +3699,13 @@
             // 需要跳过的元素列表
             let xvModelJump = new Set();
 
-            // 绑定 xv-model
-            getCanRenderEles(sroot, `[xv-model]`).forEach(ele => {
+            // 绑定 x-model
+            getCanRenderEles(sroot, `[x-model]`).forEach(ele => {
                 if (xvModelJump.has(ele)) {
                     return;
                 }
 
-                let modelKey = ele.getAttribute("xv-model");
+                let modelKey = ele.getAttribute("x-model");
 
                 switch (ele.tagName.toLowerCase()) {
                     case "input":
@@ -3713,7 +3713,7 @@
                         switch (inputType) {
                             case "checkbox":
                                 // 判断是不是复数形式的元素
-                                let allChecks = getCanRenderEles(sroot, `input[type="checkbox"][xv-model="${modelKey}"]`);
+                                let allChecks = getCanRenderEles(sroot, `input[type="checkbox"][x-model="${modelKey}"]`);
 
                                 // 查看是单个数量还是多个数量
                                 if (allChecks.length > 1) {
@@ -3751,7 +3751,7 @@
                                 }
                                 return;
                             case "radio":
-                                let allRadios = getCanRenderEles(sroot, `input[type="radio"][xv-model="${modelKey}"]`);
+                                let allRadios = getCanRenderEles(sroot, `input[type="radio"][x-model="${modelKey}"]`);
 
                                 let rid = getRandomId();
 
@@ -3793,7 +3793,7 @@
                                     cEle.setData("value", val);
                                 });
                             } else {
-                                console.warn(`can't xv-model with thie element => `, ele);
+                                console.warn(`can't x-model with thie element => `, ele);
                             }
                 }
             });
@@ -4054,7 +4054,7 @@
                 textDataArr && textDataArr.forEach((e) => {
                     var key = /{{(.+?)}}/.exec(e);
                     if (key) {
-                        temp = temp.replace(e, `<xv-span xvkey="${key[1].trim()}"></xv-span>`);
+                        temp = temp.replace(e, `<x-span xvkey="${key[1].trim()}"></x-span>`);
                     }
                 });
 
@@ -4134,7 +4134,7 @@
 
             // 设置渲染完毕
             let setRenderend = () => {
-                nextTick(() => ele.setAttribute("xv-ele", 1), ele.xvid);
+                nextTick(() => ele.setAttribute("x-ele", 1), ele.xvid);
                 xhearEle[RENDEREND_RESOLVE]();
                 xhearEle.trigger('renderend', {
                     bubbles: false
@@ -4183,8 +4183,8 @@
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5002003,
-            version: "5.2.3",
+            v: 5003000,
+            version: "5.3.0",
             fn: XhearEleFn,
             isXhear,
             ext,
@@ -5631,8 +5631,15 @@
     // 默认跳转型路由
     // 跳转路由，跟普通页面跳转的体验一样
     const initJumpRouter = (app) => {
-        if (app.router != "router" && app.router != 1) {
-            return;
+        switch (app.router) {
+            case "router":
+            case 1:
+            case "1":
+            case "fast":
+            case "fastback":
+                break;
+            default:
+                return;
         }
 
         if (routerTarget) {
@@ -6796,7 +6803,17 @@
                                     // 有动画属性下，直接修正
                                     pageEle.attrs["o-page-anime"] = current;
                                     pageEle.show = true;
+                                    if (this.router == "fastback") {
+                                        pageEle.style['transition-duration'] = '0s';
+                                        $.nextTick(() => {
+                                            pageEle.style['transition-duration'] = '';
+                                        });
+                                    }
                                 }
+                            }
+
+                            if (this.router == "fast") {
+                                pageEle.style['transition-duration'] = '0s';
                             }
                         });
 
@@ -6814,22 +6831,29 @@
 
                                 if (unneedPages && unneedPages.length) {
                                     // 以动画回退的方式干掉页面
-                                    unneedPages.forEach(pageEle => {
-                                        let {
-                                            front
-                                        } = pageEle.animeParam;
-                                        pageEle.attrs["o-page-anime"] = front;
-
-                                        // 动画结束后删除
-                                        let endfun = e => {
-                                            pageEle.ele.removeEventListener("transitionend", endfun);
+                                    if (this.router == "fast" || this.router == "fastback") {
+                                        // debugger
+                                        unneedPages.forEach(pageEle => {
                                             pageEle.remove();
-                                            endfun = null;
-                                        };
-                                        pageEle.ele.addEventListener("transitionend", endfun);
-                                        // 时间候补确保删除
-                                        setTimeout(() => endfun && endfun(), 1000);
-                                    });
+                                        });
+                                    } else {
+                                        unneedPages.forEach(pageEle => {
+                                            let {
+                                                front
+                                            } = pageEle.animeParam;
+                                            pageEle.attrs["o-page-anime"] = front;
+
+                                            // 动画结束后删除
+                                            let endfun = e => {
+                                                pageEle.ele.removeEventListener("transitionend", endfun);
+                                                pageEle.remove();
+                                                endfun = null;
+                                            };
+                                            pageEle.ele.addEventListener("transitionend", endfun);
+                                            // 时间候补确保删除
+                                            setTimeout(() => endfun && endfun(), 1000);
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -7056,8 +7080,8 @@
             </div>
             `;
         },
-        v: 2007001,
-        version: "2.7.1"
+        v: 2008000,
+        version: "2.8.0"
     };
 
     let oldOfa = glo.ofa;

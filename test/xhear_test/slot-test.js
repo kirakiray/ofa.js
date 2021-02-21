@@ -17,7 +17,7 @@
 
     // 添加进去看看
     $("#slot_test").push(`
-    <stag-test xv-ele>
+    <stag-test x-ele>
         <div>我是内容哈哈哈</div>
         <span slot="top">我是要被塞到顶部的元素</span>
     </stag-test>

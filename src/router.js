@@ -3,8 +3,15 @@ let routerTarget;
 // 默认跳转型路由
 // 跳转路由，跟普通页面跳转的体验一样
 const initJumpRouter = (app) => {
-    if (app.router != "router" && app.router != 1) {
-        return;
+    switch (app.router) {
+        case "router":
+        case 1:
+        case "1":
+        case "fast":
+        case "fastback":
+            break;
+        default:
+            return;
     }
 
     if (routerTarget) {

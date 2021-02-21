@@ -129,7 +129,17 @@ $.register({
                         // 有动画属性下，直接修正
                         pageEle.attrs["o-page-anime"] = current;
                         pageEle.show = true;
+                        if (this.router == "fastback") {
+                            pageEle.style['transition-duration'] = '0s';
+                            $.nextTick(() => {
+                                pageEle.style['transition-duration'] = '';
+                            });
+                        }
                     }
+                }
+
+                if (this.router == "fast") {
+                    pageEle.style['transition-duration'] = '0s';
                 }
             });
 
@@ -147,20 +157,27 @@ $.register({
 
                     if (unneedPages && unneedPages.length) {
                         // 以动画回退的方式干掉页面
-                        unneedPages.forEach(pageEle => {
-                            let { front } = pageEle.animeParam;
-                            pageEle.attrs["o-page-anime"] = front;
-
-                            // 动画结束后删除
-                            let endfun = e => {
-                                pageEle.ele.removeEventListener("transitionend", endfun);
+                        if (this.router == "fast" || this.router == "fastback") {
+                            // debugger
+                            unneedPages.forEach(pageEle => {
                                 pageEle.remove();
-                                endfun = null;
-                            };
-                            pageEle.ele.addEventListener("transitionend", endfun);
-                            // 时间候补确保删除
-                            setTimeout(() => endfun && endfun(), 1000);
-                        });
+                            });
+                        } else {
+                            unneedPages.forEach(pageEle => {
+                                let { front } = pageEle.animeParam;
+                                pageEle.attrs["o-page-anime"] = front;
+
+                                // 动画结束后删除
+                                let endfun = e => {
+                                    pageEle.ele.removeEventListener("transitionend", endfun);
+                                    pageEle.remove();
+                                    endfun = null;
+                                };
+                                pageEle.ele.addEventListener("transitionend", endfun);
+                                // 时间候补确保删除
+                                setTimeout(() => endfun && endfun(), 1000);
+                            });
+                        }
                     }
                 }
             }

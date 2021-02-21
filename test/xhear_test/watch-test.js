@@ -5,7 +5,7 @@
         tag: "w-test",
         temp: `
         <div style="color:red;font-size:10px;">selected:{{selected}}</div>
-        <div xv-content style="font-size:12px;"></div>
+        <div x-content style="font-size:12px;"></div>
         `,
         attrs: ['selected'],
         data: {
