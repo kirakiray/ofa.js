@@ -5,23 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>drill test</title>
+    <title>drill3 test</title>
     <script src="../../dist/ofa.js" drill-cache="1" async></script>
-    <script src="../ok.js"></script>
+    <script src="ok.js"></script>
 </head>
 
 <body>
+    <div class="testbgimg"></div>
 </body>
 <script>
-    var g1 = expect(12, '主进程');
+    const g1 = expect(11, '主进程');
 
-    var g2 = expect(3, 'pend函数');
+    const g2 = expect(3, 'pend函数');
 
-    var g3 = expect(2, '映射目录测试');
+    const g3 = expect(2, '映射目录测试');
 
-    var g4 = expect(3, 'init模块');
+    const g4 = expect(3, 'init模块');
 
-    var g5 = expect(3, 'wasm and json');
+    const g5 = expect(3, 'wasm and json');
+
+    const g6 = expect(1, 'getLink test');
+
+    const g7 = expect(1, 'get pack ok');
+
+    const g8 = expect(1, 'go catch ok');
+
+    const esModuleTest = expect(2, 'es module test');
 
     drill = async (drill) => {
         drill.config({
@@ -34,6 +43,64 @@
             }
         });
 
+        // 开启缓存
+        // drill.offline = true;
+
+        // 测试加载css文件
+        let csslink = await load("css/c1.css -r -unAppend");
+        console.log("css link  => ", csslink);
+        // let csslink = await load("css/c1.css -r");
+
+        // 加载tester
+        load("testjs/es-module-test -r");
+
+        testg1g2();
+
+        // 映射目录测试
+        let fileL1 = await load('@long/l1');
+        if (fileL1 == 'long file01') {
+            g3.ok(1, '映射目录成功');
+        }
+
+        // 映射文件测试
+        let fileL2 = await load('fileL2');
+
+        if (fileL2 == 'long file02') {
+            g3.ok(1, 'fileL2文件读取成功');
+        }
+
+        let i1 = await load('init01').post("are you init01?");
+        // 下面这个会无效，因为初始化过了
+        let i2 = await load('init01').post("no, you not init01");
+
+        g4.ok(i1.first == "are you init01?", "init redata ok");
+        g4.ok(i1 === i2, "init redata ok");
+
+        const {
+            add,
+            square
+        } = await load("w/test.wasm");
+
+        g5.ok(add(100, 100) === 200, "wasm add ok");
+        g5.ok(square(100, 100) === 10000, "wasm square ok");
+
+        let j1 = await load("j1.json");
+        g5.ok(j1.name === "testJSONFile", "json data ok");
+
+        let l1path = await load("@long/l1 -getLink");
+        if (!drill.offline) {
+            g6.ok(/\/test\/drill_test\/js\/long1\/long2\/long3\/l1.js\?d_ver=1$/.test(l1path), "get path ok");
+        } else {
+            g6.ok(!!l1path.match(/^blob/), "offline path ok");
+        }
+        console.log("l1path => ", l1path);
+
+        let pcdata = await load("pc -p");
+
+        g7.ok(pcdata.val === 'I am pack', 'load pack data ok');
+    };
+
+    async function testg1g2() {
         g1.ok(1, 'run file01 start');
         await load('file/file01');
         g1.ok(1, 'run file01 ok 1');
@@ -50,6 +117,13 @@
             .catch(function (err) {
                 console.error('err=>', err);
             });
+
+        try {
+            await load("asdasd");
+            throw "can not go then";
+        } catch (e) {
+            g8.ok(true, "catch ok");
+        }
 
         // root test
         var [d1, d2, d3] = await load('define/define01', 'define/define02', 'js/define/define03  -r');
@@ -82,43 +156,8 @@
             });
 
         g1.ok(1, 'task test ok');
+    }
 
-        // 映射目录测试
-        let fileL1 = await load('@long/l1');
-        if (fileL1 == 'long file01') {
-            g3.ok(1, '映射目录成功');
-        }
-
-        // 映射文件测试
-        let fileL2 = await load('fileL2');
-
-        if (fileL2 == 'long file02') {
-            g3.ok(1, 'fileL2文件读取成功');
-        }
-
-        // 加载defineId后的模块
-        var newD4 = await load('d4');
-        g1.ok(newD4 === d4, "load define ID ok");
-
-        let i1 = await load('init01').post("are you init01?");
-        // 下面这个会无效，因为初始化过了
-        let i2 = await load('init01').post("no, you not init01");
-
-        g4.ok(i1.first == "are you init01?", "init redata ok");
-        g4.ok(i1 === i2, "init redata ok");
-
-        const {
-            add,
-            square
-        } = await load("w/test.wasm");
-
-        g5.ok(add(100, 100) === 200, "wasm add ok");
-        g5.ok(square(100, 100) === 10000, "wasm square ok");
-
-        let j1 = await load("j1.json");
-        g5.ok(j1.name === "testJSONFile", "json data ok");
-
-    };
 </script>
 
 </html>

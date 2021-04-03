@@ -10,4 +10,4 @@ define(async (load, exports) => {
     exports.val = "I am define04";
 
     once(1, 'load define04 ok');
-}, "d4");
+});

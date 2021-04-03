@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>drill-installer</title>
+    <script src="../ok.js"></script>
+    <script src="../../dist/drill.js" drill-cache="1"></script>
+    <script src="../../plugin/drill-installer.js"></script>
+</head>
+
+<body>
+    <script>
+        (async () => {
+            drill.config({
+                baseUrl: "../js/"
+            });
+
+            let d1 = await load('define/define01');
+            let d1_2 = await load('define/define01');
+        })();
+    </script>
+</body>
+
+</html>

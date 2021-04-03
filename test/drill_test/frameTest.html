@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>drill 3.0 frame test</title>
+    <script src="ok.js"></script>
+    <script src="../dist/drill.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+    var g1 = expect(2, 'frame模块测试');
+
+    drill.config({
+        baseUrl: "js/"
+    });
+
+    Object.assign(drill.cacheInfo, {
+        k: "k",
+        v: "11"
+    });
+
+    (async () => {
+        let val = await load('testFrame1.frame').post({
+            v1: 9,
+            v2: 100,
+            v3: 99999
+        });
+
+        g1.ok(val === 89999100, "value ok1");
+
+        let val2 = await load('testFrame1.frame').post({
+            v1: 23242,
+            v2: 3434,
+            v3: 234
+        });
+
+        g1.ok(val2 === 18676248552, "value ok2");
+    })();
+
+    // load('testFrame1.frame').post({
+    //         v1: 9,
+    //         v2: 100,
+    //         v3: 99999
+    //     }).then(data=>{console.log(data)});
+</script>
+
+</html>

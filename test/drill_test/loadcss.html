@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>test loadcss</title>
+    <script src="../dist/drill.js" drill-cache="34"></script>
+</head>
+
+<body>
+    我是正文，看看 css 文件是否异步载入成功了
+</body>
+<script>
+    setTimeout(async function () {
+        let a = await load('css/incss/test.css');
+        let b = await load('css/incss/test.css');
+    }, 1000);
+</script>
+
+</html>
