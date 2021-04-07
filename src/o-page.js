@@ -272,20 +272,42 @@ $.register({
     }
 });
 
-$.fn.extend({
-    get $page() {
-        let { $host } = this;
-        while ($host.$host) {
-            $host = $host.$host;
+Object.defineProperties($.fn, {
+    $page: {
+        get() {
+            let { $host } = this;
+            while ($host.$host) {
+                $host = $host.$host;
+            }
+            return $host;
         }
-        return $host;
     },
-    get $app() {
-        let { $page } = this;
-        if (!$page) {
-            console.warn("no app");
-            return;
+    $app: {
+        get() {
+            let { $page } = this;
+            if (!$page) {
+                console.warn("no app");
+                return;
+            }
+            return $page.parents("o-app")[0];
         }
-        return $page.parents("o-app")[0];
     }
 });
+
+// $.fn.extend({
+//     get $page() {
+//         let { $host } = this;
+//         while ($host.$host) {
+//             $host = $host.$host;
+//         }
+//         return $host;
+//     },
+//     get $app() {
+//         let { $page } = this;
+//         if (!$page) {
+//             console.warn("no app");
+//             return;
+//         }
+//         return $page.parents("o-app")[0];
+//     }
+// });

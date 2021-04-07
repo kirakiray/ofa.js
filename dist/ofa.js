@@ -1,5 +1,5 @@
 /*!
- * ofa v2.8.1
+ * ofa v2.8.2
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2021 YAO
@@ -8,7 +8,7 @@
 ((glo) => {
     "use strict";
     /*!
-     * xhear v5.3.0
+     * xhear v5.3.1
      * https://github.com/kirakiray/Xhear#readme
      * 
      * (c) 2018-2021 YAO
@@ -2166,6 +2166,40 @@
 
             return proxyAttrs;
         }
+
+        const extend = (_this, proto) => {
+            Object.keys(proto).forEach(k => {
+                // 获取描述
+                let {
+                    get,
+                    set,
+                    value
+                } = getOwnPropertyDescriptor(proto, k);
+
+                if (value) {
+                    if (_this.hasOwnProperty(k)) {
+                        _this[k] = value;
+                    } else {
+                        Object.defineProperty(_this, k, {
+                            value
+                        });
+                    }
+                } else {
+                    // debugger
+                    // get && (get = get.bind(_this))
+
+                    Object.defineProperty(_this, k, {
+                        get,
+                        set
+                    });
+
+                    if (set) {
+                        // 添加到可设置key权限内
+                        xEleDefaultSetKeys.add(k);
+                    }
+                }
+            });
+        }
         // 可setData的key
         const CANSETKEYS = Symbol("cansetkeys");
         const ORIEVE = Symbol("orignEvents");
@@ -2517,7 +2551,7 @@
 
             siblings(expr) {
                 // 获取相邻元素
-                let parChilds = Array.from(this.ele.parentElement.children);
+                let parChilds = Array.from(this.parent.ele.children);
 
                 // 删除自身
                 let tarId = parChilds.indexOf(this.ele);
@@ -2613,40 +2647,40 @@
                 return cloneEle;
             }
 
-            extend(proto) {
-                Object.keys(proto).forEach(k => {
-                    // 获取描述
-                    let {
-                        get,
-                        set,
-                        value
-                    } = getOwnPropertyDescriptor(proto, k);
+            // extend(proto) {
+            //     Object.keys(proto).forEach(k => {
+            //         // 获取描述
+            //         let {
+            //             get,
+            //             set,
+            //             value
+            //         } = getOwnPropertyDescriptor(proto, k);
 
-                    if (value) {
-                        if (this.hasOwnProperty(k)) {
-                            this[k] = value;
-                        } else {
-                            Object.defineProperty(this, k, {
-                                value
-                            });
-                        }
-                    } else {
-                        // debugger
-                        // get && (get = get.bind(this))
+            //         if (value) {
+            //             if (this.hasOwnProperty(k)) {
+            //                 this[k] = value;
+            //             } else {
+            //                 Object.defineProperty(this, k, {
+            //                     value
+            //                 });
+            //             }
+            //         } else {
+            //             // debugger
+            //             // get && (get = get.bind(this))
 
-                        Object.defineProperty(this, k, {
-                            get,
-                            set
-                        });
+            //             Object.defineProperty(this, k, {
+            //                 get,
+            //                 set
+            //             });
 
-                        if (set) {
-                            // 添加到可设置key权限内
-                            xEleDefaultSetKeys.add(k);
-                        }
-                    }
-                });
-                return this;
-            }
+            //             if (set) {
+            //                 // 添加到可设置key权限内
+            //                 xEleDefaultSetKeys.add(k);
+            //             }
+            //         }
+            //     });
+            //     return this;
+            // }
 
             getTarget(keys) {
                 let target = this;
@@ -2856,7 +2890,7 @@
             }
         }
 
-        XhearEleFn.extend({
+        extend(XhearEleFn, {
             on(...args) {
                 onEve.call(this, args);
                 return this;
@@ -3023,7 +3057,7 @@
         }
 
         // 重置所有数组方法
-        XhearEleFn.extend({
+        extend(XhearEleFn, {
             // push就是最原始的appendChild，干脆直接appencChild
             push(...items) {
                 let fragment = document.createDocumentFragment();
@@ -3273,7 +3307,7 @@
                 }
             }
 
-            defaults.proto && CustomXhearEle.prototype.extend(defaults.proto);
+            defaults.proto && extend(CustomXhearEle.prototype, defaults.proto);
 
             // 注册组件的地址
             let scriptSrc = document.currentScript && document.currentScript.src;
@@ -4002,7 +4036,7 @@
             let renderTasks = [];
 
             // 合并 proto
-            defaults.proto && xhearEle.extend(defaults.proto);
+            defaults.proto && extend(xhearEle, defaults.proto);
 
             let {
                 temp
@@ -4187,8 +4221,8 @@
             register,
             nextTick,
             xdata: obj => createXData(obj)[PROXYTHIS],
-            v: 5003000,
-            version: "5.3.0",
+            v: 5003001,
+            version: "5.3.1",
             fn: XhearEleFn,
             isXhear,
             ext,
@@ -6306,7 +6340,7 @@
             }) => {
                 let defaults = {
                     // 默认模板
-                    temp: false,
+                    temp: true,
                     // 与组件同域下的样式
                     hostcss: "",
                     // 组件初始化完毕时
@@ -6642,27 +6676,49 @@
                 }
             });
 
-            $.fn.extend({
-                get $page() {
-                    let {
-                        $host
-                    } = this;
-                    while ($host.$host) {
-                        $host = $host.$host;
+            Object.defineProperties($.fn, {
+                $page: {
+                    get() {
+                        let {
+                            $host
+                        } = this;
+                        while ($host.$host) {
+                            $host = $host.$host;
+                        }
+                        return $host;
                     }
-                    return $host;
                 },
-                get $app() {
-                    let {
-                        $page
-                    } = this;
-                    if (!$page) {
-                        console.warn("no app");
-                        return;
+                $app: {
+                    get() {
+                        let {
+                            $page
+                        } = this;
+                        if (!$page) {
+                            console.warn("no app");
+                            return;
+                        }
+                        return $page.parents("o-app")[0];
                     }
-                    return $page.parents("o-app")[0];
                 }
             });
+
+            // $.fn.extend({
+            //     get $page() {
+            //         let { $host } = this;
+            //         while ($host.$host) {
+            //             $host = $host.$host;
+            //         }
+            //         return $host;
+            //     },
+            //     get $app() {
+            //         let { $page } = this;
+            //         if (!$page) {
+            //             console.warn("no app");
+            //             return;
+            //         }
+            //         return $page.parents("o-app")[0];
+            //     }
+            // });
             // currents路由提前载入页面的数量
             let preloadLen = 1;
 
@@ -7077,8 +7133,8 @@
             </div>
             `;
         },
-        v: 2008001,
-        version: "2.8.1"
+        v: 2008002,
+        version: "2.8.2"
     };
 
     let oldOfa = glo.ofa;

@@ -130,7 +130,7 @@ const componentBuildDefault = async ({ defaults, packData, options, relativeLoad
 main.setProcessor("Component", async (packData, d, { relativeLoad }) => {
     let defaults = {
         // 默认模板
-        temp: false,
+        temp: true,
         // 与组件同域下的样式
         hostcss: "",
         // 组件初始化完毕时
