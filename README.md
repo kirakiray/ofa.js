@@ -8,10 +8,9 @@ No webpack,No nodejs,Let the front end go back to the purest web;
 
 让前端回归最纯粹的web；没有nodejs，没有webpack，也能开发超大型应用；
 
-### 对比1.0 的进步
+## 文档地址
 
-- 升级 xhear 5.0，采用 web components 方案，使用更方便
-- 升级 drill 3.2，支持载入更多文件类型
+[点击跳转到文档地址](https://ofajs.com/)
 
 ### 如何重新打包？
 
