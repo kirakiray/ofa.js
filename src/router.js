@@ -92,8 +92,6 @@ const initJumpRouter = (app) => {
         let beforeHistory = (nowPageState && nowPageState.history) || [];
         let nowHistory = (e.state && e.state.history) || [];
 
-
-
         if (beforeHistory.length > nowHistory.length) {
             if (navigateBacked) {
                 // 通过app.navigate返回的路由，复原 navigateBacked

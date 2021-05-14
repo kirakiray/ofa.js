@@ -13,16 +13,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <title>o-app test</title>
     <link rel="stylesheet" href="o-page-anime.css">
-    <script src="../../dist/ofa.js"></script>
-    <script>
-        ofa.globalcss = "testglo.css";
-
-        ofa.config({
-            paths: {
-                "@ofa/": "../../lib/"
-            }
-        });
-    </script>
+    <script src="../../dist/ofa.js" async></script>
     <style>
         html,
         body {
@@ -111,45 +102,54 @@
     <div class="backbtn">返回</div>
     <div class="backbtn2">返回2</div>
     <script>
-        // document.querySelector("o-app").addEventListener("touchmove", e => {
-        //     e.preventDefault()
-        // });
-        // 安卓切换
-        if (navigator.userAgent.includes("iPhone") || navigator.userAgent.includes("iPad")) {
-            $("o-app").router = "slide";
+        ofa = () => {
+            ofa.globalcss = "testglo.css";
+
+            ofa.config({
+                paths: {
+                    "@ofa/": "../../lib/"
+                }
+            });
+            // document.querySelector("o-app").addEventListener("touchmove", e => {
+            //     e.preventDefault()
+            // });
+            // 安卓切换
+            if (navigator.userAgent.includes("iPhone") || navigator.userAgent.includes("iPad")) {
+                $("o-app").router = "slide";
+            }
+
+            // let page1 = $("#haha");
+
+            let testapp = $("o-app");
+
+            // 添加二级animeParam
+            // testapp.animeParam.back.push("back2")
+
+            let backbtn = $(".backbtn");
+            backbtn.on("click", e => {
+                testapp.back();
+            });
+
+            $(".backbtn2").on("click", e => {
+                testapp.back(2);
+            })
+
+            testapp.watch("visibility", (e, visibility) => {
+                console.log(`app ${visibility}!`)
+            });
+
+            // testapp.on("navigate", (e, naviData) => {
+            //     switch (naviData.type) {
+            //         case "to":
+            //             let pageId = naviData.target.pageId;
+
+            //             history.pushState({
+            //                 pageId
+            //             }, "page 2", `?pageId=${pageId}`);
+            //             break;
+            //     }
+            // });
         }
-
-        // let page1 = $("#haha");
-
-        let testapp = $("o-app");
-
-        // 添加二级animeParam
-        // testapp.animeParam.back.push("back2")
-
-        let backbtn = $(".backbtn");
-        backbtn.on("click", e => {
-            testapp.back();
-        });
-
-        $(".backbtn2").on("click", e => {
-            testapp.back(2);
-        })
-
-        testapp.watch("visibility", (e, visibility) => {
-            console.log(`app ${visibility}!`)
-        });
-
-        // testapp.on("navigate", (e, naviData) => {
-        //     switch (naviData.type) {
-        //         case "to":
-        //             let pageId = naviData.target.pageId;
-
-        //             history.pushState({
-        //                 pageId
-        //             }, "page 2", `?pageId=${pageId}`);
-        //             break;
-        //     }
-        // });
     </script>
 </body>
 

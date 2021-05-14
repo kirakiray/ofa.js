@@ -131,7 +131,9 @@ $.register({
                         pageEle.show = true;
                         if (this.router == "fastback") {
                             pageEle.style['transition-duration'] = '0s';
-                            $.nextTick(() => {
+                            // nextTick太快了
+                            // $.nextTick(() => {
+                            setTimeout(() => {
                                 pageEle.style['transition-duration'] = '';
                             });
                         }

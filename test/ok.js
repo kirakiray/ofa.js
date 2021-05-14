@@ -28,7 +28,7 @@
         }
 
         .wran{
-            color:#de6100;
+            color:#cd8b58;
         }
     `;
     document.head.appendChild(styleEle);

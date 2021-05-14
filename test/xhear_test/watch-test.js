@@ -1,5 +1,5 @@
 (() => {
-    let tester = expect(9, 'watch test');
+    let tester = expect(8, 'watch test');
 
     $.register({
         tag: "w-test",
@@ -10,6 +10,11 @@
         attrs: ['selected'],
         data: {
             selected: 0
+        },
+        watch: {
+            selected(e, selected) {
+                // console.log("selected =>", selected);
+            }
         }
     });
 
@@ -23,7 +28,8 @@
         // watch监听
         d.watch(e => {
             tester.ok(e.trends.length == 4, 'trends length ok');
-            tester.ok(e.trends[0].name === "push", 'trends name ok 1');
+            // 数组修正方法(push pop shift unshift)都会被转换为splice
+            tester.ok(e.trends[0].name === "splice", 'trends name ok 1');
             tester.ok(e.trends[1].name == "setData", 'trends name ok 2');
         });
 
@@ -32,36 +38,26 @@
             tag: "w-test",
             text: "t2-1"
         }, {
+            tag: "w-test",
+            0: {
+                tag: "w-test",
+                text: "t2-2-1"
+            },
+            1: {
                 tag: "w-test",
                 0: {
                     tag: "w-test",
-                    text: "t2-2-1"
+                    text: "t2-2-2-1",
                 },
                 1: {
                     tag: "w-test",
-                    0: {
-                        tag: "w-test",
-                        text: "t2-2-2-1",
-                    },
-                    1: {
-                        tag: "w-test",
-                        text: "t2-2-2-2",
-                    }
+                    text: "t2-2-2-2",
                 }
-            }, {
-                tag: "w-test",
-                text: "t2-3"
-            });
-
-        // 监听 selected=1 的
-        let cid = 0;
-        d.watch('[selected=1]', (e) => {
-            if (cid > 0) {
-                tester.ok(e.val.length == 1, "[selected=1] ok 1");
-                tester.ok(e.val[0].ele === d[1].ele, "[selected=1] ok 2");
             }
-            cid++;
-        }, true);
+        }, {
+            tag: "w-test",
+            text: "t2-3"
+        });
 
         // 判断是否push成功
         tester.ok(d.length == 3, 'length ok');
@@ -82,6 +78,34 @@
         setTimeout(() => {
             tester.ok(cloneDObj[1].selected == 1, 'sync ok');
         }, 500);
-
     }, 100);
+
+
+    // nextTick顺序测试
+    let nt_arr = [];
+    $.register({
+        tag: "w-tow",
+        data: {
+            d: [1]
+        },
+        watch: {
+            d(e, d) {
+                nt_arr.push(d);
+            }
+        }
+    });
+
+    let dtowele = $({
+        tag: "w-tow"
+    })
+
+    $.nextTick(() => {
+        dtowele.d.push(2)
+
+        $.nextTick(() => {
+            dtowele.d.push(3)
+            tester.ok(dtowele.d.string === '[1,2,3]',"nextTick order ok");
+        });
+    });
+
 })();
