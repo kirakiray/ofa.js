@@ -44,7 +44,7 @@
             // 定位对象寄存器
             let nextTickMap = new Map();
 
-            let pnext = (func) => Promise.resolve().then(() => func())
+            const pnext = (func) => Promise.resolve().then(() => func())
 
             if (typeof process === "object" && process.nextTick) {
                 pnext = process.nextTick;
@@ -275,6 +275,27 @@
                 return newObj;
             } else {
                 return obj;
+            }
+        }
+
+        // seekdata是否符合条件
+        function judgeSeekData(val, expr) {
+            if (!(val instanceof XData)) {
+                return false;
+            }
+            try {
+                return expr.call(val, val)
+            } catch (e) {}
+        }
+
+        // 鉴定的方法
+        let seekFunc = (val, expr, arr) => {
+            if (judgeSeekData(val, expr)) {
+                arr.push(val);
+            }
+
+            if (val instanceof XData) {
+                arr.push(...val.seek(expr, false));
             }
         }
 
@@ -1469,26 +1490,9 @@
 
                 let arr = [];
 
-                let f2 = (val) => {
-                    try {
-                        let bool = expr.call(val, val)
-
-                        if (bool) {
-                            arr.push(val);
-                        }
-                    } catch (e) {}
-                }
-
                 if (seekSelf) {
-                    f2(this);
-                }
-
-                // 鉴定的方法
-                let f = (val) => {
-                    f2(val);
-
-                    if (val instanceof XData) {
-                        arr.push(...val.seek(expr, false));
+                    if (judgeSeekData(this, expr)) {
+                        arr.push(this)
                     }
                 }
 
@@ -1497,13 +1501,12 @@
                         return;
                     }
 
-                    f(this[key]);
+                    seekFunc(this[key], expr, arr);
                 });
 
-                this.forEach(val => f(val));
+                this.forEach(val => seekFunc(val, expr, arr));
 
-                // 手动回收
-                f2 = f = null;
+                // Object.values(this).forEach(val => seekFunc(val, expr, arr));
 
                 return arr;
             }
@@ -1703,7 +1706,7 @@
         const XMirrorHandler = {
             get(target, key, receiver) {
                 if (XMIRRIR_CANSET_KEYS.has(key)) {
-                    return target[key];
+                    return Reflect.get(target, key, receiver);
                 }
                 let r_val;
                 if (typeof key === "symbol") {
@@ -1720,8 +1723,7 @@
             },
             set(target, key, value, receiver) {
                 if (XMIRRIR_CANSET_KEYS.has(key)) {
-                    target[key] = value;
-                    return true;
+                    return Reflect.set(target, key, value, receiver);
                 }
                 return target.mirrorHost.setData(key, value);
             }
@@ -3308,16 +3310,26 @@
             // 伪造一个挂载元素的数据
             let fakeData;
 
+            const $host = (host.$host && host.$data) ? host.$host : host;
+
             if (itemData instanceof XData) {
                 fakeData = createXData({
                     $data: itemData.mirror,
-                    $host: ((host.$host && host.$data) ? host.$host : host).mirror,
+                    // $host: ((host.$host && host.$data) ? host.$host : host).mirror,
+                    get $host() {
+                        return $host;
+                    },
                     get $parent() {
                         return parent;
                     },
                     get $index() {
                         return itemData.index !== undefined ? itemData.index : index;
                     }
+                });
+
+                itemData.on("updateIndex", e => {
+                    // debugger
+                    fakeData.emitHandler("updateIndex");
                 });
             } else {
                 fakeData = createXData({
@@ -3328,12 +3340,15 @@
                         parent[index] = val;
                         // parent.setData(index, val);
                     },
-                    $host: ((host.$host && host.$data) ? host.$host : host).mirror,
+                    // $host: ((host.$host && host.$data) ? host.$host : host).mirror,
+                    get $host() {
+                        return $host;
+                    },
                     get $parent() {
                         return parent;
                     },
                     get $index() {
-                        return itemData.index !== undefined ? itemData.index : index;
+                        return index;
                     }
                 });
             }
@@ -3487,114 +3502,116 @@
 
         // 转化为指向this的函数表达式
         const argsWReg = /(".*?"|'.*?'|\(|\)|\[|\]|\{|\}|\|\||\&\&|\?|\!|:| |\+|\-|\*|%|\,|\<|\>)/g;
-        // const argsWReg_c = /(".*?"|'.*?'|\(|\)|\[|\]|\{|\}|\|\||\&\&|\?|\!|:| |\+|\-|\*|%|\,|[\<\>\=]?[=]?=|\<|\>)/;
-        // const ignoreArgKeysReg = /(^\$event$|^\$args$|^debugger$|^console\.|^Number$|^String$|^Object$|^Array$|^parseInt$|^parseFloat$|^undefined$|^null$|^true$|^false$|^[\d])/;
 
-        // const argsWithThis = (expr) => {
-        //     // 替换字符串用的唯一key
-        //     const sKey = "$$" + getRandomId() + "_";
+        const argsWReg_c = /(".*?"|'.*?'|\(|\)|\[|\]|\{|\}|\|\||\&\&|\?|\!|:| |\+|\-|\*|%|\,|[\<\>\=]?[=]?=|\<|\>)/;
+        const ignoreArgKeysReg = /(^\$event$|^\$args$|^debugger$|^console\.|^Number$|^String$|^Object$|^Array$|^parseInt$|^parseFloat$|^undefined$|^null$|^true$|^false$|^[\d])/;
 
-        //     let jump_strs = [];
+        const argsWithThis = (expr) => {
+            // 替换字符串用的唯一key
+            const sKey = "$$" + getRandomId() + "_";
 
-        //     // 规避操作
-        //     let before_expr = expr.replace(/\? *[\w]+?:/g, e => {
-        //         let replace_key = "__" + getRandomId() + "__";
+            let jump_strs = [];
 
-        //         jump_strs.push({
-        //             k: replace_key,
-        //             v: e
-        //         });
+            // 规避操作
+            let before_expr = expr.replace(/\? *[\w]+?:/g, e => {
+                let replace_key = "__" + getRandomId() + "__";
 
-        //         return replace_key;
-        //     });
+                jump_strs.push({
+                    k: replace_key,
+                    v: e
+                });
 
-        //     // 先抽取json结构的Key，防止添加this，后面再补充回去
-        //     let after_expr = before_expr.replace(/[\w]+? *:/g, (e) => {
-        //         return `${sKey}${e}`;
-        //     });
+                return replace_key;
+            });
 
-        //     // 还原规避字符串
-        //     jump_strs.forEach(e => {
-        //         after_expr = after_expr.replace(e.k, e.v);
-        //     });
+            // 先抽取json结构的Key，防止添加this，后面再补充回去
+            let after_expr = before_expr.replace(/[\w]+? *:/g, (e) => {
+                return `${sKey}${e}`;
+            });
 
-        //     // 针对性的进行拆分
-        //     let argsSpArr = after_expr.split(argsWReg).map(e => {
-        //         if (e.includes(sKey)) {
-        //             return e.replace(sKey, "");
-        //         }
-        //         if (argsWReg_c.test(e) || !e.trim() || /^\./.test(e) || ignoreArgKeysReg.test(e)) {
-        //             return e;
-        //         }
-        //         return `this.${e}`;
-        //     });
+            // 还原规避字符串
+            jump_strs.forEach(e => {
+                after_expr = after_expr.replace(e.k, e.v);
+            });
 
-        //     return argsSpArr.join("");
-        // }
+            // 针对性的进行拆分
+            let argsSpArr = after_expr.split(argsWReg).map(e => {
+                if (e.includes(sKey)) {
+                    return e.replace(sKey, "");
+                }
+                if (argsWReg_c.test(e) || !e.trim() || /^\./.test(e) || ignoreArgKeysReg.test(e)) {
+                    return e;
+                }
+                return `this.${e}`;
+            });
+
+            return argsSpArr.join("");
+        }
 
         // 使用with性能不好，所以将内部函数变量转为指向this的函数
-        // const funcExprWithThis = (expr) => {
-        //     let new_expr = "";
+        const funcExprWithThis = (expr) => {
+            let new_expr = "";
 
-        //     let w_arr = expr.split(";").filter(e => !!e);
+            let w_arr = expr.split(";").filter(e => !!e);
 
-        //     if (w_arr.length > 1) {
-        //         w_arr.forEach(e => {
-        //             new_expr += "\n" + argsWithThis(e) + ";";
-        //         });
-        //     } else {
-        //         new_expr = `return ${argsWithThis(w_arr[0])}`;
-        //     }
+            if (w_arr.length > 1) {
+                w_arr.forEach(e => {
+                    new_expr += "\n" + argsWithThis(e) + ";";
+                });
+            } else {
+                new_expr = `return ${argsWithThis(w_arr[0])}`;
+            }
 
-        //     return new_expr;
-        // }
+            return new_expr;
+        }
 
         // 获取函数
         const exprToFunc = (expr) => {
-            // return new Function("...args", `
-            // const $event = args[0];
-            // const $args = args;
-            // args = undefined;
-
-            // try{
-            //     ${funcExprWithThis(expr)}
-            // }catch(e){
-            // let ele = this.ele;
-            // if(!ele && this.$host){
-            //     ele = this.$host.ele;
-            // }
-            // let errObj = {
-            //     expr:'${expr.replace(/'/g, "\\'").replace(/"/g, '\\"')}',
-            //     target:ele,
-            //     error:e
-            // }
-            // ele && ele.__xInfo && Object.assign(errObj,ele.__xInfo);
-            // console.error(errObj);
-            // }
-            //         `);
-
+            // 最后测试使用with性能不会差太多
             return new Function("...args", `
     const $event = args[0];
     const $args = args;
     args = undefined;
-    with(this){
-        try{
-            return ${expr}
-        }catch(e){
-            let ele = this.ele;
-            if(!ele && this.$host){
-                ele = this.$host.ele;
-            }
-            let errObj = {
-                expr:'${expr.replace(/'/g, "\\'").replace(/"/g, '\\"')}',
-                target:ele,
-                error:e
-            }
-            ele && ele.__xInfo && Object.assign(errObj,ele.__xInfo);
-            console.error(errObj);
-        }
+
+    try{
+        ${funcExprWithThis(expr)}
+    }catch(e){
+    let ele = this.ele;
+    if(!ele && this.$host){
+        ele = this.$host.ele;
     }
-        `);
+    let errObj = {
+        expr:'${expr.replace(/'/g, "\\'").replace(/"/g, '\\"')}',
+        target:ele,
+        error:e
+    }
+    ele && ele.__xInfo && Object.assign(errObj,ele.__xInfo);
+    console.error(errObj);
+    }
+            `);
+
+            // return new Function("...args", `
+            // const $event = args[0];
+            // const $args = args;
+            // args = undefined;
+            // with(this){
+            //     try{
+            //         return ${expr}
+            //     }catch(e){
+            //         let ele = this.ele;
+            //         if(!ele && this.$host){
+            //             ele = this.$host.ele;
+            //         }
+            //         let errObj = {
+            //             expr:'${expr.replace(/'/g, "\\'").replace(/"/g, '\\"')}',
+            //             target:ele,
+            //             error:e
+            //         }
+            //         ele && ele.__xInfo && Object.assign(errObj,ele.__xInfo);
+            //         console.error(errObj);
+            //     }
+            // }
+            //     `);
         }
 
         const register = (opts) => {
@@ -3838,7 +3855,8 @@
                     if (canSetKey.has(expr)) {
                         let watchFun;
                         target.watch(expr, watchFun = (e, val) => {
-                            calls.forEach(d => d.change(val, e.trends));
+                            console.log("change 1", expr);
+                            calls.forEach(d => d.change(val));
                         });
                         nextTick(() => watchFun({}, target[expr]));
 
@@ -3856,16 +3874,18 @@
                         // 是否首次运行
                         let isFirst = 1;
                         target.watch(watchFun = e => {
+                            // console.time(`per_call(${expr}) ${target.xid}`);
                             let val = f.call(target);
 
                             if (isFirst) {
                                 isFirst = 0;
                             } else if (val === old_val || (val instanceof XData && val.string === old_val)) {
+                                // console.timeEnd(`per_call(${expr}) ${target.xid}`);
                                 return;
                             }
 
-                            let trends = e ? e.trends : undefined;
-                            calls.forEach(d => d.change(val, trends));
+                            calls.forEach(d => d.change(val));
+                            // console.timeEnd(`per_call(${expr}) ${target.xid}`);
 
                             if (val instanceof XData) {
                                 old_val = val.string;
