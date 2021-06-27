@@ -1,4 +1,16 @@
-# ofa 2 **DEV**
+# ofa 3 
+
+## 和 ofa 2 对比
+
+drill 升级到 4.0，xhear 升级到 6.0；
+
+大幅提升性能；
+
+文件体积缩小一半；
+
+去除不常用的功能；
+
+<!-- # ofa 2 **DEV**
 
 MVVM front-end framework based on webComponents;
 
@@ -15,4 +27,4 @@ No webpack,No nodejs,Let the front end go back to the purest web;
 ### 如何重新打包？
 
 - 将 [Xhear](https://github.com/kirakiray/Xhear) 和 [drill.js](https://github.com/kirakiray/drill.js) clone 到本地
-- npm run watch，随便保存一下 `src/` 目录下的文件；
+- npm run watch，随便保存一下 `src/` 目录下的文件； -->
