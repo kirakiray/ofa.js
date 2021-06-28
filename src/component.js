@@ -10,52 +10,62 @@ drill.ext(({ addProcess }) => {
             });
         }
 
-        // 默认数据
-        const defaults = {
-            // 静态模板地址
-            temp: "",
-            // 下面都是 xhear 自带的组件数据
-            // // 组件名
-            // tag: "",
-            // // 自带的数据
-            // data: {},
-            // // 会绑定到 element attribute 的数据
-            // attrs: {},
-            // // 组件原型链上的数据
-            // proto: {},
-            // // 组件被创建时触发的函数（数据初始化完成）
-            // created() { },
-            // // 组件数据初始化完成后触发的函数（初次渲染完毕）
-            // ready() { },
-            // // 被添加到document触发的函数
-            // attached() { },
-            // // 被移出document触发的函数
-            // detached() { },
-            // // 容器元素发生改变
-            // slotchange() { }
-        };
-
-        Object.assign(defaults, result);
-
-        let defineName = record.src.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
-
-        // 组件名修正
-        if (!defaults.tag) {
-            defaults.tag = defineName;
-        }
-
-        // 获取模板
-        if (defaults.temp === "") {
-            // 获取与模块相同名的temp
-            let temp = await relativeLoad(`./${defineName}.html`);
-
-            defaults.temp = await fixRelativeSource(temp, relativeLoad);
-        }
+        const defaults = await getDefaults(record, relativeLoad, result);
 
         // 注册组件
         register(defaults);
+
+        record.done(async (pkg) => { })
     });
 });
+
+// 获取defautls
+const getDefaults = async (record, relativeLoad, result) => {
+    // 默认数据
+    const defaults = {
+        // 静态模板地址
+        temp: "",
+        // 下面都是 xhear 自带的组件数据
+        // // 组件名
+        // tag: "",
+        // // 自带的数据
+        data: {},
+        // // 会绑定到 element attribute 的数据
+        attrs: {},
+        // // 组件原型链上的数据
+        proto: {},
+        watch: {}
+        // // 组件被创建时触发的函数（数据初始化完成）
+        // created() { },
+        // // 组件数据初始化完成后触发的函数（初次渲染完毕）
+        // ready() { },
+        // // 被添加到document触发的函数
+        // attached() { },
+        // // 被移出document触发的函数
+        // detached() { },
+        // // 容器元素发生改变
+        // slotchange() { }
+    };
+
+    Object.assign(defaults, result);
+
+    let defineName = record.src.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
+
+    // 组件名修正
+    if (!defaults.tag) {
+        defaults.tag = defineName;
+    }
+
+    // 获取模板
+    if (defaults.temp === "") {
+        // 获取与模块相同名的temp
+        let temp = await relativeLoad(`./${defineName}.html`);
+
+        defaults.temp = await fixRelativeSource(temp, relativeLoad);
+    }
+
+    return defaults;
+}
 
 // 修正temp内的资源地址
 const fixRelativeSource = async (temp, relativeLoad) => {

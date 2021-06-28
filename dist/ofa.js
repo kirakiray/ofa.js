@@ -146,7 +146,7 @@
         target[WATCHS].forEach(f => f(opts))
 
         // 向上冒泡
-        target.owner.forEach(parent => emitUpdate(parent, opts));
+        target.owner && target.owner.forEach(parent => emitUpdate(parent, opts));
     }
 
     class XData {
@@ -216,6 +216,7 @@
                 // 所有父层对象存储的位置
                 // 拥有者对象
                 owner: {
+                    writable: true,
                     value: new Set()
                 },
                 // 数组对象
@@ -717,7 +718,11 @@
 
             const self = this[XDATASELF];
 
-            self.tag = ele.tagName ? ele.tagName.toLowerCase() : ''
+            self.tag = ele.tagName ? ele.tagName.toLowerCase() : '';
+
+            // self.owner = new WeakSet();
+            // XEle不允许拥有owner
+            self.owner = null;
 
             defineProperties(self, {
                 ele: {
@@ -1390,6 +1395,66 @@
             }
         });
     });
+    // 渲染元素
+    const renderXEle = ({
+        xele,
+        defs,
+        temps,
+        _this
+    }) => {
+        Object.assign(xele, defs.data, defs.attrs);
+
+        defs.created && defs.created.call(xele);
+
+        if (defs.temp) {
+            // 添加shadow root
+            const sroot = _this.attachShadow({
+                mode: "open"
+            });
+
+            sroot.innerHTML = defs.temp;
+
+            // 渲染元素
+            renderTemp({
+                host: xele,
+                xdata: xele,
+                content: sroot,
+                temps
+            });
+        }
+
+        defs.ready && defs.ready.call(xele);
+
+        // attrs监听
+        !isEmptyObj(defs.attrs) && xele.watchTick(e => {
+            _this.__set_attr = 1;
+            Object.keys(defs.attrs).forEach(key => {
+                _this.setAttribute(key, xele[key]);
+            });
+            delete _this.__set_attr;
+        });
+
+        // watch函数触发
+        let d_watch = defs.watch;
+        if (!isEmptyObj(d_watch)) {
+            let vals = {};
+            xele.watchTick(() => {
+                Object.keys(d_watch).forEach(k => {
+                    let func = d_watch[k];
+
+                    let val = xele[k];
+
+                    if (val === vals[k]) {
+                        return;
+                    }
+                    vals[k] = val;
+
+                    func.call(xele, val);
+                });
+            });
+        }
+    }
+
     // 注册组件的主要逻辑
     const register = (opts) => {
         const defs = {
@@ -1401,7 +1466,7 @@
             attrs: {},
             // 默认数据
             data: {},
-            // 直接监听属性变动对象
+            // 根据属性直接设置值
             watch: {},
             // 合并到原型链上的方法
             proto: {},
@@ -1433,8 +1498,18 @@
                 super(ele);
             }
 
-            // 强制刷新视图
-            forceUpdate() {}
+            // // 强制刷新视图
+            // forceUpdate() { }
+            // 回收元素内所有的数据（防止垃圾回收失败）
+            revoke() {
+                Object.values(this).forEach(child => {
+                    if (!(child instanceof XEle) && isxdata(child)) {
+                        clearXDataOwner(child, this[XDATASELF]);
+                    }
+                });
+
+                removeElementBind(this.shadow.ele);
+            }
         }
 
         // 扩展原型
@@ -1467,37 +1542,11 @@
 
                 const xele = createXEle(this);
 
-                // cansetKeys.forEach(e => xele[CANSETKEYS].add(e));
-                Object.assign(xele, defs.data, defs.attrs);
-
-                defs.created && defs.created.call(xele);
-
-                if (defs.temp) {
-                    // 添加shadow root
-                    const sroot = this.attachShadow({
-                        mode: "open"
-                    });
-
-                    sroot.innerHTML = defs.temp;
-
-                    // 渲染元素
-                    renderTemp({
-                        host: xele,
-                        xdata: xele,
-                        content: sroot,
-                        temps
-                    });
-
-                    defs.ready && defs.ready.call(xele);
-                }
-
-                // attrs监听
-                !isEmptyObj(defs.attrs) && xele.watchTick(e => {
-                    this.__set_attr = 1;
-                    Object.keys(defs.attrs).forEach(key => {
-                        this.setAttribute(key, xele[key]);
-                    });
-                    delete this.__set_attr;
+                renderXEle({
+                    xele,
+                    defs,
+                    temps,
+                    _this: this
                 });
             }
 
@@ -2999,52 +3048,62 @@ with(this){
                 });
             }
 
-            // 默认数据
-            const defaults = {
-                // 静态模板地址
-                temp: "",
-                // 下面都是 xhear 自带的组件数据
-                // // 组件名
-                // tag: "",
-                // // 自带的数据
-                // data: {},
-                // // 会绑定到 element attribute 的数据
-                // attrs: {},
-                // // 组件原型链上的数据
-                // proto: {},
-                // // 组件被创建时触发的函数（数据初始化完成）
-                // created() { },
-                // // 组件数据初始化完成后触发的函数（初次渲染完毕）
-                // ready() { },
-                // // 被添加到document触发的函数
-                // attached() { },
-                // // 被移出document触发的函数
-                // detached() { },
-                // // 容器元素发生改变
-                // slotchange() { }
-            };
-
-            Object.assign(defaults, result);
-
-            let defineName = record.src.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
-
-            // 组件名修正
-            if (!defaults.tag) {
-                defaults.tag = defineName;
-            }
-
-            // 获取模板
-            if (defaults.temp === "") {
-                // 获取与模块相同名的temp
-                let temp = await relativeLoad(`./${defineName}.html`);
-
-                defaults.temp = await fixRelativeSource(temp, relativeLoad);
-            }
+            const defaults = await getDefaults(record, relativeLoad, result);
 
             // 注册组件
             register(defaults);
+
+            record.done(async (pkg) => {})
         });
     });
+
+    // 获取defautls
+    const getDefaults = async (record, relativeLoad, result) => {
+        // 默认数据
+        const defaults = {
+            // 静态模板地址
+            temp: "",
+            // 下面都是 xhear 自带的组件数据
+            // // 组件名
+            // tag: "",
+            // // 自带的数据
+            data: {},
+            // // 会绑定到 element attribute 的数据
+            attrs: {},
+            // // 组件原型链上的数据
+            proto: {},
+            watch: {}
+            // // 组件被创建时触发的函数（数据初始化完成）
+            // created() { },
+            // // 组件数据初始化完成后触发的函数（初次渲染完毕）
+            // ready() { },
+            // // 被添加到document触发的函数
+            // attached() { },
+            // // 被移出document触发的函数
+            // detached() { },
+            // // 容器元素发生改变
+            // slotchange() { }
+        };
+
+        Object.assign(defaults, result);
+
+        let defineName = record.src.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
+
+        // 组件名修正
+        if (!defaults.tag) {
+            defaults.tag = defineName;
+        }
+
+        // 获取模板
+        if (defaults.temp === "") {
+            // 获取与模块相同名的temp
+            let temp = await relativeLoad(`./${defineName}.html`);
+
+            defaults.temp = await fixRelativeSource(temp, relativeLoad);
+        }
+
+        return defaults;
+    }
 
     // 修正temp内的资源地址
     const fixRelativeSource = async (temp, relativeLoad) => {
@@ -3106,8 +3165,88 @@ with(this){
 
         return styleStr;
     }
+    drill.ext(({
+        addProcess
+    }) => {
+        addProcess("Page", async ({
+            respone,
+            record,
+            relativeLoad
+        }) => {
+            let result = respone;
+
+            if (isFunction(respone)) {
+                result = await respone({
+                    load: relativeLoad,
+                    FILE: record.src
+                });
+            }
+
+            // 转换模板
+            const defaults = await getDefaults(record, relativeLoad, result);
+            let d = transTemp(defaults.temp);
+            defaults.temp = d.html;
+
+            // 获取可设置keys
+            const cansetKeys = getCansetKeys(defaults);
+
+            record.done(async (pkg) => {
+                return {
+                    defaults,
+                    cansetKeys,
+                    temps: d.temps
+                };
+            })
+        });
+    });
+
+    const PAGESTATUS = Symbol("page_status");
+
+    register({
+        tag: "o-page",
+        attrs: {
+            // 资源地址
+            src: null,
+            // 当前页面的状态
+            // empty空白状态，等待加载页面
+            // loading 加载中
+            // loaded 加载成功
+            // error 加载资源失败
+            [PAGESTATUS]: "empty"
+        },
+        proto: {
+            get status() {
+                return this[PAGESTATUS];
+            }
+        },
+        watch: {
+            async src(src) {
+                this[PAGESTATUS] = "loading";
+
+                // 获取渲染数据
+                let data = await load(src);
+
+                // 重新修正可修改字段
+                const n_keys = new Set([...Array.from(this[CANSETKEYS]), ...data.cansetKeys]);
+                n_keys.delete("src");
+                this[CANSETKEYS] = n_keys;
+
+                // 再次渲染元素
+                renderXEle({
+                    xele: this,
+                    defs: data.defaults,
+                    temps: data.temps,
+                    _this: this.ele
+                });
+
+                this[PAGESTATUS] = "loaded";
+            }
+        }
+    });
 
     glo.ofa = {
 
     };
+
+    glo.$ = $;
 })(window);
