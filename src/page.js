@@ -25,6 +25,21 @@ drill.ext(({ addProcess }) => {
 
 const PAGESTATUS = Symbol("page_status");
 
+// 获取在 o-app 层上的 o-page
+const getCurrentPage = (host) => {
+    if (host.parent.is("o-app")) {
+        return host;
+    }
+
+    while (host.host) {
+        host = host.host;
+        if (host.is("o-page") && host.parent.is("o-app")) {
+            return host;
+        }
+    }
+
+}
+
 register({
     tag: "o-page",
     attrs: {
@@ -40,29 +55,108 @@ register({
     proto: {
         get status() {
             return this[PAGESTATUS];
+        },
+        get app() {
+            let target = getCurrentPage(this);
+
+            if (target) {
+                return target.parent;
+            }
+            throw {
+                desc: `cannot find the app`,
+                target: this
+            };
+        },
+        get query() {
+            let urlObj = new URL(this._realsrc);
+
+            let obj = {};
+
+            for (const [key, value] of urlObj.searchParams.entries()) {
+                obj[key] = value;
+            }
+
+            return obj;
+        },
+        // 跳转到相应页面
+        navigateTo(src) {
+            let cPage = getCurrentPage(this);
+
+            // 查找到当前页的id
+            const { router } = this.app;
+            let id = router.findIndex(e => e._page == cPage);
+
+            router.splice(id + 1, router.length, src);
+        },
+        // 替换跳转
+        replaceTo(src) {
+            let cPage = getCurrentPage(this);
+
+            // 查找到当前页的id
+            const { router } = this.app;
+            let id = router.findIndex(e => e._page == cPage);
+            
+            router.splice(id, router.length, src);
+        },
+        // 返回页面
+        back() {
+            this.app.router.splice(-1, 1);
         }
     },
     watch: {
         async src(src) {
+            if (!src) {
+                return;
+            }
+
             this[PAGESTATUS] = "loading";
 
             // 获取渲染数据
             let data = await load(src);
+
+            this._realsrc = await load(src + " -link");
 
             // 重新修正可修改字段
             const n_keys = new Set([...Array.from(this[CANSETKEYS]), ...data.cansetKeys]);
             n_keys.delete("src");
             this[CANSETKEYS] = n_keys;
 
+            let { defaults } = data;
+
+            // 合并原型链上的数据
+            extend(this, defaults.proto);
+
             // 再次渲染元素
             renderXEle({
                 xele: this,
-                defs: data.defaults,
+                defs: Object.assign({}, defaults, {
+                    // o-page不允许使用attrs
+                    attrs: {},
+                }),
                 temps: data.temps,
                 _this: this.ele
             });
 
             this[PAGESTATUS] = "loaded";
+
+            emitUpdate(this, {
+                xid: this.xid,
+                name: "setData",
+                args: ["status", this[PAGESTATUS]]
+            });
+
+            defaults.attached && this.__attached_pms.then(() => defaults.attached.call(this))
+            defaults.detached && this.__detached_pms.then(() => defaults.detached.call(this))
         }
+    },
+    created() {
+        this.__attached_pms = new Promise(res => this.__attached_resolve = res);
+        this.__detached_pms = new Promise(res => this.__detached_resolve = res);
+    },
+    attached() {
+        this.__attached_resolve()
+    },
+    detached() {
+        this.__detached_resolve();
     }
 });

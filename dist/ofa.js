@@ -136,17 +136,25 @@
 
 
     const XDATASELF = Symbol("self");
+    const PROXYSELF = Symbol("proxy");
     const WATCHS = Symbol("watchs");
     const CANUPDATE = Symbol("can_update");
 
     const cansetXtatus = new Set(["root", "sub", "revoke"]);
 
-    const emitUpdate = (target, opts) => {
+    const emitUpdate = (target, opts, path) => {
+        let new_path;
+        if (!path) {
+            new_path = opts.path = [target[PROXYSELF]];
+        } else {
+            new_path = opts.path = [target[PROXYSELF], ...path];
+        }
+
         // 触发callback
         target[WATCHS].forEach(f => f(opts))
 
         // 向上冒泡
-        target.owner && target.owner.forEach(parent => emitUpdate(parent, opts));
+        target.owner && target.owner.forEach(parent => emitUpdate(parent, opts, new_path.slice()));
     }
 
     class XData {
@@ -176,6 +184,9 @@
             defineProperties(this, {
                 [XDATASELF]: {
                     value: this
+                },
+                [PROXYSELF]: {
+                    value: proxy_self
                 },
                 // 每个对象必有的id
                 xid: {
@@ -462,15 +473,72 @@
             return ${expr}
         }}catch(e){}`).bind(this);
 
-                const wid = this.watch(() => {
+                let f;
+                const wid = this.watch(f = () => {
                     let reVal = exprFun();
                     if (reVal) {
                         this.unwatch(wid);
                         resolve(reVal);
                     }
                 });
+                f();
             });
         },
+        // 监听相应key
+        watchKey(obj) {
+            let oldVal = {};
+            return this.watch(collect((arr) => {
+                Object.keys(obj).forEach(key => {
+                    // 当前值
+                    let val = this[key];
+
+                    if (oldVal[key] !== val) {
+                        obj[key].call(this, val);
+                    } else if (isxdata(val)) {
+                        // 判断改动arr内是否有当前key的改动
+                        let hasChange = arr.some(e => {
+                            let p = e.path[1];
+
+                            if (p == oldVal[key]) {
+                                return true;
+                            }
+                        });
+
+                        if (hasChange) {
+                            obj[key].call(this, val);
+                        }
+                    }
+
+                    oldVal[key] = val;
+                });
+            }));
+        },
+        // watchKey(key, func) {
+        //     let oldVal = this[key];
+        //     return this.watch(collect((arr) => {
+        //         // 当前值
+        //         let val = this[key];
+
+        //         if (oldVal !== val) {
+        //             func(val);
+        //         } else if (isxdata(val)) {
+        //             // 判断改动arr内是否有当前key的改动
+        //             let hasChange = arr.some(e => {
+        //                 let p = e.path[1];
+
+        //                 if (p == oldVal) {
+        //                     return true;
+        //                 }
+        //             });
+
+        //             if (hasChange) {
+        //                 func(val);
+        //             }
+        //         }
+
+        //         oldVal = val;
+        //     }));
+        // },
         // 转换为json数据
         toJSON() {
             let obj = {};
@@ -648,7 +716,16 @@
         // 添加数据
         objData.class && ele.setAttribute('class', objData.class);
         objData.slot && ele.setAttribute('slot', objData.slot);
-        objData.text && (ele.textContent = objData.text);
+        // objData.text && (ele.textContent = objData.text);
+
+        const xele = createXEle(ele);
+
+        // 数据合并
+        xele[CANSETKEYS].forEach(k => {
+            if (objData[k]) {
+                xele[k] = objData[k];
+            }
+        });
 
         // 填充子元素
         let akey = 0;
@@ -1034,6 +1111,13 @@
             });
 
             return cloneEle;
+        }
+
+        remove() {
+            const {
+                ele
+            } = this;
+            ele.parentNode.removeChild(ele);
         }
     }
 
@@ -1437,21 +1521,26 @@
         // watch函数触发
         let d_watch = defs.watch;
         if (!isEmptyObj(d_watch)) {
-            let vals = {};
-            xele.watchTick(() => {
-                Object.keys(d_watch).forEach(k => {
-                    let func = d_watch[k];
+            Object.keys(d_watch).forEach(key => d_watch[key].call(xele, xele[key]));
+            xele.watchKey(d_watch);
+            // let vals = {};
+            // xele.watchTick(f = (e) => {
+            //     Object.keys(d_watch).forEach(k => {
+            //         let func = d_watch[k];
 
-                    let val = xele[k];
+            //         let val = xele[k];
 
-                    if (val === vals[k]) {
-                        return;
-                    }
-                    vals[k] = val;
+            //         if (val === vals[k]) {
+            //             return;
+            //         }
+            //         vals[k] = val;
 
-                    func.call(xele, val);
-                });
-            });
+            //         func.call(xele, val);
+            //     });
+            // });
+
+            // // 先运行一次
+            // f();
         }
     }
 
@@ -1554,7 +1643,7 @@
                 // console.log("connectedCallback => ", this);
                 this.__x_connected = true;
                 if (defs.attached && !this.__x_runned_connected) {
-                    nexTick(() => {
+                    nextTick(() => {
                         if (this.__x_connected && !this.__x_runned_connected) {
                             this.__x_runned_connected = true;
                             defs.attached.call(createXEle(this));
@@ -1571,7 +1660,7 @@
                 // console.log("disconnectedCallback => ", this);
                 this.__x_connected = false;
                 if (defs.detached && !this.__x_runnded_disconnected) {
-                    nexTick(() => {
+                    nextTick(() => {
                         if (!this.__x_connected && !this.__x_runnded_disconnected) {
                             this.__x_runnded_disconnected = true;
                             defs.detached.call(createXEle(this));
@@ -2784,8 +2873,10 @@ with(this){
 
             // 文件类型，loader使用的类型，一般去路径后缀
             get ftype() {
+                const urlObj = new URL(this.src);
+
                 // 判断参数是否有 :xxx ，修正类型
-                let type = this.src.replace(/.+\.(.+)/, "$1");
+                let type = urlObj.pathname.replace(/.+\.(.+)/, "$1");
                 this.params.some(e => {
                     if (/^:(.+)/.test(e)) {
                         type = e.replace(/^:(.+)/, "$1")
@@ -3087,7 +3178,7 @@ with(this){
 
         Object.assign(defaults, result);
 
-        let defineName = record.src.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
+        let defineName = (new URL(record.src)).pathname.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
 
         // 组件名修正
         if (!defaults.tag) {
@@ -3156,12 +3247,14 @@ with(this){
     const fixStyleUrl = async (styleStr, relativeLoad) => {
         let m_arr = styleStr.match(/url\(.+?\)/g);
 
-        await Promise.all(m_arr.map(async url => {
-            let url_str = url.replace(/url\((.+?)\)/, "$1");
-            let n_url = await relativeLoad(`${url_str} -link`);
+        if (m_arr) {
+            await Promise.all(m_arr.map(async url => {
+                let url_str = url.replace(/url\((.+?)\)/, "$1");
+                let n_url = await relativeLoad(`${url_str} -link`);
 
-            styleStr = styleStr.replace(url, `url(${n_url})`);
-        }));
+                styleStr = styleStr.replace(url, `url(${n_url})`);
+            }));
+        }
 
         return styleStr;
     }
@@ -3202,6 +3295,21 @@ with(this){
 
     const PAGESTATUS = Symbol("page_status");
 
+    // 获取在 o-app 层上的 o-page
+    const getCurrentPage = (host) => {
+        if (host.parent.is("o-app")) {
+            return host;
+        }
+
+        while (host.host) {
+            host = host.host;
+            if (host.is("o-page") && host.parent.is("o-app")) {
+                return host;
+            }
+        }
+
+    }
+
     register({
         tag: "o-page",
         attrs: {
@@ -3217,36 +3325,359 @@ with(this){
         proto: {
             get status() {
                 return this[PAGESTATUS];
+            },
+            get app() {
+                let target = getCurrentPage(this);
+
+                if (target) {
+                    return target.parent;
+                }
+                throw {
+                    desc: `cannot find the app`,
+                    target: this
+                };
+            },
+            get query() {
+                let urlObj = new URL(this._realsrc);
+
+                let obj = {};
+
+                for (const [key, value] of urlObj.searchParams.entries()) {
+                    obj[key] = value;
+                }
+
+                return obj;
+            },
+            // 跳转到相应页面
+            navigateTo(src) {
+                let cPage = getCurrentPage(this);
+
+                // 查找到当前页的id
+                const {
+                    router
+                } = this.app;
+                let id = router.findIndex(e => e._page == cPage);
+
+                router.splice(id + 1, router.length, src);
+            },
+            // 替换跳转
+            replaceTo(src) {
+                let cPage = getCurrentPage(this);
+
+                // 查找到当前页的id
+                const {
+                    router
+                } = this.app;
+                let id = router.findIndex(e => e._page == cPage);
+
+                router.splice(id, router.length, src);
+            },
+            // 返回页面
+            back() {
+                this.app.router.splice(-1, 1);
             }
         },
         watch: {
             async src(src) {
+                if (!src) {
+                    return;
+                }
+
                 this[PAGESTATUS] = "loading";
 
                 // 获取渲染数据
                 let data = await load(src);
+
+                this._realsrc = await load(src + " -link");
 
                 // 重新修正可修改字段
                 const n_keys = new Set([...Array.from(this[CANSETKEYS]), ...data.cansetKeys]);
                 n_keys.delete("src");
                 this[CANSETKEYS] = n_keys;
 
+                let {
+                    defaults
+                } = data;
+
+                // 合并原型链上的数据
+                extend(this, defaults.proto);
+
                 // 再次渲染元素
                 renderXEle({
                     xele: this,
-                    defs: data.defaults,
+                    defs: Object.assign({}, defaults, {
+                        // o-page不允许使用attrs
+                        attrs: {},
+                    }),
                     temps: data.temps,
                     _this: this.ele
                 });
 
                 this[PAGESTATUS] = "loaded";
+
+                emitUpdate(this, {
+                    xid: this.xid,
+                    name: "setData",
+                    args: ["status", this[PAGESTATUS]]
+                });
+
+                defaults.attached && this.__attached_pms.then(() => defaults.attached.call(this))
+                defaults.detached && this.__detached_pms.then(() => defaults.detached.call(this))
+            }
+        },
+        created() {
+            this.__attached_pms = new Promise(res => this.__attached_resolve = res);
+            this.__detached_pms = new Promise(res => this.__detached_resolve = res);
+        },
+        attached() {
+            this.__attached_resolve()
+        },
+        detached() {
+            this.__detached_resolve();
+        }
+    });
+    const ROUTERPAGE = Symbol("router_page");
+
+    // 初始化路由对象
+    const initRouterObj = (obj) => {
+        // 增加页面元素
+        obj._page = $({
+            tag: "o-page",
+            src: obj.path,
+        });
+
+        // 隐式数据传递
+        // obj.state = {}
+    }
+
+    register({
+        tag: "o-app",
+        temp: `
+<style>
+    :host{
+        display: block;
+    }
+
+    ::slotted(o-page){
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    ::slotted(o-page[page-area]){
+        transition: all ease-in-out .25s;
+        z-index: 2;
+    }
+
+    ::slotted(o-page[page-area="back"]){
+        transform: translate(-30px, 0);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    ::slotted(o-page[page-area="next"]){
+        transform: translate(30px, 0);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+    }
+
+    .main {
+        position: relative;
+        flex: 1;
+    }
+</style>
+<div class="container">
+    <div>
+        <slot name="header"></slot>
+    </div>
+    <div class="main">
+        <slot></slot>
+    </div>
+</div>
+`,
+        attrs: {
+            // 首页地址
+            home: "",
+        },
+        data: {
+            // 路由
+            router: [],
+            // router: [{
+            //     path: "",
+            //     _page:""
+            // }]
+            // 元素的尺寸信息
+            rect: {
+                width: "",
+                height: ""
+            },
+            // 当前app是否隐藏
+            visibility: document.hidden ? "hide" : "show",
+        },
+        watch: {
+            home(src) {
+                if (src) {
+                    this.router.push({
+                        path: src
+                    });
+                }
+            },
+            router(router) {
+                if (!router.length) {
+                    return;
+                }
+
+                // 根据router的值进行修正页面路由
+                let backRouter = this._backup_router;
+                if (!backRouter) {
+                    // 首次存储
+                    backRouter = this._backup_router = [];
+                }
+
+                // 等待删除的页面
+                const needRemove = backRouter.filter(e => !router.includes(e));
+
+                // 等待新增的页面
+                const needAdd = [];
+
+                // 对比路由差异进行筛选
+                let lastIndex = router.length - 1;
+                const newRouter = router.map((e, index) => {
+                    // 修正数据
+                    if (typeof e == "string") {
+                        e = createXData({
+                            path: e
+                        });
+
+                        e.owner.add(router[XDATASELF]);
+                    }
+
+                    if (!e._page) {
+                        // 没有新建成功的
+                        initRouterObj(e);
+                    }
+
+                    if (e.state && e._page.state === undefined) {
+                        let state = e.state;
+                        extend(e._page, {
+                            get state() {
+                                return state;
+                            }
+                        });
+                    }
+
+                    if (!backRouter.includes(e)) {
+                        needAdd.push(e);
+                    }
+
+                    // 修正page-area
+                    if (index < lastIndex) {
+                        // 页面隐藏
+                        e._page.attr("page-area", "back");
+                    } else if (index == lastIndex) {
+                        // 当前页
+                        if (e._page.attr("page-area") === null) {
+                            e._page.attr("page-area", "next");
+                            // firefox会无效
+                            // requestAnimationFrame(() => {
+                            //     e._page.attr("page-area", "");
+                            // });
+                            setTimeout(() => {
+                                e._page.attr("page-area", "");
+                            }, 10);
+                        } else {
+                            e._page.attr("page-area", "");
+                        }
+                    }
+
+                    return e;
+                });
+
+                // 添加页面
+                needAdd.forEach(e => {
+                    this.push(e._page);
+                });
+
+                // 删除页面
+                needRemove.forEach(e => {
+                    e._page.attr("page-area", "next");
+                    e._page.one("transitionend", () => {
+                        e._page.remove();
+                        clearTimeout(timer);
+                    });
+                    // 保底删除
+                    let timer = setTimeout(() => e._page.remove(), 500);
+                });
+
+                // 修正路由数据
+                router[XDATASELF].splice(0, 1000, ...newRouter);
+
+                // 备份
+                this._backup_router = router.slice();
+
+                // 触发当前页的激活事件
+                router.slice(-1)[0]._page.trigger("activepage");
+            }
+        },
+        ready() {
+            // 检查页面状况
+            window.addEventListener("visibilitychange", e => {
+                this.visibility = document.hidden ? "hide" : "show";
+            });
+
+            // 元素尺寸修正
+            const fixSize = () => {
+                // 修正尺寸数据
+                this.rect.width = this.ele.clientWidth;
+                this.rect.height = this.ele.clientHeight;
+            }
+            fixSize();
+            if (window.ResizeObserver) {
+                const resizeObserver = new ResizeObserver(entries => {
+                    fixSize();
+                });
+                resizeObserver.observe(this.ele);
+            } else {
+                let resizeTimer;
+                window.addEventListener("resize", e => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => fixSize(), 300);
+                });
             }
         }
     });
 
-    glo.ofa = {
+    let init_ofa = glo.ofa;
 
+    const ofa = {
+        v: 3000000,
+        version: "3.0.0",
+        get config() {
+            return drill.config;
+        },
     };
+
+    defineProperties(glo, {
+        ofa: {
+            set(val) {
+                val(ofa);
+            },
+            get() {
+                return ofa;
+            }
+        }
+    });
+
+    init_ofa && init_ofa(ofa);
 
     glo.$ = $;
 })(window);

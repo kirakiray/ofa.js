@@ -49,7 +49,7 @@ const getDefaults = async (record, relativeLoad, result) => {
 
     Object.assign(defaults, result);
 
-    let defineName = record.src.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
+    let defineName = (new URL(record.src)).pathname.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
 
     // 组件名修正
     if (!defaults.tag) {
@@ -118,12 +118,14 @@ const fixRelativeSource = async (temp, relativeLoad) => {
 const fixStyleUrl = async (styleStr, relativeLoad) => {
     let m_arr = styleStr.match(/url\(.+?\)/g);
 
-    await Promise.all(m_arr.map(async url => {
-        let url_str = url.replace(/url\((.+?)\)/, "$1");
-        let n_url = await relativeLoad(`${url_str} -link`);
+    if (m_arr) {
+        await Promise.all(m_arr.map(async url => {
+            let url_str = url.replace(/url\((.+?)\)/, "$1");
+            let n_url = await relativeLoad(`${url_str} -link`);
 
-        styleStr = styleStr.replace(url, `url(${n_url})`);
-    }));
+            styleStr = styleStr.replace(url, `url(${n_url})`);
+        }));
+    }
 
     return styleStr;
 }

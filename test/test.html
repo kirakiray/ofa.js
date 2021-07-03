@@ -6,16 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>test</title>
+    <script src="ok.js"></script>
     <script src="../dist/ofa.js"></script>
+    <script src="Nexter.js"></script>
     <!-- <script src="comp/test-comp/test-comp.js"></script> -->
     <script>
         load("comp/test-comp -p");
     </script>
+    <style>
+        #testapp {
+            width: 200px;
+            height: 200px;
+            background-color: #eee;
+            overflow: hidden;
+        }
+    </style>
 </head>
 
 <body>
     <test-comp></test-comp>
-    <o-page src="pages/testpage -p"></o-page>
+    <br>
+    <br>
+    <o-page id="testpage" src="pages/testpage -p"></o-page>
+    <br>
+    <br>
+    <o-app id="testapp" home="pages/p1 -p"></o-app>
+    <script src="test.js" async></script>
 </body>
 
 </html>
