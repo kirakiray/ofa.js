@@ -70,6 +70,8 @@ register({
     attrs: {
         // 首页地址
         home: "",
+        // 全局化路由
+        global: null
     },
     data: {
         // 路由

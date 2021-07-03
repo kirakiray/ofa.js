@@ -5,6 +5,7 @@
     //<!--component-->
     //<!--page-->
     //<!--app-->
+    //<!--address-->
 
     let init_ofa = glo.ofa;
 
