@@ -29,6 +29,7 @@ Page(async ({ load }) => {
             this._wid = this._app.watchKey({
                 rect: () => this.updataInfo()
             });
+            this.updataInfo();
         },
         detached() {
             this._app.unwatch(this._wid);

@@ -3285,7 +3285,6 @@ with(this){
                 return host;
             }
         }
-
     }
 
     register({
@@ -3352,7 +3351,7 @@ with(this){
             },
             // 返回页面
             back() {
-                this.app.router.splice(-1, 1);
+                this.app.back();
             }
         },
         watch: {
@@ -3486,7 +3485,7 @@ with(this){
             // 首页地址
             home: "",
             // 全局化路由
-            global: null
+            appmode: null
         },
         data: {
             // 路由
@@ -3502,12 +3501,25 @@ with(this){
             },
             // 当前app是否隐藏
             visibility: document.hidden ? "hide" : "show",
+            // 加载home完成
+            homeLoaded: false
         },
         watch: {
+            appmode(val) {
+                if (val !== undefined && val !== null) {
+                    initAddress(this);
+                }
+            },
             home(src) {
                 if (src) {
                     this.router.push({
                         path: src
+                    });
+
+                    nextTick(() => {
+                        this.router[0]._page.watchUntil("status == 'loaded'").then(e => {
+                            this.homeLoaded = true;
+                        });
                     });
                 }
             },
@@ -3608,6 +3620,17 @@ with(this){
                 router.slice(-1)[0]._page.trigger("activepage");
             }
         },
+        proto: {
+            get currentPage() {
+                return this.router.slice(-1)[0]._page;
+            },
+            // 返回页面
+            back() {
+                if (this.router.length > 1) {
+                    this.router.splice(-1, 1);
+                }
+            }
+        },
         ready() {
             // 检查页面状况
             window.addEventListener("visibilitychange", e => {
@@ -3637,8 +3660,8 @@ with(this){
     });
     let initedAddressApp = false;
 
-    // 对地址栏的监听
-    const initAddress = (app) => {
+    // 全局化app，进行地址栏的监听
+    const initAddress = async (app) => {
         if (initedAddressApp) {
             throw {
                 desc: "the existing app is initialized globally",
@@ -3647,6 +3670,54 @@ with(this){
         }
 
         initedAddressApp = app;
+
+        await app.watchUntil("homeLoaded");
+
+        window.addEventListener("popstate", e => {
+            switch (e.state.type) {
+                case "back":
+                    app.currentPage.back();
+                    history.forward();
+                    break;
+                    // case "now":
+                    //     history.replaceState({
+                    //         type: "now",
+                    //     }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
+                    //     break;
+                    // case "forward":
+                    //     history.back();
+                    //     break;
+            }
+        });
+
+        // 主要监听到最新的页面的路由
+        app.watchKey({
+            router: e => {
+                setTimeout(() => {
+                    history.replaceState({
+                        type: "now",
+                    }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
+                }, 50);
+            }
+        });
+
+        // 初始化过就不用初始化了
+        if (!history.state || history.state.type !== "now") {
+            // 初始化返回路由
+            history.pushState({
+                type: "back"
+            }, "", `#back`);
+
+            history.pushState({
+                type: "now",
+            }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
+
+            // history.pushState({
+            //     type: "forward"
+            // }, "", `#forward`);
+
+            // history.back();
+        }
     }
 
     let init_ofa = glo.ofa;

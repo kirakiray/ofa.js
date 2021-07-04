@@ -71,7 +71,7 @@ register({
         // 首页地址
         home: "",
         // 全局化路由
-        global: null
+        appmode: null
     },
     data: {
         // 路由
@@ -87,12 +87,25 @@ register({
         },
         // 当前app是否隐藏
         visibility: document.hidden ? "hide" : "show",
+        // 加载home完成
+        homeLoaded: false
     },
     watch: {
+        appmode(val) {
+            if (val !== undefined && val !== null) {
+                initAddress(this);
+            }
+        },
         home(src) {
             if (src) {
                 this.router.push({
                     path: src
+                });
+
+                nextTick(() => {
+                    this.router[0]._page.watchUntil("status == 'loaded'").then(e => {
+                        this.homeLoaded = true;
+                    });
                 });
             }
         },
@@ -191,6 +204,17 @@ register({
 
             // 触发当前页的激活事件
             router.slice(-1)[0]._page.trigger("activepage");
+        }
+    },
+    proto: {
+        get currentPage() {
+            return this.router.slice(-1)[0]._page;
+        },
+        // 返回页面
+        back() {
+            if (this.router.length > 1) {
+                this.router.splice(-1, 1);
+            }
         }
     },
     ready() {

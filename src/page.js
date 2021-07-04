@@ -37,7 +37,6 @@ const getCurrentPage = (host) => {
             return host;
         }
     }
-
 }
 
 register({
@@ -95,12 +94,12 @@ register({
             // 查找到当前页的id
             const { router } = this.app;
             let id = router.findIndex(e => e._page == cPage);
-            
+
             router.splice(id, router.length, src);
         },
         // 返回页面
         back() {
-            this.app.router.splice(-1, 1);
+            this.app.back();
         }
     },
     watch: {
