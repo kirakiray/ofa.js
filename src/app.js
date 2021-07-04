@@ -71,7 +71,7 @@ register({
         // 首页地址
         home: "",
         // 全局化路由
-        appmode: null
+        useAddress: null
     },
     data: {
         // 路由
@@ -91,7 +91,7 @@ register({
         homeLoaded: false
     },
     watch: {
-        appmode(val) {
+        useAddress(val) {
             if (val !== undefined && val !== null) {
                 initAddress(this);
             }

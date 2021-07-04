@@ -3485,7 +3485,7 @@ with(this){
             // 首页地址
             home: "",
             // 全局化路由
-            appmode: null
+            useAddress: null
         },
         data: {
             // 路由
@@ -3505,7 +3505,7 @@ with(this){
             homeLoaded: false
         },
         watch: {
-            appmode(val) {
+            useAddress(val) {
                 if (val !== undefined && val !== null) {
                     initAddress(this);
                 }
@@ -3676,17 +3676,10 @@ with(this){
         window.addEventListener("popstate", e => {
             switch (e.state.type) {
                 case "back":
+                    // 拦截返回的路由
                     app.currentPage.back();
                     history.forward();
                     break;
-                    // case "now":
-                    //     history.replaceState({
-                    //         type: "now",
-                    //     }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
-                    //     break;
-                    // case "forward":
-                    //     history.back();
-                    //     break;
             }
         });
 
@@ -3696,6 +3689,15 @@ with(this){
                 setTimeout(() => {
                     history.replaceState({
                         type: "now",
+                        router: app.router.map(e => {
+                            let obj = {
+                                path: e.path
+                            };
+
+                            e.state && (obj.state = e.state);
+
+                            return obj;
+                        })
                     }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
                 }, 50);
             }
@@ -3711,12 +3713,9 @@ with(this){
             history.pushState({
                 type: "now",
             }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
-
-            // history.pushState({
-            //     type: "forward"
-            // }, "", `#forward`);
-
-            // history.back();
+        } else if (history.state && history.state.type == "now" && history.state.router.length > 1) {
+            // 还原之前的路由
+            app.router.push(...history.state.router.slice(1));
         }
     }
 
