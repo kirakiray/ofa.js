@@ -11,8 +11,6 @@ const initAddress = async (app) => {
 
     initedAddressApp = app;
 
-    await app.watchUntil("homeLoaded");
-
     window.addEventListener("popstate", e => {
         switch (e.state.type) {
             case "back":
@@ -24,9 +22,11 @@ const initAddress = async (app) => {
     });
 
     // 主要监听到最新的页面的路由
+    let routerTimer;
     app.watchKey({
         router: e => {
-            setTimeout(() => {
+            clearTimeout(routerTimer);
+            routerTimer = setTimeout(() => {
                 history.replaceState({
                     type: "now",
                     router: app.router.map(e => {
@@ -34,25 +34,37 @@ const initAddress = async (app) => {
                             path: e.path
                         };
 
-                        e.state && (obj.state = e.state);
+                        e.state && (obj.state = JSON.parse(JSON.stringify(e.state)));
 
                         return obj;
                     })
-                }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
-            }, 50);
+                }, "", `#${encodeURIComponent(app.currentPage.src)}`);
+            }, 150);
         }
     });
 
     // 初始化过就不用初始化了
     if (!history.state || history.state.type !== "now") {
+        // 如果当前路由地址不是首页，载入相应页面
+        let target_url;
+        if (location.hash && location.hash.length > 1) {
+            target_url = location.hash.replace(/^#/, "");
+        }
+
         // 初始化返回路由
         history.pushState({
             type: "back"
         }, "", `#back`);
 
+        // 添加首页
         history.pushState({
             type: "now",
-        }, "", `#src=${encodeURIComponent(app.currentPage.src)}`);
+        }, "", `#${encodeURIComponent(app.currentPage.src)}`);
+
+        // 进入下一级页面
+        if (target_url && app.currentPage.src !== target_url) {
+            app.router.push(decodeURIComponent(target_url));
+        }
     } else if (history.state && history.state.type == "now" && history.state.router.length > 1) {
         // 还原之前的路由
         app.router.push(...history.state.router.slice(1));

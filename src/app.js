@@ -1,16 +1,7 @@
 const ROUTERPAGE = Symbol("router_page");
 
-// 初始化路由对象
-const initRouterObj = (obj) => {
-    // 增加页面元素
-    obj._page = $({
-        tag: "o-page",
-        src: obj.path,
-    });
-
-    // 隐式数据传递
-    // obj.state = {}
-}
+// 等待器等待加载的个数
+let waitCount = 2;
 
 register({
     tag: "o-app",
@@ -58,6 +49,11 @@ register({
         flex: 1;
     }
 </style>
+<style id="initStyle">
+::slotted(o-page[page-area]){
+    transition: none;
+}
+</style>
 <div class="container">
     <div>
         <slot name="header"></slot>
@@ -87,25 +83,20 @@ register({
         },
         // 当前app是否隐藏
         visibility: document.hidden ? "hide" : "show",
-        // 加载home完成
-        homeLoaded: false
     },
     watch: {
         useAddress(val) {
             if (val !== undefined && val !== null) {
-                initAddress(this);
+                // 在路由加载的情况下才初始化地址
+                this.watchUntil(`router.length`).then(e => {
+                    initAddress(this);
+                });
             }
         },
         home(src) {
             if (src) {
                 this.router.push({
                     path: src
-                });
-
-                nextTick(() => {
-                    this.router[0]._page.watchUntil("status == 'loaded'").then(e => {
-                        this.homeLoaded = true;
-                    });
                 });
             }
         },
@@ -139,9 +130,25 @@ register({
                     e.owner.add(router[XDATASELF]);
                 }
 
+                // 没有新建成功的
                 if (!e._page) {
-                    // 没有新建成功的
-                    initRouterObj(e);
+                    // 增加页面元素
+                    let page = e._page = $({
+                        tag: "o-page",
+                        src: e.path,
+                    });
+
+                    // 添加loading
+                    if (ofa.onState.loading) {
+                        page.push(ofa.onState.loading({
+                            src: e.path
+                        }));
+                    }
+
+                    let w_resolve;
+                    // 添加等待器
+                    page._waiting = new Promise(res => w_resolve = res);
+                    page.__waiter_resolve = w_resolve;
                 }
 
                 if (e.state && e._page.state === undefined) {
@@ -170,11 +177,20 @@ register({
                         //     e._page.attr("page-area", "");
                         // });
                         setTimeout(() => {
-                            e._page.attr("page-area", "");
+                            // 如果被改动过，就不用再修改
+                            if (e._page.attr("page-area") === "next") {
+                                e._page.attr("page-area", "");
+                            }
                         }, 10);
                     } else {
                         e._page.attr("page-area", "");
                     }
+                }
+
+                // 修正等待器的加载
+                if (index + waitCount > lastIndex && e._page.__waiter_resolve) {
+                    e._page.__waiter_resolve();
+                    delete e._page.__waiter_resolve;
                 }
 
                 return e;
@@ -188,12 +204,18 @@ register({
             // 删除页面
             needRemove.forEach(e => {
                 e._page.attr("page-area", "next");
-                e._page.one("transitionend", () => {
+                if (parseFloat(e._page.css.transitionDuration) > 0) {
+                    // 保底删除
+                    let timer = setTimeout(() => e._page.remove(), 500);
+                    // 有动画的情况下，进行动画结束后操作
+                    e._page.one("transitionend", () => {
+                        e._page.remove();
+                        clearTimeout(timer);
+                    });
+                } else {
+                    // 没有动画直接删除
                     e._page.remove();
-                    clearTimeout(timer);
-                });
-                // 保底删除
-                let timer = setTimeout(() => e._page.remove(), 500);
+                }
             });
 
             // 修正路由数据
@@ -222,6 +244,11 @@ register({
         window.addEventListener("visibilitychange", e => {
             this.visibility = document.hidden ? "hide" : "show";
         });
+
+        // 开始的一段时间，不需要动画
+        setTimeout(() => {
+            this.shadow.$("#initStyle").remove();
+        }, 150);
 
         // 元素尺寸修正
         const fixSize = () => {

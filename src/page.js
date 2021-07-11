@@ -107,34 +107,53 @@ register({
             if (!src) {
                 return;
             }
+            if (this[PAGESTATUS] !== "empty") {
+                throw {
+                    desc: "src can only be set once",
+                    target: this
+                };
+            }
 
             this[PAGESTATUS] = "loading";
 
+            if (this._waiting) {
+                // 等待加载
+                await this._waiting;
+            }
+
+            let defaults;
+
             // 获取渲染数据
-            let data = await load(src);
+            try {
+                let data = await load(src);
 
-            this._realsrc = await load(src + " -link");
+                this._realsrc = await load(src + " -link");
 
-            // 重新修正可修改字段
-            const n_keys = new Set([...Array.from(this[CANSETKEYS]), ...data.cansetKeys]);
-            n_keys.delete("src");
-            this[CANSETKEYS] = n_keys;
+                // 重新修正可修改字段
+                const n_keys = new Set([...Array.from(this[CANSETKEYS]), ...data.cansetKeys]);
+                n_keys.delete("src");
+                this[CANSETKEYS] = n_keys;
 
-            let { defaults } = data;
+                defaults = data.defaults;
 
-            // 合并原型链上的数据
-            extend(this, defaults.proto);
+                // 合并原型链上的数据
+                extend(this, defaults.proto);
 
-            // 再次渲染元素
-            renderXEle({
-                xele: this,
-                defs: Object.assign({}, defaults, {
-                    // o-page不允许使用attrs
-                    attrs: {},
-                }),
-                temps: data.temps,
-                _this: this.ele
-            });
+                // 再次渲染元素
+                renderXEle({
+                    xele: this,
+                    defs: Object.assign({}, defaults, {
+                        // o-page不允许使用attrs
+                        attrs: {},
+                    }),
+                    temps: data.temps,
+                    _this: this.ele
+                });
+            } catch (err) {
+                this.html = ofa.onState.loadError(err);
+                this[PAGESTATUS] = "error";
+                return;
+            }
 
             this[PAGESTATUS] = "loaded";
 
