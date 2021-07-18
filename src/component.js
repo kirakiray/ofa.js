@@ -49,7 +49,7 @@ const getDefaults = async (record, relativeLoad, result) => {
 
     Object.assign(defaults, result);
 
-    let defineName = (new URL(record.src)).pathname.replace(/.+\/(.+)/, "$1").replace(/\.js$/, "");
+    let defineName = (new URL(record.src)).pathname.replace(/.*\/(.+)/, "$1").replace(/\.js$/, "");
 
     // 组件名修正
     if (!defaults.tag) {
