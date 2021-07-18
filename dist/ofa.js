@@ -383,7 +383,16 @@
                 return true;
             }
 
-            return target.setData(key, value);
+            try {
+                return target.setData(key, value);
+            } catch (e) {
+                throw {
+                    desc: `failed to set ${key}`,
+                    key,
+                    value,
+                    target: receiver
+                };
+            }
         },
         deleteProperty: function(target, key) {
             return target.delete(key);
@@ -1562,6 +1571,8 @@
         const CustomXEle = class extends XEle {
             constructor(ele) {
                 super(ele);
+
+                ele.isCustom = true;
             }
 
             // // 强制刷新视图
@@ -2091,6 +2102,10 @@ with(this){
     // 根据 if 语句，去除数据绑定关系
     const removeElementBind = (target) => {
         elementDeepEach(target, ele => {
+            if (ele.isCustom) {
+                createXEle(ele).revoke();
+            }
+
             if (ele.__bindings) {
                 ele.__bindings.forEach(e => {
                     let {
@@ -2199,6 +2214,33 @@ with(this){
                         val
                     }) => {
                         ele.setAttribute(attrName, val);
+                    }
+                });
+
+                addBindingData(ele, bindings);
+            })
+        });
+
+        // class绑定
+        getCanRenderEles(content, "[x-class]").forEach(ele => {
+            const classListData = JSON.parse(ele.getAttribute('x-class'));
+
+            moveAttrExpr(ele, "x-class", classListData);
+
+            Object.keys(classListData).forEach(className => {
+                const bindings = exprToSet({
+                    xdata,
+                    host,
+                    expr: classListData[className],
+                    callback: ({
+                        val
+                    }) => {
+                        // ele.setAttribute(className, val);
+                        if (val) {
+                            ele.classList.add(className);
+                        } else {
+                            ele.classList.remove(className);
+                        }
                     }
                 });
 
@@ -2746,7 +2788,8 @@ with(this){
             return Array.from(document.querySelectorAll(expr)).map(e => createXEle(e));
         },
         register,
-        xdata: (obj) => createXData(obj)
+        xdata: (obj) => createXData(obj),
+        nextTick
     });
     /*!
      * drill.js v4.0.0
