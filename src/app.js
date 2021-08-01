@@ -101,10 +101,12 @@ register({
             }
         },
         router(router) {
+
+            debugger
+
             if (!router.length) {
                 return;
             }
-
             // 根据router的值进行修正页面路由
             let backRouter = this._backup_router;
             if (!backRouter) {
