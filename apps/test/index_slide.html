@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fb4747">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>normal test</title>
+    <title>slide test</title>
     <meta name="apple-mobile-web-app-title" content="OFA demo">
     <style>
         html,
@@ -30,7 +30,12 @@
 </head>
 
 <body>
-    <o-app home="pages/p1 -p" use-address style="width:100%;height:100%;overflow:hidden;"></o-app>
+    <o-app home="pages/p1 -p" style="width:100%;height:100%;overflow:hidden;"></o-app>
+    <script>
+        load("../../lib/edgeSlide.js").then(init => {
+            init($("o-app"));
+        });
+    </script>
 </body>
 
 </html>
