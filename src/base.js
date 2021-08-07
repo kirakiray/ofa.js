@@ -23,7 +23,7 @@
             },
             // 加载失败的临时模板
             loadError(e) {
-                return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">${e.error.desc} <br>${e.src}</div></div>`;
+                return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">error expr:${e.expr} <br>error src:${e.src}</div></div>`;
             }
         }
     };

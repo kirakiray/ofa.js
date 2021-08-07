@@ -5,7 +5,8 @@ const initAddress = async (app) => {
     if (initedAddressApp) {
         throw {
             desc: "the existing app is initialized globally",
-            target: initedAddressApp
+            initedTarget: initedAddressApp,
+            target: app
         };
     }
 

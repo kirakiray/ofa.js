@@ -79,8 +79,6 @@ register({
         },
         // 跳转到相应页面
         navigateTo(src) {
-            debugger
-
             let cPage = getCurrentPage(this);
 
             // 查找到当前页的id

@@ -26,13 +26,13 @@ register({
     }
 
     ::slotted(o-page[page-area="back"]){
-        transform: translate(-30px, 0);
+        transform: translate(-30%, 0);
         opacity: 0;
         z-index: 1;
     }
 
     ::slotted(o-page[page-area="next"]){
-        transform: translate(30px, 0);
+        transform: translate(30%, 0);
         opacity: 0;
         z-index: 1;
     }
@@ -48,6 +48,15 @@ register({
         position: relative;
         flex: 1;
     }
+
+    .article{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        height:100%;
+        overflow-y:auto;
+    }
 </style>
 <style id="initStyle">
 ::slotted(o-page[page-area]){
@@ -59,7 +68,9 @@ register({
         <slot name="header"></slot>
     </div>
     <div class="main">
-        <slot></slot>
+        <div class="article">
+            <slot></slot>
+        </div>
     </div>
 </div>
 `,
@@ -101,9 +112,6 @@ register({
             }
         },
         router(router) {
-
-            debugger
-
             if (!router.length) {
                 return;
             }

@@ -608,8 +608,10 @@
                 return e;
             })
 
+            let b_howmany = getType(howmany) == 'number' ? howmany : (this.length - index);
+
             // 套入原生方法
-            let rmArrs = arraySplice.call(self, index, howmany, ...items);
+            let rmArrs = arraySplice.call(self, index, b_howmany, ...items);
 
             // rmArrs.forEach(e => isxdata(e) && e.owner.delete(self));
             rmArrs.forEach(e => clearXDataOwner(e, self));
@@ -1274,7 +1276,7 @@
 
             let watchFun = () => {
                 const eles = this.formEles;
-                const obj = getFromEleData(eles);
+                const obj = getFromEleData(eles, this);
 
                 const objKeys = Object.keys(obj);
                 Object.keys(this).filter(e => {
@@ -1363,7 +1365,7 @@
     }
 
     // 从元素上获取表单数据
-    const getFromEleData = (eles) => {
+    const getFromEleData = (eles, oldData) => {
         const obj = {};
 
         eles.forEach(ele => {
@@ -1380,9 +1382,14 @@
                     }
                     break;
                 case "checkbox":
+                    let tar_arr = obj[name] || ((obj[name] = oldData[name]) || (obj[name] = []));
                     if (ele.checked) {
-                        let tar_arr = obj[name] || (obj[name] = []);
-                        tar_arr.push(value);
+                        if (!tar_arr.includes(ele.value)) {
+                            tar_arr.push(value);
+                        }
+                    } else if (tar_arr.includes(ele.value)) {
+                        // 包含就删除
+                        tar_arr.splice(tar_arr.indexOf(ele.value), 1);
                     }
                     break;
                 case "text":
@@ -1477,7 +1484,7 @@
             // 删除相应元素
             const removes = [];
             let b_index = index;
-            let b_howmany = howmany;
+            let b_howmany = getType(howmany) == 'number' ? howmany : (this.length - index);
             let target = children[b_index];
             while (target && b_howmany > 0) {
                 removes.push(target);
@@ -3071,11 +3078,11 @@ try{
                         let nowSrc = document.currentScript.src;
 
                         // 查看原来是否有record
-                        let record = bag.get(nowSrc);
+                        let record = getBag(nowSrc);
 
                         if (!record) {
                             record = new BagRecord(nowSrc);
-                            bag.set(nowSrc, record);
+                            setBag(nowSrc, record);
                         }
 
                         // 设置加载中的状态
@@ -3161,7 +3168,7 @@ try{
         // 添加加载器的方法
         const addLoader = (type, callback) => {
             loaders.set(type, src => {
-                const record = bag.get(src)
+                const record = getBag(src)
 
                 record.type = type;
 
@@ -3320,6 +3327,16 @@ try{
         // 所以文件的存储仓库
         const bag = new Map();
 
+        const setBag = (src, record) => {
+            let o = new URL(src);
+            bag.set(o.origin + o.pathname, record)
+        }
+
+        const getBag = (src) => {
+            let o = new URL(src);
+            return bag.get(o.origin + o.pathname);
+        }
+
         // 背包记录器
         class BagRecord {
             constructor(src) {
@@ -3350,13 +3367,32 @@ try{
 
                 this.doneTime = Date.now();
             }
+
+            fail(err) {
+                this.status = -1;
+                this.__reject(data);
+
+                delete this.__resolve;
+                delete this.__reject;
+
+                this.doneTime = Date.now();
+            }
         }
+
+        const notfindLoader = {};
 
         // 代理资源请求
         async function agent(pkg) {
-            let record = bag.get(pkg.src);
+            let record = getBag(pkg.src);
 
             if (record) {
+                if (record.status == -1) {
+                    throw {
+                        expr: pkg.url,
+                        src: record.src
+                    };
+                }
+
                 const getPack = await record.data;
 
                 return await getPack(pkg);
@@ -3364,26 +3400,35 @@ try{
 
             record = new BagRecord(pkg.src);
 
-            bag.set(pkg.src, record);
+            setBag(pkg.src, record);
 
             // 根据后缀名获取loader
             let loader = loaders.get(pkg.ftype);
 
-            if (loader) {
-                // 加载资源
-                await loader(record.src);
-            } else {
-                // 不存在这种加载器
-                console.warn({
-                    desc: "did not find this loader",
-                    type: pkg.ftype
-                });
+            try {
+                if (loader) {
+                    // 加载资源
+                    await loader(record.src);
+                } else {
+                    if (!notfindLoader[pkg.ftype]) {
+                        // 不存在这种加载器
+                        console.warn({
+                            desc: "did not find this loader",
+                            type: pkg.ftype
+                        });
 
-                // loadByUtf8({
-                await loadByFetch({
-                    src: record.src,
-                    record
-                });
+                        notfindLoader[pkg.ftype] = 1;
+                    }
+
+                    // loadByUtf8({
+                    await loadByFetch({
+                        src: record.src,
+                        record
+                    });
+                }
+            } catch (err) {
+                record.fail(err);
+                // throw err;
             }
 
             // 返回数据
@@ -3650,12 +3695,12 @@ try{
             async has(src) {
                 let path = await load(`${src} -link`);
 
-                return !!bag.get(path);
+                return !!getBag(path);
             },
             // 删除该资源缓存
             async remove(src) {
                 let path = await load(`${src} -link`);
-                let record = bag.get(path);
+                let record = getBag(path);
 
                 // 删除挂载元素
                 let sele = record.sourceElement;
@@ -3674,6 +3719,7 @@ try{
                     addProcess
                 });
             },
+            bag,
             // 版本信息
             version: "4.0.0",
             v: 4000000
@@ -3915,8 +3961,6 @@ try{
             },
             // 跳转到相应页面
             navigateTo(src) {
-                debugger
-
                 let cPage = getCurrentPage(this);
 
                 // 查找到当前页的id
@@ -4047,13 +4091,13 @@ try{
     }
 
     ::slotted(o-page[page-area="back"]){
-        transform: translate(-30px, 0);
+        transform: translate(-30%, 0);
         opacity: 0;
         z-index: 1;
     }
 
     ::slotted(o-page[page-area="next"]){
-        transform: translate(30px, 0);
+        transform: translate(30%, 0);
         opacity: 0;
         z-index: 1;
     }
@@ -4069,6 +4113,15 @@ try{
         position: relative;
         flex: 1;
     }
+
+    .article{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        height:100%;
+        overflow-y:auto;
+    }
 </style>
 <style id="initStyle">
 ::slotted(o-page[page-area]){
@@ -4080,7 +4133,9 @@ try{
         <slot name="header"></slot>
     </div>
     <div class="main">
-        <slot></slot>
+        <div class="article">
+            <slot></slot>
+        </div>
     </div>
 </div>
 `,
@@ -4122,9 +4177,6 @@ try{
                 }
             },
             router(router) {
-
-                debugger
-
                 if (!router.length) {
                     return;
                 }
@@ -4301,7 +4353,8 @@ try{
         if (initedAddressApp) {
             throw {
                 desc: "the existing app is initialized globally",
-                target: initedAddressApp
+                initedTarget: initedAddressApp,
+                target: app
             };
         }
 
@@ -4383,7 +4436,7 @@ try{
             },
             // 加载失败的临时模板
             loadError(e) {
-                return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">${e.error.desc} <br>${e.src}</div></div>`;
+                return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">error expr:${e.expr} <br>error src:${e.src}</div></div>`;
             }
         }
     };
