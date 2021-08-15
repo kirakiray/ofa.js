@@ -88,15 +88,23 @@
     })();
 
     // 在tick后运行收集的函数数据
-    const collect = (func) => {
+    const collect = (func, time) => {
         let arr = [];
+        let timer;
         const reFunc = e => {
             arr.push(Object.assign({}, e));
-            // arr.push(e);
-            nextTick(() => {
-                func(arr);
-                arr.length = 0;
-            }, reFunc);
+            if (time) {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    func(arr);
+                    arr.length = 0;
+                }, time);
+            } else {
+                nextTick(() => {
+                    func(arr);
+                    arr.length = 0;
+                }, reFunc);
+            }
         }
 
         return reFunc;
@@ -154,7 +162,11 @@
         }
 
         // 触发callback
-        target[WATCHS].forEach(f => f(opts))
+        target[WATCHS].forEach(f => f(opts));
+
+        if (target._unupdate) {
+            return;
+        }
 
         // 向上冒泡
         target.owner && target.owner.forEach(parent => emitUpdate(parent, opts, new_path.slice()));
@@ -470,8 +482,8 @@
             return arr;
         },
         // watch异步收集版本
-        watchTick(func) {
-            return this.watch(collect(func));
+        watchTick(func, time) {
+            return this.watch(collect(func, time));
         },
         // 监听直到表达式成功
         watchUntil(expr) {
@@ -1740,6 +1752,16 @@
                 content: sroot,
                 temps
             });
+
+            // 子元素有改动，触发元素渲染
+            xele.shadow && xele.shadow.watchTick(e => {
+                if (e.some(e2 => e2.path.length > 1)) {
+                    emitUpdate(xele, {
+                        xid: xele.xid,
+                        name: "forceUpdate"
+                    });
+                }
+            }, 10);
         }
 
         defs.ready && defs.ready.call(xele);
@@ -1759,6 +1781,9 @@
             xele.watchKey(d_watch, true);
         }
     }
+
+    // 已经运行revoke函数
+    const RUNNDEDREVOKE = Symbol("runned_revoke");
 
     // 注册组件的主要逻辑
     const register = (opts) => {
@@ -1807,10 +1832,20 @@
                 ele.isCustom = true;
             }
 
-            // // 强制刷新视图
-            // forceUpdate() { }
+            // 强制刷新视图
+            forceUpdate() {
+                // 改动冒泡
+                emitUpdate(this, {
+                    xid: this.xid,
+                    name: "forceUpdate"
+                });
+            }
             // 回收元素内所有的数据（防止垃圾回收失败）
             revoke() {
+                if (this[RUNNDEDREVOKE]) {
+                    return;
+                }
+                this[RUNNDEDREVOKE] = 1;
                 Object.values(this).forEach(child => {
                     if (!(child instanceof XEle) && isxdata(child)) {
                         clearXDataOwner(child, this[XDATASELF]);
@@ -2812,6 +2847,8 @@ try{
             fillKeys && (fillKeys = JSON.parse(fillKeys));
 
             const container = ele;
+
+            createXEle(container)._unupdate = 1;
 
             let [tempName, propName] = Object.entries(fillData)[0];
 
@@ -3949,11 +3986,11 @@ try{
                 };
             },
             get query() {
-                let urlObj = new URL(this._realsrc);
+                const searchParams = new URLSearchParams(this.src.replace(/.+(\?.+)/, "$1"));
 
                 let obj = {};
 
-                for (const [key, value] of urlObj.searchParams.entries()) {
+                for (const [key, value] of searchParams.entries()) {
                     obj[key] = value;
                 }
 
@@ -4120,7 +4157,7 @@ try{
         top:0;
         width:100%;
         height:100%;
-        overflow-y:auto;
+        overflow:hidden;
     }
 </style>
 <style id="initStyle">
@@ -4133,7 +4170,7 @@ try{
         <slot name="header"></slot>
     </div>
     <div class="main">
-        <div class="article">
+        <div class="article" part="body">
             <slot></slot>
         </div>
     </div>

@@ -67,11 +67,11 @@ register({
             };
         },
         get query() {
-            let urlObj = new URL(this._realsrc);
+            const searchParams = new URLSearchParams(this.src.replace(/.+(\?.+)/, "$1"));
 
             let obj = {};
 
-            for (const [key, value] of urlObj.searchParams.entries()) {
+            for (const [key, value] of searchParams.entries()) {
                 obj[key] = value;
             }
 

@@ -55,7 +55,7 @@ register({
         top:0;
         width:100%;
         height:100%;
-        overflow-y:auto;
+        overflow:hidden;
     }
 </style>
 <style id="initStyle">
@@ -68,7 +68,7 @@ register({
         <slot name="header"></slot>
     </div>
     <div class="main">
-        <div class="article">
+        <div class="article" part="body">
             <slot></slot>
         </div>
     </div>
