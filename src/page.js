@@ -148,6 +148,9 @@ register({
                     }),
                     temps: data.temps,
                     _this: this.ele
+                }).then(e => {
+                    this.ele.x_render = 2;
+                    this.attr("x-render", 2);
                 });
             } catch (err) {
                 this.html = ofa.onState.loadError(err);

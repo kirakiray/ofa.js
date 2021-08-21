@@ -54,7 +54,7 @@ const tester1 = expect(6, "created,ready and attached runned");
             tester.ok($.all("o-app o-page").length == 1, "page length ok");
 
             $("o-app o-page").shadow.$(".p3btn").click();
-        }, 400)
+        }, 800)
         .nexter(() => {
             let page = $.all("o-app o-page")[1];
             return page.watchUntil("status == 'loaded'").then(() => {

@@ -153,7 +153,7 @@
 
     const cansetXtatus = new Set(["root", "sub", "revoke"]);
 
-    const emitUpdate = (target, opts, path) => {
+    const emitUpdate = (target, opts, path, unupdate) => {
         let new_path;
         if (!path) {
             new_path = opts.path = [target[PROXYSELF]];
@@ -164,7 +164,7 @@
         // 触发callback
         target[WATCHS].forEach(f => f(opts));
 
-        if (target._unupdate) {
+        if (unupdate || target._unupdate) {
             return;
         }
 
@@ -516,9 +516,9 @@
             }
 
             let oldVal = {};
-            // Object.entries(this).forEach(([k, v]) => {
-            //     oldVal[k] = v;
-            // });
+            Object.entries(this).forEach(([k, v]) => {
+                oldVal[k] = v;
+            });
             return this.watch(collect((arr) => {
                 Object.keys(obj).forEach(key => {
                     // 当前值
@@ -1050,7 +1050,11 @@
                 return ele.getAttribute(key);
             }
 
-            ele.setAttribute(key, value);
+            if (value === null) {
+                ele.removeAttribute(key);
+            } else {
+                ele.setAttribute(key, value);
+            }
         }
 
         siblings(expr) {
@@ -1145,6 +1149,51 @@
             extend(this, proto, {
                 configurable: true
             });
+        }
+
+        // 监听尺寸变动
+        initSizeObs(time = 300) {
+            if (this._initedSizeObs) {
+                console.warn({
+                    target: this.ele,
+                    desc: "initRect is runned"
+                });
+                return;
+            }
+            this._initedSizeObs = 1;
+
+            let resizeTimer;
+            // 元素尺寸修正
+            const fixSize = () => {
+                clearTimeout(resizeTimer);
+
+                setTimeout(() => {
+                    // 尺寸时间监听
+                    emitUpdate(this, {
+                        xid: this.xid,
+                        name: "sizeUpdate"
+                    }, undefined, false);
+                }, time);
+            }
+            fixSize();
+            if (window.ResizeObserver) {
+                const resizeObserver = new ResizeObserver(entries => {
+                    fixSize();
+                });
+                resizeObserver.observe(this.ele);
+
+                return () => {
+                    resizeObserver.disconnect();
+                }
+            } else {
+                let f;
+                window.addEventListener("resize", f = e => {
+                    fixSize();
+                });
+                return () => {
+                    window.removeEventListener("resize", f);
+                }
+            }
         }
     }
 
@@ -1727,7 +1776,7 @@
     const Components = {};
 
     // 渲染元素
-    const renderXEle = ({
+    const renderXEle = async ({
         xele,
         defs,
         temps,
@@ -1762,6 +1811,34 @@
                     });
                 }
             }, 10);
+
+            // 缓冲link
+            let links = sroot.querySelectorAll("link");
+            if (links.length) {
+                await Promise.all(Array.from(links).map(linkEle => {
+                    return new Promise((resolve, reject) => {
+                        if (linkEle.sheet) {
+                            resolve();
+                        } else {
+                            let succeedCall, errCall;
+                            linkEle.addEventListener("load", succeedCall = e => {
+                                linkEle.removeEventListener("load", succeedCall);
+                                linkEle.removeEventListener("error", errCall);
+                                resolve();
+                            });
+                            linkEle.addEventListener("error", errCall = e => {
+                                linkEle.removeEventListener("load", succeedCall);
+                                linkEle.removeEventListener("error", errCall);
+                                reject({
+                                    desc: "link load error",
+                                    ele: linkEle,
+                                    target: xele.ele
+                                });
+                            });
+                        }
+                    });
+                }));
+            }
         }
 
         defs.ready && defs.ready.call(xele);
@@ -1891,11 +1968,20 @@
                     defs,
                     temps,
                     _this: this
+                }).then(e => {
+                    if (this.__x_connected) {
+                        this.setAttribute("x-render", 1);
+                    } else {
+                        this.x_render = 1;
+                    }
                 });
             }
 
             connectedCallback() {
                 // console.log("connectedCallback => ", this);
+                if (this.x_render) {
+                    this.setAttribute("x-render", this.x_render)
+                }
                 this.__x_connected = true;
                 if (defs.attached && !this.__x_runned_connected) {
                     nextTick(() => {
@@ -2199,7 +2285,7 @@ const [$e,$target] = $args;
 
 try{
     with(this){
-        return ${expr};
+        ${expr};
     }
 }catch(e){
     throw {
@@ -2240,7 +2326,7 @@ try{
 
         if (regIsFuncExpr.test(expr)) {
             // 属于函数
-            runFunc = exprToFunc(expr).bind(xdata);
+            runFunc = exprToFunc("return " + expr).bind(xdata);
         } else {
             // 值变动
             runFunc = () => xdata[expr];
@@ -4071,6 +4157,9 @@ try{
                         }),
                         temps: data.temps,
                         _this: this.ele
+                    }).then(e => {
+                        this.ele.x_render = 2;
+                        this.attr("x-render", 2);
                     });
                 } catch (err) {
                     this.html = ofa.onState.loadError(err);
@@ -4179,8 +4268,6 @@ try{
         attrs: {
             // 首页地址
             home: "",
-            // 全局化路由
-            useAddress: null
         },
         data: {
             // 路由
@@ -4198,14 +4285,6 @@ try{
             visibility: document.hidden ? "hide" : "show",
         },
         watch: {
-            useAddress(val) {
-                if (val !== undefined && val !== null) {
-                    // 在路由加载的情况下才初始化地址
-                    this.watchUntil(`router.length`).then(e => {
-                        initAddress(this);
-                    });
-                }
-            },
             home(src) {
                 if (src) {
                     this.router.push({
@@ -4361,101 +4440,8 @@ try{
             setTimeout(() => {
                 this.shadow.$("#initStyle").remove();
             }, 150);
-
-            // 元素尺寸修正
-            const fixSize = () => {
-                // 修正尺寸数据
-                this.rect.width = this.ele.clientWidth;
-                this.rect.height = this.ele.clientHeight;
-            }
-            fixSize();
-            if (window.ResizeObserver) {
-                const resizeObserver = new ResizeObserver(entries => {
-                    fixSize();
-                });
-                resizeObserver.observe(this.ele);
-            } else {
-                let resizeTimer;
-                window.addEventListener("resize", e => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(() => fixSize(), 300);
-                });
-            }
         }
     });
-    let initedAddressApp = false;
-
-    // 全局化app，进行地址栏的监听
-    const initAddress = async (app) => {
-        if (initedAddressApp) {
-            throw {
-                desc: "the existing app is initialized globally",
-                initedTarget: initedAddressApp,
-                target: app
-            };
-        }
-
-        initedAddressApp = app;
-
-        window.addEventListener("popstate", e => {
-            switch (e.state.type) {
-                case "back":
-                    // 拦截返回的路由
-                    app.currentPage.back();
-                    history.forward();
-                    break;
-            }
-        });
-
-        // 主要监听到最新的页面的路由
-        let routerTimer;
-        app.watchKey({
-            router: e => {
-                clearTimeout(routerTimer);
-                routerTimer = setTimeout(() => {
-                    history.replaceState({
-                        type: "now",
-                        router: app.router.map(e => {
-                            let obj = {
-                                path: e.path
-                            };
-
-                            e.state && (obj.state = JSON.parse(JSON.stringify(e.state)));
-
-                            return obj;
-                        })
-                    }, "", `#${encodeURIComponent(app.currentPage.src)}`);
-                }, 150);
-            }
-        });
-
-        // 初始化过就不用初始化了
-        if (!history.state || history.state.type !== "now") {
-            // 如果当前路由地址不是首页，载入相应页面
-            let target_url;
-            if (location.hash && location.hash.length > 1) {
-                target_url = location.hash.replace(/^#/, "");
-            }
-
-            // 初始化返回路由
-            history.pushState({
-                type: "back"
-            }, "", `#back`);
-
-            // 添加首页
-            history.pushState({
-                type: "now",
-            }, "", `#${encodeURIComponent(app.currentPage.src)}`);
-
-            // 进入下一级页面
-            if (target_url && app.currentPage.src !== target_url) {
-                app.router.push(decodeURIComponent(target_url));
-            }
-        } else if (history.state && history.state.type == "now" && history.state.router.length > 1) {
-            // 还原之前的路由
-            app.router.push(...history.state.router.slice(1));
-        }
-    }
 
     let init_ofa = glo.ofa;
 

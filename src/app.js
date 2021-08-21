@@ -77,8 +77,6 @@ register({
     attrs: {
         // 首页地址
         home: "",
-        // 全局化路由
-        useAddress: null
     },
     data: {
         // 路由
@@ -96,14 +94,6 @@ register({
         visibility: document.hidden ? "hide" : "show",
     },
     watch: {
-        useAddress(val) {
-            if (val !== undefined && val !== null) {
-                // 在路由加载的情况下才初始化地址
-                this.watchUntil(`router.length`).then(e => {
-                    initAddress(this);
-                });
-            }
-        },
         home(src) {
             if (src) {
                 this.router.push({
@@ -259,25 +249,5 @@ register({
         setTimeout(() => {
             this.shadow.$("#initStyle").remove();
         }, 150);
-
-        // 元素尺寸修正
-        const fixSize = () => {
-            // 修正尺寸数据
-            this.rect.width = this.ele.clientWidth;
-            this.rect.height = this.ele.clientHeight;
-        }
-        fixSize();
-        if (window.ResizeObserver) {
-            const resizeObserver = new ResizeObserver(entries => {
-                fixSize();
-            });
-            resizeObserver.observe(this.ele);
-        } else {
-            let resizeTimer;
-            window.addEventListener("resize", e => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => fixSize(), 300);
-            });
-        }
     }
 });
