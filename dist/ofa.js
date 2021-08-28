@@ -345,6 +345,15 @@
             return reval;
         }
 
+        // 主动触发更新事件
+        // 方便 get 类型数据触发 watch 
+        update(opts = {}) {
+            emitUpdate(this, Object.assign({}, opts, {
+                xid: this.xid,
+                isCustom: true
+            }));
+        }
+
         delete(key) {
             // 确认key是隐藏属性
             if (/^_/.test(key) || typeof key === "symbol") {
@@ -500,7 +509,7 @@
         }}catch(e){}`).bind(this);
 
                 let f;
-                const wid = this.watch(f = () => {
+                const wid = this.watchTick(f = () => {
                     let reVal = exprFun();
                     if (reVal) {
                         this.unwatch(wid);
@@ -517,9 +526,12 @@
             }
 
             let oldVal = {};
-            Object.entries(this).forEach(([k, v]) => {
-                oldVal[k] = v;
+            Object.keys(obj).forEach(key => {
+                oldVal[key] = this[key];
             });
+            // Object.entries(this).forEach(([k, v]) => {
+            //     oldVal[k] = v;
+            // });
             return this.watch(collect((arr) => {
                 Object.keys(obj).forEach(key => {
                     // 当前值
@@ -1775,6 +1787,25 @@
     });
     // 所有注册的组件
     const Components = {};
+    const ComponentResolves = {};
+
+    // 获取组件
+    const getComp = (name) => {
+        name = attrToProp(name);
+
+        // 组件上有数据就直接返回
+        if (Components[name]) {
+            return Components[name];
+        }
+
+        // 创建挂载组件
+        let pms = new Promise(res => {
+            ComponentResolves[name] = res;
+        });
+        Components[name] = pms;
+
+        return pms;
+    }
 
     // 渲染元素
     const renderXEle = async ({
@@ -1901,9 +1932,9 @@
         }
 
         // 生成新的XEle class
-        let className = attrToProp(opts.tag);
-        className = className[0].toUpperCase() + className.slice(1)
-        const CustomXEle = Components[className] = class extends XEle {
+        let compName = attrToProp(opts.tag);
+        // const CustomXEle = Components[compName] = class extends XEle {
+        const CustomXEle = class extends XEle {
             constructor(ele) {
                 super(ele);
 
@@ -2023,6 +2054,15 @@
         }
 
         customElements.define(defs.tag, XhearElement);
+
+        // 设置注册完成
+        if (ComponentResolves[compName]) {
+            ComponentResolves[compName](CustomXEle);
+            delete ComponentResolves[compName];
+        } else {
+            Components[compName] = Promise.resolve(CustomXEle);
+        }
+
     }
 
     // 根据 defaults 获取可设置的keys
@@ -2447,7 +2487,7 @@ try{
         _binds.push(...bindings);
     }
 
-    const regIsFuncExpr = /[\(\)\;\.\=\>\<]/;
+    const regIsFuncExpr = /[\(\)\;\.\=\>\<\|]/;
 
     // 元素深度循环函数
     const elementDeepEach = (ele, callback) => {
@@ -3151,12 +3191,12 @@ try{
         all(expr) {
             return Array.from(document.querySelectorAll(expr)).map(e => createXEle(e));
         },
-        Components,
         register,
         xdata: (obj) => createXData(obj),
         nextTick,
         fn: XEle.prototype,
-        extend
+        extend,
+        getComp
     });
     /*!
      * drill.js v4.0.0
@@ -4193,79 +4233,15 @@ try{
     });
     const ROUTERPAGE = Symbol("router_page");
 
+    // 所有的app元素
+    const apps = [];
+
     // 等待器等待加载的个数
     let waitCount = 2;
 
     register({
         tag: "o-app",
-        temp: `
-<style>
-    :host{
-        display: block;
-    }
-
-    ::slotted(o-page){
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    ::slotted(o-page[page-area]){
-        transition: all ease-in-out .25s;
-        z-index: 2;
-    }
-
-    ::slotted(o-page[page-area="back"]){
-        transform: translate(-30%, 0);
-        opacity: 0;
-        z-index: 1;
-    }
-
-    ::slotted(o-page[page-area="next"]){
-        transform: translate(30%, 0);
-        opacity: 0;
-        z-index: 1;
-    }
-
-    .container {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-    }
-
-    .main {
-        position: relative;
-        flex: 1;
-    }
-
-    .article{
-        position:absolute;
-        left:0;
-        top:0;
-        width:100%;
-        height:100%;
-        overflow:hidden;
-    }
-</style>
-<style id="initStyle">
-::slotted(o-page[page-area]){
-    transition: none;
-}
-</style>
-<div class="container">
-    <div>
-        <slot name="header"></slot>
-    </div>
-    <div class="main">
-        <div class="article" part="body">
-            <slot></slot>
-        </div>
-    </div>
-</div>
-`,
+        temp: `<style>:host{display:block}::slotted(o-page){position:absolute;left:0;top:0;width:100%;height:100%}::slotted(o-page[page-area]){transition:all ease-in-out .25s;z-index:2}::slotted(o-page[page-area=back]){transform:translate(-30%,0);opacity:0;z-index:1}::slotted(o-page[page-area=next]){transform:translate(30%,0);opacity:0;z-index:1}.container{display:flex;flex-direction:column;width:100%;height:100%}.main{position:relative;flex:1}.article{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}</style><style id="initStyle">::slotted(o-page[page-area]){transition:none}</style><div class="container"><div><slot name="header"></slot></div><div class="main"><div class="article" part="body"><slot></slot></div></div></div>`,
         attrs: {
             // 首页地址
             home: "",
@@ -4429,6 +4405,28 @@ try{
                 if (this.router.length > 1) {
                     this.router.splice(-1, 1);
                 }
+            },
+            // 全局app都可用的数据
+            get globalData() {
+                return globalAppData;
+            },
+            postback(data) {
+                let target;
+                if (top !== window) {
+                    target = top;
+                } else if (opener) {
+                    target = opener;
+                } else {
+                    console.warn("can't use postback");
+                    return false;
+                }
+
+                target.postMessage({
+                    type: "web-app-postback-data",
+                    data
+                }, "*");
+
+                return true;
             }
         },
         ready() {
@@ -4441,7 +4439,70 @@ try{
             setTimeout(() => {
                 this.shadow.$("#initStyle").remove();
             }, 150);
+        },
+        attached() {
+            apps.push(this);
+        },
+        detached() {
+            let id = apps.indexOf(this);
+            if (id > -1) {
+                apps.splice(id, 1);
+            }
         }
+    });
+    // 关于 o-app 和 上层应用的数据通信相关逻辑
+    // 全局的app数据
+    const globalAppData = {
+        // 上级传递过来的message数据
+        message: null
+    };
+
+    if (opener && !opener.closed) {
+        if (document.readyState == "complete") {
+            opener.postMessage({
+                type: "web-app-postback-data",
+                command: "complete"
+            }, "*");
+        } else {
+            let onloadFunc = () => {
+                opener.postMessage({
+                    type: "web-app-postback-data",
+                    command: "complete"
+                }, "*");
+                glo.removeEventListener("load", onloadFunc);
+                onloadFunc = null;
+            };
+            glo.addEventListener("load", onloadFunc);
+        }
+
+        // 存在更高层的窗口，添加关闭事件通报
+        glo.addEventListener("beforeunload", e => {
+            opener.postMessage({
+                type: "web-app-postback-data",
+                command: "close"
+            }, "*");
+        });
+    }
+
+    glo.addEventListener("message", e => {
+        let {
+            data
+        } = e;
+
+        if (!(data && data.type && data.type == 'web-app-post-data')) {
+            return;
+        }
+        data = data.data;
+
+        globalAppData.message = data;
+
+        apps.forEach(e => {
+            e.triggerHandler("message", data);
+            emitUpdate(e, {
+                xid: e.xid,
+                name: "message"
+            });
+        });
     });
 
     let init_ofa = glo.ofa;
@@ -4462,6 +4523,9 @@ try{
             loadError(e) {
                 return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">error expr:${e.expr} <br>error src:${e.src}</div></div>`;
             }
+        },
+        get apps() {
+            return apps.slice();
         }
     };
 
@@ -4477,6 +4541,12 @@ try{
     });
 
     init_ofa && init_ofa(ofa);
+
+    drill.config({
+        paths: {
+            "@lib/": "https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/lib/"
+        }
+    });
 
     glo.$ = $;
 })(window);

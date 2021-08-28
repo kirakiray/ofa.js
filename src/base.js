@@ -5,6 +5,7 @@
     //<!--component-->
     //<!--page-->
     //<!--app-->
+    //<!--message-->
 
     let init_ofa = glo.ofa;
 
@@ -24,6 +25,9 @@
             loadError(e) {
                 return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">error expr:${e.expr} <br>error src:${e.src}</div></div>`;
             }
+        },
+        get apps() {
+            return apps.slice();
         }
     };
 
@@ -39,6 +43,12 @@
     });
 
     init_ofa && init_ofa(ofa);
+
+    drill.config({
+        paths: {
+            "@lib/": "https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/lib/"
+        }
+    });
 
     glo.$ = $;
 })(window);

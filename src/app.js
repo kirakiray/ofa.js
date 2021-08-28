@@ -1,79 +1,15 @@
 const ROUTERPAGE = Symbol("router_page");
 
+// 所有的app元素
+const apps = [];
+
 // 等待器等待加载的个数
 let waitCount = 2;
 
 register({
     tag: "o-app",
     temp:
-        `
-<style>
-    :host{
-        display: block;
-    }
-
-    ::slotted(o-page){
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    ::slotted(o-page[page-area]){
-        transition: all ease-in-out .25s;
-        z-index: 2;
-    }
-
-    ::slotted(o-page[page-area="back"]){
-        transform: translate(-30%, 0);
-        opacity: 0;
-        z-index: 1;
-    }
-
-    ::slotted(o-page[page-area="next"]){
-        transform: translate(30%, 0);
-        opacity: 0;
-        z-index: 1;
-    }
-
-    .container {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-    }
-
-    .main {
-        position: relative;
-        flex: 1;
-    }
-
-    .article{
-        position:absolute;
-        left:0;
-        top:0;
-        width:100%;
-        height:100%;
-        overflow:hidden;
-    }
-</style>
-<style id="initStyle">
-::slotted(o-page[page-area]){
-    transition: none;
-}
-</style>
-<div class="container">
-    <div>
-        <slot name="header"></slot>
-    </div>
-    <div class="main">
-        <div class="article" part="body">
-            <slot></slot>
-        </div>
-    </div>
-</div>
-`,
+        `<style>:host{display:block}::slotted(o-page){position:absolute;left:0;top:0;width:100%;height:100%}::slotted(o-page[page-area]){transition:all ease-in-out .25s;z-index:2}::slotted(o-page[page-area=back]){transform:translate(-30%,0);opacity:0;z-index:1}::slotted(o-page[page-area=next]){transform:translate(30%,0);opacity:0;z-index:1}.container{display:flex;flex-direction:column;width:100%;height:100%}.main{position:relative;flex:1}.article{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}</style><style id="initStyle">::slotted(o-page[page-area]){transition:none}</style><div class="container"><div><slot name="header"></slot></div><div class="main"><div class="article" part="body"><slot></slot></div></div></div>`,
     attrs: {
         // 首页地址
         home: "",
@@ -237,6 +173,28 @@ register({
             if (this.router.length > 1) {
                 this.router.splice(-1, 1);
             }
+        },
+        // 全局app都可用的数据
+        get globalData() {
+            return globalAppData;
+        },
+        postback(data) {
+            let target;
+            if (top !== window) {
+                target = top;
+            } else if (opener) {
+                target = opener;
+            } else {
+                console.warn("can't use postback");
+                return false;
+            }
+
+            target.postMessage({
+                type: "web-app-postback-data",
+                data
+            }, "*");
+
+            return true;
         }
     },
     ready() {
@@ -249,5 +207,14 @@ register({
         setTimeout(() => {
             this.shadow.$("#initStyle").remove();
         }, 150);
+    },
+    attached() {
+        apps.push(this);
+    },
+    detached() {
+        let id = apps.indexOf(this);
+        if (id > -1) {
+            apps.splice(id, 1);
+        }
     }
 });
