@@ -32,30 +32,29 @@ if (opener && !opener.closed) {
     });
 }
 
-glo.addEventListener("message", e => {
-    let { data } = e;
+if (opener || top !== window) {
+    glo.addEventListener("message", e => {
+        let { data } = e;
 
-    if (!(data && data.type)) {
-        return;
-    }
+        if (!(data && data.type)) {
+            return;
+        }
 
-    const { type } = data;
-    data = data.data;
+        const { type } = data;
+        data = data.data;
 
-    if (type == "web-app-post-init-data") {
-        globalAppData.initial = data;
-        return;
-    } else if (type === 'web-app-post-data') {
-        globalAppData.message = data;
-    } else {
-        return;
-    }
+        if (type == "web-app-post-init-data") {
+            globalAppData.initial = data;
+        } else if (type === 'web-app-post-data') {
+            globalAppData.message = data;
+            apps.forEach(e => e.triggerHandler("message", data));
+        } else {
+            return;
+        }
 
-    apps.forEach(e => {
-        e.triggerHandler("message", data);
-        emitUpdate(e, {
+        apps.forEach(e => emitUpdate(e, {
             xid: e.xid,
             name: "message"
-        });
+        }));
     });
-});
+}
