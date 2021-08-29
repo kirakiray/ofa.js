@@ -4489,12 +4489,23 @@ try{
             data
         } = e;
 
-        if (!(data && data.type && data.type == 'web-app-post-data')) {
+        if (!(data && data.type)) {
             return;
         }
+
+        const {
+            type
+        } = data;
         data = data.data;
 
-        globalAppData.message = data;
+        if (type == "web-app-post-init-data") {
+            globalAppData.initial = data;
+            return;
+        } else if (type === 'web-app-post-data') {
+            globalAppData.message = data;
+        } else {
+            return;
+        }
 
         apps.forEach(e => {
             e.triggerHandler("message", data);
