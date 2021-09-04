@@ -153,8 +153,10 @@ register({
                     this.attr("x-render", 2);
                 });
             } catch (err) {
-                this.html = ofa.onState.loadError(err);
-                this[PAGESTATUS] = "error";
+                if (glo.ofa) {
+                    this.html = ofa.onState.loadError(err);
+                    this[PAGESTATUS] = "error";
+                }
                 return;
             }
 

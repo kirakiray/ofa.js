@@ -32,9 +32,14 @@
 <body>
     <o-app home="pages/p1 -p" style="width:100%;height:100%;overflow:hidden;"></o-app>
     <script>
-        load("../../lib/addressRouter.js").then(init => {
+        load("../../lib/router/address.js").then(init => {
             init($("o-app"));
         });
+
+        // $("o-app").on("back", e => {
+        //     // 阻止页面后退
+        //     e.preventDefault();
+        // })
     </script>
 </body>
 

@@ -1,5 +1,33 @@
-ofa = async () => {
-    const init = await load("../../lib/addressRouter.js");
+define({
+    data: {
+        // 添加的首页
+        home: "pages/main -p"
+    },
+    proto: {
+        // shareHash 的 get 和 set 一定要成对应关系
+        // 显示出来的hash
+        get shareHash() {
+            // 可设置
+            console.log("get share hash => ", this.currentPage.src);
+            return this.currentPage.src;
+        },
+        // 通过外部 shareHash 进入的app
+        // 只会在最开始加载时候进入一次，如果没有带hash数据就不会触发这个设置
+        set shareHash(hash) {
+            if (hash) {
+                // 直接添加
+                this.router.push(hash);
+                // this.router.splice(0, 10, hash);
+            }
+        }
+    },
+    // 初始化完成
+    ready() {
+        load("../../lib/router/address.js").then(init => {
+            init();
+        });
 
-    init($("o-app"));
-}
+        // 可通过 location.hash 获取分享数据，并添加到路由
+        // 如果在ready添加了router，那么 home 和 set shareHash 将不会被触发
+    }
+});

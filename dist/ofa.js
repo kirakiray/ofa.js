@@ -322,13 +322,25 @@
                 value.owner.add(this);
             }
 
-            const oldVal = this[key];
+            let oldVal;
+            const descObj = Object.getOwnPropertyDescriptor(this, key);
+            const p_self = this[PROXYSELF];
+            try {
+                // 为了只有 set 没有 get 的情况
+                oldVal = p_self[key];
+            } catch (err) {}
 
             if (oldVal === value) {
                 return true;
             }
 
-            let reval = Reflect.set(this, key, value);
+            let reval;
+            if (descObj && descObj.set) {
+                descObj.set.call(p_self, value);
+                reval = true;
+            } else {
+                reval = Reflect.set(this, key, value);
+            }
 
             // if (this[CANUPDATE] || this._update === false) {
             if (this[CANUPDATE]) {
@@ -1159,6 +1171,13 @@
 
         // 插件方法extend
         extend(proto) {
+            const descObj = Object.getOwnPropertyDescriptors(proto);
+            Object.entries(descObj).forEach(([key, obj]) => {
+                if (obj.set) {
+                    // 扩展拥有set的可被写入
+                    this[CANSETKEYS].add(key);
+                }
+            });
             extend(this, proto, {
                 configurable: true
             });
@@ -1876,13 +1895,25 @@
         defs.ready && defs.ready.call(xele);
 
         // attrs监听
-        !isEmptyObj(defs.attrs) && xele.watchTick(e => {
-            _this.__set_attr = 1;
-            Object.keys(defs.attrs).forEach(key => {
-                _this.setAttribute(propToAttr(key), xele[key]);
+        if (!isEmptyObj(defs.attrs)) {
+            const {
+                ele
+            } = xele;
+            // 先判断是否有值可获取
+            Object.keys(defs.attrs).forEach(k => {
+                if (ele.hasAttribute(k)) {
+                    xele[k] = ele.getAttribute(k);
+                }
+            })
+
+            xele.watchTick(e => {
+                _this.__set_attr = 1;
+                Object.keys(defs.attrs).forEach(key => {
+                    _this.setAttribute(propToAttr(key), xele[key]);
+                });
+                delete _this.__set_attr;
             });
-            delete _this.__set_attr;
-        });
+        }
 
         // watch函数触发
         let d_watch = defs.watch;
@@ -3195,7 +3226,6 @@ try{
         xdata: (obj) => createXData(obj),
         nextTick,
         fn: XEle.prototype,
-        extend,
         getComp
     });
     /*!
@@ -4203,8 +4233,10 @@ try{
                         this.attr("x-render", 2);
                     });
                 } catch (err) {
-                    this.html = ofa.onState.loadError(err);
-                    this[PAGESTATUS] = "error";
+                    if (glo.ofa) {
+                        this.html = ofa.onState.loadError(err);
+                        this[PAGESTATUS] = "error";
+                    }
                     return;
                 }
 
@@ -4245,6 +4277,8 @@ try{
         attrs: {
             // 首页地址
             home: "",
+            // 引用资源地址
+            src: ""
         },
         data: {
             // 路由
@@ -4262,8 +4296,35 @@ try{
             visibility: document.hidden ? "hide" : "show",
         },
         watch: {
+            async src(src) {
+                if (!src || this._loaded_src) {
+                    return;
+                }
+                this._loaded_src = 1;
+
+                // 加载相应模块并执行
+                let m = await load(src);
+
+                m.data && Object.assign(this, m.data);
+
+                if (m.proto) {
+                    // 扩展选项
+                    this.extend(m.proto);
+                }
+
+                if (m.ready) {
+                    m.ready.call(this);
+                }
+
+                if (this.home && !this.router.length) {
+                    // 当存在home，又没有其他页面在路由时，添加home
+                    this.router.push({
+                        path: this.home
+                    });
+                }
+            },
             home(src) {
-                if (src) {
+                if (!this.src && src && !this.router.length) {
                     this.router.push({
                         path: src
                     });
@@ -4307,7 +4368,7 @@ try{
                         });
 
                         // 添加loading
-                        if (ofa.onState.loading) {
+                        if (glo.ofa && ofa.onState.loading) {
                             page.push(ofa.onState.loading({
                                 src: e.path
                             }));
@@ -4402,8 +4463,17 @@ try{
             },
             // 返回页面
             back() {
-                if (this.router.length > 1) {
-                    this.router.splice(-1, 1);
+                // 是否接受返回行为
+                const event = new Event("back", {
+                    cancelable: true
+                });
+                this.triggerHandler(event);
+
+                if (event.returnValue) {
+                    // 拦截返回的路由
+                    if (this.router.length > 1) {
+                        this.router.splice(-1, 1);
+                    }
                 }
             },
             // 全局app都可用的数据
@@ -4427,7 +4497,10 @@ try{
                 }, "*");
 
                 return true;
-            }
+            },
+            // get shareHash() {
+            //     return encodeURIComponent(this.currentPage.src);
+            // }
         },
         ready() {
             // 检查页面状况
