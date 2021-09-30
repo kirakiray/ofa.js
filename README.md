@@ -1,30 +1,11 @@
-# ofa 3 
+# ofa.js
 
-## 和 ofa 2 对比
+ofajs 是新时代前端渐进式框架；基于 Web Components 和完全异步的模块化方案；
 
-drill 升级到 4.0，xhear 升级到 6.0；
+与传统前端框架不一样，ofajs是 面向开发友好型 的框架，完全基于浏览器运行，不需要nodejs开发环境；（因此不需要学习npm和webpack之类的）
 
-大幅提升性能；
+如果你被现有前端技术栈劝退过（被脚手架、nodejs或npm之类的知识点迷惑），可以试试 ofajs；
 
-文件体积缩小一半；
+既能像jQuery那样，快速开发单独功能或页面；也能像Vue/React/Angular那样，开发大型高级项目；
 
-去除不常用的功能；
-
-<!-- # ofa 2 **DEV**
-
-MVVM front-end framework based on webComponents;
-
-No webpack,No nodejs,Let the front end go back to the purest web;
-
-一个基于原生WebComponents的MVVM框架；
-
-让前端回归最纯粹的web；没有nodejs，没有webpack，也能开发超大型应用；
-
-## 文档地址
-
-[点击跳转到文档地址](https://ofajs.com/)
-
-### 如何重新打包？
-
-- 将 [Xhear](https://github.com/kirakiray/Xhear) 和 [drill.js](https://github.com/kirakiray/drill.js) clone 到本地
-- npm run watch，随便保存一下 `src/` 目录下的文件； -->
+[文档地址](https://ofajs.com/)
