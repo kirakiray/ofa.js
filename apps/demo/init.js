@@ -4,7 +4,7 @@ define({
         home: "pages/main -p"
     },
     proto: {
-        // shareHash 的 get 和 set 一定要成对应关系
+        // shareHash 的 get 和 set 一定要成对应关系，并且必须同时出现
         // 显示出来的hash
         get shareHash() {
             // 可设置
@@ -12,7 +12,7 @@ define({
             return this.currentPage.src;
         },
         // 通过外部 shareHash 进入的app
-        // 只会在最开始加载时候进入一次，如果没有带hash数据就不会触发这个设置
+        // 用于地址栏直接载入地址用
         set shareHash(hash) {
             if (hash) {
                 // 直接添加

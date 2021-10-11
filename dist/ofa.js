@@ -3220,7 +3220,6 @@ try{
         return itemEle;
     }
 
-
     function $(expr) {
         if (expr instanceof Element) {
             return createXEle(expr);
@@ -4530,7 +4529,11 @@ try{
 
                 return true;
             },
+            // 用于不想暴露真实地址或保证地址唯一性
             // get shareHash() {
+            //     return encodeURIComponent(this.currentPage.src);
+            // }
+            // set shareHash() {
             //     return encodeURIComponent(this.currentPage.src);
             // }
         },
