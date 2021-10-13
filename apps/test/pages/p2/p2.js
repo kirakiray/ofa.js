@@ -5,6 +5,11 @@ Page(async (load) => {
         },
         ready() {
             let a = this.query;
+        },
+        proto: {
+            toHome() {
+                this.app.router.splice(1);
+            }
         }
     };
 })
