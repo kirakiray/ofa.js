@@ -2817,7 +2817,7 @@ try{
 
             let all_expr = '';
 
-            // 生成个字的函数
+            // 将连在一起的 if else 都组成一个数组，并转化成条件函数
             const conditions = conditionEles.map((e, index) => {
                 let callback;
 
@@ -2841,52 +2841,65 @@ try{
             } = postionNode(ele);
 
             // 生成的目标元素
-            let targetEle = null;
-            let oldIndex = -1;
+            let oldTargetEle = null;
+            let oldConditionId = -1;
+            // let oldConditionValue;
 
             const watchFun = (modifys) => {
-                let tempEle, tarIndex;
+                let tempEle, conditionId = -1;
+                let conditionVal;
                 conditions.some((e, index) => {
-                    if (!e.callback || e.callback()) {
+                    if (e.callback) {
+                        conditionVal = !!e.callback();
+
+                        if (conditionVal) {
+                            tempEle = e.tempEle;
+                            conditionId = index;
+                            return true;
+                        }
+                    } else {
+                        // 最后的else
                         tempEle = e.tempEle;
-                        tarIndex = index;
-                        return true;
+                        conditionId = index;
+                        // conditionVal = true;
                     }
                 });
 
-                // 存在改动，进行纠正
-                if (oldIndex !== tarIndex) {
+                // 值或序号不一样，都能进入修正的环节
+                // if (oldConditionId !== conditionId || conditionVal !== oldConditionValue) {
+                if (oldConditionId !== conditionId) {
                     // 旧模板销毁
-                    if (targetEle) {
+                    if (oldTargetEle) {
+                        // debugger
                         // 去除数据绑定
-                        removeElementBind(targetEle);
+                        removeElementBind(oldTargetEle);
 
                         // 删除元素
-                        targetEle.parentNode.removeChild(targetEle);
-                        // parent.replaceChild(marker, targetEle);
-                        targetEle = null;
+                        oldTargetEle.parentNode.removeChild(oldTargetEle);
+                        // parent.replaceChild(marker, oldTargetEle);
+                        oldTargetEle = null;
                     }
 
-                    if (!tempEle) {
-                        // 木存在模板就待定
-                        return;
+                    // 确定可添加模板
+                    // if (conditionVal && tempEle) {
+                    if (tempEle) {
+                        // 添加元素
+                        oldTargetEle = parseStringToDom(tempEle.content.children[0].outerHTML)[0];
+
+                        parent.insertBefore(oldTargetEle, marker);
+
+                        // 重新渲染
+                        renderTemp({
+                            host,
+                            xdata,
+                            content: oldTargetEle,
+                            temps
+                        });
                     }
-
-                    // 添加元素
-                    targetEle = parseStringToDom(tempEle.content.children[0].outerHTML)[0];
-
-                    parent.insertBefore(targetEle, marker);
-
-                    // 重新渲染
-                    renderTemp({
-                        host,
-                        xdata,
-                        content: targetEle,
-                        temps
-                    });
                 }
 
-                oldIndex = tarIndex;
+                // oldConditionValue = conditionVal;
+                oldConditionId = conditionId;
             }
 
             // 先执行一次
