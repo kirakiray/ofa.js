@@ -154,6 +154,10 @@
     const cansetXtatus = new Set(["root", "sub", "revoke"]);
 
     const emitUpdate = (target, opts, path, unupdate) => {
+        if (path && path.includes(target[PROXYSELF])) {
+            // 防止循环引用
+            return;
+        }
         let new_path;
         if (!path) {
             new_path = opts.path = [target[PROXYSELF]];
