@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.4
+ * ofa v3.0.5
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2021 YAO
@@ -2667,17 +2667,24 @@ try{
                     // 函数绑定
                     const func = exprToFunc(name);
                     eid = $tar.on(eventName, (event) => {
-                        // func.call(xdata, event, $tar);
-                        func.call(host, event, $tar);
+                        func.call(xdata, event, $tar);
+                        // func.call(host, event, $tar);
                     });
                 } else {
                     // 函数名绑定
                     eid = $tar.on(eventName, (event) => {
+                        // if (name.includes(".")) {
+                        //     throw {
+                        //         desc: "don't use dotted keys function"
+                        //     };
+                        // }
                         // const func = xdata[name];
-                        const func = host[name];
+                        // const func = host[name];
+                        const func = getXData(xdata, name);
                         if (func) {
                             if (isFunction(func)) {
-                                func.call(xdata, event);
+                                // func.call(xdata, event);
+                                func.call(host, event);
                             } else {
                                 console.error({
                                     target: xdata,
@@ -3023,7 +3030,8 @@ try{
                                 parent,
                                 host,
                                 xdata: {
-                                    [thenTemp.getAttribute("x-cmd-then")]: e
+                                    [thenTemp.getAttribute("x-cmd-then")]: e,
+                                    $host: host
                                 }
                             });
                         }
@@ -3041,7 +3049,8 @@ try{
                                 parent,
                                 host,
                                 xdata: {
-                                    [catchTemp.getAttribute("x-cmd-catch")]: err
+                                    [catchTemp.getAttribute("x-cmd-catch")]: err,
+                                    $host: host
                                 }
                             });
                         }
@@ -4648,8 +4657,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000004,
-        version: "3.0.4",
+        v: 3000005,
+        version: "3.0.5",
         // 配置基础信息
         get config() {
             return drill.config;
