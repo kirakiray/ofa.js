@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.3
+ * ofa v3.0.4
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2021 YAO
@@ -1549,6 +1549,10 @@
 
             e.trigger(event);
 
+            if (!e.hasOwnProperty("msg")) {
+                return;
+            }
+
             const {
                 msg
             } = event;
@@ -2663,20 +2667,21 @@ try{
                     // 函数绑定
                     const func = exprToFunc(name);
                     eid = $tar.on(eventName, (event) => {
-                        // func.call(host, event);
-                        func.call(xdata, event, $tar);
+                        // func.call(xdata, event, $tar);
+                        func.call(host, event, $tar);
                     });
                 } else {
                     // 函数名绑定
                     eid = $tar.on(eventName, (event) => {
-                        // host[name] && host[name].call(host, event);
-                        const func = xdata[name];
+                        // const func = xdata[name];
+                        const func = host[name];
                         if (func) {
                             if (isFunction(func)) {
                                 func.call(xdata, event);
                             } else {
                                 console.error({
                                     target: xdata,
+                                    host,
                                     name,
                                     value: func,
                                     desc: "bind value is not function"
@@ -2685,6 +2690,7 @@ try{
                         } else {
                             console.error({
                                 target: xdata,
+                                host,
                                 name,
                                 desc: "no binding function"
                             });
@@ -2949,41 +2955,6 @@ try{
                 expr: all_expr,
                 watchFun
             }));
-
-            // const expr = ele.getAttribute('x-cmd-if');
-
-            // // 定位文本元素
-            // let { marker, parent } = postionNode(ele);
-
-            // // 生成的目标元素
-            // let targetEle = null;
-
-            // const bindings = exprToSet({
-            //     xdata, host, expr,
-            //     callback: ({ val }) => {
-            //         if (val && !targetEle) {
-            //             // 添加元素
-            //             targetEle = $(ele.content.children[0].outerHTML).ele;
-
-            //             parent.insertBefore(targetEle, marker);
-            //             // parent.replaceChild(targetEle, marker);
-
-            //             // 重新渲染
-            //             renderTemp({ host, xdata, content: targetEle, temps });
-            //         } else if (!val && targetEle) {
-            //             // 去除数据绑定
-            //             removeElementBind(targetEle);
-
-            //             // 删除元素
-            //             targetEle.parentNode.removeChild(targetEle);
-            //             // parent.replaceChild(marker, targetEle);
-
-            //             targetEle = null;
-            //         }
-            //     }
-            // });
-
-            // addBindingData(marker, bindings);
         });
 
         // await元素渲染
@@ -4677,8 +4648,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000003,
-        version: "3.0.3",
+        v: 3000004,
+        version: "3.0.4",
         // 配置基础信息
         get config() {
             return drill.config;
