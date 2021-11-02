@@ -61,10 +61,12 @@ register({
             if (target) {
                 return target.parent;
             }
-            throw {
+            console.warn({
                 desc: `cannot find the app`,
                 target: this
-            };
+            });
+            return null;
+
         },
         get query() {
             const searchParams = new URLSearchParams(this.src.replace(/.+(\?.+)/, "$1"));
@@ -81,6 +83,13 @@ register({
         navigateTo(src) {
             let cPage = getCurrentPage(this);
 
+            if (!cPage) {
+                throw {
+                    desc: "cannot use navigateTo without in app",
+                    target: this
+                };
+            }
+
             // 查找到当前页的id
             const { router } = this.app;
             let id = router.findIndex(e => e._page == cPage);
@@ -91,6 +100,13 @@ register({
         replaceTo(src) {
             let cPage = getCurrentPage(this);
 
+            if (!cPage) {
+                throw {
+                    desc: "cannot use replaceTo without in app",
+                    target: this
+                };
+            }
+
             // 查找到当前页的id
             const { router } = this.app;
             let id = router.findIndex(e => e._page == cPage);
@@ -99,7 +115,8 @@ register({
         },
         // 返回页面
         back() {
-            this.app.back();
+            let { app } = this;
+            app && app.back();
         }
     },
     watch: {

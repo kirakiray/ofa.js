@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.5
+ * ofa v3.0.6
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2021 YAO
@@ -1410,7 +1410,7 @@
             let backupData;
 
             let watchFun = () => {
-                const eles = this.formEles;
+                const eles = this.eles();
                 const obj = getFromEleData(eles, this);
 
                 const objKeys = Object.keys(obj);
@@ -1453,7 +1453,7 @@
 
                     if (value !== oldVal || (typeof value == "object" && typeof oldVal == "object" && JSON.stringify(value) !== JSON.stringify(oldVal))) {
                         // 相应的元素
-                        let targetEles = this.getTarget(k);
+                        let targetEles = this.eles(k);
 
                         targetEles.forEach(ele => {
                             switch (ele.type) {
@@ -1485,18 +1485,15 @@
             });
         }
 
-        get formEles() {
-            return this._target.all(this._selector)
-        }
+        eles(propName) {
+            let eles = this._target.all(this._selector)
 
-        // 获取对应属性的元素
-        getTarget(propName) {
-            return this.formEles.filter(e => e.name === propName);
-        }
+            if (propName) {
+                return eles.filter(e => e.name === propName);
+            }
 
-        // 用于验证的方法
-        // verify() {
-        // }
+            return eles;
+        }
     }
 
     // 从元素上获取表单数据
@@ -4199,10 +4196,12 @@ try{
                 if (target) {
                     return target.parent;
                 }
-                throw {
+                console.warn({
                     desc: `cannot find the app`,
                     target: this
-                };
+                });
+                return null;
+
             },
             get query() {
                 const searchParams = new URLSearchParams(this.src.replace(/.+(\?.+)/, "$1"));
@@ -4219,6 +4218,13 @@ try{
             navigateTo(src) {
                 let cPage = getCurrentPage(this);
 
+                if (!cPage) {
+                    throw {
+                        desc: "cannot use navigateTo without in app",
+                        target: this
+                    };
+                }
+
                 // 查找到当前页的id
                 const {
                     router
@@ -4231,6 +4237,13 @@ try{
             replaceTo(src) {
                 let cPage = getCurrentPage(this);
 
+                if (!cPage) {
+                    throw {
+                        desc: "cannot use replaceTo without in app",
+                        target: this
+                    };
+                }
+
                 // 查找到当前页的id
                 const {
                     router
@@ -4241,7 +4254,10 @@ try{
             },
             // 返回页面
             back() {
-                this.app.back();
+                let {
+                    app
+                } = this;
+                app && app.back();
             }
         },
         watch: {
@@ -4657,8 +4673,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000005,
-        version: "3.0.5",
+        v: 3000006,
+        version: "3.0.6",
         // 配置基础信息
         get config() {
             return drill.config;
