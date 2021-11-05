@@ -23,8 +23,8 @@ define({
     },
     // 初始化完成
     ready() {
-        load("../../lib/router/address.js").then(init => {
-            init();
+        load("../../lib/router/auto.js").then(init => {
+            init(this);
         });
 
         // 可通过 location.hash 获取分享数据，并添加到路由

@@ -203,6 +203,7 @@ register({
             const event = new Event("back", {
                 cancelable: true
             });
+            event.delta = 1;
             this.triggerHandler(event);
 
             if (event.returnValue) {
