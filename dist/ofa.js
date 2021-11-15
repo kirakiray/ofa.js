@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.6
+ * ofa v3.0.7
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2021 YAO
@@ -2775,6 +2775,7 @@ try{
                     callback: ({
                         val
                     }) => {
+                        propName = attrToProp(propName);
                         xEle[propName] = val;
                     }
                 });
@@ -4671,11 +4672,21 @@ try{
         });
     }
 
+    $.fn.extend({
+        get page() {
+            let host = this;
+            while (host && !host.is('o-page')) {
+                host = host.host;
+            }
+            return host;
+        }
+    });
+
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000006,
-        version: "3.0.6",
+        v: 3000007,
+        version: "3.0.7",
         // 配置基础信息
         get config() {
             return drill.config;

@@ -7,6 +7,16 @@
     //<!--app-->
     //<!--message-->
 
+    $.fn.extend({
+        get page() {
+            let host = this;
+            while (host && !host.is('o-page')) {
+                host = host.host;
+            }
+            return host;
+        }
+    });
+
     let init_ofa = glo.ofa;
 
     const ofa = {
