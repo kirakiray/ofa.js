@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.7
+ * ofa v3.0.8
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2021 YAO
@@ -2776,7 +2776,35 @@ try{
                         val
                     }) => {
                         propName = attrToProp(propName);
-                        xEle[propName] = val;
+                        // if (!(propName in xEle)) {
+                        //     throw {
+                        //         target: ele,
+                        //         host: host.ele,
+                        //         desc: `this element doesn't have the property ${propName} (:${propName}), did you want to use attr:${propName}?`,
+                        //     };
+                        // } else {
+                        //     try {
+                        //         xEle[propName] = val;
+                        //     } catch (err) {
+                        //         throw {
+                        //             target: ele,
+                        //             host: host.ele,
+                        //             desc: `Failed to set property ${propName} (:${propName})`,
+                        //             error: err
+                        //         };
+                        //     }
+                        // }
+
+                        try {
+                            xEle[propName] = val;
+                        } catch (error) {
+                            throw {
+                                target: ele,
+                                host: host.ele,
+                                desc: `failed to set property ${propName} (:${propName} or prop:${propName}), did you want to use attr:${propName}?`,
+                                error
+                            };
+                        }
                     }
                 });
 
@@ -4685,8 +4713,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000007,
-        version: "3.0.7",
+        v: 3000008,
+        version: "3.0.8",
         // 配置基础信息
         get config() {
             return drill.config;
