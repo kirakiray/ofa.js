@@ -5,7 +5,7 @@ drill.ext(({ addProcess }) => {
         if (isFunction(respone)) {
             result = await respone({
                 load: relativeLoad,
-                FILE: record.src
+                FILE: record.src,
             });
         }
 
@@ -19,7 +19,7 @@ drill.ext(({ addProcess }) => {
 
         record.done(async (pkg) => {
             return { defaults, cansetKeys, temps: d.temps };
-        })
+        });
     });
 });
 
@@ -37,7 +37,7 @@ const getCurrentPage = (host) => {
             return host;
         }
     }
-}
+};
 
 register({
     tag: "o-page",
@@ -49,7 +49,7 @@ register({
         // loading 加载中
         // loaded 加载成功
         // error 加载资源失败
-        [PAGESTATUS]: "empty"
+        [PAGESTATUS]: "empty",
     },
     proto: {
         get status() {
@@ -63,13 +63,14 @@ register({
             }
             console.warn({
                 desc: `cannot find the app`,
-                target: this
+                target: this,
             });
             return null;
-
         },
         get query() {
-            const searchParams = new URLSearchParams(this.src.replace(/.+(\?.+)/, "$1"));
+            const searchParams = new URLSearchParams(
+                this.src.replace(/.+(\?.+)/, "$1")
+            );
 
             let obj = {};
 
@@ -86,13 +87,13 @@ register({
             if (!cPage) {
                 throw {
                     desc: "cannot use navigateTo without in app",
-                    target: this
+                    target: this,
                 };
             }
 
             // 查找到当前页的id
             const { router } = this.app;
-            let id = router.findIndex(e => e._page == cPage);
+            let id = router.findIndex((e) => e._page == cPage);
 
             router.splice(id + 1, router.length, src);
         },
@@ -103,13 +104,13 @@ register({
             if (!cPage) {
                 throw {
                     desc: "cannot use replaceTo without in app",
-                    target: this
+                    target: this,
                 };
             }
 
             // 查找到当前页的id
             const { router } = this.app;
-            let id = router.findIndex(e => e._page == cPage);
+            let id = router.findIndex((e) => e._page == cPage);
 
             router.splice(id, router.length, src);
         },
@@ -117,7 +118,7 @@ register({
         back() {
             let { app } = this;
             app && app.back();
-        }
+        },
     },
     watch: {
         async src(src) {
@@ -127,7 +128,7 @@ register({
             if (this[PAGESTATUS] !== "empty") {
                 throw {
                     desc: "src can only be set once",
-                    target: this
+                    target: this,
                 };
             }
 
@@ -147,7 +148,10 @@ register({
                 this._realsrc = await load(src + " -link");
 
                 // 重新修正可修改字段
-                const n_keys = new Set([...Array.from(this[CANSETKEYS]), ...data.cansetKeys]);
+                const n_keys = new Set([
+                    ...Array.from(this[CANSETKEYS]),
+                    ...data.cansetKeys,
+                ]);
                 n_keys.delete("src");
                 this[CANSETKEYS] = n_keys;
 
@@ -164,8 +168,8 @@ register({
                         attrs: {},
                     }),
                     temps: data.temps,
-                    _this: this.ele
-                }).then(e => {
+                    _this: this.ele,
+                }).then((e) => {
                     this.ele.x_render = 2;
                     this.attr("x-render", 2);
                 });
@@ -182,21 +186,27 @@ register({
             emitUpdate(this, {
                 xid: this.xid,
                 name: "setData",
-                args: ["status", this[PAGESTATUS]]
+                args: ["status", this[PAGESTATUS]],
             });
 
-            defaults.attached && this.__attached_pms.then(() => defaults.attached.call(this))
-            defaults.detached && this.__detached_pms.then(() => defaults.detached.call(this))
-        }
+            defaults.attached &&
+                this.__attached_pms.then(() => defaults.attached.call(this));
+            defaults.detached &&
+                this.__detached_pms.then(() => defaults.detached.call(this));
+        },
     },
     created() {
-        this.__attached_pms = new Promise(res => this.__attached_resolve = res);
-        this.__detached_pms = new Promise(res => this.__detached_resolve = res);
+        this.__attached_pms = new Promise(
+            (res) => (this.__attached_resolve = res)
+        );
+        this.__detached_pms = new Promise(
+            (res) => (this.__detached_resolve = res)
+        );
     },
     attached() {
-        this.__attached_resolve()
+        this.__attached_resolve();
     },
     detached() {
         this.__detached_resolve();
-    }
+    },
 });

@@ -10,11 +10,11 @@
     $.fn.extend({
         get page() {
             let host = this;
-            while (host && !host.is('o-page')) {
+            while (host && !host.is("o-page")) {
                 host = host.host;
             }
             return host;
-        }
+        },
     });
 
     let init_ofa = glo.ofa;
@@ -34,11 +34,11 @@
             // 加载失败的临时模板
             loadError(e) {
                 return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">error expr:${e.expr} <br>error src:${e.src}</div></div>`;
-            }
+            },
         },
         get apps() {
             return apps.slice();
-        }
+        },
     };
 
     defineProperties(glo, {
@@ -48,16 +48,16 @@
             },
             get() {
                 return ofa;
-            }
-        }
+            },
+        },
     });
 
     init_ofa && init_ofa(ofa);
 
     drill.config({
         paths: {
-            "@lib/": "https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/lib/"
-        }
+            "@lib/": "https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/lib/",
+        },
     });
 
     glo.$ = $;

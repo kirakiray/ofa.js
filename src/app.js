@@ -8,13 +8,12 @@ let waitCount = 2;
 
 register({
     tag: "o-app",
-    temp:
-        `<style>:host{display:block}::slotted(o-page){position:absolute;left:0;top:0;width:100%;height:100%}::slotted(o-page[page-area]){transform:translate(0,0);transition:all ease-in-out .25s;z-index:2}::slotted(o-page[page-area=back]){transform:translate(-30%,0);opacity:0;z-index:1}::slotted(o-page[page-area=next]){transform:translate(30%,0);opacity:0;z-index:1}.container{display:flex;flex-direction:column;width:100%;height:100%}.main{position:relative;flex:1}.article{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}</style><style id="initStyle">::slotted(o-page[page-area]){transition:none}</style><div class="container"><div><slot name="header"></slot></div><div class="main"><div class="article" part="body"><slot></slot></div></div></div>`,
+    temp: `<style>:host{display:block}::slotted(o-page){position:absolute;left:0;top:0;width:100%;height:100%}::slotted(o-page[page-area]){transform:translate(0,0);transition:all ease-in-out .25s;z-index:2}::slotted(o-page[page-area=back]){transform:translate(-30%,0);opacity:0;z-index:1}::slotted(o-page[page-area=next]){transform:translate(30%,0);opacity:0;z-index:1}.container{display:flex;flex-direction:column;width:100%;height:100%}.main{position:relative;flex:1}.article{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}</style><style id="initStyle">::slotted(o-page[page-area]){transition:none}</style><div class="container"><div><slot name="header"></slot></div><div class="main"><div class="article" part="body"><slot></slot></div></div></div>`,
     attrs: {
         // 首页地址
         home: "",
         // 引用资源地址
-        src: ""
+        src: "",
     },
     data: {
         // 路由
@@ -26,7 +25,7 @@ register({
         // 元素的尺寸信息
         rect: {
             width: "",
-            height: ""
+            height: "",
         },
         // 当前app是否隐藏
         visibility: document.hidden ? "hide" : "show",
@@ -55,14 +54,14 @@ register({
             if (this.home && !this.router.length) {
                 // 当存在home，又没有其他页面在路由时，添加home
                 this.router.push({
-                    path: this.home
+                    path: this.home,
                 });
             }
         },
         home(src) {
             if (!this.src && src && !this.router.length) {
                 this.router.push({
-                    path: src
+                    path: src,
                 });
             }
         },
@@ -78,7 +77,7 @@ register({
             }
 
             // 等待删除的页面
-            const needRemove = backRouter.filter(e => !router.includes(e));
+            const needRemove = backRouter.filter((e) => !router.includes(e));
 
             // 等待新增的页面
             const needAdd = [];
@@ -89,7 +88,7 @@ register({
                 // 修正数据
                 if (typeof e == "string") {
                     e = createXData({
-                        path: e
+                        path: e,
                     });
 
                     e.owner.add(router[XDATASELF]);
@@ -98,21 +97,23 @@ register({
                 // 没有新建成功的
                 if (!e._page) {
                     // 增加页面元素
-                    let page = e._page = $({
+                    let page = (e._page = $({
                         tag: "o-page",
                         src: e.path,
-                    });
+                    }));
 
                     // 添加loading
                     if (glo.ofa && ofa.onState.loading) {
-                        page.push(ofa.onState.loading({
-                            src: e.path
-                        }));
+                        page.push(
+                            ofa.onState.loading({
+                                src: e.path,
+                            })
+                        );
                     }
 
                     let w_resolve;
                     // 添加等待器
-                    page._waiting = new Promise(res => w_resolve = res);
+                    page._waiting = new Promise((res) => (w_resolve = res));
                     page.__waiter_resolve = w_resolve;
                 }
 
@@ -121,7 +122,7 @@ register({
                     extend(e._page, {
                         get state() {
                             return state;
-                        }
+                        },
                     });
                 }
 
@@ -162,12 +163,12 @@ register({
             });
 
             // 添加页面
-            needAdd.forEach(e => {
+            needAdd.forEach((e) => {
                 this.push(e._page);
             });
 
             // 删除页面
-            needRemove.forEach(e => {
+            needRemove.forEach((e) => {
                 e._page.attr("page-area", "next");
                 if (parseFloat(e._page.css.transitionDuration) > 0) {
                     // 保底删除
@@ -191,7 +192,7 @@ register({
 
             // 触发当前页的激活事件
             router.slice(-1)[0]._page.trigger("activepage");
-        }
+        },
     },
     proto: {
         get currentPage() {
@@ -201,7 +202,7 @@ register({
         back() {
             // 是否接受返回行为
             const event = new Event("back", {
-                cancelable: true
+                cancelable: true,
             });
             event.delta = 1;
             this.triggerHandler(event);
@@ -228,10 +229,13 @@ register({
                 return false;
             }
 
-            target.postMessage({
-                type: "web-app-postback-data",
-                data
-            }, "*");
+            target.postMessage(
+                {
+                    type: "web-app-postback-data",
+                    data,
+                },
+                "*"
+            );
 
             return true;
         },
@@ -245,7 +249,7 @@ register({
     },
     ready() {
         // 检查页面状况
-        window.addEventListener("visibilitychange", e => {
+        window.addEventListener("visibilitychange", (e) => {
             this.visibility = document.hidden ? "hide" : "show";
         });
 
@@ -262,5 +266,5 @@ register({
         if (id > -1) {
             apps.splice(id, 1);
         }
-    }
+    },
 });

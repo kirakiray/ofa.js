@@ -6,7 +6,7 @@ drill.ext(({ addProcess }) => {
         if (isFunction(respone)) {
             result = await respone({
                 load: relativeLoad,
-                FILE: record.src
+                FILE: record.src,
             });
         }
 
@@ -15,7 +15,7 @@ drill.ext(({ addProcess }) => {
         // 注册组件
         register(defaults);
 
-        record.done(async (pkg) => { })
+        record.done(async (pkg) => {});
     });
 });
 
@@ -34,7 +34,7 @@ const getDefaults = async (record, relativeLoad, result) => {
         attrs: {},
         // // 组件原型链上的数据
         proto: {},
-        watch: {}
+        watch: {},
         // // 组件被创建时触发的函数（数据初始化完成）
         // created() { },
         // // 组件数据初始化完成后触发的函数（初次渲染完毕）
@@ -49,7 +49,9 @@ const getDefaults = async (record, relativeLoad, result) => {
 
     Object.assign(defaults, result);
 
-    let defineName = (new URL(record.src)).pathname.replace(/.*\/(.+)/, "$1").replace(/\.js$/, "");
+    let defineName = new URL(record.src).pathname
+        .replace(/.*\/(.+)/, "$1")
+        .replace(/\.js$/, "");
 
     // 组件名修正
     if (!defaults.tag) {
@@ -65,7 +67,7 @@ const getDefaults = async (record, relativeLoad, result) => {
     }
 
     return defaults;
-}
+};
 
 // 修正temp内的资源地址
 const fixRelativeSource = async (temp, relativeLoad) => {
@@ -81,51 +83,78 @@ const fixRelativeSource = async (temp, relativeLoad) => {
     // 所有进程
     const pms = [];
 
-    hrefEles && Array.from(hrefEles).forEach(ele => {
-        pms.push((async () => {
-            let relative_href = await relativeLoad(`${ele.getAttribute("href")} -link`);
-            ele.setAttribute("href", relative_href)
-        })());
-    });
+    hrefEles &&
+        Array.from(hrefEles).forEach((ele) => {
+            pms.push(
+                (async () => {
+                    let relative_href = await relativeLoad(
+                        `${ele.getAttribute("href")} -link`
+                    );
+                    ele.setAttribute("href", relative_href);
+                })()
+            );
+        });
 
-    srcEles && Array.from(srcEles).forEach(ele => {
-        pms.push((async () => {
-            let relative_src = await relativeLoad(`${ele.getAttribute("src")} -link`);
-            ele.setAttribute("src", relative_src)
-        })());
-    });
+    srcEles &&
+        Array.from(srcEles).forEach((ele) => {
+            pms.push(
+                (async () => {
+                    let relative_src = await relativeLoad(
+                        `${ele.getAttribute("src")} -link`
+                    );
+                    ele.setAttribute("src", relative_src);
+                })()
+            );
+        });
 
     // 修正style资源地址
-    hasStyleEle && Array.from(hasStyleEle).forEach(ele => {
-        pms.push((async () => {
-            ele.setAttribute("style", await fixStyleUrl(ele.getAttribute("style"), relativeLoad));
-        })());
-    });
+    hasStyleEle &&
+        Array.from(hasStyleEle).forEach((ele) => {
+            pms.push(
+                (async () => {
+                    ele.setAttribute(
+                        "style",
+                        await fixStyleUrl(
+                            ele.getAttribute("style"),
+                            relativeLoad
+                        )
+                    );
+                })()
+            );
+        });
 
     let styles = tempEle.content.querySelectorAll("style");
-    styles && Array.from(styles).forEach(style => {
-        pms.push((async () => {
-            style.innerHTML = await fixStyleUrl(style.innerHTML, relativeLoad);
-        })());
-    });
+    styles &&
+        Array.from(styles).forEach((style) => {
+            pms.push(
+                (async () => {
+                    style.innerHTML = await fixStyleUrl(
+                        style.innerHTML,
+                        relativeLoad
+                    );
+                })()
+            );
+        });
 
     await Promise.all(pms);
 
     return tempEle.innerHTML;
-}
+};
 
 // 修正style字符串上的资源地址
 const fixStyleUrl = async (styleStr, relativeLoad) => {
     let m_arr = styleStr.match(/url\(.+?\)/g);
 
     if (m_arr) {
-        await Promise.all(m_arr.map(async url => {
-            let url_str = url.replace(/url\((.+?)\)/, "$1");
-            let n_url = await relativeLoad(`${url_str} -link`);
+        await Promise.all(
+            m_arr.map(async (url) => {
+                let url_str = url.replace(/url\((.+?)\)/, "$1");
+                let n_url = await relativeLoad(`${url_str} -link`);
 
-            styleStr = styleStr.replace(url, `url(${n_url})`);
-        }));
+                styleStr = styleStr.replace(url, `url(${n_url})`);
+            })
+        );
     }
 
     return styleStr;
-}
+};

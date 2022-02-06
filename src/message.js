@@ -2,21 +2,27 @@
 // 全局的app数据
 const globalAppData = {
     // 上级传递过来的message数据
-    message: null
+    message: null,
 };
 
 if (opener && !opener.closed) {
     if (document.readyState == "complete") {
-        opener.postMessage({
-            type: "web-app-postback-data",
-            command: "complete"
-        }, "*");
+        opener.postMessage(
+            {
+                type: "web-app-postback-data",
+                command: "complete",
+            },
+            "*"
+        );
     } else {
         let onloadFunc = () => {
-            opener.postMessage({
-                type: "web-app-postback-data",
-                command: "complete"
-            }, "*");
+            opener.postMessage(
+                {
+                    type: "web-app-postback-data",
+                    command: "complete",
+                },
+                "*"
+            );
             glo.removeEventListener("load", onloadFunc);
             onloadFunc = null;
         };
@@ -24,16 +30,19 @@ if (opener && !opener.closed) {
     }
 
     // 存在更高层的窗口，添加关闭事件通报
-    glo.addEventListener("beforeunload", e => {
-        opener.postMessage({
-            type: "web-app-postback-data",
-            command: "close"
-        }, "*");
+    glo.addEventListener("beforeunload", (e) => {
+        opener.postMessage(
+            {
+                type: "web-app-postback-data",
+                command: "close",
+            },
+            "*"
+        );
     });
 }
 
 if (opener || top !== window) {
-    glo.addEventListener("message", e => {
+    glo.addEventListener("message", (e) => {
         let { data } = e;
 
         if (!(data && data.type)) {
@@ -45,16 +54,18 @@ if (opener || top !== window) {
 
         if (type == "web-app-post-init-data") {
             globalAppData.initial = data;
-        } else if (type === 'web-app-post-data') {
+        } else if (type === "web-app-post-data") {
             globalAppData.message = data;
-            apps.forEach(e => e.triggerHandler("message", data));
+            apps.forEach((e) => e.triggerHandler("message", data));
         } else {
             return;
         }
 
-        apps.forEach(e => emitUpdate(e, {
-            xid: e.xid,
-            name: "message"
-        }));
+        apps.forEach((e) =>
+            emitUpdate(e, {
+                xid: e.xid,
+                name: "message",
+            })
+        );
     });
 }
