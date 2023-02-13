@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.9
+ * ofa v3.0.10
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2023 YAO
@@ -4681,8 +4681,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000009,
-        version: "3.0.9",
+        v: 3000010,
+        version: "3.0.10",
         // Configure the base information
         get config() {
             return drill.config;
