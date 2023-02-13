@@ -5,7 +5,7 @@ Page(async ({ load }) => {
             iHeight: "0",
             screenW: "0",
             screenH: "0",
-            ua: ""
+            ua: "",
         },
         proto: {
             updataInfo() {
@@ -17,22 +17,31 @@ Page(async ({ load }) => {
                 this.ua = navigator.userAgent;
 
                 // 外框大小
-                this.shadow.$("#outerScreen").style.height = screen.height / screen.width * this.shadow.$("#outerScreen").width + "px";
+                this.shadow.$("#outerScreen").style.height =
+                    (screen.height / screen.width) *
+                        this.shadow.$("#outerScreen").width +
+                    "px";
 
                 // 内框调整
-                this.shadow.$("#screenEle").style.width = innerWidth / screen.width * this.shadow.$("#outerScreen").width + "px";
-                this.shadow.$("#screenEle").style.height = innerHeight / screen.height * this.shadow.$("#outerScreen").height + "px";
-            }
+                this.shadow.$("#screenEle").style.width =
+                    (innerWidth / screen.width) *
+                        this.shadow.$("#outerScreen").width +
+                    "px";
+                this.shadow.$("#screenEle").style.height =
+                    (innerHeight / screen.height) *
+                        this.shadow.$("#outerScreen").height +
+                    "px";
+            },
         },
         attached() {
             this._app = this.app;
-            this._wid = this._app.watchKey({
-                rect: () => this.updataInfo()
-            });
+            // this._wid = this._app.watchKey({
+            //     rect: () => this.updataInfo()
+            // });
             this.updataInfo();
         },
         detached() {
-            this._app.unwatch(this._wid);
-        }
+            // this._app.unwatch(this._wid);
+        },
     };
-})
+});

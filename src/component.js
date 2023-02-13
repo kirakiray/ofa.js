@@ -1,160 +1,142 @@
-// 自定义组件
+// Customized Components
 drill.ext(({ addProcess }) => {
-    addProcess("Component", async ({ respone, record, relativeLoad }) => {
-        let result = respone;
+  addProcess("Component", async ({ respone, record, relativeLoad }) => {
+    let result = respone;
 
-        if (isFunction(respone)) {
-            result = await respone({
-                load: relativeLoad,
-                FILE: record.src,
-            });
-        }
+    if (isFunction(respone)) {
+      result = await respone({
+        load: relativeLoad,
+        FILE: record.src,
+      });
+    }
 
-        const defaults = await getDefaults(record, relativeLoad, result);
+    const defaults = await getDefaults(record, relativeLoad, result);
 
-        // 注册组件
-        register(defaults);
+    // Register Component
+    register(defaults);
 
-        record.done(async (pkg) => {});
-    });
+    record.done(async (pkg) => {});
+  });
 });
 
-// 获取defautls
 const getDefaults = async (record, relativeLoad, result) => {
-    // 默认数据
-    const defaults = {
-        // 静态模板地址
-        temp: "",
-        // 下面都是 xhear 自带的组件数据
-        // // 组件名
-        // tag: "",
-        // // 自带的数据
-        data: {},
-        // // 会绑定到 element attribute 的数据
-        attrs: {},
-        // // 组件原型链上的数据
-        proto: {},
-        watch: {},
-        // // 组件被创建时触发的函数（数据初始化完成）
-        // created() { },
-        // // 组件数据初始化完成后触发的函数（初次渲染完毕）
-        // ready() { },
-        // // 被添加到document触发的函数
-        // attached() { },
-        // // 被移出document触发的函数
-        // detached() { },
-        // // 容器元素发生改变
-        // slotchange() { }
-    };
+  const defaults = {
+    // Static template address
+    temp: "",
+    // The following are the component data that comes with X shear
+    // tag: "",
+    data: {},
+    attrs: {},
+    proto: {},
+    watch: {},
+    // created() { },
+    // ready() { },
+    // attached() { },
+    // detached() { },
+  };
 
-    Object.assign(defaults, result);
+  Object.assign(defaults, result);
 
-    let defineName = new URL(record.src).pathname
-        .replace(/.*\/(.+)/, "$1")
-        .replace(/\.js$/, "");
+  let defineName = new URL(record.src).pathname
+    .replace(/.*\/(.+)/, "$1")
+    .replace(/\.js$/, "");
 
-    // 组件名修正
-    if (!defaults.tag) {
-        defaults.tag = defineName;
-    }
+  // Component name correction
+  if (!defaults.tag) {
+    defaults.tag = defineName;
+  }
 
-    // 获取模板
-    if (defaults.temp === "") {
-        // 获取与模块相同名的temp
-        let temp = await relativeLoad(`./${defineName}.html`);
+  // Get Template
+  if (defaults.temp === "") {
+    // Get temp of the same name as the module
+    let temp = await relativeLoad(`./${defineName}.html`);
 
-        defaults.temp = await fixRelativeSource(temp, relativeLoad);
-    }
+    defaults.temp = await fixRelativeSource(temp, relativeLoad);
+  }
 
-    return defaults;
+  return defaults;
 };
 
-// 修正temp内的资源地址
+// Fix the resource address in temp
 const fixRelativeSource = async (temp, relativeLoad) => {
-    // 修正所有资源地址
-    let tempEle = document.createElement("template");
-    tempEle.innerHTML = temp;
+  // Fix all resource addresses to include content within the template
+  let tempEle = document.createElement("template");
+  tempEle.innerHTML = temp;
 
-    // 修正所有link
-    let hrefEles = tempEle.content.querySelectorAll("[href]");
-    let srcEles = tempEle.content.querySelectorAll("[src]");
-    let hasStyleEle = tempEle.content.querySelectorAll(`[style*="url("]`);
+  // Fix all links
+  let hrefEles = tempEle.content.querySelectorAll("[href]");
+  let srcEles = tempEle.content.querySelectorAll("[src]");
+  let hasStyleEle = tempEle.content.querySelectorAll(`[style*="url("]`);
 
-    // 所有进程
-    const pms = [];
+  // All processes
+  const pms = [];
 
-    hrefEles &&
-        Array.from(hrefEles).forEach((ele) => {
-            pms.push(
-                (async () => {
-                    let relative_href = await relativeLoad(
-                        `${ele.getAttribute("href")} -link`
-                    );
-                    ele.setAttribute("href", relative_href);
-                })()
-            );
-        });
+  hrefEles &&
+    Array.from(hrefEles).forEach((ele) => {
+      pms.push(
+        (async () => {
+          let relative_href = await relativeLoad(
+            `${ele.getAttribute("href")} -link`
+          );
+          ele.setAttribute("href", relative_href);
+        })()
+      );
+    });
 
-    srcEles &&
-        Array.from(srcEles).forEach((ele) => {
-            pms.push(
-                (async () => {
-                    let relative_src = await relativeLoad(
-                        `${ele.getAttribute("src")} -link`
-                    );
-                    ele.setAttribute("src", relative_src);
-                })()
-            );
-        });
+  srcEles &&
+    Array.from(srcEles).forEach((ele) => {
+      pms.push(
+        (async () => {
+          let relative_src = await relativeLoad(
+            `${ele.getAttribute("src")} -link`
+          );
+          ele.setAttribute("src", relative_src);
+        })()
+      );
+    });
 
-    // 修正style资源地址
-    hasStyleEle &&
-        Array.from(hasStyleEle).forEach((ele) => {
-            pms.push(
-                (async () => {
-                    ele.setAttribute(
-                        "style",
-                        await fixStyleUrl(
-                            ele.getAttribute("style"),
-                            relativeLoad
-                        )
-                    );
-                })()
-            );
-        });
+  // Fix style resource address
+  hasStyleEle &&
+    Array.from(hasStyleEle).forEach((ele) => {
+      pms.push(
+        (async () => {
+          ele.setAttribute(
+            "style",
+            await fixStyleUrl(ele.getAttribute("style"), relativeLoad)
+          );
+        })()
+      );
+    });
 
-    let styles = tempEle.content.querySelectorAll("style");
-    styles &&
-        Array.from(styles).forEach((style) => {
-            pms.push(
-                (async () => {
-                    style.innerHTML = await fixStyleUrl(
-                        style.innerHTML,
-                        relativeLoad
-                    );
-                })()
-            );
-        });
+  let styles = tempEle.content.querySelectorAll("style");
+  styles &&
+    Array.from(styles).forEach((style) => {
+      pms.push(
+        (async () => {
+          style.innerHTML = await fixStyleUrl(style.innerHTML, relativeLoad);
+        })()
+      );
+    });
 
-    await Promise.all(pms);
+  await Promise.all(pms);
 
-    return tempEle.innerHTML;
+  return tempEle.innerHTML;
 };
 
-// 修正style字符串上的资源地址
+// Fix the resource address on the style string
 const fixStyleUrl = async (styleStr, relativeLoad) => {
-    let m_arr = styleStr.match(/url\(.+?\)/g);
+  let m_arr = styleStr.match(/url\(.+?\)/g);
 
-    if (m_arr) {
-        await Promise.all(
-            m_arr.map(async (url) => {
-                let url_str = url.replace(/url\((.+?)\)/, "$1");
-                let n_url = await relativeLoad(`${url_str} -link`);
+  if (m_arr) {
+    await Promise.all(
+      m_arr.map(async (url) => {
+        let url_str = url.replace(/url\((.+?)\)/, "$1");
+        let n_url = await relativeLoad(`${url_str} -link`);
 
-                styleStr = styleStr.replace(url, `url(${n_url})`);
-            })
-        );
-    }
+        styleStr = styleStr.replace(url, `url(${n_url})`);
+      })
+    );
+  }
 
-    return styleStr;
+  return styleStr;
 };

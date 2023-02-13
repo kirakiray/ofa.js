@@ -2,7 +2,7 @@
  * ofa v3.0.9
  * https://github.com/kirakiray/ofa.js
  * 
- * (c) 2018-2022 YAO
+ * (c) 2018-2023 YAO
  * Released under the MIT License.
  */
 ((glo) => {
@@ -26,7 +26,6 @@
 
     const isDebug = document.currentScript.getAttribute("debug") !== null;
 
-    // 改良异步方法
     const nextTick = (() => {
         if (isDebug) {
             let nMap = new Map();
@@ -47,7 +46,6 @@
             };
         }
 
-        // 定位对象寄存器
         let nextTickMap = new Map();
 
         let pnext = (func) => Promise.resolve().then(() => func());
@@ -94,12 +92,14 @@
         };
     })();
 
-    // 在tick后运行收集的函数数据
+    // Collects the data returned over a period of time and runs it once as a parameter after a period of time.
     const collect = (func, time) => {
         let arr = [];
         let timer;
         const reFunc = (e) => {
-            arr.push(Object.assign({}, e));
+            arr.push({
+                ...e
+            });
             if (time) {
                 clearTimeout(timer);
                 timer = setTimeout(() => {
@@ -117,10 +117,9 @@
         return reFunc;
     };
 
-    // 扩展对象
+    // Enhanced methods for extending objects
     const extend = (_this, proto, descriptor = {}) => {
         Object.keys(proto).forEach((k) => {
-            // 获取描述
             let {
                 get,
                 set,
@@ -146,12 +145,6 @@
         });
     };
 
-    const startTime = Date.now();
-    // 获取高精度的当前时间
-    // const getTimeId = () => startTime + performance.now();
-    // const getTimeId = () => Date.now().toString(32);
-    // const getTimeId = () => performance.now().toString(32);
-
 
     const XDATASELF = Symbol("self");
     const PROXYSELF = Symbol("proxy");
@@ -162,7 +155,7 @@
 
     const emitUpdate = (target, opts, path, unupdate) => {
         if (path && path.includes(target[PROXYSELF])) {
-            // 防止循环引用
+            console.warn("Circular references appear");
             return;
         }
         let new_path;
@@ -172,14 +165,14 @@
             new_path = opts.path = [target[PROXYSELF], ...path];
         }
 
-        // 触发callback
+        // trigger watch callback
         target[WATCHS].forEach((f) => f(opts));
 
         if (unupdate || target._unupdate) {
             return;
         }
 
-        // 向上冒泡
+        // Bubbling change events to the parent object
         target.owner &&
             target.owner.forEach((parent) =>
                 emitUpdate(parent, opts, new_path.slice())
@@ -205,10 +198,10 @@
                 proxy_self = new Proxy(this, xdataHandler);
             }
 
-            // 当前对象所处的状态
+            // status of the object
             let xtatus = status;
 
-            // 每个对象的专属id
+            // Attributes that are available for each instance
             defineProperties(this, {
                 [XDATASELF]: {
                     value: this,
@@ -216,11 +209,10 @@
                 [PROXYSELF]: {
                     value: proxy_self,
                 },
-                // 每个对象必有的id
+                // Each object must have an id
                 xid: {
                     value: "x_" + getRandomId(),
                 },
-                // 当前所处的状态
                 _xtatus: {
                     get() {
                         return xtatus;
@@ -252,20 +244,18 @@
                         xtatus = val;
                     },
                 },
-                // 所有父层对象存储的位置
-                // 拥有者对象
+                // Save all parent objects
                 owner: {
                     configurable: true,
                     writable: true,
                     value: new Set(),
                 },
-                // 数组对象
                 length: {
                     configurable: true,
                     writable: true,
                     value: 0,
                 },
-                // 监听函数
+                // Save the object of the listener function
                 [WATCHS]: {
                     value: new Map(),
                 },
@@ -294,13 +284,11 @@
                     }
                 }
                 if (get || set) {
-                    // 通过get set 函数设置
                     defineProperties(this, {
                         [key]: descObj,
                     });
                 } else {
-                    // 直接设置函数
-                    // this.setData(key, value);
+                    // Set the function directly
                     proxy_self[key] = value;
                 }
             });
@@ -331,7 +319,7 @@
             if (valueType == "array" || valueType == "object") {
                 value = createXData(value, "sub");
 
-                // 设置父层的key
+                // Adding a parent object to an object
                 value.owner.add(this);
             }
 
@@ -339,7 +327,7 @@
             const descObj = Object.getOwnPropertyDescriptor(this, key);
             const p_self = this[PROXYSELF];
             try {
-                // 为了只有 set 没有 get 的情况
+                // The case of only set but not get
                 oldVal = p_self[key];
             } catch (err) {}
 
@@ -355,9 +343,8 @@
                 reval = Reflect.set(this, key, value);
             }
 
-            // if (this[CANUPDATE] || this._update === false) {
             if (this[CANUPDATE]) {
-                // 改动冒泡
+                // Need bubble processing after changing data
                 emitUpdate(this, {
                     xid: this.xid,
                     name: "setData",
@@ -370,8 +357,8 @@
             return reval;
         }
 
-        // 主动触发更新事件
-        // 方便 get 类型数据触发 watch
+        // Proactively trigger update events
+        // Convenient get type data trigger watch
         update(opts = {}) {
             emitUpdate(
                 this,
@@ -383,7 +370,7 @@
         }
 
         delete(key) {
-            // 确认key是隐藏属性
+            // The _ prefix or symbol can be deleted directly
             if (/^_/.test(key) || typeof key === "symbol") {
                 return Reflect.deleteProperty(this, key);
             }
@@ -392,17 +379,16 @@
                 return false;
             }
 
-            // 无proxy自身
+            // Adjustment of internal data, not using proxy objects
             const _this = this[XDATASELF];
 
             let val = _this[key];
-            // 清除owner上的父层
-            // val.owner.delete(_this);
+            // Clear the parent on the owner
             clearXDataOwner(val, _this);
 
             let reval = Reflect.deleteProperty(_this, key);
 
-            // 改动冒泡
+            // Bubbling behavior after data changes
             emitUpdate(this, {
                 xid: this.xid,
                 name: "delete",
@@ -413,14 +399,14 @@
         }
     }
 
-    // 中转XBody的请求
+    // Proxy Handler for relaying XData
     const xdataHandler = {
         set(target, key, value, receiver) {
             if (typeof key === "symbol") {
                 return Reflect.set(target, key, value, receiver);
             }
 
-            // 确认key是隐藏属性
+            // Set properties with _ prefix directly
             if (/^_/.test(key)) {
                 if (!target.hasOwnProperty(key)) {
                     defineProperties(target, {
@@ -452,7 +438,7 @@
         },
     };
 
-    // 清除xdata的owner数据
+    // Clear xdata's owner data
     const clearXDataOwner = (xdata, parent) => {
         if (!isxdata(xdata)) {
             return;
@@ -471,10 +457,10 @@
         }
     };
 
-    // 修正xdata的owner数据
+    // Fix xdata's owner data
     const fixXDataOwner = (xdata) => {
         if (xdata._xtatus === "revoke") {
-            // 重新修复状态
+            // Restoration status
             Object.values(xdata).forEach((e) => {
                 if (isxdata(e)) {
                     fixXDataOwner(e);
@@ -519,11 +505,11 @@
 
             return arr;
         },
-        // watch异步收集版本
+        // watch asynchronous collection version
         watchTick(func, time) {
             return this.watch(collect(func, time));
         },
-        // 监听直到表达式成功
+        // Listening until the expression succeeds
         watchUntil(expr) {
             let isFunc = isFunction(expr);
             if (!isFunc && /[^=><]=[^=]/.test(expr)) {
@@ -531,7 +517,7 @@
             }
 
             return new Promise((resolve) => {
-                // 忽略错误
+                // Ignore errors
                 let exprFun = isFunc ?
                     expr.bind(this) :
                     new Function(`
@@ -552,7 +538,7 @@
                 f();
             });
         },
-        // 监听相应key
+        // Listen to the corresponding key
         watchKey(obj, immediately) {
             if (immediately) {
                 Object.keys(obj).forEach((key) => obj[key].call(this, this[key]));
@@ -562,13 +548,10 @@
             Object.keys(obj).forEach((key) => {
                 oldVal[key] = this[key];
             });
-            // Object.entries(this).forEach(([k, v]) => {
-            //     oldVal[k] = v;
-            // });
+
             return this.watch(
                 collect((arr) => {
                     Object.keys(obj).forEach((key) => {
-                        // 当前值
                         let val = this[key];
                         let old = oldVal[key];
 
@@ -577,11 +560,10 @@
                                 old
                             });
                         } else if (isxdata(val)) {
-                            // 判断改动arr内是否有当前key的改动
+                            // Whether the current array has changes to this key
                             let hasChange = arr.some((e) => {
                                 let p = e.path[1];
 
-                                // if (p == oldVal[key]) {
                                 return p == val;
                             });
 
@@ -597,7 +579,6 @@
                 })
             );
         },
-        // 转换为json数据
         toJSON() {
             let obj = {};
 
@@ -637,14 +618,13 @@
 
             return obj;
         },
-        // 转为字符串
         toString() {
             return JSON.stringify(this.toJSON());
         },
     });
 
 
-    // 不影响数据原结构的方法，重新做钩子
+    // Submerged hooks that do not affect the original structure of the data
     [
         "concat",
         "every",
@@ -670,14 +650,13 @@
         }
     });
 
-    // 原生splice方法
     const arraySplice = Array.prototype.splice;
 
     extend(XData.prototype, {
         splice(index, howmany, ...items) {
             let self = this[XDATASELF];
 
-            // items修正
+            // Fix the properties of new objects
             items = items.map((e) => {
                 let valueType = getType(e);
                 if (valueType == "array" || valueType == "object") {
@@ -688,16 +667,14 @@
                 return e;
             });
 
-            let b_howmany =
+            const b_howmany =
                 getType(howmany) == "number" ? howmany : this.length - index;
 
-            // 套入原生方法
-            let rmArrs = arraySplice.call(self, index, b_howmany, ...items);
+            // Follow the native split method
+            const rmArrs = arraySplice.call(self, index, b_howmany, ...items);
 
-            // rmArrs.forEach(e => isxdata(e) && e.owner.delete(self));
             rmArrs.forEach((e) => clearXDataOwner(e, self));
 
-            // 改动冒泡
             emitUpdate(this, {
                 xid: this.xid,
                 name: "splice",
@@ -723,7 +700,6 @@
     });
 
     ["sort", "reverse"].forEach((methodName) => {
-        // 原来的数组方法
         const arrayFnFunc = Array.prototype[methodName];
 
         if (arrayFnFunc) {
@@ -743,8 +719,6 @@
             });
         }
     });
-    // 公用方法文件
-    // 创建xEle元素
     const createXEle = (ele) => {
         if (!ele) {
             return null;
@@ -752,7 +726,7 @@
         return ele.__xEle__ ? ele.__xEle__ : (ele.__xEle__ = new XEle(ele));
     };
 
-    // 判断元素是否符合条件
+    // Determine if an element is eligible
     const meetTemp = document.createElement("template");
     const meetsEle = (ele, expr) => {
         if (!ele.tagName) {
@@ -765,14 +739,14 @@
             return false;
         }
         meetTemp.innerHTML = `<${ele.tagName.toLowerCase()} ${Array.from(
-        ele.attributes
-    )
-        .map((e) => e.name + '="' + e.value + '"')
-        .join(" ")} />`;
+    ele.attributes
+  )
+    .map((e) => e.name + '="' + e.value + '"')
+    .join(" ")} />`;
         return !!meetTemp.content.querySelector(expr);
     };
 
-    // 转换元素
+    // Converting strings to elements
     const parseStringToDom = (str) => {
         const pstTemp = document.createElement("div");
         pstTemp.innerHTML = str;
@@ -783,34 +757,31 @@
         });
     };
 
-    // 将对象转为element
+    // Converting objects to elements
     const parseDataToDom = (objData) => {
         if (!objData.tag) {
             console.error("this data need tag =>", objData);
             throw "";
         }
 
-        // 生成element
         let ele = document.createElement(objData.tag);
 
-        // 添加数据
+        // add data
         objData.class && ele.setAttribute("class", objData.class);
         objData.slot && ele.setAttribute("slot", objData.slot);
-        // objData.text && (ele.textContent = objData.text);
 
         const xele = createXEle(ele);
 
-        // 数据合并
+        // merge data
         xele[CANSETKEYS].forEach((k) => {
             if (objData[k]) {
                 xele[k] = objData[k];
             }
         });
 
-        // 填充子元素
+        // append child elements
         let akey = 0;
         while (akey in objData) {
-            // 转换数据
             let childEle = parseDataToDom(objData[akey]);
             ele.appendChild(childEle);
             akey++;
@@ -819,13 +790,11 @@
         return ele;
     };
 
-    // 将 element attribute 横杠转换为大小写模式
+    //  Converts element attribute horizontal bar to case mode
     const attrToProp = (key) => {
-        // 判断是否有横线
+        // Determine if there is a horizontal line
         if (/\-/.test(key)) {
-            key = key.replace(/\-[\D]/g, (letter) =>
-                letter.substr(1).toUpperCase()
-            );
+            key = key.replace(/\-[\D]/g, (letter) => letter.substr(1).toUpperCase());
         }
         return key;
     };
@@ -836,7 +805,7 @@
         return key;
     };
 
-    // 对象获取值，优化对象多点key获取值
+    // object to get the value, optimize the string with multiple '.'
     const getXData = (xdata, key) => {
         if (typeof key === "string" && key.includes(".")) {
             let tar = xdata;
@@ -849,7 +818,7 @@
         }
     };
 
-    // 对象设置值，优化对象多点key设置值
+    // object to set the value, optimize the string with multiple '.'
     const setXData = (xdata, key, value) => {
         if (typeof key === "string" && key.includes(".")) {
             let tar = xdata,
@@ -870,7 +839,6 @@
         }
     };
 
-    // 最基础对象功能
     const XEleHandler = {
         get(target, key, receiver) {
             if (typeof key === "string" && !/\D/.test(key)) {
@@ -900,7 +868,7 @@
     const EVENTS = Symbol("events");
     const xSetData = XData.prototype.setData;
 
-    // 可直接设置的Key
+    // It can use the keys of set
     const xEleDefaultSetKeys = ["text", "html", "show", "style"];
     const CANSETKEYS = Symbol("cansetkeys");
 
@@ -914,7 +882,7 @@
             self.tag = ele.tagName ? ele.tagName.toLowerCase() : "";
 
             // self.owner = new WeakSet();
-            // XEle不允许拥有owner
+            // XEle is not allowed to have an owner
             // self.owner = null;
             // delete self.owner;
             defineProperties(self, {
@@ -935,20 +903,11 @@
                     writable: true,
                     value: "",
                 },
-                // 允许被设置的key值
-                // [CANSETKEYS]: {
-                //     value: new Set(xEleDefaultSetKeys)
-                // }
             });
 
             delete self.length;
 
-            // if (self.tag == "input" || self.tag == "textarea" || self.tag == "select" || (ele.contentEditable == "true")) { // contentEditable可以随时被修改
-            if (
-                self.tag == "input" ||
-                self.tag == "textarea" ||
-                self.tag == "select"
-            ) {
+            if (self.tag == "input" || self.tag == "textarea" || self.tag == "select") {
                 renderInput(self);
             }
         }
@@ -1042,11 +1001,11 @@
                 style
             } = this;
 
-            // 覆盖旧的样式
+            // Covering the old style
             let hasKeys = Array.from(style);
             let nextKeys = Object.keys(d);
 
-            // 清空不用设置的key
+            // Clear the unused key
             hasKeys.forEach((k) => {
                 if (!nextKeys.includes(k)) {
                     style[k] = "";
@@ -1181,14 +1140,14 @@
         }
 
         siblings(expr) {
-            // 获取相邻元素
+            // Get adjacent elements
             let parChilds = Array.from(this.parent.ele.children);
 
-            // 删除自身
+            // delete self
             let tarId = parChilds.indexOf(this.ele);
             parChilds.splice(tarId, 1);
 
-            // 删除不符合规定的
+            // Delete the non-conforming
             if (expr) {
                 parChilds = parChilds.filter((e) => {
                     if (meetsEle(e, expr)) {
@@ -1248,7 +1207,7 @@
         clone() {
             let cloneEle = createXEle(this.ele.cloneNode(true));
 
-            // 数据重新设置
+            // reset data
             Object.keys(this).forEach((key) => {
                 if (key !== "tag") {
                     cloneEle[key] = this[key];
@@ -1263,16 +1222,14 @@
                 parent
             } = this;
             parent.splice(parent.indexOf(this), 1);
-            // const { ele } = this;
-            // ele.parentNode.removeChild(ele);
         }
 
-        // 插件方法extend
+        // Plugin method extend
         extend(proto) {
             const descObj = Object.getOwnPropertyDescriptors(proto);
             Object.entries(descObj).forEach(([key, obj]) => {
                 if (obj.set) {
-                    // 扩展拥有set的可被写入
+                    // The extension has set of writable
                     this[CANSETKEYS].add(key);
                 }
             });
@@ -1281,60 +1238,61 @@
             });
         }
 
-        // 监听尺寸变动
-        initSizeObs(time = 300) {
-            if (this._initedSizeObs) {
-                console.warn({
-                    target: this.ele,
-                    desc: "initRect is runned",
-                });
-                return;
-            }
-            this._initedSizeObs = 1;
+        // This api is deprecated, please use CSS Container Query instead.
+        // Listening for size changes
+        //   initSizeObs(time = 300) {
+        //     if (this._initedSizeObs) {
+        //       console.warn({
+        //         target: this.ele,
+        //         desc: "initRect is runned",
+        //       });
+        //       return;
+        //     }
+        //     this._initedSizeObs = 1;
 
-            let resizeTimer;
-            // 元素尺寸修正
-            const fixSize = () => {
-                clearTimeout(resizeTimer);
+        //     let resizeTimer;
+        //     // Element Size Correction
+        //     const fixSize = () => {
+        //       clearTimeout(resizeTimer);
 
-                setTimeout(() => {
-                    // 尺寸时间监听
-                    emitUpdate(
-                        this, {
-                            xid: this.xid,
-                            name: "sizeUpdate",
-                        },
-                        undefined,
-                        false
-                    );
-                }, time);
-            };
-            fixSize();
-            if (window.ResizeObserver) {
-                const resizeObserver = new ResizeObserver((entries) => {
-                    fixSize();
-                });
-                resizeObserver.observe(this.ele);
+        //       setTimeout(() => {
+        //         emitUpdate(
+        //           this,
+        //           {
+        //             xid: this.xid,
+        //             name: "sizeUpdate",
+        //           },
+        //           undefined,
+        //           false
+        //         );
+        //       }, time);
+        //     };
+        //     fixSize();
+        //     if (window.ResizeObserver) {
+        //       const resizeObserver = new ResizeObserver((entries) => {
+        //         fixSize();
+        //       });
+        //       resizeObserver.observe(this.ele);
 
-                return () => {
-                    resizeObserver.disconnect();
-                };
-            } else {
-                let f;
-                window.addEventListener(
-                    "resize",
-                    (f = (e) => {
-                        fixSize();
-                    })
-                );
-                return () => {
-                    window.removeEventListener("resize", f);
-                };
-            }
-        }
+        //       return () => {
+        //         resizeObserver.disconnect();
+        //       };
+        //     } else {
+        //       let f;
+        //       window.addEventListener(
+        //         "resize",
+        //         (f = (e) => {
+        //           fixSize();
+        //         })
+        //       );
+        //       return () => {
+        //         window.removeEventListener("resize", f);
+        //       };
+        //     }
+        //   }
     }
 
-    // 允许被设置的key值
+    // Allowed key values to be set
     defineProperties(XEle.prototype, {
         [CANSETKEYS]: {
             // writable: true,
@@ -1342,8 +1300,8 @@
         },
     });
 
-    // 因为表单太常用了，将表单组件进行规范
-    // 渲染表单元素的方法
+    // Normalize the form component because forms are so commonly used
+    // Methods for rendering form elements
     const renderInput = (xele) => {
         let type = xele.attr("type") || "text";
         const {
@@ -1365,7 +1323,7 @@
                     return ele.hasOwnProperty("__value") ? ele.__value : ele.value;
                 },
                 set(val) {
-                    // 针对可能输入的是数字被动转成字符
+                    // Conversion of input numbers to characters
                     ele.value = ele.__value = val;
 
                     emitUpdate(xele, {
@@ -1384,7 +1342,7 @@
                     ele.disabled = val;
                 },
             },
-            // 错误信息
+            // error message
             msg: {
                 writable: true,
                 value: null,
@@ -1394,7 +1352,6 @@
             },
         };
 
-        // 根据类型进行设置
         switch (type) {
             case "radio":
             case "checkbox":
@@ -1416,7 +1373,7 @@
                     },
                 });
 
-                // 不赋予这个字段
+                // radio or checkbox does not have the property msg
                 delete d_opts.msg;
 
                 xele.on("change", (e) => {
@@ -1444,7 +1401,6 @@
                 xele.on("input", (e) => {
                     delete ele.__value;
 
-                    // 改动冒泡
                     emitUpdate(xele, {
                         xid: xele.xid,
                         name: "setData",
@@ -1505,12 +1461,12 @@
                 }, this._delay);
             });
 
-            // 数据初始化
+            // Data initialization
             watchFun();
 
             isInit = 1;
 
-            // 反向数据绑定
+            // Reverse data binding
             this.watchTick((e) => {
                 let data = this.toJSON();
 
@@ -1523,10 +1479,7 @@
                             typeof oldVal == "object" &&
                             JSON.stringify(value) !== JSON.stringify(oldVal))
                     ) {
-                        // 相应的元素
-                        let targetEles = this.eles(k);
-
-                        targetEles.forEach((ele) => {
+                        this.eles(k).forEach((ele) => {
                             switch (ele.type) {
                                 case "checkbox":
                                     if (value.includes(ele.value)) {
@@ -1551,11 +1504,11 @@
                     }
                 });
 
-                // 备份数据
                 backupData = data;
             });
         }
 
+        // Get form elements
         eles(propName) {
             let eles = this._target.all(this._selector);
 
@@ -1567,7 +1520,7 @@
         }
     }
 
-    // 从元素上获取表单数据
+    // Get form data from an elements
     const getFromEleData = (eles, oldData) => {
         const obj = {};
 
@@ -1586,15 +1539,13 @@
                     break;
                 case "checkbox":
                     let tar_arr =
-                        obj[name] ||
-                        (obj[name] = oldData[name]) ||
-                        (obj[name] = []);
+                        obj[name] || (obj[name] = oldData[name]) || (obj[name] = []);
                     if (ele.checked) {
                         if (!tar_arr.includes(ele.value)) {
                             tar_arr.push(value);
                         }
                     } else if (tar_arr.includes(ele.value)) {
-                        // 包含就删除
+                        // Delete if included
                         tar_arr.splice(tar_arr.indexOf(ele.value), 1);
                     }
                     break;
@@ -1607,9 +1558,8 @@
         return obj;
     };
 
-    // 验证表单元素
     const verifyFormEle = (eles) => {
-        // 重新跑一次验证
+        // Re-run the verification
         eles.forEach((e) => {
             const event = new CustomEvent("verify", {
                 bubbles: false,
@@ -1629,7 +1579,7 @@
             } = event;
             const msg_type = getType(msg);
 
-            // msg只能是Error或字符串
+            // msg can only be Error or a string
             if (msg_type == "string") {
                 e.msg = msg || null;
             } else if (msg_type == "error") {
@@ -1647,10 +1597,9 @@
     };
 
     extend(XEle.prototype, {
-        // 专门用于表单的插件
+        // Plug-in methods specifically for forms
         form(opts) {
             const defs = {
-                // 对表单元素进行修正
                 selector: "input,textarea,select",
                 delay: 100,
             };
@@ -1661,7 +1610,7 @@
                 Object.assign(defs, opts);
             }
 
-            // 主体返回对象
+            // Returned object data
             const formdata = new FromXData({}, {
                 selector: defs.selector,
                 delay: defs.delay,
@@ -1672,7 +1621,7 @@
         },
     });
 
-    // 重造数组方法
+    // rebuild array methods
     [
         "concat",
         "every",
@@ -1702,14 +1651,13 @@
     });
 
     extend(XEle.prototype, {
-        // 最基础的
         splice(index, howmany, ...items) {
             const {
                 ele
             } = this;
             const children = Array.from(ele.children);
 
-            // 删除相应元素
+            // Delete the corresponding element
             const removes = [];
             let b_index = index;
             let b_howmany =
@@ -1723,7 +1671,7 @@
                 target = children[b_index];
             }
 
-            // 新增元素
+            // add new elements
             if (items.length) {
                 let fragEle = document.createDocumentFragment();
                 items.forEach((e) => {
@@ -1749,15 +1697,15 @@
                 });
 
                 if (index >= this.length) {
-                    // 在末尾添加元素
+                    // push element at the end
                     ele.appendChild(fragEle);
                 } else {
-                    // 指定index插入
+                    // Index to insert
                     ele.insertBefore(fragEle, ele.children[index]);
                 }
             }
 
-            // 改动冒泡
+            // Bubbling behavior after data changes
             emitUpdate(this, {
                 xid: this.xid,
                 name: "splice",
@@ -1768,9 +1716,7 @@
         },
         sort(sortCall) {
             const selfEle = this.ele;
-            const childs = Array.from(selfEle.children)
-                .map(createXEle)
-                .sort(sortCall);
+            const childs = Array.from(selfEle.children).map(createXEle).sort(sortCall);
 
             rebuildXEleArray(selfEle, childs);
 
@@ -1793,7 +1739,7 @@
         },
     });
 
-    // 根据先后顺序数组进行元素排序
+    // Sorting elements according to sequential arrays
     const rebuildXEleArray = (container, rearray) => {
         const {
             children
@@ -1805,7 +1751,6 @@
             const targetChild = children[index];
 
             if (!targetChild) {
-                // 属于后面新增
                 container.appendChild(ele);
             } else if (ele !== targetChild) {
                 container.insertBefore(ele, targetChild);
@@ -1813,7 +1758,6 @@
         });
     };
 
-    // DOM自带事件，何必舍近求远
     const getEventsMap = (target) => {
         return target[EVENTS] ? target[EVENTS] : (target[EVENTS] = new Map());
     };
@@ -1821,7 +1765,6 @@
     const MOUSEEVENT = glo.MouseEvent || Event;
     const TOUCHEVENT = glo.TouchEvent || Event;
 
-    // 修正 Event Class 用的数据表
     const EventMap = new Map([
         ["click", MOUSEEVENT],
         ["mousedown", MOUSEEVENT],
@@ -1834,7 +1777,7 @@
         ["touchmove", TOUCHEVENT],
     ]);
 
-    // 触发原生事件
+    // Trigger native events
     const triggerEvenet = (_this, name, data, bubbles = true) => {
         let TargeEvent = EventMap.get(name) || CustomEvent;
 
@@ -1848,7 +1791,6 @@
 
         event.data = data;
 
-        // 触发事件
         return _this.ele.dispatchEvent(event);
     };
 
@@ -1935,34 +1877,33 @@
         },
     });
 
-    // 常用事件封装
+    // Wrapping common events
     ["click", "focus", "blur"].forEach((name) => {
         extend(XEle.prototype, {
             [name](callback) {
                 if (isFunction(callback)) {
                     this.on(name, callback);
                 } else {
-                    // callback 就是 data
                     return this.trigger(name, callback);
                 }
             },
         });
     });
 
-    // 所有注册的组件
+    // All registered components
     const Components = {};
     const ComponentResolves = {};
 
-    // 获取组件
+    // get component
     const getComp = (name) => {
         name = attrToProp(name);
 
-        // 组件上有数据就直接返回
+        // Return directly if you have registration
         if (Components[name]) {
             return Components[name];
         }
 
-        // 创建挂载组件
+        // Creating Mounted Components
         let pms = new Promise((res) => {
             ComponentResolves[name] = res;
         });
@@ -1971,7 +1912,7 @@
         return pms;
     };
 
-    // 渲染元素
+    // render elements
     const renderXEle = async ({
         xele,
         defs,
@@ -1983,14 +1924,14 @@
         defs.created && defs.created.call(xele);
 
         if (defs.temp) {
-            // 添加shadow root
+            // Add shadow root
             const sroot = _this.attachShadow({
                 mode: "open"
             });
 
             sroot.innerHTML = defs.temp;
 
-            // 渲染元素
+            // Rendering elements
             renderTemp({
                 host: xele,
                 xdata: xele,
@@ -1998,7 +1939,7 @@
                 temps,
             });
 
-            // 子元素有改动，触发元素渲染
+            // Child elements have changes that trigger element rendering
             xele.shadow &&
                 xele.shadow.watchTick((e) => {
                     if (e.some((e2) => e2.path.length > 1)) {
@@ -2009,9 +1950,8 @@
                     }
                 }, 10);
 
-            // 缓冲link
-            let links = sroot.querySelectorAll("link");
-            if (links.length) {
+            const links = sroot.querySelectorAll("link");
+            if (links && links.length) {
                 await Promise.all(
                     Array.from(links).map((linkEle) => {
                         return new Promise((resolve, reject) => {
@@ -2022,28 +1962,16 @@
                                 linkEle.addEventListener(
                                     "load",
                                     (succeedCall = (e) => {
-                                        linkEle.removeEventListener(
-                                            "load",
-                                            succeedCall
-                                        );
-                                        linkEle.removeEventListener(
-                                            "error",
-                                            errCall
-                                        );
+                                        linkEle.removeEventListener("load", succeedCall);
+                                        linkEle.removeEventListener("error", errCall);
                                         resolve();
                                     })
                                 );
                                 linkEle.addEventListener(
                                     "error",
                                     (errCall = (e) => {
-                                        linkEle.removeEventListener(
-                                            "load",
-                                            succeedCall
-                                        );
-                                        linkEle.removeEventListener(
-                                            "error",
-                                            errCall
-                                        );
+                                        linkEle.removeEventListener("load", succeedCall);
+                                        linkEle.removeEventListener("error", errCall);
                                         reject({
                                             desc: "link load error",
                                             ele: linkEle,
@@ -2060,12 +1988,12 @@
 
         defs.ready && defs.ready.call(xele);
 
-        // attrs监听
+        // atributes listening
         if (!isEmptyObj(defs.attrs)) {
             const {
                 ele
             } = xele;
-            // 先判断是否有值可获取
+            // First determine if there is a value to get
             Object.keys(defs.attrs).forEach((k) => {
                 if (ele.hasAttribute(k)) {
                     xele[k] = ele.getAttribute(k);
@@ -2086,40 +2014,40 @@
             });
         }
 
-        // watch函数触发
+        // The watch function triggers
         let d_watch = defs.watch;
         if (!isEmptyObj(d_watch)) {
             xele.watchKey(d_watch, true);
         }
     };
 
-    // 已经运行revoke函数
+    // The revoke function has been run
     const RUNNDEDREVOKE = Symbol("runned_revoke");
 
-    // 注册组件的主要逻辑
+    // Registering component functions
     const register = (opts) => {
         const defs = {
-            // 注册的组件名
+            // Registered component name
             tag: "",
-            // 正文内容字符串
+            // Body content string
             temp: "",
-            // 和attributes绑定的keys
+            // Keys bound to attributes
             attrs: {},
-            // 默认数据
+            // Initialization data after element creation
             data: {},
-            // 根据属性直接设置值
+            // The listener function for the element
             watch: {},
-            // 合并到原型链上的方法
+            // Methods merged into the prototype
             proto: {},
-            // // 组件被创建时触发的函数（数据初始化完成）
+            // Function triggered when the component is created (data initialization complete)
             // created() { },
-            // // 组件数据初始化完成后触发的函数（初次渲染完毕）
+            // Function triggered after component data initialization is complete (initial rendering completed)
             // ready() { },
-            // // 被添加到document触发的函数
+            // Functions that are added to the document trigger
             // attached() { },
-            // // 被移出document触发的函数
+            // Functions triggered by moving out of the document
             // detached() { },
-            // // 容器元素发生改变
+            // The container element is changed
             // slotchange() { }
         };
 
@@ -2133,8 +2061,9 @@
             temps = d.temps;
         }
 
-        // 生成新的XEle class
+        // Generate a new XEle class
         let compName = attrToProp(opts.tag);
+
         // const CustomXEle = Components[compName] = class extends XEle {
         const CustomXEle = class extends XEle {
             constructor(ele) {
@@ -2143,15 +2072,14 @@
                 ele.isCustom = true;
             }
 
-            // 强制刷新视图
+            // Forced view refresh
             forceUpdate() {
-                // 改动冒泡
                 emitUpdate(this, {
                     xid: this.xid,
                     name: "forceUpdate",
                 });
             }
-            // 回收元素内所有的数据（防止垃圾回收失败）
+            // Recycle all data within the element (prevent garbage collection failure)
             revoke() {
                 if (this[RUNNDEDREVOKE]) {
                     return;
@@ -2167,12 +2095,11 @@
             }
         };
 
-        // 扩展原型
         extend(CustomXEle.prototype, defs.proto);
 
         const cansetKeys = getCansetKeys(defs);
 
-        // 扩展CANSETKEYS
+        // Extending CANSETKEYS
         defineProperties(CustomXEle.prototype, {
             [CANSETKEYS]: {
                 writable: true,
@@ -2180,18 +2107,10 @@
             },
         });
 
-        // 注册原生组件
+        // Registering native components
         const XhearElement = class extends HTMLElement {
             constructor(...args) {
                 super(...args);
-
-                // let old_xele = this.__xEle__;
-                // if (old_xele) {
-                //     console.warn({
-                //         target: old_xele,
-                //         desc: "please re-instantiate the object"
-                //     });
-                // }
 
                 this.__xEle__ = new CustomXEle(this);
 
@@ -2257,7 +2176,7 @@
 
         customElements.define(defs.tag, XhearElement);
 
-        // 设置注册完成
+        // Setup registration complete
         if (ComponentResolves[compName]) {
             ComponentResolves[compName](CustomXEle);
             delete ComponentResolves[compName];
@@ -2266,7 +2185,7 @@
         }
     };
 
-    // 根据 defaults 获取可设置的keys
+    // Get the settable keys according to defaults
     const getCansetKeys = (defs) => {
         const {
             attrs,
@@ -2295,38 +2214,33 @@
         return keys;
     };
 
-    // 将temp转化为可渲染的模板
+    // Convert temp into a renderable template
     const transTemp = (temp, regTagName) => {
-        // 去除注释代码
+        // Removing commented code
         temp = temp.replace(/<!--.+?-->/g, "");
 
-        // 自定义字符串转换
+        // Custom String Conversion
         var textDataArr = temp.match(/{{.+?}}/g);
         textDataArr &&
             textDataArr.forEach((e) => {
                 var key = /{{(.+?)}}/.exec(e);
                 if (key) {
                     // temp = temp.replace(e, `<span :text="${key[1]}"></span>`);
-                    temp = temp.replace(
-                        e,
-                        `<x-span prop="${encodeURI(key[1])}"></x-span>`
-                    );
+                    temp = temp.replace(e, `<x-span prop="${encodeURI(key[1])}"></x-span>`);
                 }
             });
 
-        // 再转换
         const tsTemp = document.createElement("template");
         tsTemp.innerHTML = temp;
 
-        // 原生元素上修正 temp:xxx模板
+        // Fix temp:xxx template on native elements
         let addTemps = [],
             removeRegEles = [];
 
         Array.from(tsTemp.content.querySelectorAll("*")).forEach((ele) => {
-            // 绑定对象
             const bindData = {};
 
-            // 需要被删除的属性
+            // Properties that need to be removed
             const needRemoveAttrs = [];
 
             Array.from(ele.attributes).forEach((attrObj) => {
@@ -2335,7 +2249,7 @@
                     value
                 } = attrObj;
 
-                // 模板抽离
+                // Template Extraction
                 let tempMatch = /^temp:(.+)/.exec(name);
                 if (tempMatch) {
                     let [, tempName] = tempMatch;
@@ -2348,9 +2262,7 @@
                     return true;
                 }
 
-                // 指令
                 let command;
-                // 目标
                 let target;
 
                 if (/^#/.test(name)) {
@@ -2360,20 +2272,20 @@
                     command = "on";
                     target = name.replace(/^@/, "");
                 } else if (name.includes(":")) {
-                    // 带有指令分隔符的，进行之类修正
+                    // Fixed with command separator
                     let m_arr = name.split(":");
 
                     if (m_arr.length == 2) {
-                        // 模板正确，进行赋值
+                        // Assign values if the template is correct
                         command = m_arr[0];
                         target = m_arr[1];
 
                         if (command === "") {
-                            // 属性绑定修正
+                            // Fix Attribute Binding
                             command = "prop";
                         }
                     } else {
-                        // 绑定标识出错
+                        // Error in binding identification
                         throw {
                             desc: "template binding mark error",
                             target: ele,
@@ -2399,7 +2311,7 @@
                 // ele.setAttribute("bind-data", JSON.stringify(bindData));
                 // ele.setAttribute('bind-keys', Object.keys(bindData).join(" "));
 
-                // 原属性还原
+                // Restore original properties
                 Object.keys(bindData).forEach((bName) => {
                     let data = bindData[bName];
                     if (bName == "cmd") {
@@ -2424,28 +2336,26 @@
             });
         }
 
-        // 将 template 内的页进行转换
+        // Convert template data
         Array.from(tsTemp.content.querySelectorAll("template")).forEach((e) => {
             e.innerHTML = transTemp(e.innerHTML).html;
         });
 
-        // 修正 x-cmd-if 元素
+        // fix x-cmd-if elements
         wrapIfTemp(tsTemp);
 
-        // 获取模板
+        // get templates
         let temps = new Map();
 
-        Array.from(tsTemp.content.querySelectorAll(`template[name]`)).forEach(
-            (e) => {
-                temps.set(e.getAttribute("name"), {
-                    ele: e,
-                    code: e.content.children[0].outerHTML,
-                });
-                e.parentNode.removeChild(e);
-            }
-        );
+        Array.from(tsTemp.content.querySelectorAll(`template[name]`)).forEach((e) => {
+            temps.set(e.getAttribute("name"), {
+                ele: e,
+                code: e.content.children[0].outerHTML,
+            });
+            e.parentNode.removeChild(e);
+        });
 
-        // 对temp进行检测
+        // Inspection of the template
         if (temps.size) {
             for (let [key, e] of temps.entries()) {
                 const {
@@ -2471,14 +2381,13 @@
             }
         }
 
-        // 返回最终结果
         return {
             temps,
             html: tsTemp.innerHTML,
         };
     };
 
-    // 给 x-cmd-if 元素包裹 template
+    // Wrap the template around the x-cmd-if element
     const wrapIfTemp = (tempEle) => {
         let iEles = tempEle.content.querySelectorAll(
             "[x-cmd-if],[x-cmd-else-if],[x-cmd-else],[x-cmd-await],[x-cmd-then],[x-cmd-catch]"
@@ -2512,13 +2421,11 @@
             ifTempEle.content.appendChild(ele);
         });
 
-        // 内部 template 也进行包裹
-        Array.from(tempEle.content.querySelectorAll("template")).forEach(
-            wrapIfTemp
-        );
+        // The internal template is also wrapped
+        Array.from(tempEle.content.querySelectorAll("template")).forEach(wrapIfTemp);
     };
 
-    // 获取所有符合表达式的可渲染的元素
+    // Get all renderable elements that match the expression
     const getCanRenderEles = (root, expr) => {
         let arr = Array.from(root.querySelectorAll(expr));
         if (root instanceof Element && meetsEle(root, expr)) {
@@ -2527,9 +2434,8 @@
         return arr;
     };
 
-    // 去除原元素并添加定位元素
+    // Remove the original element and add a positioning element
     const postionNode = (e) => {
-        // let textnode = document.createTextNode("");
         let marker = new Comment("x-marker");
 
         let parent = e.parentNode;
@@ -2542,7 +2448,7 @@
         };
     };
 
-    // 将表达式转换为函数
+    // Converting expressions to functions
     const exprToFunc = (expr) => {
         return new Function(
             "...$args",
@@ -2564,21 +2470,22 @@ try{
         );
     };
 
-    // 清除表达式属性并将数据添加到元素对象内
+    // Clear the expression property and add the data to the element object
     const moveAttrExpr = (ele, exprName, propData) => {
         ele.removeAttribute(exprName);
 
         let renderedData = ele.__renderData;
         if (!renderedData) {
             renderedData = ele.__renderData = {};
-            // 增加渲染过后的数据
+
+            // Adding rendered data
             ele.setAttribute("x-rendered", "");
         }
 
         renderedData[exprName] = propData;
     };
 
-    // 绑定函数监听，添加到记录数组
+    // Binding function listener, added to the record array
     const bindWatch = (data, func, bindings) => {
         let eid = data.watchTick(func);
         bindings.push({
@@ -2587,39 +2494,35 @@ try{
         });
     };
 
-    // 获取目标数据get函数
+    // Get the target data get function
     const renderXdataGetFunc = (expr, xdata) => {
         let runFunc;
 
         if (regIsFuncExpr.test(expr)) {
-            // 属于函数
             runFunc = exprToFunc("return " + expr).bind(xdata);
         } else {
-            // 值变动
-            // runFunc = () => xdata[expr];
             runFunc = () => getXData(xdata, expr);
         }
 
         return runFunc;
     };
 
-    // 渲染器上的watch函数绑定
-    // expr用作判断xdata或host的依据，不做执行
+    // Watch function binding on the renderer
+    // 'expr' is used as the basis for determining xdata or host, not for execution
     const renderInWatch = ({
         xdata,
         host,
         expr,
         watchFun
     }) => {
-        // 已绑定的数据
         const bindings = [];
 
         // if (host !== xdata) {
         if (!(xdata instanceof XEle)) {
-            // fill内的再填充渲染
-            // xdata负责监听$index
-            // xdata.$data为item数据本身
-            // $host为组件数据
+            // Refill rendering within fill
+            // xdata is responsible for listening to $index
+            // xdata.$data is the item data itself
+            // $host is the component data
             if (expr.includes("$host")) {
                 if (expr.includes("$index")) {
                     bindWatch(xdata, watchFun, bindings);
@@ -2639,14 +2542,14 @@ try{
             //     };
             // }
         } else {
-            // host数据绑定
+            // host data binding
             bindWatch(xdata, watchFun, bindings);
         }
 
         return bindings;
     };
 
-    // 表达式到值的设置
+    // Expression to value setting
     const exprToSet = ({
         xdata,
         host,
@@ -2654,19 +2557,19 @@ try{
         callback,
         isArray
     }) => {
-        // 即时运行的判断函数
+        // Instant-running judgment functions
         let runFunc = renderXdataGetFunc(expr, xdata);
 
-        // 备份比较用的数据
+        // Backing up data for comparison
         let backup_val, backup_ids, backup_objstr;
 
-        // 直接运行的渲染函数
+        // Rendering functions that run directly
         const watchFun = (modifys) => {
             const val = runFunc();
 
             if (isxdata(val)) {
                 if (isArray) {
-                    // 对象只监听数组变动
+                    // If it is an array, only listen to the array changes
                     let ids = val.map((e) => (e && e.xid ? e.xid : e)).join(",");
                     if (backup_ids !== ids) {
                         callback({
@@ -2676,7 +2579,7 @@ try{
                         backup_ids = ids;
                     }
                 } else {
-                    // 对象监听
+                    // Object Listening
                     let obj_str = val.toJSON();
 
                     if (backup_val !== val || obj_str !== backup_objstr) {
@@ -2697,7 +2600,7 @@ try{
             backup_val = val;
         };
 
-        // 先执行一次
+        // First execute once
         watchFun();
 
         return renderInWatch({
@@ -2708,7 +2611,7 @@ try{
         });
     };
 
-    // 添加监听数据
+    // Add listening data
     const addBindingData = (target, bindings) => {
         let _binds = target.__bindings || (target.__bindings = []);
         _binds.push(...bindings);
@@ -2716,9 +2619,8 @@ try{
 
     const regIsFuncExpr = /[\(\)\;\=\>\<\|\!\?\+\-\*\/\&\|\{\}`]/;
 
-    // 元素深度循环函数
+    // Element depth loop function
     const elementDeepEach = (ele, callback) => {
-        // callback(ele);
         Array.from(ele.childNodes).forEach((target) => {
             callback(target);
 
@@ -2728,7 +2630,7 @@ try{
         });
     };
 
-    // 根据 if 语句，去除数据绑定关系
+    // Remove data binding relationships based on if statements
     const removeElementBind = (target) => {
         elementDeepEach(target, (ele) => {
             if (ele.isCustom) {
@@ -2747,7 +2649,7 @@ try{
         });
     };
 
-    // 添加渲染模板item内的元素
+    // Adding elements inside a rendered template item
     const addTempItemEle = ({
         temp,
         temps,
@@ -2756,7 +2658,7 @@ try{
         host,
         xdata
     }) => {
-        // 添加元素
+        // add elements
         let targets = parseStringToDom(temp.innerHTML);
         targets.forEach((ele) => {
             parent.insertBefore(ele, marker);
@@ -2770,28 +2672,27 @@ try{
         return targets;
     };
 
-    // 删除渲染模板item内的元素
+    // Delete the elements inside the rendered template item
     const removeTempItemEle = (arr) => {
         arr.forEach((item) => {
-            // 去除数据绑定
+            // Removing data binding
             removeElementBind(item);
 
-            // 删除元素
             item.parentNode.removeChild(item);
         });
     };
 
-    // 渲染组件的逻辑
-    // host 主体组件元素；存放方法的主体
-    // xdata 渲染目标数据；单层渲染下是host，x-fill模式下是具体的数据
-    // content 渲染目标元素
+    // Logic for rendering components
+    // host :body component element; holds the body of the method
+    // xdata: rendering target data; host in single-level rendering, concrete data in x-fill mode
+    // content: rendering target element
     const renderTemp = ({
         host,
         xdata,
         content,
         temps
     }) => {
-        // 事件绑定
+        // Event Binding
         getCanRenderEles(content, "[x-on]").forEach((target) => {
             let eventInfo = JSON.parse(target.getAttribute("x-on"));
 
@@ -2806,28 +2707,19 @@ try{
 
                 let eid;
 
-                // 判断是否函数
+                // Determine if the function
                 if (regIsFuncExpr.test(name)) {
-                    // 函数绑定
+                    // Function Binding
                     const func = exprToFunc(name);
                     eid = $tar.on(eventName, (event) => {
                         func.call(xdata, event, $tar);
-                        // func.call(host, event, $tar);
                     });
                 } else {
-                    // 函数名绑定
+                    // Function name binding
                     eid = $tar.on(eventName, (event) => {
-                        // if (name.includes(".")) {
-                        //     throw {
-                        //         desc: "don't use dotted keys function"
-                        //     };
-                        // }
-                        // const func = xdata[name];
-                        // const func = host[name];
                         const func = getXData(xdata, name);
                         if (func) {
                             if (isFunction(func)) {
-                                // func.call(xdata, event);
                                 func.call(host, event);
                             } else {
                                 console.error({
@@ -2855,7 +2747,7 @@ try{
             moveAttrExpr(target, "x-on", eventInfo);
         });
 
-        // 属性绑定
+        // Attribute Binding
         getCanRenderEles(content, "[x-attr]").forEach((ele) => {
             const attrData = JSON.parse(ele.getAttribute("x-attr"));
 
@@ -2881,7 +2773,7 @@ try{
             });
         });
 
-        // class绑定
+        // class binding
         getCanRenderEles(content, "[x-class]").forEach((ele) => {
             const classListData = JSON.parse(ele.getAttribute("x-class"));
 
@@ -2908,6 +2800,7 @@ try{
             });
         });
 
+        // Property Binding
         getCanRenderEles(content, "[x-prop]").forEach((ele) => {
             const propData = JSON.parse(ele.getAttribute("x-prop"));
             const xEle = createXEle(ele);
@@ -2923,24 +2816,6 @@ try{
                         val
                     }) => {
                         propName = attrToProp(propName);
-                        // if (!(propName in xEle)) {
-                        //     throw {
-                        //         target: ele,
-                        //         host: host.ele,
-                        //         desc: `this element doesn't have the property ${propName} (:${propName}), did you want to use attr:${propName}?`,
-                        //     };
-                        // } else {
-                        //     try {
-                        //         xEle[propName] = val;
-                        //     } catch (err) {
-                        //         throw {
-                        //             target: ele,
-                        //             host: host.ele,
-                        //             desc: `Failed to set property ${propName} (:${propName})`,
-                        //             error: err
-                        //         };
-                        //     }
-                        // }
 
                         try {
                             xEle[propName] = val;
@@ -2959,7 +2834,7 @@ try{
             });
         });
 
-        // 数据双向绑定
+        // Two-way data binding
         getCanRenderEles(content, "[x-sync]").forEach((ele) => {
             const propData = JSON.parse(ele.getAttribute("x-sync"));
             const xEle = createXEle(ele);
@@ -2998,7 +2873,7 @@ try{
             });
         });
 
-        // 文本绑定
+        // Text Binding
         getCanRenderEles(content, "x-span").forEach((ele) => {
             let expr = decodeURI(ele.getAttribute("prop"));
 
@@ -3007,11 +2882,11 @@ try{
                 parent
             } = postionNode(ele);
 
-            // 改为textNode
+            // Changing markup elements to textNode
             const textnode = document.createTextNode("");
             parent.replaceChild(textnode, marker);
 
-            // 数据绑定
+            // Data Binding
             const bindings = exprToSet({
                 xdata,
                 host,
@@ -3026,10 +2901,10 @@ try{
             addBindingData(textnode, bindings);
         });
 
-        // if元素渲染
+        // Conditional expression element rendering
         getCanRenderEles(content, "[x-cmd-if]").forEach((ele) => {
             const conditionEles = [ele];
-            // 将后续的else-if和else都拿起来
+            // Pick up the subsequent else-if and else
             let {
                 nextElementSibling
             } = ele;
@@ -3045,7 +2920,7 @@ try{
 
             let all_expr = "";
 
-            // 将连在一起的 if else 都组成一个数组，并转化成条件函数
+            // Converting concatenated conditional elements into conditional functions
             const conditions = conditionEles.map((e, index) => {
                 let callback;
 
@@ -3063,16 +2938,15 @@ try{
                 };
             });
 
-            // 定位文本元素
+            // Positioning text elements
             let {
                 marker,
                 parent
             } = postionNode(ele);
 
-            // 生成的目标元素
+            // Generated target elements
             let oldTargetEle = null;
             let oldConditionId = -1;
-            // let oldConditionValue;
 
             const watchFun = (modifys) => {
                 let tempEle,
@@ -3088,39 +2962,32 @@ try{
                             return true;
                         }
                     } else {
-                        // 最后的else
+                        // The final else condition
                         tempEle = e.tempEle;
                         conditionId = index;
-                        // conditionVal = true;
                     }
                 });
 
-                // 值或序号不一样，都能进入修正的环节
-                // if (oldConditionId !== conditionId || conditionVal !== oldConditionValue) {
+                // The value or serial number is different, both can enter the corrected link
                 if (oldConditionId !== conditionId) {
-                    // 旧模板销毁
+                    // Old template destruction
                     if (oldTargetEle) {
-                        // debugger
-                        // 去除数据绑定
                         removeElementBind(oldTargetEle);
 
-                        // 删除元素
                         oldTargetEle.parentNode.removeChild(oldTargetEle);
-                        // parent.replaceChild(marker, oldTargetEle);
                         oldTargetEle = null;
                     }
 
-                    // 确定可添加模板
-                    // if (conditionVal && tempEle) {
+                    // Confirm that templates can be added
                     if (tempEle) {
-                        // 添加元素
+                        // add element
                         oldTargetEle = parseStringToDom(
                             tempEle.content.children[0].outerHTML
                         )[0];
 
                         parent.insertBefore(oldTargetEle, marker);
 
-                        // 重新渲染
+                        // Rerendering
                         renderTemp({
                             host,
                             xdata,
@@ -3130,11 +2997,10 @@ try{
                     }
                 }
 
-                // oldConditionValue = conditionVal;
                 oldConditionId = conditionId;
             };
 
-            // 先执行一次
+            // First execute once
             watchFun();
 
             addBindingData(
@@ -3148,12 +3014,12 @@ try{
             );
         });
 
-        // await元素渲染
+        // await element rendering
         getCanRenderEles(content, "[x-cmd-await]").forEach((ele) => {
             let awaitTemp = ele,
                 thenTemp,
                 catchTemp;
-            // 将后续的else-if和else都拿起来
+            // Pick up the subsequent else-if and else
             let {
                 nextElementSibling
             } = ele;
@@ -3171,7 +3037,7 @@ try{
                 nextElementSibling = ele.nextElementSibling;
             }
 
-            // 添加定位
+            // Add Location
             let {
                 marker,
                 parent
@@ -3187,13 +3053,13 @@ try{
                 callback: ({
                     val
                 }) => {
-                    // 清除前面的数据
+                    // Clear the previous data
                     if (beforeTargets) {
                         removeTempItemEle(beforeTargets);
                         beforeTargets = null;
                     }
 
-                    // 添加元素
+                    // add elements
                     beforeTargets = addTempItemEle({
                         temp: awaitTemp,
                         temps,
@@ -3205,52 +3071,54 @@ try{
 
                     beforePms = val;
 
-                    val.then((e) => {
-                        if (beforePms !== val) {
-                            return;
-                        }
-                        removeTempItemEle(beforeTargets);
-                        beforeTargets = null;
-                        if (thenTemp) {
-                            beforeTargets = addTempItemEle({
-                                temp: thenTemp,
-                                temps,
-                                marker,
-                                parent,
-                                host,
-                                xdata: {
-                                    [thenTemp.getAttribute("x-cmd-then")]: e,
-                                    $host: host,
-                                },
-                            });
-                        }
-                    }).catch((err) => {
-                        if (beforePms !== val) {
-                            return;
-                        }
-                        removeTempItemEle(beforeTargets);
-                        beforeTargets = null;
-                        if (catchTemp) {
-                            beforeTargets = addTempItemEle({
-                                temp: catchTemp,
-                                temps,
-                                marker,
-                                parent,
-                                host,
-                                xdata: {
-                                    [catchTemp.getAttribute("x-cmd-catch")]: err,
-                                    $host: host,
-                                },
-                            });
-                        }
-                    });
+                    val
+                        .then((e) => {
+                            if (beforePms !== val) {
+                                return;
+                            }
+                            removeTempItemEle(beforeTargets);
+                            beforeTargets = null;
+                            if (thenTemp) {
+                                beforeTargets = addTempItemEle({
+                                    temp: thenTemp,
+                                    temps,
+                                    marker,
+                                    parent,
+                                    host,
+                                    xdata: {
+                                        [thenTemp.getAttribute("x-cmd-then")]: e,
+                                        $host: host,
+                                    },
+                                });
+                            }
+                        })
+                        .catch((err) => {
+                            if (beforePms !== val) {
+                                return;
+                            }
+                            removeTempItemEle(beforeTargets);
+                            beforeTargets = null;
+                            if (catchTemp) {
+                                beforeTargets = addTempItemEle({
+                                    temp: catchTemp,
+                                    temps,
+                                    marker,
+                                    parent,
+                                    host,
+                                    xdata: {
+                                        [catchTemp.getAttribute("x-cmd-catch")]: err,
+                                        $host: host,
+                                    },
+                                });
+                            }
+                        });
                 },
             });
 
             addBindingData(marker, bindings);
         });
 
-        // 填充绑定
+        // Fill Binding
         getCanRenderEles(content, "[x-fill]").forEach((ele) => {
             const fillData = JSON.parse(ele.getAttribute("x-fill"));
             let fillKeys = ele.getAttribute("x-item");
@@ -3264,7 +3132,7 @@ try{
 
             let old_xid;
 
-            // 提前把 x-fill 属性去掉，防止重复渲染
+            // Remove the x-fill attribute in advance to prevent double rendering
             moveAttrExpr(ele, "x-fill", fillData);
             moveAttrExpr(ele, "x-item", fillKeys);
 
@@ -3276,7 +3144,7 @@ try{
                 callback: (d) => {
                     const targetArr = d.val;
 
-                    // 获取模板
+                    // Get Template
                     let tempData = temps.get(tempName);
 
                     if (!tempData) {
@@ -3288,7 +3156,7 @@ try{
                     }
 
                     if (!old_xid) {
-                        // 完全填充
+                        // Completely filled
                         targetArr.forEach((data, index) => {
                             const itemEle = createFillItem({
                                 host,
@@ -3302,7 +3170,7 @@ try{
                                 initKeyToItem(itemEle, fillKeys, xdata, host);
                             }
 
-                            // 添加到容器内
+                            // Add to container
                             container.appendChild(itemEle.ele);
                         });
 
@@ -3317,7 +3185,6 @@ try{
                         targetArr.forEach((e, index) => {
                             let oldIndex = oldArr.indexOf(e);
                             if (oldIndex === -1) {
-                                // 属于新增
                                 let newItem = createFillItem({
                                     host,
                                     data: e,
@@ -3332,21 +3199,20 @@ try{
 
                                 afterChilds.push(newItem.ele);
                             } else {
-                                // 属于位移
+                                // belongs to the element displacement
                                 let targetEle = childs[oldIndex];
-                                // 更新index
+                                // update index
                                 targetEle.__fill_item.$index = index;
                                 afterChilds.push(targetEle);
 
-                                // 标识已用
                                 oldArr[oldIndex] = holder;
                             }
                         });
 
-                        // 需要被清除数据的
+                        // that need to be cleared of data
                         const needRemoves = [];
 
-                        // 删除不在数据内的元素
+                        // Delete elements that are not in the data
                         oldArr.forEach((e, i) => {
                             if (e !== holder) {
                                 let e2 = childs[i];
@@ -3355,10 +3221,10 @@ try{
                             }
                         });
 
-                        // 去除数据绑定
+                        // Removing data binding
                         needRemoves.forEach((e) => removeElementBind(e));
 
-                        // 重构数组
+                        // Reconstructing arrays
                         rebuildXEleArray(container, afterChilds);
                     }
                 },
@@ -3389,8 +3255,6 @@ try{
         });
     };
 
-    // 生成fillItem元素
-    // fillKeys 传递的Key
     const createFillItem = ({
         host,
         data,
@@ -3410,7 +3274,7 @@ try{
                 return data;
             },
             get $item() {
-                // 获取自身
+                // get self
                 return itemData;
             },
             // get $index() {
@@ -3448,7 +3312,7 @@ try{
 
         const exprType = getType(expr);
 
-        // 目标元素
+        // The final element to be returned
         let ele;
 
         if (exprType == "string") {
@@ -3486,28 +3350,26 @@ try{
      * drill.js v4.0.0
      * https://github.com/kirakiray/drill.js
      * 
-     * (c) 2018-2022 YAO
+     * (c) 2018-2023 YAO
      * Released under the MIT License.
      */
     ((glo) => {
         "use strict";
-        // function
-        // 获取随机id
+        // functions
         const getRandomId = () => Math.random().toString(32).substr(2);
-        var objectToString = Object.prototype.toString;
-        var getType = (value) =>
+        const objectToString = Object.prototype.toString;
+        const getType = (value) =>
             objectToString
             .call(value)
             .toLowerCase()
             .replace(/(\[object )|(])/g, "");
         const isFunction = (d) => getType(d).search("function") > -1;
-        var isEmptyObj = (obj) => !(0 in Object.keys(obj));
+        const isEmptyObj = (obj) => !(0 in Object.keys(obj));
 
         const {
             defineProperties
         } = Object;
 
-        //改良异步方法
         const nextTick = (() => {
             const pnext = (func) => Promise.resolve().then(() => func());
 
@@ -3518,10 +3380,10 @@ try{
             return pnext;
         })();
 
-        // 针对js类型的进程处理操作
+        // Process handling operations for js types
         const processor = new Map();
 
-        // 添加进程类型的方法
+        // Functions for adding process types
         const addProcess = (name, callback) => {
             processor.set(name, callback);
 
@@ -3530,7 +3392,7 @@ try{
                     value: (respone) => {
                         let nowSrc = document.currentScript.src;
 
-                        // 查看原来是否有record
+                        // Check if there is a record
                         let record = getBag(nowSrc);
 
                         if (!record) {
@@ -3538,7 +3400,7 @@ try{
                             setBag(nowSrc, record);
                         }
 
-                        // 设置加载中的状态
+                        // Set the loading status
                         record.status = 1;
 
                         record.ptype = name;
@@ -3549,7 +3411,7 @@ try{
                             relativeLoad(...args) {
                                 let repms = new Drill(...args);
 
-                                // 设置相对目录
+                                // Set relative directory
                                 repms.__relative__ = nowSrc;
 
                                 return repms;
@@ -3560,26 +3422,25 @@ try{
             });
         };
 
-        // 最初始的模块类型 define
+        // Initial module type: define
         addProcess("define", async ({
             respone,
             record,
             relativeLoad
         }) => {
-            // 完整的获取函数
+            // Functions for returning module content
             let getPack;
 
             if (isFunction(respone)) {
                 const exports = {};
 
-                // 先运行返回结果
+                // Run first to return results
                 let result = await respone({
                     load: relativeLoad,
                     FILE: record.src,
                     exports,
                 });
 
-                // 没有放回结果并且exports上有数据
                 if (result === undefined && !isEmptyObj(exports)) {
                     result = exports;
                 }
@@ -3588,17 +3449,17 @@ try{
                     return result;
                 };
             } else {
-                // 直接赋值result
+                // Assign the result directly
                 getPack = (pkg) => {
                     return respone;
                 };
             }
 
-            // 返回getPack函数
+            // Return the getPack function
             record.done(getPack);
         });
 
-        // 进程模块
+        // Initial module type: task
         addProcess("task", async ({
             respone,
             record,
@@ -3619,7 +3480,7 @@ try{
 
         const loaders = new Map();
 
-        // 添加加载器的方法
+        // function for adding loaders
         const addLoader = (type, callback) => {
             loaders.set(type, (src) => {
                 const record = getBag(src);
@@ -3638,41 +3499,38 @@ try{
             record
         }) => {
             return new Promise((resolve, reject) => {
-                // 主体script
+                // main script element
                 let script = document.createElement("script");
 
-                //填充相应数据
                 script.type = "text/javascript";
                 script.async = true;
                 script.src = src;
 
-                // 挂载script元素
+                // Mounted script element
                 record.sourceElement = script;
 
-                // 添加事件
                 script.addEventListener("load", async () => {
-                    // 添加脚本完成时间
+                    // Script load completion time
                     record.loadedTime = Date.now();
 
-                    // 判断资源是否有被设置加载中或完成的状态
+                    // Determine if a resource has been set to loading or completed status
                     if (record.status == 0) {
                         record.ptype = "script";
 
-                        // 未进入 1 或 2 状态，代表是普通js文件，直接执行done
+                        // No 1 or 2 state, it means it's a normal js file, just execute done
                         record.done((pkg) => {});
                     }
 
                     resolve();
                 });
                 script.addEventListener("error", (event) => {
-                    // 加载错误
+                    // load error
                     reject({
                         desc: "load script error",
                         event,
                     });
                 });
 
-                // 添加进主体
                 document.head.appendChild(script);
             });
         });
@@ -3692,7 +3550,6 @@ try{
         }) => {
             let data = await fetch(src).then((e) => e.arrayBuffer());
 
-            // 转换wasm模块
             let module = await WebAssembly.compile(data);
             const instance = new WebAssembly.Instance(module);
 
@@ -3705,7 +3562,6 @@ try{
         }) => {
             let data = await fetch(src);
 
-            // 转换json格式
             data = await data.json();
 
             record.done(() => data);
@@ -3720,24 +3576,23 @@ try{
             link.type = "text/css";
             link.href = src;
 
-            // 挂载元素
             record.sourceElement = link;
 
             let isAppend = false;
 
             record.done(async (pkg) => {
                 if (pkg.params.includes("-unpull")) {
-                    // 带unpull直接返回
+                    // If there is an unpull parameter, the link element is returned and not added to the head
                     return link;
                 }
 
-                // 默认情况下会添加到body，并且不返回值
+                // By default it is added to the head and does not return a value
                 if (!isAppend) {
                     document.head.appendChild(link);
                     isAppend = true;
                 }
 
-                // 未加载完成的话要等待
+                // Wait if not finished loading
                 if (!link.sheet) {
                     await new Promise((resolve) => {
                         link.addEventListener("load", (e) => {
@@ -3748,7 +3603,7 @@ try{
             });
         });
 
-        // 通过utf8返回数据
+        // The following types return utf8 strings
         ["html"].forEach((name) => {
             addLoader(name, async ({
                 src,
@@ -3760,7 +3615,6 @@ try{
             });
         });
 
-        // 获取并通过respon返回数据
         const loadByFetch = async ({
             src,
             record
@@ -3774,11 +3628,11 @@ try{
                 };
             }
 
-            // 重置getPack
+            // Reset getPack
             record.done(() => response);
         };
 
-        // 所以文件的存储仓库
+        // So the information about the file exists on this object
         const bag = new Map();
 
         const setBag = (src, record) => {
@@ -3791,18 +3645,17 @@ try{
             return bag.get(o.origin + o.pathname);
         };
 
-        // 背包记录器
         class BagRecord {
             constructor(src) {
                 this.src = src;
-                // 0 加载中
-                // 1 加载资源成功（但依赖未完成）
-                // 2 加载完成
-                // -1 加载失败
+                // 0 Loading
+                // 1 Loaded resources successfully (but dependencies not completed)
+                // 2 Loading completed
+                // -1 Load failure
                 this.status = 0;
                 this.bid = "b_" + getRandomId();
 
-                // getPack函数的存放处
+                // repository of the getPack function
                 this.data = new Promise((res, rej) => {
                     this.__resolve = res;
                     this.__reject = rej;
@@ -3811,7 +3664,6 @@ try{
                 this.startTime = Date.now();
             }
 
-            // 完成设置
             done(data) {
                 this.status = 2;
                 this.__resolve(data);
@@ -3835,7 +3687,7 @@ try{
 
         const notfindLoader = {};
 
-        // 代理资源请求
+        // Agent resource requests
         async function agent(pkg) {
             let record = getBag(pkg.src);
 
@@ -3856,16 +3708,16 @@ try{
 
             setBag(pkg.src, record);
 
-            // 根据后缀名获取loader
+            // Get loader by suffix name
             let loader = loaders.get(pkg.ftype);
 
             try {
                 if (loader) {
-                    // 加载资源
+                    // Loading resource
                     await loader(record.src);
                 } else {
                     if (!notfindLoader[pkg.ftype]) {
-                        // 不存在这种加载器
+                        // No such loader exists
                         console.warn({
                             desc: "did not find this loader",
                             type: pkg.ftype,
@@ -3882,16 +3734,14 @@ try{
                 }
             } catch (err) {
                 record.fail(err);
-                // throw err;
             }
 
-            // 返回数据
             const getPack = await record.data;
 
             return await getPack(pkg);
         }
 
-        // 存储地址
+        // Save shortcut path in this object
         const pathsMap = new Map();
 
         class DPackage {
@@ -3902,13 +3752,12 @@ try{
                 this.bag = bag;
             }
 
-            // 脚本地址
             get src() {
                 let {
                     url
                 } = this;
 
-                // 快捷地址
+                // Add the part in front of the shortcut path
                 if (/^@.+/.test(url)) {
                     for (let [keyReg, path] of pathsMap) {
                         if (keyReg.test(url)) {
@@ -3918,7 +3767,7 @@ try{
                     }
                 }
 
-                // 如果有 -p 参数的，修正链接地址
+                // If there is a -p parameter, fix the link path
                 if (this.params.includes("-p")) {
                     let packName = url.replace(/.+\/(.+)/, "$1");
                     url += `/${packName}.js`;
@@ -3928,11 +3777,11 @@ try{
                 return obj.href;
             }
 
-            // 文件类型，loader使用的类型，一般去路径后缀
+            // File type, the type used by the loader, usually takes the path suffix
             get ftype() {
                 const urlObj = new URL(this.src);
 
-                // 判断参数是否有 :xxx ，修正类型
+                // Determine if the parameter has :xxx , correction type
                 let type = urlObj.pathname.replace(/.+\.(.+)/, "$1");
                 this.params.some((e) => {
                     if (/^:(.+)/.test(e)) {
@@ -3944,23 +3793,21 @@ try{
                 // return this.url.replace(/.+\.(.+)/, "$1");
             }
 
-            // 寄存的数据
+            // Get the data passed during the module
             get data() {
                 return this.bag[POST_DATA];
             }
-            // 获取相对路径
             get relative() {
                 return this.bag.__relative__ || location.href;
             }
         }
 
-        // 分发
+        // Main distribution function
         function buildUp(dBag) {
             dBag.args.forEach((e) => dBag.result.push(undefined));
 
-            // 请求成功数统计
+            // Number of successful requests 
             let count = 0;
-            // 是否出错过
             let iserror = false;
 
             let {
@@ -3969,11 +3816,11 @@ try{
 
             const pendFunc = dBag[DRILL_PENDFUNC];
 
-            // 打包成可分发的对象
+            // Packaged into distributable objects
             dBag.args.forEach((str, index) => {
                 let pkg = new DPackage(str, dBag);
 
-                // 执行完成函数
+                // Execution completion function
                 let done = (data) => {
                     result[index] = data;
                     count++;
@@ -3995,13 +3842,13 @@ try{
                     done = null;
                 };
 
-                // 如果带有-link参数，直接返回链接
+                // If the -link parameter is present, the link is returned directly
                 if (pkg.params.includes("-link")) {
                     done(pkg.src);
                 } else if (pkg.params.includes("-pkg")) {
                     done(pkg);
                 } else {
-                    // 代理转发
+                    // Proxy Forwarding
                     agent(pkg)
                         .then(done)
                         .catch((err) => {
@@ -4056,29 +3903,24 @@ try{
                     [DRILL_REJECT]: {
                         value: rej,
                     },
-                    // 请求参数
+                    // Parameters for load modules
                     args: {
                         value: args,
                     },
-                    // 返回的结果
+                    // The final array of returned results
                     result: {
                         value: [],
                     },
-                    // 相对路径
+                    // Relative path to load module
                     __relative__: {
                         writable: true,
                         value: "",
                     },
-                    // 响应数量
-                    // responded: {
-                    //     value: 0
-                    // }
                 });
 
                 nextTick(() => buildUp(this));
             }
 
-            // 加载中
             pend(func) {
                 if (this[DRILL_PENDFUNC]) {
                     throw {
@@ -4095,7 +3937,7 @@ try{
                 return this;
             }
 
-            // 发送数据
+            // Passing data to the module to be loaded
             post(data) {
                 if (this[POST_DATA]) {
                     throw {
@@ -4121,11 +3963,11 @@ try{
                 paths
             } = opts;
             if (paths) {
-                // 快捷路径
+                // Shortcut path
                 Object.keys(paths).forEach((k) => {
                     let val = paths[k];
 
-                    // 不是@开头/结尾的定义为不合法
+                    // Definitions that do not start/end with @ are not legal
                     if (!/^@.+\/$/.test(k)) {
                         throw {
                             desc: "incorrect definition of paths",
@@ -4150,27 +3992,27 @@ try{
         const drill = {
             load,
             config,
-            // 是否已加载该资源
+            // Whether the resource has been loaded
             async has(src) {
                 let path = await load(`${src} -link`);
 
                 return !!getBag(path);
             },
-            // 删除该资源缓存
+            // Delete this resource cache
             async remove(src) {
                 let path = await load(`${src} -link`);
                 let record = getBag(path);
 
-                // 删除挂载元素
+                // Delete Mounted Elements
                 let sele = record.sourceElement;
                 if (sele) {
                     sele.parentNode.removeChild(sele);
                 }
 
-                // 删除缓存数据
+                // Delete cached data
                 bag.delete(path);
             },
-            // 二次开发扩展方法
+            // Secondary development extension method
             ext(callback) {
                 callback({
                     bag,
@@ -4179,19 +4021,18 @@ try{
                 });
             },
             bag,
-            // 版本信息
             version: "4.0.0",
             v: 4000000,
         };
 
-        // 全局函数
+        // Global Functions
         defineProperties(glo, {
             drill: {
                 value: drill,
             },
         });
     })(typeof globalThis != "undefined" ? globalThis : window);
-    // 自定义组件
+    // Customized Components
     drill.ext(({
         addProcess
     }) => {
@@ -4211,39 +4052,27 @@ try{
 
             const defaults = await getDefaults(record, relativeLoad, result);
 
-            // 注册组件
+            // Register Component
             register(defaults);
 
             record.done(async (pkg) => {});
         });
     });
 
-    // 获取defautls
     const getDefaults = async (record, relativeLoad, result) => {
-        // 默认数据
         const defaults = {
-            // 静态模板地址
+            // Static template address
             temp: "",
-            // 下面都是 xhear 自带的组件数据
-            // // 组件名
+            // The following are the component data that comes with X shear
             // tag: "",
-            // // 自带的数据
             data: {},
-            // // 会绑定到 element attribute 的数据
             attrs: {},
-            // // 组件原型链上的数据
             proto: {},
             watch: {},
-            // // 组件被创建时触发的函数（数据初始化完成）
             // created() { },
-            // // 组件数据初始化完成后触发的函数（初次渲染完毕）
             // ready() { },
-            // // 被添加到document触发的函数
             // attached() { },
-            // // 被移出document触发的函数
             // detached() { },
-            // // 容器元素发生改变
-            // slotchange() { }
         };
 
         Object.assign(defaults, result);
@@ -4252,14 +4081,14 @@ try{
             .replace(/.*\/(.+)/, "$1")
             .replace(/\.js$/, "");
 
-        // 组件名修正
+        // Component name correction
         if (!defaults.tag) {
             defaults.tag = defineName;
         }
 
-        // 获取模板
+        // Get Template
         if (defaults.temp === "") {
-            // 获取与模块相同名的temp
+            // Get temp of the same name as the module
             let temp = await relativeLoad(`./${defineName}.html`);
 
             defaults.temp = await fixRelativeSource(temp, relativeLoad);
@@ -4268,18 +4097,18 @@ try{
         return defaults;
     };
 
-    // 修正temp内的资源地址
+    // Fix the resource address in temp
     const fixRelativeSource = async (temp, relativeLoad) => {
-        // 修正所有资源地址
+        // Fix all resource addresses to include content within the template
         let tempEle = document.createElement("template");
         tempEle.innerHTML = temp;
 
-        // 修正所有link
+        // Fix all links
         let hrefEles = tempEle.content.querySelectorAll("[href]");
         let srcEles = tempEle.content.querySelectorAll("[src]");
         let hasStyleEle = tempEle.content.querySelectorAll(`[style*="url("]`);
 
-        // 所有进程
+        // All processes
         const pms = [];
 
         hrefEles &&
@@ -4306,17 +4135,14 @@ try{
                 );
             });
 
-        // 修正style资源地址
+        // Fix style resource address
         hasStyleEle &&
             Array.from(hasStyleEle).forEach((ele) => {
                 pms.push(
                     (async () => {
                         ele.setAttribute(
                             "style",
-                            await fixStyleUrl(
-                                ele.getAttribute("style"),
-                                relativeLoad
-                            )
+                            await fixStyleUrl(ele.getAttribute("style"), relativeLoad)
                         );
                     })()
                 );
@@ -4327,10 +4153,7 @@ try{
             Array.from(styles).forEach((style) => {
                 pms.push(
                     (async () => {
-                        style.innerHTML = await fixStyleUrl(
-                            style.innerHTML,
-                            relativeLoad
-                        );
+                        style.innerHTML = await fixStyleUrl(style.innerHTML, relativeLoad);
                     })()
                 );
             });
@@ -4340,7 +4163,7 @@ try{
         return tempEle.innerHTML;
     };
 
-    // 修正style字符串上的资源地址
+    // Fix the resource address on the style string
     const fixStyleUrl = async (styleStr, relativeLoad) => {
         let m_arr = styleStr.match(/url\(.+?\)/g);
 
@@ -4375,12 +4198,12 @@ try{
                 });
             }
 
-            // 转换模板
+            // Conversion Templates
             const defaults = await getDefaults(record, relativeLoad, result);
             let d = transTemp(defaults.temp);
             defaults.temp = d.html;
 
-            // 获取可设置keys
+            // Get settable keys
             const cansetKeys = getCansetKeys(defaults);
 
             record.done(async (pkg) => {
@@ -4395,7 +4218,7 @@ try{
 
     const PAGESTATUS = Symbol("page_status");
 
-    // 获取在 o-app 层上的 o-page
+    // Get the o-page on the o-app layer
     const getCurrentPage = (host) => {
         if (host.parent.is("o-app")) {
             return host;
@@ -4412,13 +4235,13 @@ try{
     register({
         tag: "o-page",
         attrs: {
-            // 资源地址
+            // Resource Address
             src: null,
-            // 当前页面的状态
-            // empty空白状态，等待加载页面
-            // loading 加载中
-            // loaded 加载成功
-            // error 加载资源失败
+            // Status of the current page
+            // empty: blank state, waiting for the page to be loaded
+            // loading : loading
+            // loaded: loaded successfully
+            // error: loading resource failed
             [PAGESTATUS]: "empty",
         },
         proto: {
@@ -4450,7 +4273,7 @@ try{
 
                 return obj;
             },
-            // 跳转到相应页面
+            // Jump to the corresponding page
             navigateTo(src) {
                 let cPage = getCurrentPage(this);
 
@@ -4461,7 +4284,7 @@ try{
                     };
                 }
 
-                // 查找到当前页的id
+                // Find the id of the current page
                 const {
                     router
                 } = this.app;
@@ -4469,7 +4292,7 @@ try{
 
                 router.splice(id + 1, router.length, src);
             },
-            // 替换跳转
+            // Replacement Jump
             replaceTo(src) {
                 let cPage = getCurrentPage(this);
 
@@ -4480,7 +4303,7 @@ try{
                     };
                 }
 
-                // 查找到当前页的id
+                // Find the id of the current page
                 const {
                     router
                 } = this.app;
@@ -4488,7 +4311,7 @@ try{
 
                 router.splice(id, router.length, src);
             },
-            // 返回页面
+            // back page
             back() {
                 let {
                     app
@@ -4511,19 +4334,19 @@ try{
                 this[PAGESTATUS] = "loading";
 
                 if (this._waiting) {
-                    // 等待加载
+                    // Waiting to load
                     await this._waiting;
                 }
 
                 let defaults;
 
-                // 获取渲染数据
+                // Get rendering data
                 try {
                     let data = await load(src);
 
                     this._realsrc = await load(src + " -link");
 
-                    // 重新修正可修改字段
+                    // Revise modifiable fields
                     const n_keys = new Set([
                         ...Array.from(this[CANSETKEYS]),
                         ...data.cansetKeys,
@@ -4533,14 +4356,14 @@ try{
 
                     defaults = data.defaults;
 
-                    // 合并原型链上的数据
+                    // Merging data in the prototype chain
                     extend(this, defaults.proto);
 
-                    // 再次渲染元素
+                    // Render the element again
                     renderXEle({
                         xele: this,
                         defs: Object.assign({}, defaults, {
-                            // o-page不允许使用attrs
+                            // o-page does not allow attrs
                             attrs: {},
                         }),
                         temps: data.temps,
@@ -4572,12 +4395,8 @@ try{
             },
         },
         created() {
-            this.__attached_pms = new Promise(
-                (res) => (this.__attached_resolve = res)
-            );
-            this.__detached_pms = new Promise(
-                (res) => (this.__detached_resolve = res)
-            );
+            this.__attached_pms = new Promise((res) => (this.__attached_resolve = res));
+            this.__detached_pms = new Promise((res) => (this.__detached_resolve = res));
         },
         attached() {
             this.__attached_resolve();
@@ -4589,35 +4408,32 @@ try{
 
     const ROUTERPAGE = Symbol("router_page");
 
-    // 所有的app元素
+    // All app elements
     const apps = [];
 
-    // 等待器等待加载的个数
+    // Number of waiters waiting to be loaded
     let waitCount = 2;
 
     register({
         tag: "o-app",
         temp: `<style>:host{display:block}::slotted(o-page){position:absolute;left:0;top:0;width:100%;height:100%}::slotted(o-page[page-area]){transform:translate(0,0);transition:all ease-in-out .25s;z-index:2}::slotted(o-page[page-area=back]){transform:translate(-30%,0);opacity:0;z-index:1}::slotted(o-page[page-area=next]){transform:translate(30%,0);opacity:0;z-index:1}.container{display:flex;flex-direction:column;width:100%;height:100%}.main{position:relative;flex:1}.article{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}</style><style id="initStyle">::slotted(o-page[page-area]){transition:none}</style><div class="container"><div><slot name="header"></slot></div><div class="main"><div class="article" part="body"><slot></slot></div></div></div>`,
         attrs: {
-            // 首页地址
+            // Home Address
             home: "",
-            // 引用资源地址
+            // Cite the resource address
             src: "",
         },
         data: {
-            // 路由
             router: [],
             // router: [{
             //     path: "",
             //     _page:""
             // }]
-            // 元素的尺寸信息
-            rect: {
-                width: "",
-                height: "",
-            },
-            // 当前app是否隐藏
-            visibility: document.hidden ? "hide" : "show",
+            // rect: {
+            //     width: "",
+            //     height: "",
+            // },
+            visibility: document.hidden ? 0 : 1,
         },
         watch: {
             async src(src) {
@@ -4626,13 +4442,13 @@ try{
                 }
                 this._loaded_src = 1;
 
-                // 加载相应模块并执行
+                // Load the appropriate module and execute
                 let m = await load(src);
 
                 m.data && Object.assign(this, m.data);
 
                 if (m.proto) {
-                    // 扩展选项
+                    // Extended Options
                     this.extend(m.proto);
                 }
 
@@ -4641,7 +4457,7 @@ try{
                 }
 
                 if (this.home && !this.router.length) {
-                    // 当存在home，又没有其他页面在路由时，添加home
+                    // When home exists and no other pages are routed, add home
                     this.router.push({
                         path: this.home,
                     });
@@ -4658,23 +4474,22 @@ try{
                 if (!router.length) {
                     return;
                 }
-                // 根据router的值进行修正页面路由
+                // Change page routing based on router values
                 let backRouter = this._backup_router;
                 if (!backRouter) {
-                    // 首次存储
+                    // Initial Storage
                     backRouter = this._backup_router = [];
                 }
 
-                // 等待删除的页面
+                // Pages waiting to be deleted
                 const needRemove = backRouter.filter((e) => !router.includes(e));
 
-                // 等待新增的页面
+                // Waiting for the new page to be added
                 const needAdd = [];
 
-                // 对比路由差异进行筛选
                 let lastIndex = router.length - 1;
                 const newRouter = router.map((e, index) => {
-                    // 修正数据
+                    // Corrected data
                     if (typeof e == "string") {
                         e = createXData({
                             path: e,
@@ -4683,15 +4498,14 @@ try{
                         e.owner.add(router[XDATASELF]);
                     }
 
-                    // 没有新建成功的
                     if (!e._page) {
-                        // 增加页面元素
+                        // Adding page elements
                         let page = (e._page = $({
                             tag: "o-page",
                             src: e.path,
                         }));
 
-                        // 添加loading
+                        // Add loading
                         if (glo.ofa && ofa.onState.loading) {
                             page.push(
                                 ofa.onState.loading({
@@ -4701,7 +4515,7 @@ try{
                         }
 
                         let w_resolve;
-                        // 添加等待器
+                        // Add waiting period related properties
                         page._waiting = new Promise((res) => (w_resolve = res));
                         page.__waiter_resolve = w_resolve;
                     }
@@ -4719,20 +4533,20 @@ try{
                         needAdd.push(e);
                     }
 
-                    // 修正page-area
+                    // fix page-area
                     if (index < lastIndex) {
-                        // 页面隐藏
+                        // hide page
                         e._page.attr("page-area", "back");
                     } else if (index == lastIndex) {
-                        // 当前页
+                        // current page
                         if (e._page.attr("page-area") === null) {
                             e._page.attr("page-area", "next");
-                            // firefox会无效
+                            // firefox will not work
                             // requestAnimationFrame(() => {
                             //     e._page.attr("page-area", "");
                             // });
                             setTimeout(() => {
-                                // 如果被改动过，就不用再修改
+                                // If it has been changed, there is no need to modify it again
                                 if (e._page.attr("page-area") === "next") {
                                     e._page.attr("page-area", "");
                                 }
@@ -4742,7 +4556,7 @@ try{
                         }
                     }
 
-                    // 修正等待器的加载
+                    // Fix the loading of the waiter
                     if (index + waitCount > lastIndex && e._page.__waiter_resolve) {
                         e._page.__waiter_resolve();
                         delete e._page.__waiter_resolve;
@@ -4751,35 +4565,34 @@ try{
                     return e;
                 });
 
-                // 添加页面
+                // Add page
                 needAdd.forEach((e) => {
                     this.push(e._page);
                 });
 
-                // 删除页面
+                // delete page
                 needRemove.forEach((e) => {
                     e._page.attr("page-area", "next");
                     if (parseFloat(e._page.css.transitionDuration) > 0) {
-                        // 保底删除
+                        // If the animation deletion is invalid, it will be deleted by setTimeout
                         let timer = setTimeout(() => e._page.remove(), 500);
-                        // 有动画的情况下，进行动画结束后操作
+                        //  If there is an animation, perform an end-of-animation operation
                         e._page.one("transitionend", () => {
                             e._page.remove();
                             clearTimeout(timer);
                         });
                     } else {
-                        // 没有动画直接删除
+                        // No animation directly deleted
                         e._page.remove();
                     }
                 });
 
-                // 修正路由数据
+                // Correction of routing data
                 router[XDATASELF].splice(0, 1000, ...newRouter);
 
-                // 备份
                 this._backup_router = router.slice();
 
-                // 触发当前页的激活事件
+                // Triggers the activation event of the current page
                 router.slice(-1)[0]._page.trigger("activepage");
             },
         },
@@ -4787,26 +4600,24 @@ try{
             get currentPage() {
                 return this.router.slice(-1)[0]._page;
             },
-            // 返回页面
+            // Back to page
             back() {
-                // 是否接受返回行为
                 const event = new Event("back", {
                     cancelable: true,
                 });
                 event.delta = 1;
                 this.triggerHandler(event);
 
+                // Block page return behavior when returnValue is false
                 if (event.returnValue) {
-                    // 拦截返回的路由
                     if (this.router.length > 1) {
                         this.router.splice(-1, 1);
                     }
                 }
             },
-            // 全局app都可用的数据
-            get globalData() {
-                return globalAppData;
-            },
+            // get globalData() {
+            //   return globalAppData;
+            // },
             postback(data) {
                 let target;
                 if (top !== window) {
@@ -4827,7 +4638,7 @@ try{
 
                 return true;
             },
-            // 用于不想暴露真实地址或保证地址唯一性
+            // Used when you don't want to expose your real address or ensure address uniqueness
             // get shareHash() {
             //     return encodeURIComponent(this.currentPage.src);
             // }
@@ -4836,12 +4647,11 @@ try{
             // }
         },
         ready() {
-            // 检查页面状况
             window.addEventListener("visibilitychange", (e) => {
-                this.visibility = document.hidden ? "hide" : "show";
+                this.visibility = document.hidden ? 0 : 1;
             });
 
-            // 开始的一段时间，不需要动画
+            // The moment it starts, no animation required
             setTimeout(() => {
                 this.shadow.$("#initStyle").remove();
             }, 150);
@@ -4856,79 +4666,6 @@ try{
             }
         },
     });
-
-    // 关于 o-app 和 上层应用的数据通信相关逻辑
-    // 全局的app数据
-    const globalAppData = {
-        // 上级传递过来的message数据
-        message: null,
-    };
-
-    if (opener && !opener.closed) {
-        if (document.readyState == "complete") {
-            opener.postMessage({
-                    type: "web-app-postback-data",
-                    command: "complete",
-                },
-                "*"
-            );
-        } else {
-            let onloadFunc = () => {
-                opener.postMessage({
-                        type: "web-app-postback-data",
-                        command: "complete",
-                    },
-                    "*"
-                );
-                glo.removeEventListener("load", onloadFunc);
-                onloadFunc = null;
-            };
-            glo.addEventListener("load", onloadFunc);
-        }
-
-        // 存在更高层的窗口，添加关闭事件通报
-        glo.addEventListener("beforeunload", (e) => {
-            opener.postMessage({
-                    type: "web-app-postback-data",
-                    command: "close",
-                },
-                "*"
-            );
-        });
-    }
-
-    if (opener || top !== window) {
-        glo.addEventListener("message", (e) => {
-            let {
-                data
-            } = e;
-
-            if (!(data && data.type)) {
-                return;
-            }
-
-            const {
-                type
-            } = data;
-            data = data.data;
-
-            if (type == "web-app-post-init-data") {
-                globalAppData.initial = data;
-            } else if (type === "web-app-post-data") {
-                globalAppData.message = data;
-                apps.forEach((e) => e.triggerHandler("message", data));
-            } else {
-                return;
-            }
-
-            apps.forEach((e) =>
-                emitUpdate(e, {
-                    xid: e.xid,
-                    name: "message",
-                })
-            );
-        });
-    }
 
 
     $.fn.extend({
@@ -4946,16 +4683,16 @@ try{
     const ofa = {
         v: 3000009,
         version: "3.0.9",
-        // 配置基础信息
+        // Configure the base information
         get config() {
             return drill.config;
         },
         onState: {
-            // 加载中临时模板callback
+            // Content displayed in loading
             loading(e) {
                 return `<div style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;font-size:14px;color:#aaa;">Loading</div>`;
             },
-            // 加载失败的临时模板
+            // Contents of the load failure display
             loadError(e) {
                 return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">error expr:${e.expr} <br>error src:${e.src}</div></div>`;
             },
