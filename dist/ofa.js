@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.10
+ * ofa v3.0.11
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2023 YAO
@@ -4061,8 +4061,10 @@ try{
 
     const getDefaults = async (record, relativeLoad, result) => {
         const defaults = {
-            // Static template address
+            // Static template
             temp: "",
+            // static template address
+            tempsrc: "",
             // The following are the component data that comes with X shear
             // tag: "",
             data: {},
@@ -4088,8 +4090,12 @@ try{
 
         // Get Template
         if (defaults.temp === "") {
+            let {
+                tempsrc
+            } = defaults;
+
             // Get temp of the same name as the module
-            let temp = await relativeLoad(`./${defineName}.html`);
+            let temp = await relativeLoad(tempsrc || `./${defineName}.html`);
 
             defaults.temp = await fixRelativeSource(temp, relativeLoad);
         }
@@ -4681,8 +4687,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000010,
-        version: "3.0.10",
+        v: 3000011,
+        version: "3.0.11",
         // Configure the base information
         get config() {
             return drill.config;

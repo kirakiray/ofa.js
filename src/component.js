@@ -21,8 +21,10 @@ drill.ext(({ addProcess }) => {
 
 const getDefaults = async (record, relativeLoad, result) => {
   const defaults = {
-    // Static template address
+    // Static template
     temp: "",
+    // static template address
+    tempsrc: "",
     // The following are the component data that comes with X shear
     // tag: "",
     data: {},
@@ -48,8 +50,10 @@ const getDefaults = async (record, relativeLoad, result) => {
 
   // Get Template
   if (defaults.temp === "") {
+    let { tempsrc } = defaults;
+
     // Get temp of the same name as the module
-    let temp = await relativeLoad(`./${defineName}.html`);
+    let temp = await relativeLoad(tempsrc || `./${defineName}.html`);
 
     defaults.temp = await fixRelativeSource(temp, relativeLoad);
   }
