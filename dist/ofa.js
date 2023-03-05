@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.11
+ * ofa v3.0.12
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2023 YAO
@@ -1778,15 +1778,16 @@
     ]);
 
     // Trigger native events
-    const triggerEvenet = (_this, name, data, bubbles = true) => {
+    const triggerEvenet = (_this, name, data, options = {}) => {
         let TargeEvent = EventMap.get(name) || CustomEvent;
 
         const event =
             name instanceof Event ?
             name :
             new TargeEvent(name, {
-                bubbles,
+                bubbles: true,
                 cancelable: true,
+                ...options,
             });
 
         event.data = data;
@@ -1869,11 +1870,13 @@
 
             return eid;
         },
-        trigger(name, data) {
-            return triggerEvenet(this, name, data);
+        trigger(name, data, options = {}) {
+            return triggerEvenet(this, name, data, options);
         },
         triggerHandler(name, data) {
-            return triggerEvenet(this, name, data, false);
+            return triggerEvenet(this, name, data, {
+                bubbles: false,
+            });
         },
     });
 
@@ -4243,6 +4246,8 @@ try{
         attrs: {
             // Resource Address
             src: null,
+        },
+        data: {
             // Status of the current page
             // empty: blank state, waiting for the page to be loaded
             // loading : loading
@@ -4403,6 +4408,7 @@ try{
         created() {
             this.__attached_pms = new Promise((res) => (this.__attached_resolve = res));
             this.__detached_pms = new Promise((res) => (this.__detached_resolve = res));
+            this.__loaded
         },
         attached() {
             this.__attached_resolve();
@@ -4687,8 +4693,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000011,
-        version: "3.0.11",
+        v: 3000012,
+        version: "3.0.12",
         // Configure the base information
         get config() {
             return drill.config;

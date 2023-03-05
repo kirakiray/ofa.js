@@ -44,6 +44,8 @@ register({
   attrs: {
     // Resource Address
     src: null,
+  },
+  data: {
     // Status of the current page
     // empty: blank state, waiting for the page to be loaded
     // loading : loading
@@ -198,6 +200,7 @@ register({
   created() {
     this.__attached_pms = new Promise((res) => (this.__attached_resolve = res));
     this.__detached_pms = new Promise((res) => (this.__detached_resolve = res));
+    this.__loaded
   },
   attached() {
     this.__attached_resolve();
