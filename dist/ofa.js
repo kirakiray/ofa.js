@@ -1,5 +1,5 @@
 /*!
- * ofa v3.0.12
+ * ofa v3.0.13
  * https://github.com/kirakiray/ofa.js
  * 
  * (c) 2018-2023 YAO
@@ -907,7 +907,12 @@
 
             delete self.length;
 
-            if (self.tag == "input" || self.tag == "textarea" || self.tag == "select") {
+            if (
+                self.tag === "input" ||
+                self.tag === "textarea" ||
+                self.tag === "select" ||
+                self.tag === "button"
+            ) {
                 renderInput(self);
             }
         }
@@ -4693,8 +4698,8 @@ try{
     let init_ofa = glo.ofa;
 
     const ofa = {
-        v: 3000012,
-        version: "3.0.12",
+        v: 3000013,
+        version: "3.0.13",
         // Configure the base information
         get config() {
             return drill.config;
