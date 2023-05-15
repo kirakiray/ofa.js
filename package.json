@@ -1,36 +1,38 @@
 {
-    "name": "ofa",
-    "version": "3.0.13",
-    "description": "no webpack,no nodejs,Back to the purest front end",
-    "scripts": {
-        "watch": "node scripts/watch.js",
-        "server": "node scripts/server.js",
-        "test": "npm run server & open 'http://localhost:9669/ofa/test/normal-test.html'"
-    },
-    "author": {
-        "name": "YAO",
-        "email": "kirayao@hotmail.com",
-        "url": "https://kirakiray.com/"
-    },
-    "license": "MIT",
-    "devDependencies": {
-        "js-beautify": "^1.10.0",
-        "uglify-es": "^3.3.9"
-    },
-    "main": "dist/ofa.js",
-    "directories": {
-        "test": "test"
-    },
-    "dependencies": {},
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/kirakiray/ofa.js.git"
-    },
-    "bugs": {
-        "url": "https://github.com/kirakiray/ofa.js/issues"
-    },
-    "homepage": "https://github.com/kirakiray/ofa.js",
-    "watchjs": {
-        "startyear": "2018"
-    }
+  "name": "ofa",
+  "version": "4.0.0",
+  "description": "pure web front-end componentized framework that does not require the use of nodejs",
+  "scripts": {
+    "dev": "node scripts/dev.js"
+  },
+  "author": {
+    "name": "YAO",
+    "email": "kirayao@hotmail.com",
+    "url": "https://kirakiray.com/"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.32.3",
+    "jasmine-core": "^4.6.0",
+    "koa": "^2.14.1",
+    "koa-static": "^5.0.0",
+    "rollup": "^3.21.6",
+    "terser": "^5.17.3",
+    "shelljs": "^0.8.5",
+    "sync-directory": "^6.0.4"
+  },
+  "main": "dist/ofa.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kirakiray/ofa.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kirakiray/ofa.js/issues"
+  },
+  "homepage": "https://github.com/kirakiray/ofa.js",
+  "startyear": "2018"
 }
