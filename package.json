@@ -12,20 +12,22 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.32.3",
+    "@playwright/test": "^1.33.0",
     "jasmine-core": "^4.6.0",
     "koa": "^2.14.1",
     "koa-static": "^5.0.0",
     "rollup": "^3.21.6",
-    "terser": "^5.17.3",
     "shelljs": "^0.8.5",
-    "sync-directory": "^6.0.4"
+    "terser": "^5.17.3"
   },
   "main": "dist/ofa.js",
   "directories": {
     "test": "test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "drill.js": "^5.0.1",
+    "xhear": "^7.2.3"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kirakiray/ofa.js.git"
