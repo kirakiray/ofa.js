@@ -1,6 +1,11 @@
 import { processor, use } from "./use.mjs";
 
 const createLoad = (meta) => {
+  if (!meta) {
+    meta = {
+      url: document.location.href,
+    };
+  }
   const load = (url) => {
     let reurl = "";
     if (meta.resolve) {
