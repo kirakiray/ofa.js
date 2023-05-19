@@ -7,7 +7,7 @@ const banner = `//! ${PACKAGE.name} - v${PACKAGE.version} ${
 }  (c) ${PACKAGE.startyear}-${new Date().getFullYear()} ${PACKAGE.author.name}`;
 
 module.exports = {
-  input: "packages/ofa/base.mjs",
+  input: "packages/ofa/main.mjs",
   output: [
     {
       file: "dist/ofa.mjs",
