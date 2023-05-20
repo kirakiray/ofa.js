@@ -58,7 +58,7 @@ $.register({
       let tempSrc = defaults.temp;
 
       if (!tempSrc) {
-        tempSrc = selfUrl.replace(/\.m?js/, ".html");
+        tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
       }
 
       defaults.temp = await fetch(tempSrc).then((e) => e.text());
@@ -66,6 +66,11 @@ $.register({
       const template = document.createElement("template");
       template.innerHTML = defaults.temp;
       const temps = convert(template);
+
+      // Fix the relative path of referenced resources
+      Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
+        (el) => el.setAttribute("relate-path", tempSrc)
+      );
 
       renderElement({
         defaults,

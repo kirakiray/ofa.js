@@ -6,17 +6,17 @@ export default {
 
     const { data } = options;
 
-    this[propName] = data[targetName];
+    this[propName] = data.get(targetName);
 
     const wid1 = this.watch((e) => {
       if (e.hasModified(propName)) {
-        data[targetName] = this[propName];
+        data.set(targetName, this.get(propName));
       }
     });
 
     const wid2 = data.watch((e) => {
       if (e.hasModified(targetName)) {
-        this[propName] = data[targetName];
+        this.set(propName, data.get(targetName));
       }
     });
 

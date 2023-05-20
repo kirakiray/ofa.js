@@ -252,6 +252,7 @@ const fn = Xhear.prototype;
 fn.extend(
   {
     get: sfn.get,
+    set: sfn.set,
     toJSON: sfn.toJSON,
     toString: sfn.toString,
     ...watchFn,

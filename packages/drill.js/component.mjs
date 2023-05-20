@@ -18,9 +18,18 @@ class LoadModule extends HTMLElement {
       return;
       // throw `The ${this.tagName.toLowerCase()} element requires the src attribut `;
     }
-
     this.__initSrc = src;
-    src = new URL(src, location.href, src).href;
+
+    const relatePath = this.getAttribute("relate-path");
+    this.removeAttribute("relate-path");
+    src = new URL(src, relatePath || location.href).href;
+    this.__relatePath = relatePath;
+    Object.defineProperties(this, {
+      src: {
+        configurable: true,
+        value: src,
+      },
+    });
     agent(src, {
       element: this,
     });

@@ -120,9 +120,18 @@
         return;
         // throw `The ${this.tagName.toLowerCase()} element requires the src attribut `;
       }
-
       this.__initSrc = src;
-      src = new URL(src, location.href, src).href;
+
+      const relatePath = this.getAttribute("relate-path");
+      this.removeAttribute("relate-path");
+      src = new URL(src, relatePath || location.href).href;
+      this.__relatePath = relatePath;
+      Object.defineProperties(this, {
+        src: {
+          configurable: true,
+          value: src,
+        },
+      });
       agent(src, {
         element: this,
       });
@@ -2660,7 +2669,7 @@ try{
         let tempSrc = defaults.temp;
 
         if (!tempSrc) {
-          tempSrc = selfUrl.replace(/\.m?js/, ".html");
+          tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
         }
 
         defaults.temp = await fetch(tempSrc).then((e) => e.text());
@@ -2668,6 +2677,11 @@ try{
         const template = document.createElement("template");
         template.innerHTML = defaults.temp;
         const temps = convert(template);
+
+        // Fix the relative path of referenced resources
+        Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
+          (el) => el.setAttribute("relate-path", tempSrc)
+        );
 
         renderElement({
           defaults,
