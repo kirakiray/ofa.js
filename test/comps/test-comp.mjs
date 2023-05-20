@@ -5,7 +5,7 @@ export const type = $.COMP;
 // export const temp = "../testtemp.html";
 
 export const ready = function () {
-  console.log("ready => ", this);
+  console.log("component ready => ", this);
 };
 
 // export default async ({ load }) => {
@@ -22,6 +22,6 @@ export const ready = function () {
 
 export default {
   ready() {
-    console.log("ready => ", this);
+    console.log("component ready => ", this);
   },
 };

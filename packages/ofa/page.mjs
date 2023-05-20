@@ -1,20 +1,9 @@
 import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { renderElement } from "../xhear/register.mjs";
-
-// const PAGE = Symbol("Page");
-
-// Object.defineProperty($, "PAGE", {
-//   value: PAGE,
-// });
-
-// lm.use(async ({ data: moduleData, url }) => {
-//   if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
-//     return;
-//   }
-
-//   debugger;
-// });
+import { convert } from "../xhear/render/render.mjs";
+import { isFunction } from "../xhear/public.mjs";
+import { resolvePath } from "./public.mjs";
 
 $.register({
   tag: "o-page",
@@ -23,7 +12,7 @@ $.register({
   },
   watch: {
     async src(val) {
-      if (this.__init_src) {
+      if (this.__init_src && this.__init_src !== val) {
         throw "A page that has already been initialized cannot be set with the src attribute";
       }
 
@@ -41,19 +30,46 @@ $.register({
 
       const { default: defaultData } = moduleData;
 
+      const selfUrl = resolvePath(val, document.location.href);
+
       if (isFunction(defaultData)) {
         finnalDefault = await defaultData({
           load: lm({
-            url,
+            url: selfUrl,
           }),
+          url: selfUrl,
+          get params() {
+            const urlObj = new URL(selfUrl);
+            return Object.fromEntries(
+              Array.from(urlObj.searchParams.entries())
+            );
+          },
         });
       } else if (defaultData instanceof Object) {
         finnalDefault = defaultData;
       }
 
+      const defaults = {
+        proto: {},
+        ...moduleData,
+        ...finnalDefault,
+      };
+
+      let tempSrc = defaults.temp;
+
+      if (!tempSrc) {
+        tempSrc = selfUrl.replace(/\.m?js/, ".html");
+      }
+
+      defaults.temp = await fetch(tempSrc).then((e) => e.text());
+
+      const template = document.createElement("template");
+      template.innerHTML = defaults.temp;
+      const temps = convert(template);
+
       renderElement({
         defaults,
-        ele: this,
+        ele: this.ele,
         template,
         temps,
       });
