@@ -41,6 +41,11 @@ use("wasm", async ({ url }) => {
 });
 
 const createLoad = (meta) => {
+  if (!meta) {
+    meta = {
+      url: document.location.href,
+    };
+  }
   const load = (url) => {
     let reurl = "";
     if (meta.resolve) {
@@ -1643,6 +1648,55 @@ var formFn = {
 
 const COMPS = {};
 
+const renderElement = ({ defaults, ele, template, temps }) => {
+  const data = {
+    ...defaults.data,
+    ...defaults.attrs,
+  };
+
+  const $ele = eleX(ele);
+
+  $ele.extend(defaults.proto, { enumerable: false });
+
+  for (let [key, value] of Object.entries(data)) {
+    if (!$ele.hasOwnProperty(key)) {
+      $ele[key] = value;
+    }
+  }
+
+  if (defaults.temp) {
+    const root = ele.attachShadow({ mode: "open" });
+
+    root.innerHTML = template.innerHTML;
+
+    render({
+      target: root,
+      data: $ele,
+      temps,
+    });
+  }
+
+  defaults.ready && defaults.ready.call($ele);
+
+  if (defaults.watch) {
+    const wen = Object.entries(defaults.watch);
+
+    $ele.watchTick((e) => {
+      for (let [name, func] of wen) {
+        if (e.hasModified(name)) {
+          func.call($ele, $ele[name], {
+            watchers: e,
+          });
+        }
+      }
+    });
+
+    for (let [name, func] of wen) {
+      func.call($ele, $ele[name], {});
+    }
+  }
+};
+
 const register = (opts = {}) => {
   const defaults = {
     // Registered component name
@@ -1693,7 +1747,6 @@ const register = (opts = {}) => {
 
     return attrKeys;
   };
-
   const XElement = (COMPS[name] = class extends HTMLElement {
     constructor(...args) {
       super(...args);
@@ -1702,8 +1755,6 @@ const register = (opts = {}) => {
 
       defaults.created && defaults.created.call($ele);
 
-      $ele.extend(defaults.proto, { enumerable: false });
-
       if (defaults.attrs) {
         const attrKeys = getAttrKeys(defaults.attrs);
 
@@ -1711,54 +1762,24 @@ const register = (opts = {}) => {
         $ele.watchTick((e) => {
           attrKeys.forEach((key) => {
             if (e.hasModified(key)) {
-              this.setAttribute(toDashCase(key), $ele[key]);
+              const val = $ele[key];
+              const attrName = toDashCase(key);
+              if (val === null || val === undefined) {
+                this.removeAttribute(attrName);
+              } else {
+                this.setAttribute(attrName, val);
+              }
             }
           });
         });
       }
 
-      const data = {
-        ...defaults.data,
-        ...defaults.attrs,
-      };
-
-      for (let [key, value] of Object.entries(data)) {
-        if (!$ele.hasOwnProperty(key)) {
-          $ele[key] = value;
-        }
-      }
-
-      if (defaults.temp) {
-        const root = this.attachShadow({ mode: "open" });
-
-        root.innerHTML = template.innerHTML;
-
-        render({
-          target: root,
-          data: $ele,
-          temps,
-        });
-      }
-
-      defaults.ready && defaults.ready.call($ele);
-
-      if (defaults.watch) {
-        const wen = Object.entries(defaults.watch);
-
-        $ele.watchTick((e) => {
-          for (let [name, func] of wen) {
-            if (e.hasModified(name)) {
-              func.call($ele, $ele[name], {
-                watchers: e,
-              });
-            }
-          }
-        });
-
-        for (let [name, func] of wen) {
-          func.call($ele, $ele[name], {});
-        }
-      }
+      renderElement({
+        defaults,
+        ele: this,
+        template,
+        temps,
+      });
     }
 
     connectedCallback() {
@@ -2506,5 +2527,157 @@ Object.assign($, {
   fn: Xhear.prototype,
   all: (expr) => Array.from(document.querySelectorAll(expr)).map(eleX),
 });
+
+function resolvePath(moduleName, baseURI) {
+  const baseURL = new URL(baseURI);
+  // 如果是绝对路径，则直接返回
+  if (
+    moduleName.startsWith("/") ||
+    moduleName.startsWith("http://") ||
+    moduleName.startsWith("https://")
+  ) {
+    return moduleName;
+  }
+
+  // 如果是相对路径，则计算出绝对路径
+  const moduleURL = new URL(moduleName, baseURL);
+  return moduleURL.href;
+}
+
+const COMP = Symbol("Component");
+
+Object.defineProperty($, "COMP", {
+  value: COMP,
+});
+
+lm.use(async ({ data: moduleData, url }) => {
+  if (typeof moduleData !== "object" || moduleData.type !== COMP) {
+    return;
+  }
+
+  let finnalDefault = {};
+
+  const { default: defaultData } = moduleData;
+
+  if (isFunction(defaultData)) {
+    finnalDefault = await defaultData({
+      load: lm({
+        url,
+      }),
+    });
+  } else if (defaultData instanceof Object) {
+    finnalDefault = defaultData;
+  }
+
+  const { tag, temp } = { ...moduleData, ...finnalDefault };
+
+  let tagName = tag;
+  const matchName = url.match(/\/([^/]+)\.m?js$/);
+
+  if (!tagName) {
+    if (matchName) {
+      tagName = toDashCase(matchName[1]);
+    }
+  }
+
+  let tempUrl;
+  if (!temp) {
+    if (tag) {
+      tempUrl = resolvePath(`${tag}.html`, url);
+    } else {
+      tempUrl = resolvePath(`${matchName[1]}.html`, url);
+    }
+  } else {
+    tempUrl = resolvePath(temp, url);
+  }
+
+  const tempContent = await fetch(tempUrl).then((e) => e.text());
+
+  $.register({
+    ...moduleData,
+    ...finnalDefault,
+    tag: tagName,
+    temp: tempContent,
+  });
+});
+
+$.register({
+  tag: "o-page",
+  attrs: {
+    src: null,
+  },
+  watch: {
+    async src(val) {
+      if (this.__init_src && this.__init_src !== val) {
+        throw "A page that has already been initialized cannot be set with the src attribute";
+      }
+
+      if (!val) {
+        return;
+      }
+
+      this.__init_src = val;
+
+      const load = lm();
+
+      const moduleData = await load(val);
+
+      let finnalDefault = {};
+
+      const { default: defaultData } = moduleData;
+
+      const selfUrl = resolvePath(val, document.location.href);
+
+      if (isFunction(defaultData)) {
+        finnalDefault = await defaultData({
+          load: lm({
+            url: selfUrl,
+          }),
+          url: selfUrl,
+          get params() {
+            const urlObj = new URL(selfUrl);
+            return Object.fromEntries(
+              Array.from(urlObj.searchParams.entries())
+            );
+          },
+        });
+      } else if (defaultData instanceof Object) {
+        finnalDefault = defaultData;
+      }
+
+      const defaults = {
+        proto: {},
+        ...moduleData,
+        ...finnalDefault,
+      };
+
+      let tempSrc = defaults.temp;
+
+      if (!tempSrc) {
+        tempSrc = selfUrl.replace(/\.m?js/, ".html");
+      }
+
+      defaults.temp = await fetch(tempSrc).then((e) => e.text());
+
+      const template = document.createElement("template");
+      template.innerHTML = defaults.temp;
+      const temps = convert(template);
+
+      renderElement({
+        defaults,
+        ele: this.ele,
+        template,
+        temps,
+      });
+    },
+  },
+  ready() {
+    console.log("page ready =>");
+  },
+});
+
+if (typeof window !== "undefined") {
+  window.$ = $;
+}
 
 export { $ as default };
