@@ -1,5 +1,6 @@
 export default {
   on(name, func, options) {
+    const errExpr = `on:${name}="${func}"`;
     if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
       func = options.data.get(func);
     } else {
@@ -7,7 +8,15 @@ export default {
     }
 
     if (options && options.data) {
-      func = func.bind(options.data);
+      try {
+        func = func.bind(options.data);
+      } catch (error) {
+        const err = new Error(
+          `Binding event failed, expression error => ${errExpr}\n  ${error.stack}`
+        );
+        console.error(err);
+        return;
+      }
     }
 
     this.ele.addEventListener(name, func);

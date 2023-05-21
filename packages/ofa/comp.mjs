@@ -1,7 +1,7 @@
 import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
-import { resolvePath } from "./public.mjs";
+import { fixRelateSource, resolvePath } from "./public.mjs";
 
 const COMP = Symbol("Component");
 
@@ -56,6 +56,6 @@ lm.use(async ({ data: moduleData, url }) => {
     ...moduleData,
     ...finnalDefault,
     tag: tagName,
-    temp: tempContent,
+    temp: fixRelateSource(tempContent, tempUrl),
   });
 });

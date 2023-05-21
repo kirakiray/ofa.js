@@ -13,3 +13,15 @@ export function resolvePath(moduleName, baseURI) {
   const moduleURL = new URL(moduleName, baseURL);
   return moduleURL.href;
 }
+
+export function fixRelateSource(content, path) {
+  const template = document.createElement("template");
+  template.innerHTML = content;
+
+  // Fix the relative path of referenced resources
+  Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
+    (el) => el.setAttribute("relate-path", path)
+  );
+
+  return template.innerHTML;
+}

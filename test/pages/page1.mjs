@@ -1,8 +1,8 @@
 export default async function ({ load, url, params }) {
   return {
     data: {
-      val: params,
-      ia: "",
+      pm: params,
+      ia: "aaa",
     },
     proto: {
       changeInput(e) {},

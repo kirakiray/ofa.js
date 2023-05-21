@@ -770,6 +770,33 @@
 
       return this[key];
     }
+    set(key, value) {
+      if (/\./.test(key)) {
+        const keys = key.split(".");
+        const lastKey = keys.pop();
+        let target = this;
+        for (let i = 0, len = keys.length; i < len; i++) {
+          try {
+            target = target[keys[i]];
+          } catch (error) {
+            const err = new Error(
+              `Failed to get data : ${keys.slice(0, i).join(".")} \n${
+              error.stack
+            }`
+            );
+            Object.assign(err, {
+              error,
+              target,
+            });
+            throw err;
+          }
+        }
+
+        return (target[lastKey] = value);
+      }
+
+      return (this[key] = value);
+    }
   }
 
   Stanz.prototype.extend(
@@ -933,13 +960,13 @@
   const convertToFunc = (expr, data) => {
     const funcStr = `
 const [$event] = $args;
-try{
+// try{
   with(this){
     return ${expr};
   }
-}catch(error){
-  console.error(error);
-}
+// }catch(error){
+  // console.error(error);
+// }
 `;
     return new Function("...$args", funcStr).bind(data);
   };
@@ -969,9 +996,18 @@ try{
       parentNode.insertBefore(textEl, el);
       parentNode.removeChild(el);
 
-      const func = convertToFunc(el.getAttribute("expr"), data);
+      const expr = el.getAttribute("expr");
+      const func = convertToFunc(expr, data);
       const renderFunc = () => {
-        textEl.textContent = func();
+        try {
+          textEl.textContent = func();
+        } catch (error) {
+          const err = new Error(
+            `Rendering text failed, expression error:  {{${expr}}} \n  ${error.stack}`
+          );
+          err.error = error;
+          console.error(err);
+        }
       };
       tasks.push(renderFunc);
 
@@ -1157,9 +1193,17 @@ try{
     return temps;
   }
 
-  const getVal = (val) => {
+  const getVal = (val, { errExpr } = {}) => {
     if (isFunction(val)) {
-      return val();
+      try {
+        return val();
+      } catch (error) {
+        const err = new Error(
+          `Expression operation failed => ${errExpr} \n  ${error.stack}`
+        );
+        console.error(err);
+        return "";
+      }
     }
 
     return val;
@@ -1177,26 +1221,28 @@ try{
     },
     prop(...args) {
       let [name, value, options] = args;
+      const errExpr = `:${name}="${value}"`;
 
       if (args.length === 1) {
         return this[name];
       }
 
       value = this._convertExpr(options, value);
-      value = getVal(value);
+      value = getVal(value, { errExpr });
       name = hyphenToUpperCase(name);
 
       this[name] = value;
     },
     attr(...args) {
       let [name, value, options] = args;
+      const errExpr = `attr:${name}="${value}"`;
 
       if (args.length === 1) {
         return this.ele.getAttribute(name);
       }
 
       value = this._convertExpr(options, value);
-      value = getVal(value);
+      value = getVal(value, { errExpr });
 
       this.ele.setAttribute(name, value);
     },
@@ -1213,17 +1259,17 @@ try{
 
       const { data } = options;
 
-      this[propName] = data[targetName];
+      this[propName] = data.get(targetName);
 
       const wid1 = this.watch((e) => {
         if (e.hasModified(propName)) {
-          data[targetName] = this[propName];
+          data.set(targetName, this.get(propName));
         }
       });
 
       const wid2 = data.watch((e) => {
         if (e.hasModified(targetName)) {
-          this[propName] = data[targetName];
+          this.set(propName, data.get(targetName));
         }
       });
 
@@ -1236,6 +1282,7 @@ try{
 
   var eventFn = {
     on(name, func, options) {
+      const errExpr = `on:${name}="${func}"`;
       if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
         func = options.data.get(func);
       } else {
@@ -1243,7 +1290,15 @@ try{
       }
 
       if (options && options.data) {
-        func = func.bind(options.data);
+        try {
+          func = func.bind(options.data);
+        } catch (error) {
+          const err = new Error(
+            `Binding event failed, expression error => ${errExpr}\n  ${error.stack}`
+          );
+          console.error(err);
+          return;
+        }
       }
 
       this.ele.addEventListener(name, func);
@@ -2446,6 +2501,7 @@ try{
   fn.extend(
     {
       get: sfn.get,
+      set: sfn.set,
       toJSON: sfn.toJSON,
       toString: sfn.toString,
       ...watchFn,
@@ -2559,6 +2615,18 @@ try{
     return moduleURL.href;
   }
 
+  function fixRelateSource(content, path) {
+    const template = document.createElement("template");
+    template.innerHTML = content;
+
+    // Fix the relative path of referenced resources
+    Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
+      (el) => el.setAttribute("relate-path", path)
+    );
+
+    return template.innerHTML;
+  }
+
   const COMP = Symbol("Component");
 
   Object.defineProperty($, "COMP", {
@@ -2612,7 +2680,7 @@ try{
       ...moduleData,
       ...finnalDefault,
       tag: tagName,
-      temp: tempContent,
+      temp: fixRelateSource(tempContent, tempUrl),
     });
   });
 
@@ -2675,13 +2743,8 @@ try{
         defaults.temp = await fetch(tempSrc).then((e) => e.text());
 
         const template = document.createElement("template");
-        template.innerHTML = defaults.temp;
+        template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
         const temps = convert(template);
-
-        // Fix the relative path of referenced resources
-        Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
-          (el) => el.setAttribute("relate-path", tempSrc)
-        );
 
         renderElement({
           defaults,

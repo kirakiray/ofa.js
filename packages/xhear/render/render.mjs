@@ -15,13 +15,13 @@ const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 const convertToFunc = (expr, data) => {
   const funcStr = `
 const [$event] = $args;
-try{
+// try{
   with(this){
     return ${expr};
   }
-}catch(error){
-  console.error(error);
-}
+// }catch(error){
+  // console.error(error);
+// }
 `;
   return new Function("...$args", funcStr).bind(data);
 };
@@ -51,9 +51,18 @@ export function render({
     parentNode.insertBefore(textEl, el);
     parentNode.removeChild(el);
 
-    const func = convertToFunc(el.getAttribute("expr"), data);
+    const expr = el.getAttribute("expr");
+    const func = convertToFunc(expr, data);
     const renderFunc = () => {
-      textEl.textContent = func();
+      try {
+        textEl.textContent = func();
+      } catch (error) {
+        const err = new Error(
+          `Rendering text failed, expression error:  {{${expr}}} \n  ${error.stack}`
+        );
+        err.error = error;
+        console.error(err);
+      }
     };
     tasks.push(renderFunc);
 
@@ -239,9 +248,17 @@ export function convert(el) {
   return temps;
 }
 
-const getVal = (val) => {
+const getVal = (val, { errExpr } = {}) => {
   if (isFunction(val)) {
-    return val();
+    try {
+      return val();
+    } catch (error) {
+      const err = new Error(
+        `Expression operation failed => ${errExpr} \n  ${error.stack}`
+      );
+      console.error(err);
+      return "";
+    }
   }
 
   return val;
@@ -259,26 +276,28 @@ const defaultData = {
   },
   prop(...args) {
     let [name, value, options] = args;
+    const errExpr = `:${name}="${value}"`;
 
     if (args.length === 1) {
       return this[name];
     }
 
     value = this._convertExpr(options, value);
-    value = getVal(value);
+    value = getVal(value, { errExpr });
     name = hyphenToUpperCase(name);
 
     this[name] = value;
   },
   attr(...args) {
     let [name, value, options] = args;
+    const errExpr = `attr:${name}="${value}"`;
 
     if (args.length === 1) {
       return this.ele.getAttribute(name);
     }
 
     value = this._convertExpr(options, value);
-    value = getVal(value);
+    value = getVal(value, { errExpr });
 
     this.ele.setAttribute(name, value);
   },

@@ -3,7 +3,7 @@ import $ from "../xhear/base.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { isFunction } from "../xhear/public.mjs";
-import { resolvePath } from "./public.mjs";
+import { fixRelateSource, resolvePath } from "./public.mjs";
 
 $.register({
   tag: "o-page",
@@ -64,13 +64,8 @@ $.register({
       defaults.temp = await fetch(tempSrc).then((e) => e.text());
 
       const template = document.createElement("template");
-      template.innerHTML = defaults.temp;
+      template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
       const temps = convert(template);
-
-      // Fix the relative path of referenced resources
-      Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
-        (el) => el.setAttribute("relate-path", tempSrc)
-      );
 
       renderElement({
         defaults,
