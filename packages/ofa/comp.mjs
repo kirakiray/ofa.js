@@ -1,5 +1,4 @@
 import lm from "../drill.js/base.mjs";
-import { nextTick } from "../stanz/public.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
 import { dispatchLoad } from "./page.mjs";
@@ -63,10 +62,7 @@ lm.use(async ({ data: moduleData, url }) => {
   const { loaded } = registerOpts;
   registerOpts.ready = async function (...args) {
     oldReady && oldReady.apply(this, args);
-    loaded &&
-      nextTick(() => {
-        dispatchLoad(this, loaded);
-      });
+    loaded && dispatchLoad(this, loaded);
   };
 
   $.register({

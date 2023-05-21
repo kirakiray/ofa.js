@@ -2767,10 +2767,7 @@ lm.use(async ({ data: moduleData, url }) => {
   const { loaded } = registerOpts;
   registerOpts.ready = async function (...args) {
     oldReady && oldReady.apply(this, args);
-    loaded &&
-      nextTick(() => {
-        dispatchLoad(this, loaded);
-      });
+    loaded && dispatchLoad(this, loaded);
   };
 
   $.register({
