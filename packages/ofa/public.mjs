@@ -1,3 +1,5 @@
+import { searchEle } from "../xhear/public.mjs";
+
 export function resolvePath(moduleName, baseURI) {
   const baseURL = new URL(baseURI);
   // 如果是绝对路径，则直接返回
@@ -14,13 +16,11 @@ export function resolvePath(moduleName, baseURI) {
   return moduleURL.href;
 }
 
-const getEles = (target, expr) => Array.from(target.querySelectorAll(expr));
-
 export function fixRelateSource(content, path) {
   const template = document.createElement("template");
   template.innerHTML = content;
 
-  getEles(template.content, "[href],[src]").forEach((el) => {
+  searchEle(template.content, "[href],[src]").forEach((el) => {
     ["href", "src"].forEach((name) => {
       let val = el.getAttribute(name);
       if (val) {

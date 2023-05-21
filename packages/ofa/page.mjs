@@ -2,7 +2,7 @@ import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
-import { isFunction } from "../xhear/public.mjs";
+import { isFunction, searchEle } from "../xhear/public.mjs";
 import { fixRelateSource, resolvePath } from "./public.mjs";
 
 $.register({
@@ -32,11 +32,13 @@ $.register({
 
       const selfUrl = resolvePath(val, document.location.href);
 
+      const relateLoad = lm({
+        url: selfUrl,
+      });
+
       if (isFunction(defaultData)) {
         finnalDefault = await defaultData({
-          load: lm({
-            url: selfUrl,
-          }),
+          load: relateLoad,
           url: selfUrl,
           get params() {
             const urlObj = new URL(selfUrl);
@@ -73,9 +75,29 @@ $.register({
         template,
         temps,
       });
+
+      dispatchLoad(this, defaults.loaded);
     },
   },
-  ready() {
-    console.log("page ready =>");
-  },
 });
+
+export const dispatchLoad = async (_this, loaded) => {
+  const shadow = _this.ele.shadowRoot;
+  if (shadow) {
+    const srcEles = searchEle(shadow, `l-m,load-module`);
+    await Promise.all(
+      srcEles.map(
+        (el) =>
+          new Promise((res) => {
+            el.addEventListener("load", (e) => {
+              res();
+            });
+          })
+      )
+    );
+  }
+
+  if (loaded) {
+    loaded.call(_this);
+  }
+};

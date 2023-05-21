@@ -1,4 +1,5 @@
 import { processor, use } from "./use.mjs";
+export const LOADED = Symbol("loaded");
 
 const createLoad = (meta) => {
   if (!meta) {
@@ -43,6 +44,13 @@ export const agent = async (url, opts) => {
     }
   } else {
     data = fetch(url);
+  }
+
+  if (opts && opts.element) {
+    const { element } = opts;
+    element[LOADED] = true;
+    const event = new Event("load");
+    element.dispatchEvent(event);
   }
 
   return data;

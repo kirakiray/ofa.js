@@ -65,3 +65,5 @@ export const removeArrayValue = (arr, target) => {
     arr.splice(index, 1);
   }
 };
+
+export const searchEle = (el, expr) => Array.from(el.querySelectorAll(expr));

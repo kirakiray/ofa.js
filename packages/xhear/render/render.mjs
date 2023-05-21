@@ -3,11 +3,10 @@ import {
   hyphenToUpperCase,
   meetsEle,
   isEmptyObject,
+  searchEle,
   removeArrayValue as remove,
 } from "../public.mjs";
 import { eleX } from "../util.mjs";
-
-const searchEle = (el, expr) => Array.from(el.querySelectorAll(expr));
 
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
 const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
@@ -15,13 +14,13 @@ const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 const convertToFunc = (expr, data) => {
   const funcStr = `
 const [$event] = $args;
-// try{
+try{
   with(this){
     return ${expr};
   }
-// }catch(error){
-  // console.error(error);
-// }
+}catch(error){
+  console.error(error);
+}
 `;
   return new Function("...$args", funcStr).bind(data);
 };
@@ -40,29 +39,20 @@ export function render({
     target.innerHTML = content;
   }
 
-  const texts = target.querySelectorAll("xtext");
+  const texts = searchEle(target, "xtext");
 
   const tasks = [];
   const revokes = getRevokes(target);
 
-  Array.from(texts).forEach((el) => {
+  texts.forEach((el) => {
     const textEl = document.createTextNode("");
     const { parentNode } = el;
     parentNode.insertBefore(textEl, el);
     parentNode.removeChild(el);
 
-    const expr = el.getAttribute("expr");
-    const func = convertToFunc(expr, data);
+    const func = convertToFunc(el.getAttribute("expr"), data);
     const renderFunc = () => {
-      try {
-        textEl.textContent = func();
-      } catch (error) {
-        const err = new Error(
-          `Rendering text failed, expression error:  {{${expr}}} \n  ${error.stack}`
-        );
-        err.error = error;
-        console.error(err);
-      }
+      textEl.textContent = func();
     };
     tasks.push(renderFunc);
 
@@ -248,17 +238,9 @@ export function convert(el) {
   return temps;
 }
 
-const getVal = (val, { errExpr } = {}) => {
+const getVal = (val) => {
   if (isFunction(val)) {
-    try {
-      return val();
-    } catch (error) {
-      const err = new Error(
-        `Expression operation failed => ${errExpr} \n  ${error.stack}`
-      );
-      console.error(err);
-      return "";
-    }
+    return val();
   }
 
   return val;
@@ -276,28 +258,26 @@ const defaultData = {
   },
   prop(...args) {
     let [name, value, options] = args;
-    const errExpr = `:${name}="${value}"`;
 
     if (args.length === 1) {
       return this[name];
     }
 
     value = this._convertExpr(options, value);
-    value = getVal(value, { errExpr });
+    value = getVal(value);
     name = hyphenToUpperCase(name);
 
     this[name] = value;
   },
   attr(...args) {
     let [name, value, options] = args;
-    const errExpr = `attr:${name}="${value}"`;
 
     if (args.length === 1) {
       return this.ele.getAttribute(name);
     }
 
     value = this._convertExpr(options, value);
-    value = getVal(value, { errExpr });
+    value = getVal(value);
 
     this.ele.setAttribute(name, value);
   },

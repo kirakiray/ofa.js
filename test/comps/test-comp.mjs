@@ -24,4 +24,7 @@ export default {
   ready() {
     console.log("component ready => ", this);
   },
+  loaded() {
+    console.log("component loaded => ", this);
+  },
 };

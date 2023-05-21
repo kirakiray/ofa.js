@@ -4,6 +4,7 @@ import Xhear from "./main.mjs";
 import stanz from "../stanz/base.mjs";
 import { getType } from "../stanz/public.mjs";
 import { register } from "./register.mjs";
+import { searchEle } from "./public.mjs";
 
 export default function $(expr) {
   if (getType(expr) === "string" && !/<.+>/.test(expr)) {
@@ -21,5 +22,5 @@ Object.assign($, {
   convert,
   register,
   fn: Xhear.prototype,
-  all: (expr) => Array.from(document.querySelectorAll(expr)).map(eleX),
+  all: (expr) => searchEle(document, expr).map(eleX),
 });

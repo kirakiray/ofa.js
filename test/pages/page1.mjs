@@ -8,7 +8,10 @@ export default async function ({ load, url, params }) {
       changeInput(e) {},
     },
     ready() {
-      console.log("page ready !");
+      console.log("page ready =>", this);
+    },
+    loaded() {
+      console.log("page loaded => ", this);
     },
   };
 }

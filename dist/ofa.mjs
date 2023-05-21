@@ -40,6 +40,8 @@ use("wasm", async ({ url }) => {
   return instance.exports;
 });
 
+const LOADED = Symbol("loaded");
+
 const createLoad = (meta) => {
   if (!meta) {
     meta = {
@@ -85,6 +87,13 @@ const agent = async (url, opts) => {
     data = fetch(url);
   }
 
+  if (opts && opts.element) {
+    const { element } = opts;
+    element[LOADED] = true;
+    const event = new Event("load");
+    element.dispatchEvent(event);
+  }
+
   return data;
 };
 
@@ -99,6 +108,14 @@ Object.assign(lm, {
 class LoadModule extends HTMLElement {
   constructor(...args) {
     super(...args);
+
+    this[LOADED] = false;
+
+    Object.defineProperties(this, {
+      loaded: {
+        get: () => this[LOADED],
+      },
+    });
 
     this._init();
   }
@@ -315,6 +332,8 @@ const removeArrayValue = (arr, target) => {
     arr.splice(index, 1);
   }
 };
+
+const searchEle = (el, expr) => Array.from(el.querySelectorAll(expr));
 
 const { assign: assign$1, freeze } = Object;
 
@@ -946,21 +965,19 @@ const handler = {
   },
 };
 
-const searchEle = (el, expr) => Array.from(el.querySelectorAll(expr));
-
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
 const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
 const convertToFunc = (expr, data) => {
   const funcStr = `
 const [$event] = $args;
-// try{
+try{
   with(this){
     return ${expr};
   }
-// }catch(error){
-  // console.error(error);
-// }
+}catch(error){
+  console.error(error);
+}
 `;
   return new Function("...$args", funcStr).bind(data);
 };
@@ -979,29 +996,20 @@ function render({
     target.innerHTML = content;
   }
 
-  const texts = target.querySelectorAll("xtext");
+  const texts = searchEle(target, "xtext");
 
   const tasks = [];
   const revokes = getRevokes(target);
 
-  Array.from(texts).forEach((el) => {
+  texts.forEach((el) => {
     const textEl = document.createTextNode("");
     const { parentNode } = el;
     parentNode.insertBefore(textEl, el);
     parentNode.removeChild(el);
 
-    const expr = el.getAttribute("expr");
-    const func = convertToFunc(expr, data);
+    const func = convertToFunc(el.getAttribute("expr"), data);
     const renderFunc = () => {
-      try {
-        textEl.textContent = func();
-      } catch (error) {
-        const err = new Error(
-          `Rendering text failed, expression error:  {{${expr}}} \n  ${error.stack}`
-        );
-        err.error = error;
-        console.error(err);
-      }
+      textEl.textContent = func();
     };
     tasks.push(renderFunc);
 
@@ -1187,17 +1195,9 @@ function convert(el) {
   return temps;
 }
 
-const getVal = (val, { errExpr } = {}) => {
+const getVal = (val) => {
   if (isFunction(val)) {
-    try {
-      return val();
-    } catch (error) {
-      const err = new Error(
-        `Expression operation failed => ${errExpr} \n  ${error.stack}`
-      );
-      console.error(err);
-      return "";
-    }
+    return val();
   }
 
   return val;
@@ -1215,28 +1215,26 @@ const defaultData = {
   },
   prop(...args) {
     let [name, value, options] = args;
-    const errExpr = `:${name}="${value}"`;
 
     if (args.length === 1) {
       return this[name];
     }
 
     value = this._convertExpr(options, value);
-    value = getVal(value, { errExpr });
+    value = getVal(value);
     name = hyphenToUpperCase(name);
 
     this[name] = value;
   },
   attr(...args) {
     let [name, value, options] = args;
-    const errExpr = `attr:${name}="${value}"`;
 
     if (args.length === 1) {
       return this.ele.getAttribute(name);
     }
 
     value = this._convertExpr(options, value);
-    value = getVal(value, { errExpr });
+    value = getVal(value);
 
     this.ele.setAttribute(name, value);
   },
@@ -1276,7 +1274,6 @@ var syncFn = {
 
 var eventFn = {
   on(name, func, options) {
-    const errExpr = `on:${name}="${func}"`;
     if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
       func = options.data.get(func);
     } else {
@@ -1284,15 +1281,7 @@ var eventFn = {
     }
 
     if (options && options.data) {
-      try {
-        func = func.bind(options.data);
-      } catch (error) {
-        const err = new Error(
-          `Binding event failed, expression error => ${errExpr}\n  ${error.stack}`
-        );
-        console.error(err);
-        return;
-      }
+      func = func.bind(options.data);
     }
 
     this.ele.addEventListener(name, func);
@@ -1676,12 +1665,10 @@ const getFormData = (target, expr) => {
     } else if (tag === "textarea") {
       data[name] = ele.value;
     } else if (tag === "select") {
-      const selectedsOpt = ele.querySelectorAll(`option:checked`);
+      const selectedsOpt = searchEle(ele, `option:checked`);
 
       if (ele.multiple) {
-        data[name] = Array.from(selectedsOpt).map(
-          (e) => e.value || e.textContent
-        );
+        data[name] = selectedsOpt.map((e) => e.value || e.textContent);
       } else {
         const [e] = selectedsOpt;
         data[name] = e.value || e.textContent;
@@ -2312,7 +2299,7 @@ class Xhear extends LikeArray {
   }
 
   all(expr) {
-    return Array.from(this.ele.querySelectorAll(expr)).map(eleX);
+    return searchEle(this.ele, expr).map(eleX);
   }
 
   extend(obj, desc) {
@@ -2590,7 +2577,7 @@ Object.assign($, {
   convert,
   register,
   fn: Xhear.prototype,
-  all: (expr) => Array.from(document.querySelectorAll(expr)).map(eleX),
+  all: (expr) => searchEle(document, expr).map(eleX),
 });
 
 function resolvePath(moduleName, baseURI) {
@@ -2613,13 +2600,114 @@ function fixRelateSource(content, path) {
   const template = document.createElement("template");
   template.innerHTML = content;
 
-  // Fix the relative path of referenced resources
-  Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
-    (el) => el.setAttribute("relate-path", path)
-  );
+  searchEle(template.content, "[href],[src]").forEach((el) => {
+    ["href", "src"].forEach((name) => {
+      let val = el.getAttribute(name);
+      if (val) {
+        el.setAttribute(name, resolvePath(val, path));
+      }
+    });
+  });
 
   return template.innerHTML;
 }
+
+$.register({
+  tag: "o-page",
+  attrs: {
+    src: null,
+  },
+  watch: {
+    async src(val) {
+      if (this.__init_src && this.__init_src !== val) {
+        throw "A page that has already been initialized cannot be set with the src attribute";
+      }
+
+      if (!val) {
+        return;
+      }
+
+      this.__init_src = val;
+
+      const load = lm();
+
+      const moduleData = await load(val);
+
+      let finnalDefault = {};
+
+      const { default: defaultData } = moduleData;
+
+      const selfUrl = resolvePath(val, document.location.href);
+
+      const relateLoad = lm({
+        url: selfUrl,
+      });
+
+      if (isFunction(defaultData)) {
+        finnalDefault = await defaultData({
+          load: relateLoad,
+          url: selfUrl,
+          get params() {
+            const urlObj = new URL(selfUrl);
+            return Object.fromEntries(
+              Array.from(urlObj.searchParams.entries())
+            );
+          },
+        });
+      } else if (defaultData instanceof Object) {
+        finnalDefault = defaultData;
+      }
+
+      const defaults = {
+        proto: {},
+        ...moduleData,
+        ...finnalDefault,
+      };
+
+      let tempSrc = defaults.temp;
+
+      if (!tempSrc) {
+        tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
+      }
+
+      defaults.temp = await fetch(tempSrc).then((e) => e.text());
+
+      const template = document.createElement("template");
+      template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
+      const temps = convert(template);
+
+      renderElement({
+        defaults,
+        ele: this.ele,
+        template,
+        temps,
+      });
+
+      dispatchLoad(this, defaults.loaded);
+    },
+  },
+});
+
+const dispatchLoad = async (_this, loaded) => {
+  const shadow = _this.ele.shadowRoot;
+  if (shadow) {
+    const srcEles = searchEle(shadow, `l-m,load-module`);
+    await Promise.all(
+      srcEles.map(
+        (el) =>
+          new Promise((res) => {
+            el.addEventListener("load", (e) => {
+              res();
+            });
+          })
+      )
+    );
+  }
+
+  if (loaded) {
+    loaded.call(_this);
+  }
+};
 
 const COMP = Symbol("Component");
 
@@ -2670,87 +2758,26 @@ lm.use(async ({ data: moduleData, url }) => {
 
   const tempContent = await fetch(tempUrl).then((e) => e.text());
 
-  $.register({
+  const registerOpts = {
     ...moduleData,
     ...finnalDefault,
+  };
+
+  const oldReady = registerOpts.ready;
+  const { loaded } = registerOpts;
+  registerOpts.ready = async function (...args) {
+    oldReady && oldReady.apply(this, args);
+    loaded &&
+      nextTick(() => {
+        dispatchLoad(this, loaded);
+      });
+  };
+
+  $.register({
+    ...registerOpts,
     tag: tagName,
     temp: fixRelateSource(tempContent, tempUrl),
   });
-});
-
-$.register({
-  tag: "o-page",
-  attrs: {
-    src: null,
-  },
-  watch: {
-    async src(val) {
-      if (this.__init_src && this.__init_src !== val) {
-        throw "A page that has already been initialized cannot be set with the src attribute";
-      }
-
-      if (!val) {
-        return;
-      }
-
-      this.__init_src = val;
-
-      const load = lm();
-
-      const moduleData = await load(val);
-
-      let finnalDefault = {};
-
-      const { default: defaultData } = moduleData;
-
-      const selfUrl = resolvePath(val, document.location.href);
-
-      if (isFunction(defaultData)) {
-        finnalDefault = await defaultData({
-          load: lm({
-            url: selfUrl,
-          }),
-          url: selfUrl,
-          get params() {
-            const urlObj = new URL(selfUrl);
-            return Object.fromEntries(
-              Array.from(urlObj.searchParams.entries())
-            );
-          },
-        });
-      } else if (defaultData instanceof Object) {
-        finnalDefault = defaultData;
-      }
-
-      const defaults = {
-        proto: {},
-        ...moduleData,
-        ...finnalDefault,
-      };
-
-      let tempSrc = defaults.temp;
-
-      if (!tempSrc) {
-        tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
-      }
-
-      defaults.temp = await fetch(tempSrc).then((e) => e.text());
-
-      const template = document.createElement("template");
-      template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
-      const temps = convert(template);
-
-      renderElement({
-        defaults,
-        ele: this.ele,
-        template,
-        temps,
-      });
-    },
-  },
-  ready() {
-    console.log("page ready =>");
-  },
 });
 
 if (typeof window !== "undefined") {

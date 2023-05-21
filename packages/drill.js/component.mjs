@@ -1,8 +1,16 @@
-import { agent } from "./main.mjs";
+import { agent, LOADED } from "./main.mjs";
 
 class LoadModule extends HTMLElement {
   constructor(...args) {
     super(...args);
+
+    this[LOADED] = false;
+
+    Object.defineProperties(this, {
+      loaded: {
+        get: () => this[LOADED],
+      },
+    });
 
     this._init();
   }

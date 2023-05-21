@@ -1,5 +1,5 @@
 import { eleX } from "./util.mjs";
-import { meetsEle } from "./public.mjs";
+import { meetsEle, searchEle } from "./public.mjs";
 import { handler } from "./accessor.mjs";
 import renderFn from "./render/render.mjs";
 import syncFn from "./render/sync.mjs";
@@ -69,7 +69,7 @@ export default class Xhear extends LikeArray {
   }
 
   all(expr) {
-    return Array.from(this.ele.querySelectorAll(expr)).map(eleX);
+    return searchEle(this.ele, expr).map(eleX);
   }
 
   extend(obj, desc) {

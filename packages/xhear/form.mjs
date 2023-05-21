@@ -1,5 +1,6 @@
 import stanz from "../stanz/base.mjs";
 import { emitUpdate } from "../stanz/watch.mjs";
+import { searchEle } from "./public.mjs";
 
 const { defineProperty, assign } = Object;
 
@@ -140,12 +141,10 @@ const getFormData = (target, expr) => {
     } else if (tag === "textarea") {
       data[name] = ele.value;
     } else if (tag === "select") {
-      const selectedsOpt = ele.querySelectorAll(`option:checked`);
+      const selectedsOpt = searchEle(ele, `option:checked`);
 
       if (ele.multiple) {
-        data[name] = Array.from(selectedsOpt).map(
-          (e) => e.value || e.textContent
-        );
+        data[name] = selectedsOpt.map((e) => e.value || e.textContent);
       } else {
         const [e] = selectedsOpt;
         data[name] = e.value || e.textContent;

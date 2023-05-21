@@ -1,6 +1,8 @@
 import lm from "../drill.js/base.mjs";
+import { nextTick } from "../stanz/public.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
+import { dispatchLoad } from "./page.mjs";
 import { fixRelateSource, resolvePath } from "./public.mjs";
 
 const COMP = Symbol("Component");
@@ -52,9 +54,23 @@ lm.use(async ({ data: moduleData, url }) => {
 
   const tempContent = await fetch(tempUrl).then((e) => e.text());
 
-  $.register({
+  const registerOpts = {
     ...moduleData,
     ...finnalDefault,
+  };
+
+  const oldReady = registerOpts.ready;
+  const { loaded } = registerOpts;
+  registerOpts.ready = async function (...args) {
+    oldReady && oldReady.apply(this, args);
+    loaded &&
+      nextTick(() => {
+        dispatchLoad(this, loaded);
+      });
+  };
+
+  $.register({
+    ...registerOpts,
     tag: tagName,
     temp: fixRelateSource(tempContent, tempUrl),
   });
