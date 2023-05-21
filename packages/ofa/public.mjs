@@ -14,14 +14,20 @@ export function resolvePath(moduleName, baseURI) {
   return moduleURL.href;
 }
 
+const getEles = (target, expr) => Array.from(target.querySelectorAll(expr));
+
 export function fixRelateSource(content, path) {
   const template = document.createElement("template");
   template.innerHTML = content;
 
-  // Fix the relative path of referenced resources
-  Array.from(template.content.querySelectorAll("l-m,load-module")).forEach(
-    (el) => el.setAttribute("relate-path", path)
-  );
+  getEles(template.content, "[href],[src]").forEach((el) => {
+    ["href", "src"].forEach((name) => {
+      let val = el.getAttribute(name);
+      if (val) {
+        el.setAttribute(name, resolvePath(val, path));
+      }
+    });
+  });
 
   return template.innerHTML;
 }
