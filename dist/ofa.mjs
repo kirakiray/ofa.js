@@ -237,7 +237,10 @@ function debounce(func, wait = 0) {
 
 // Enhanced methods for extending objects
 const extend = (_this, proto, descriptor = {}) => {
-  Object.keys(proto).forEach((k) => {
+  [
+    ...Object.getOwnPropertyNames(proto),
+    ...Object.getOwnPropertySymbols(proto),
+  ].forEach((k) => {
     const result = Object.getOwnPropertyDescriptor(proto, k);
     const { configurable, enumerable, writable, get, set, value } = result;
 
@@ -2612,6 +2615,56 @@ function fixRelateSource(content, path) {
   return template.innerHTML;
 }
 
+const initSrc = async (_this, val) => {
+  if (_this.__init_src) {
+    if (_this.__init_src !== val) {
+      throw "A page that has already been initialized cannot be set with the src attribute";
+    }
+    return false;
+  }
+
+  if (!val) {
+    return false;
+  }
+
+  _this.__init_src = val;
+
+  const load = lm();
+
+  const moduleData = await load(val);
+
+  let finnalDefault = {};
+
+  const { default: defaultData } = moduleData;
+
+  const selfUrl = resolvePath(val, document.location.href);
+
+  const relateLoad = lm({
+    url: selfUrl,
+  });
+
+  if (isFunction(defaultData)) {
+    finnalDefault = await defaultData({
+      load: relateLoad,
+      url: selfUrl,
+      get params() {
+        const urlObj = new URL(selfUrl);
+        return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
+      },
+    });
+  } else if (defaultData instanceof Object) {
+    finnalDefault = defaultData;
+  }
+
+  const defaults = {
+    proto: {},
+    ...moduleData,
+    ...finnalDefault,
+  };
+
+  return { selfUrl, defaults };
+};
+
 $.register({
   tag: "o-page",
   attrs: {
@@ -2619,50 +2672,13 @@ $.register({
   },
   watch: {
     async src(val) {
-      if (this.__init_src && this.__init_src !== val) {
-        throw "A page that has already been initialized cannot be set with the src attribute";
-      }
+      const result = await initSrc(this, val);
 
-      if (!val) {
+      if (result === false) {
         return;
       }
 
-      this.__init_src = val;
-
-      const load = lm();
-
-      const moduleData = await load(val);
-
-      let finnalDefault = {};
-
-      const { default: defaultData } = moduleData;
-
-      const selfUrl = resolvePath(val, document.location.href);
-
-      const relateLoad = lm({
-        url: selfUrl,
-      });
-
-      if (isFunction(defaultData)) {
-        finnalDefault = await defaultData({
-          load: relateLoad,
-          url: selfUrl,
-          get params() {
-            const urlObj = new URL(selfUrl);
-            return Object.fromEntries(
-              Array.from(urlObj.searchParams.entries())
-            );
-          },
-        });
-      } else if (defaultData instanceof Object) {
-        finnalDefault = defaultData;
-      }
-
-      const defaults = {
-        proto: {},
-        ...moduleData,
-        ...finnalDefault,
-      };
+      const { selfUrl, defaults } = result;
 
       let tempSrc = defaults.temp;
 
@@ -2684,6 +2700,17 @@ $.register({
       });
 
       dispatchLoad(this, defaults.loaded);
+    },
+  },
+  proto: {
+    back() {
+      this.app.back();
+    },
+    goto(src) {
+      this.app.goto(new URL(src, this.src).href);
+    },
+    replace(src) {
+      this.app.replace(new URL(src, this.src).href);
     },
   },
 });
@@ -2775,6 +2802,93 @@ lm.use(async ({ data: moduleData, url }) => {
     tag: tagName,
     temp: fixRelateSource(tempContent, tempUrl),
   });
+});
+
+const HISTORY = Symbol("history");
+
+$.register({
+  tag: "o-app",
+  temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+  attrs: {
+    src: "",
+  },
+  watch: {
+    async src(val) {
+      const result = await initSrc(this, val);
+
+      if (result === false) {
+        return;
+      }
+
+      const { selfUrl, defaults } = result;
+
+      this.extend(defaults.proto);
+
+      if (defaults.ready) {
+        defaults.ready.call(this);
+      }
+
+      const homeUrl = new URL(defaults.home, selfUrl).href;
+
+      this.push(`<o-page src="${homeUrl}"></o-page>`);
+    },
+  },
+  proto: {
+    [HISTORY]: [],
+    back() {
+      if (!this[HISTORY].length) {
+        console.warn(`It's already the first page, can't go back`);
+        return;
+      }
+      this.current.remove();
+
+      const newCurrent = this[HISTORY].pop();
+
+      this.push(newCurrent);
+    },
+    goto(src) {
+      const { current } = this;
+      this[HISTORY].push(current.toJSON());
+
+      this.push(`<o-page src="${src}"></o-page>`);
+
+      current.remove();
+    },
+    replace() {},
+    get current() {
+      return this.$("o-page:last-of-type");
+    },
+    get routers() {
+      const routers = [...this[HISTORY], this.current.toJSON()];
+
+      return routers;
+    },
+  },
+});
+
+$.fn.extend({
+  get app() {
+    let target = this;
+
+    while (target && target !== "o-app") {
+      if (target.tag === "o-page") {
+        const result = target.parents.find((el) => el.tag === "o-app");
+
+        if (result) {
+          target = result;
+          break;
+        }
+      }
+
+      target = target.host;
+
+      if (!target) {
+        break;
+      }
+    }
+
+    return target;
+  },
 });
 
 if (typeof window !== "undefined") {
