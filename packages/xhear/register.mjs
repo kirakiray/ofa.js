@@ -16,7 +16,7 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
 
   const $ele = eleX(ele);
 
-  $ele.extend(defaults.proto, { enumerable: false });
+  defaults.proto && $ele.extend(defaults.proto, { enumerable: false });
 
   for (let [key, value] of Object.entries(data)) {
     if (!$ele.hasOwnProperty(key)) {

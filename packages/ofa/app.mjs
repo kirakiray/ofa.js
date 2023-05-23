@@ -1,14 +1,28 @@
-import lm from "../drill.js/base.mjs";
+// import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { initSrc } from "./page.mjs";
+import { convert } from "../xhear/render/render.mjs";
+import { renderElement } from "../xhear/register.mjs";
 
 const HISTORY = Symbol("history");
+
+const getLoading = ({ self: _this, src, type }) => {
+  const { loading } = _this._opts;
+
+  let loadingContent = "";
+  if (loading) {
+    loadingContent = loading({ src, type });
+  }
+
+  return loadingContent;
+};
 
 $.register({
   tag: "o-app",
   temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
   attrs: {
     src: "",
+    _opts: {},
   },
   watch: {
     async src(val) {
@@ -26,9 +40,43 @@ $.register({
         defaults.ready.call(this);
       }
 
+      const { loading, fail } = defaults;
+
+      this.on("error", (e) => {
+        let failContent = ``;
+
+        if (fail) {
+          failContent = fail({
+            target: e.target,
+            src: e.target.getAttribute("src"),
+            error: e.error,
+          });
+        }
+
+        const template = document.createElement("template");
+        template.innerHTML = failContent;
+        const temps = convert(template);
+
+        renderElement({
+          defaults: {
+            temp: " ",
+          },
+          ele: e.target,
+          template,
+          temps,
+        });
+
+        e.target.innerHTML = "";
+      });
+
       const homeUrl = new URL(defaults.home, selfUrl).href;
 
       this.push(`<o-page src="${homeUrl}"></o-page>`);
+
+      Object.assign(this._opts, {
+        loading,
+        fail,
+      });
     },
   },
   proto: {
@@ -45,16 +93,32 @@ $.register({
       this.push(newCurrent);
     },
     goto(src) {
-      const { current } = this;
-      this[HISTORY].push(current.toJSON());
+      const { current: oldCurrent } = this;
 
-      this.push(`<o-page src="${src}"></o-page>`);
+      oldCurrent.forEach((el) => el.remove());
 
-      current.remove();
+      this[HISTORY].push(oldCurrent.toJSON());
+
+      this.push(
+        `<o-page src="${src}">${getLoading({
+          self: this,
+          src,
+          type: "goto",
+        })}</o-page>`
+      );
+
+      oldCurrent.remove();
     },
     replace(src) {
       this.current.remove();
-      this.push(`<o-page src="${src}"></o-page>`);
+
+      this.push(
+        `<o-page src="${src}">${getLoading({
+          self: this,
+          src,
+          type: "replace",
+        })}</o-page>`
+      );
     },
     get current() {
       return this.$("o-page:last-of-type");

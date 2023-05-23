@@ -31,3 +31,14 @@ export function fixRelateSource(content, path) {
 
   return template.innerHTML;
 }
+
+export const wrapErrorCall = async (callback, { self, desc }) => {
+  try {
+    await callback();
+  } catch (error) {
+    const err = new Error(`${desc}\n  ${error.stack}`);
+    err.error = error;
+    self.emit("error", { error: err });
+    throw err;
+  }
+};

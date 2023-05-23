@@ -32,13 +32,16 @@ export default {
     this.ele.removeEventListener(name, func);
     return this;
   },
-  emit(name, options) {
+  emit(name, data, opts) {
     let event;
-    if (name) {
-      event = new Event(name);
+
+    if (name instanceof Event) {
+      event = name;
+    } else if (name) {
+      event = new Event(name, { bubbles: true, ...opts });
     }
 
-    options && Object.assign(event, options);
+    data && Object.assign(event, data);
 
     this.ele.dispatchEvent(event);
 

@@ -3,7 +3,7 @@ import $ from "../xhear/base.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { isFunction, searchEle } from "../xhear/public.mjs";
-import { fixRelateSource, resolvePath } from "./public.mjs";
+import { fixRelateSource, resolvePath, wrapErrorCall } from "./public.mjs";
 
 export const initSrc = async (_this, val) => {
   if (_this.__init_src) {
@@ -62,7 +62,17 @@ $.register({
   },
   watch: {
     async src(val) {
-      const result = await initSrc(this, val);
+      let result;
+
+      await wrapErrorCall(
+        async () => {
+          result = await initSrc(this, val);
+        },
+        {
+          self: this,
+          desc: `Request for ${val} module failed`,
+        }
+      );
 
       if (result === false) {
         return;
@@ -76,7 +86,15 @@ $.register({
         tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
       }
 
-      defaults.temp = await fetch(tempSrc).then((e) => e.text());
+      await wrapErrorCall(
+        async () => {
+          defaults.temp = await fetch(tempSrc).then((e) => e.text());
+        },
+        {
+          self: this,
+          desc: `${selfUrl} module request for ${tempSrc} template page failed`,
+        }
+      );
 
       const template = document.createElement("template");
       template.innerHTML = fixRelateSource(defaults.temp, tempSrc);

@@ -1309,13 +1309,16 @@ var eventFn = {
     this.ele.removeEventListener(name, func);
     return this;
   },
-  emit(name, options) {
+  emit(name, data, opts) {
     let event;
-    if (name) {
-      event = new Event(name);
+
+    if (name instanceof Event) {
+      event = name;
+    } else if (name) {
+      event = new Event(name, { bubbles: true, ...opts });
     }
 
-    options && Object.assign(event, options);
+    data && Object.assign(event, data);
 
     this.ele.dispatchEvent(event);
 
@@ -1710,7 +1713,7 @@ const renderElement = ({ defaults, ele, template, temps }) => {
 
   const $ele = eleX(ele);
 
-  $ele.extend(defaults.proto, { enumerable: false });
+  defaults.proto && $ele.extend(defaults.proto, { enumerable: false });
 
   for (let [key, value] of Object.entries(data)) {
     if (!$ele.hasOwnProperty(key)) {
@@ -2615,6 +2618,17 @@ function fixRelateSource(content, path) {
   return template.innerHTML;
 }
 
+const wrapErrorCall = async (callback, { self, desc }) => {
+  try {
+    await callback();
+  } catch (error) {
+    const err = new Error(`${desc}\n  ${error.stack}`);
+    err.error = error;
+    self.emit("error", { error: err });
+    throw err;
+  }
+};
+
 const initSrc = async (_this, val) => {
   if (_this.__init_src) {
     if (_this.__init_src !== val) {
@@ -2672,7 +2686,17 @@ $.register({
   },
   watch: {
     async src(val) {
-      const result = await initSrc(this, val);
+      let result;
+
+      await wrapErrorCall(
+        async () => {
+          result = await initSrc(this, val);
+        },
+        {
+          self: this,
+          desc: `Request for ${val} module failed`,
+        }
+      );
 
       if (result === false) {
         return;
@@ -2686,7 +2710,15 @@ $.register({
         tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
       }
 
-      defaults.temp = await fetch(tempSrc).then((e) => e.text());
+      await wrapErrorCall(
+        async () => {
+          defaults.temp = await fetch(tempSrc).then((e) => e.text());
+        },
+        {
+          self: this,
+          desc: `${selfUrl} module request for ${tempSrc} template page failed`,
+        }
+      );
 
       const template = document.createElement("template");
       template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
@@ -2804,13 +2836,27 @@ lm.use(async ({ data: moduleData, url }) => {
   });
 });
 
+// import lm from "../drill.js/base.mjs";
+
 const HISTORY = Symbol("history");
+
+const getLoading = ({ self: _this, src, type }) => {
+  const { loading } = _this._opts;
+
+  let loadingContent = "";
+  if (loading) {
+    loadingContent = loading({ src, type });
+  }
+
+  return loadingContent;
+};
 
 $.register({
   tag: "o-app",
   temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
   attrs: {
     src: "",
+    _opts: {},
   },
   watch: {
     async src(val) {
@@ -2828,9 +2874,43 @@ $.register({
         defaults.ready.call(this);
       }
 
+      const { loading, fail } = defaults;
+
+      this.on("error", (e) => {
+        let failContent = ``;
+
+        if (fail) {
+          failContent = fail({
+            target: e.target,
+            src: e.target.getAttribute("src"),
+            error: e.error,
+          });
+        }
+
+        const template = document.createElement("template");
+        template.innerHTML = failContent;
+        const temps = convert(template);
+
+        renderElement({
+          defaults: {
+            temp: " ",
+          },
+          ele: e.target,
+          template,
+          temps,
+        });
+
+        e.target.innerHTML = "";
+      });
+
       const homeUrl = new URL(defaults.home, selfUrl).href;
 
       this.push(`<o-page src="${homeUrl}"></o-page>`);
+
+      Object.assign(this._opts, {
+        loading,
+        fail,
+      });
     },
   },
   proto: {
@@ -2847,14 +2927,33 @@ $.register({
       this.push(newCurrent);
     },
     goto(src) {
-      const { current } = this;
-      this[HISTORY].push(current.toJSON());
+      const { current: oldCurrent } = this;
 
-      this.push(`<o-page src="${src}"></o-page>`);
+      oldCurrent.forEach((el) => el.remove());
 
-      current.remove();
+      this[HISTORY].push(oldCurrent.toJSON());
+
+      this.push(
+        `<o-page src="${src}">${getLoading({
+          self: this,
+          src,
+          type: "goto",
+        })}</o-page>`
+      );
+
+      oldCurrent.remove();
     },
-    replace() {},
+    replace(src) {
+      this.current.remove();
+
+      this.push(
+        `<o-page src="${src}">${getLoading({
+          self: this,
+          src,
+          type: "replace",
+        })}</o-page>`
+      );
+    },
     get current() {
       return this.$("o-page:last-of-type");
     },
