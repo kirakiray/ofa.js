@@ -84,46 +84,27 @@ $.register({
   },
   proto: {
     [HISTORY]: [],
-    back() {
+    async back() {
       if (!this[HISTORY].length) {
         console.warn(`It's already the first page, can't go back`);
         return;
       }
 
+      // It is convenient to know that this current and the following current are not the same object
       const { current: oldCurrent } = this;
-
-      const { pageAnime: oldAnime } = oldCurrent;
-
-      // outPage({
-      //   page: oldCurrent,
-      //   key: "next",
-      //   callback: () => {
-      //     this.push(this[HISTORY].pop());
-      //   },
-      // });
-
-      if (oldAnime.next) {
-        requestAnimationFrame(() => {
-          oldCurrent.one("transitionend", () => {
-            oldCurrent.remove();
-          });
-
-          oldCurrent.style = {
-            transition: "all ease .3s",
-            ...oldAnime.next,
-          };
-        });
-      } else {
-        oldCurrent.remove();
-      }
 
       this.push(this[HISTORY].pop());
 
-      const { current: newCurrent } = this;
+      pageAddAnime({ page: this.current, key: "previous" });
 
-      keepPage({ page: newCurrent, key: "previous" });
+      await outPage({
+        page: oldCurrent,
+        key: "next",
+      });
+
+      oldCurrent.remove();
     },
-    goto(src) {
+    async goto(src) {
       const { current: oldCurrent } = this;
 
       const markID = "m_" + getRandomId();
@@ -140,16 +121,22 @@ $.register({
       const newCurrent = this.$(`[${markID}]`);
       newCurrent.ele.removeAttribute(markID);
 
-      keepPage({ page: newCurrent, key: "next" });
+      pageAddAnime({ page: newCurrent, key: "next" });
 
-      outPage({
+      await outPage({
         page: oldCurrent,
         key: "previous",
-        callback: () => this[HISTORY].push(oldCurrent.toJSON()),
       });
+
+      // Removing child node data from historical routes
+      oldCurrent.forEach((el) => el.remove());
+
+      this[HISTORY].push(oldCurrent.toJSON());
+
+      oldCurrent.remove();
     },
-    replace(src) {
-      this.current.remove();
+    async replace(src) {
+      const { current: oldCurrent } = this;
 
       this.push(
         `<o-page src="${src}">${getLoading({
@@ -158,6 +145,18 @@ $.register({
           type: "replace",
         })}</o-page>`
       );
+
+      pageAddAnime({
+        page: this.current,
+        key: "next",
+      });
+
+      await outPage({
+        page: oldCurrent,
+        key: "previous",
+      });
+
+      oldCurrent.remove();
     },
     get current() {
       return this.$("o-page:last-of-type");
@@ -170,7 +169,7 @@ $.register({
   },
 });
 
-const keepPage = ({ page, key }) => {
+const pageAddAnime = ({ page, key }) => {
   const { pageAnime } = page;
 
   const targetAnime = pageAnime[key];
@@ -190,28 +189,20 @@ const keepPage = ({ page, key }) => {
   }
 };
 
-const outPage = ({ page, key, callback }) => {
-  const removePage = () => {
-    // Removing child node data from historical routes
-    page.forEach((el) => el.remove());
+const outPage = ({ page, key }) =>
+  new Promise((resolve) => {
+    const targetAnime = page.pageAnime[key];
 
-    callback();
+    if (targetAnime) {
+      requestAnimationFrame(() => {
+        page.one("transitionend", resolve);
 
-    page.remove();
-  };
-
-  const targetAnime = page.pageAnime[key];
-
-  if (targetAnime) {
-    requestAnimationFrame(() => {
-      page.one("transitionend", removePage);
-
-      page.style = {
-        transition: "all ease .3s",
-        ...targetAnime,
-      };
-    });
-  } else {
-    removePage();
-  }
-};
+        page.style = {
+          transition: "all ease .3s",
+          ...targetAnime,
+        };
+      });
+    } else {
+      resolve();
+    }
+  });
