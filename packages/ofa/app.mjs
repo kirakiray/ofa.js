@@ -94,6 +94,14 @@ $.register({
 
       const { pageAnime: oldAnime } = oldCurrent;
 
+      // outPage({
+      //   page: oldCurrent,
+      //   key: "next",
+      //   callback: () => {
+      //     this.push(this[HISTORY].pop());
+      //   },
+      // });
+
       if (oldAnime.next) {
         requestAnimationFrame(() => {
           oldCurrent.one("transitionend", () => {
@@ -113,21 +121,7 @@ $.register({
 
       const { current: newCurrent } = this;
 
-      const { pageAnime: newAnime } = newCurrent;
-
-      if (newAnime.previous) {
-        newCurrent.style = {
-          transition: "all ease .3s",
-          ...newAnime.previous,
-        };
-
-        requestAnimationFrame(() => {
-          newCurrent.style = {
-            transition: "all ease .3s",
-            ...newAnime.current,
-          };
-        });
-      }
+      keepPage({ page: newCurrent, key: "previous" });
     },
     goto(src) {
       const { current: oldCurrent } = this;
@@ -146,45 +140,13 @@ $.register({
       const newCurrent = this.$(`[${markID}]`);
       newCurrent.ele.removeAttribute(markID);
 
-      const { pageAnime: newAnime } = newCurrent;
+      keepPage({ page: newCurrent, key: "next" });
 
-      if (newAnime.next) {
-        newCurrent.style = {
-          transition: "all ease .3s",
-          ...newAnime.next,
-        };
-
-        requestAnimationFrame(() => {
-          newCurrent.style = {
-            transition: "all ease .3s",
-            ...(newAnime.current || {}),
-          };
-        });
-      }
-
-      const { pageAnime: oldAnime } = oldCurrent;
-
-      const removePage = () => {
-        // Removing child node data from historical routes
-        oldCurrent.forEach((el) => el.remove());
-
-        this[HISTORY].push(oldCurrent.toJSON());
-
-        oldCurrent.remove();
-      };
-
-      if (oldAnime.previous) {
-        requestAnimationFrame(() => {
-          oldCurrent.one("transitionend", removePage);
-
-          oldCurrent.style = {
-            transition: "all ease .3s",
-            ...oldAnime.previous,
-          };
-        });
-      } else {
-        removePage();
-      }
+      outPage({
+        page: oldCurrent,
+        key: "previous",
+        callback: () => this[HISTORY].push(oldCurrent.toJSON()),
+      });
     },
     replace(src) {
       this.current.remove();
@@ -207,3 +169,49 @@ $.register({
     },
   },
 });
+
+const keepPage = ({ page, key }) => {
+  const { pageAnime } = page;
+
+  const targetAnime = pageAnime[key];
+
+  if (targetAnime) {
+    page.style = {
+      transition: "all ease .3s",
+      ...targetAnime,
+    };
+
+    requestAnimationFrame(() => {
+      page.style = {
+        transition: "all ease .3s",
+        ...(pageAnime.current || {}),
+      };
+    });
+  }
+};
+
+const outPage = ({ page, key, callback }) => {
+  const removePage = () => {
+    // Removing child node data from historical routes
+    page.forEach((el) => el.remove());
+
+    callback();
+
+    page.remove();
+  };
+
+  const targetAnime = page.pageAnime[key];
+
+  if (targetAnime) {
+    requestAnimationFrame(() => {
+      page.one("transitionend", removePage);
+
+      page.style = {
+        transition: "all ease .3s",
+        ...targetAnime,
+      };
+    });
+  } else {
+    removePage();
+  }
+};
