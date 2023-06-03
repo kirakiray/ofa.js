@@ -5,6 +5,8 @@ import { convert } from "../xhear/render/render.mjs";
 import { isFunction, searchEle } from "../xhear/public.mjs";
 import { fixRelateSource, resolvePath, wrapErrorCall } from "./public.mjs";
 
+const clone = (obj) => JSON.parse(JSON.stringify(obj));
+
 export const initSrc = async (_this, val) => {
   if (_this.__init_src) {
     if (_this.__init_src !== val) {
@@ -119,6 +121,16 @@ $.register({
     },
     replace(src) {
       this.app.replace(new URL(src, this.src).href);
+    },
+    get pageAnime() {
+      const { app, _pageAnime } = this;
+
+      const { pageAnime } = app?._module?.defaults || {};
+
+      return clone({ ...pageAnime, ...(_pageAnime || {}) });
+    },
+    set pageAnime(val) {
+      this._pageAnime = val;
     },
   },
 });

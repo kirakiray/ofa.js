@@ -3,6 +3,7 @@ import $ from "../xhear/base.mjs";
 import { initSrc } from "./page.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { renderElement } from "../xhear/register.mjs";
+import { getRandomId } from "../stanz/public.mjs";
 
 const HISTORY = Symbol("history");
 
@@ -31,6 +32,8 @@ $.register({
       if (result === false) {
         return;
       }
+
+      this._module = result;
 
       const { selfUrl, defaults } = result;
 
@@ -86,28 +89,102 @@ $.register({
         console.warn(`It's already the first page, can't go back`);
         return;
       }
-      this.current.remove();
 
-      const newCurrent = this[HISTORY].pop();
+      const { current: oldCurrent } = this;
 
-      this.push(newCurrent);
+      const { pageAnime: oldAnime } = oldCurrent;
+
+      if (oldAnime.next) {
+        requestAnimationFrame(() => {
+          oldCurrent.one("transitionend", () => {
+            oldCurrent.remove();
+          });
+
+          oldCurrent.style = {
+            transition: "all ease .3s",
+            ...oldAnime.next,
+          };
+        });
+      } else {
+        oldCurrent.remove();
+      }
+
+      this.push(this[HISTORY].pop());
+
+      const { current: newCurrent } = this;
+
+      const { pageAnime: newAnime } = newCurrent;
+
+      if (newAnime.previous) {
+        newCurrent.style = {
+          transition: "all ease .3s",
+          ...newAnime.previous,
+        };
+
+        requestAnimationFrame(() => {
+          newCurrent.style = {
+            transition: "all ease .3s",
+            ...newAnime.current,
+          };
+        });
+      }
     },
     goto(src) {
       const { current: oldCurrent } = this;
 
-      oldCurrent.forEach((el) => el.remove());
+      const markID = "m_" + getRandomId();
 
-      this[HISTORY].push(oldCurrent.toJSON());
-
+      // When the page element is initialized, the parent element is already available within the ready function
       this.push(
-        `<o-page src="${src}">${getLoading({
+        `<o-page src="${src}" ${markID}>${getLoading({
           self: this,
           src,
           type: "goto",
         })}</o-page>`
       );
 
-      oldCurrent.remove();
+      const newCurrent = this.$(`[${markID}]`);
+      newCurrent.ele.removeAttribute(markID);
+
+      const { pageAnime: newAnime } = newCurrent;
+
+      if (newAnime.next) {
+        newCurrent.style = {
+          transition: "all ease .3s",
+          ...newAnime.next,
+        };
+
+        requestAnimationFrame(() => {
+          newCurrent.style = {
+            transition: "all ease .3s",
+            ...(newAnime.current || {}),
+          };
+        });
+      }
+
+      const { pageAnime: oldAnime } = oldCurrent;
+
+      const removePage = () => {
+        // Removing child node data from historical routes
+        oldCurrent.forEach((el) => el.remove());
+
+        this[HISTORY].push(oldCurrent.toJSON());
+
+        oldCurrent.remove();
+      };
+
+      if (oldAnime.previous) {
+        requestAnimationFrame(() => {
+          oldCurrent.one("transitionend", removePage);
+
+          oldCurrent.style = {
+            transition: "all ease .3s",
+            ...oldAnime.previous,
+          };
+        });
+      } else {
+        removePage();
+      }
     },
     replace(src) {
       this.current.remove();
