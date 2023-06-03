@@ -2935,52 +2935,37 @@ try{
     },
     proto: {
       [HISTORY]: [],
-      back() {
+      async back(delta = 1) {
         if (!this[HISTORY].length) {
           console.warn(`It's already the first page, can't go back`);
           return;
         }
 
+        // It is convenient to know that this current and the following current are not the same object
         const { current: oldCurrent } = this;
 
-        const { pageAnime: oldAnime } = oldCurrent;
+        delta = delta < this[HISTORY].length ? delta : this[HISTORY].length;
 
-        if (oldAnime.next) {
-          requestAnimationFrame(() => {
-            oldCurrent.one("transitionend", () => {
-              oldCurrent.remove();
-            });
+        const newCurrent = this[HISTORY].splice(-delta)[0];
+        this.push({
+          ...newCurrent,
+          html: getLoading({
+            self: this,
+            src: newCurrent.src,
+            type: "back",
+          }),
+        });
 
-            oldCurrent.style = {
-              transition: "all ease .3s",
-              ...oldAnime.next,
-            };
-          });
-        } else {
-          oldCurrent.remove();
-        }
+        pageAddAnime({ page: this.current, key: "previous" });
 
-        this.push(this[HISTORY].pop());
+        await outPage({
+          page: oldCurrent,
+          key: "next",
+        });
 
-        const { current: newCurrent } = this;
-
-        const { pageAnime: newAnime } = newCurrent;
-
-        if (newAnime.previous) {
-          newCurrent.style = {
-            transition: "all ease .3s",
-            ...newAnime.previous,
-          };
-
-          requestAnimationFrame(() => {
-            newCurrent.style = {
-              transition: "all ease .3s",
-              ...newAnime.current,
-            };
-          });
-        }
+        oldCurrent.remove();
       },
-      goto(src) {
+      async goto(src) {
         const { current: oldCurrent } = this;
 
         const markID = "m_" + getRandomId();
@@ -2997,48 +2982,22 @@ try{
         const newCurrent = this.$(`[${markID}]`);
         newCurrent.ele.removeAttribute(markID);
 
-        const { pageAnime: newAnime } = newCurrent;
+        pageAddAnime({ page: newCurrent, key: "next" });
 
-        if (newAnime.next) {
-          newCurrent.style = {
-            transition: "all ease .3s",
-            ...newAnime.next,
-          };
+        await outPage({
+          page: oldCurrent,
+          key: "previous",
+        });
 
-          requestAnimationFrame(() => {
-            newCurrent.style = {
-              transition: "all ease .3s",
-              ...(newAnime.current || {}),
-            };
-          });
-        }
+        // Removing child node data from historical routes
+        oldCurrent.forEach((el) => el.remove());
 
-        const { pageAnime: oldAnime } = oldCurrent;
+        this[HISTORY].push(oldCurrent.toJSON());
 
-        const removePage = () => {
-          // Removing child node data from historical routes
-          oldCurrent.forEach((el) => el.remove());
-
-          this[HISTORY].push(oldCurrent.toJSON());
-
-          oldCurrent.remove();
-        };
-
-        if (oldAnime.previous) {
-          requestAnimationFrame(() => {
-            oldCurrent.one("transitionend", removePage);
-
-            oldCurrent.style = {
-              transition: "all ease .3s",
-              ...oldAnime.previous,
-            };
-          });
-        } else {
-          removePage();
-        }
+        oldCurrent.remove();
       },
-      replace(src) {
-        this.current.remove();
+      async replace(src) {
+        const { current: oldCurrent } = this;
 
         this.push(
           `<o-page src="${src}">${getLoading({
@@ -3047,6 +3006,18 @@ try{
           type: "replace",
         })}</o-page>`
         );
+
+        pageAddAnime({
+          page: this.current,
+          key: "next",
+        });
+
+        await outPage({
+          page: oldCurrent,
+          key: "previous",
+        });
+
+        oldCurrent.remove();
       },
       get current() {
         return this.$("o-page:last-of-type");
@@ -3058,6 +3029,44 @@ try{
       },
     },
   });
+
+  const pageAddAnime = ({ page, key }) => {
+    const { pageAnime } = page;
+
+    const targetAnime = pageAnime[key];
+
+    if (targetAnime) {
+      page.style = {
+        transition: "all ease .3s",
+        ...targetAnime,
+      };
+
+      requestAnimationFrame(() => {
+        page.style = {
+          transition: "all ease .3s",
+          ...(pageAnime.current || {}),
+        };
+      });
+    }
+  };
+
+  const outPage = ({ page, key }) =>
+    new Promise((resolve) => {
+      const targetAnime = page.pageAnime[key];
+
+      if (targetAnime) {
+        requestAnimationFrame(() => {
+          page.one("transitionend", resolve);
+
+          page.style = {
+            transition: "all ease .3s",
+            ...targetAnime,
+          };
+        });
+      } else {
+        resolve();
+      }
+    });
 
   $.fn.extend({
     get app() {

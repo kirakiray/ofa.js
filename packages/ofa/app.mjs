@@ -84,7 +84,7 @@ $.register({
   },
   proto: {
     [HISTORY]: [],
-    async back() {
+    async back(delta = 1) {
       if (!this[HISTORY].length) {
         console.warn(`It's already the first page, can't go back`);
         return;
@@ -93,7 +93,17 @@ $.register({
       // It is convenient to know that this current and the following current are not the same object
       const { current: oldCurrent } = this;
 
-      this.push(this[HISTORY].pop());
+      delta = delta < this[HISTORY].length ? delta : this[HISTORY].length;
+
+      const newCurrent = this[HISTORY].splice(-delta)[0];
+      this.push({
+        ...newCurrent,
+        html: getLoading({
+          self: this,
+          src: newCurrent.src,
+          type: "back",
+        }),
+      });
 
       pageAddAnime({ page: this.current, key: "previous" });
 
