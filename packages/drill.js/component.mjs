@@ -28,18 +28,19 @@ class LoadModule extends HTMLElement {
     }
     this.__initSrc = src;
 
-    const relatePath = this.getAttribute("relate-path");
-    this.removeAttribute("relate-path");
-    src = new URL(src, relatePath || location.href).href;
-    this.__relatePath = relatePath;
+    src = new URL(src, location.href).href;
     Object.defineProperties(this, {
       src: {
         configurable: true,
         value: src,
       },
     });
-    agent(src, {
+
+    const [url, ...params] = src.split(" ");
+
+    agent(url, {
       element: this,
+      params,
     });
   }
 

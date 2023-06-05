@@ -7,8 +7,10 @@ const createLoad = (meta) => {
       url: document.location.href,
     };
   }
-  const load = (url) => {
+  const load = (ourl) => {
     let reurl = "";
+    const [url, ...params] = ourl.split(" ");
+
     if (meta.resolve) {
       reurl = meta.resolve(url);
     } else {
@@ -17,7 +19,7 @@ const createLoad = (meta) => {
       reurl = resolvedUrl.href;
     }
 
-    return agent(reurl);
+    return agent(reurl, { params });
   };
   return load;
 };

@@ -18,8 +18,12 @@ export const use = (name, handler) => {
   tasks.push(handler);
 };
 
-use(["mjs", "js"], ({ url }) => {
-  return import(url);
+use(["mjs", "js"], ({ url, params }) => {
+  const d = new URL(url);
+  if (params.includes("-direct")) {
+    return import(url);
+  }
+  return import(`${d.origin}${d.pathname}`);
 });
 
 use(["txt", "html"], ({ url }) => {
