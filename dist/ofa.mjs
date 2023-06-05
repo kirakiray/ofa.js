@@ -19,8 +19,12 @@ const use = (name, handler) => {
   tasks.push(handler);
 };
 
-use(["mjs", "js"], ({ url }) => {
-  return import(url);
+use(["mjs", "js"], ({ url, params }) => {
+  const d = new URL(url);
+  if (params.includes("-direct")) {
+    return import(url);
+  }
+  return import(`${d.origin}${d.pathname}`);
 });
 
 use(["txt", "html"], ({ url }) => {
@@ -48,8 +52,10 @@ const createLoad = (meta) => {
       url: document.location.href,
     };
   }
-  const load = (url) => {
+  const load = (ourl) => {
     let reurl = "";
+    const [url, ...params] = ourl.split(" ");
+
     if (meta.resolve) {
       reurl = meta.resolve(url);
     } else {
@@ -58,7 +64,7 @@ const createLoad = (meta) => {
       reurl = resolvedUrl.href;
     }
 
-    return agent(reurl);
+    return agent(reurl, { params });
   };
   return load;
 };
@@ -133,18 +139,19 @@ class LoadModule extends HTMLElement {
     }
     this.__initSrc = src;
 
-    const relatePath = this.getAttribute("relate-path");
-    this.removeAttribute("relate-path");
-    src = new URL(src, relatePath || location.href).href;
-    this.__relatePath = relatePath;
+    src = new URL(src, location.href).href;
     Object.defineProperties(this, {
       src: {
         configurable: true,
         value: src,
       },
     });
-    agent(src, {
+
+    const [url, ...params] = src.split(" ");
+
+    agent(url, {
       element: this,
+      params,
     });
   }
 
@@ -1858,7 +1865,7 @@ const register = (opts = {}) => {
         newValue = Number(newValue);
       }
 
-      $ele[name] = newValue;
+      $ele[hyphenToUpperCase(name)] = newValue;
     }
 
     static get observedAttributes() {
@@ -3061,6 +3068,32 @@ const outPage = ({ page, key }) =>
       resolve();
     }
   });
+
+const FIXBODY = `f-${getRandomId()}`;
+
+$.register({
+  tag: "o-router",
+  temp: `<style>:host{display:block;width:100%;height:100%;overflow:hidden}::slotted(o-app){display:block;width:100%;height:100%}</style><slot></slot>`,
+  attrs: {
+    fixBody: null,
+  },
+  watch: {
+    fixBody(val) {
+      if (val !== null) {
+        const styleEle = document.createElement("style");
+        styleEle.setAttribute(FIXBODY, "");
+        styleEle.innerHTML = `html,body{margin:0;padding:0;width:100%;height:100%;}`;
+        document.head.append(styleEle);
+      } else {
+        const target = document.head.querySelector(FIXBODY);
+        if (target) {
+          target.remove();
+        }
+      }
+    },
+  },
+  ready() {},
+});
 
 $.fn.extend({
   get app() {

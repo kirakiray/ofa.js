@@ -1,6 +1,7 @@
 import "./comp.mjs";
 import "./page.mjs";
 import "./app.mjs";
+import "./router.mjs"
 import $ from "../xhear/base.mjs";
 
 $.fn.extend({

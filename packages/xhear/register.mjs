@@ -161,7 +161,7 @@ export const register = (opts = {}) => {
         newValue = Number(newValue);
       }
 
-      $ele[name] = newValue;
+      $ele[hyphenToUpperCase(name)] = newValue;
     }
 
     static get observedAttributes() {
