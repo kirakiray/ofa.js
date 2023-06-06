@@ -8,7 +8,9 @@
     "terser": "npm run terser-umd && npm run terser-esm",
     "terser-umd": "terser dist/ofa.js -c -m -o dist/ofa.min.js",
     "terser-esm": "terser dist/ofa.mjs -c -m -o dist/ofa.min.mjs",
-    "test": ""
+    "static-server": "node scripts/static-server",
+    "test": "node scripts/ci-test",
+    "playwright": "npx playwright test"
   },
   "author": {
     "name": "YAO",
