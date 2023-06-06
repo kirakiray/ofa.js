@@ -2971,6 +2971,11 @@ try{
         });
 
         oldCurrent.remove();
+
+        this.emit("router-change", {
+          name: "back",
+          delta,
+        });
       },
       async goto(src) {
         const { current: oldCurrent } = this;
@@ -3002,6 +3007,11 @@ try{
         this[HISTORY].push(oldCurrent.toJSON());
 
         oldCurrent.remove();
+
+        this.emit("router-change", {
+          name: "goto",
+          src,
+        });
       },
       async replace(src) {
         const { current: oldCurrent } = this;
@@ -3025,6 +3035,11 @@ try{
         });
 
         oldCurrent.remove();
+
+        this.emit("router-change", {
+          name: "replace",
+          src,
+        });
       },
       get current() {
         return this.$("o-page:last-of-type");
@@ -3074,32 +3089,6 @@ try{
         resolve();
       }
     });
-
-  const FIXBODY = `f-${getRandomId()}`;
-
-  $.register({
-    tag: "o-router",
-    temp: `<style>:host{display:block;width:100%;height:100%;overflow:hidden}::slotted(o-app){display:block;width:100%;height:100%}</style><slot></slot>`,
-    attrs: {
-      fixBody: null,
-    },
-    watch: {
-      fixBody(val) {
-        if (val !== null) {
-          const styleEle = document.createElement("style");
-          styleEle.setAttribute(FIXBODY, "");
-          styleEle.innerHTML = `html,body{margin:0;padding:0;width:100%;height:100%;}`;
-          document.head.append(styleEle);
-        } else {
-          const target = document.head.querySelector(FIXBODY);
-          if (target) {
-            target.remove();
-          }
-        }
-      },
-    },
-    ready() {},
-  });
 
   $.fn.extend({
     get app() {

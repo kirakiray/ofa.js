@@ -8,10 +8,17 @@
     <script type="module">
       import $ from "../packages/ofa/main.mjs";
     </script>
+    <style>
+      o-app {
+        display: block;
+        width: 320px;
+        height: 480px;
+        border: #aaa solid 1px;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
-    <o-router fix-body>
-      <o-app src="./app.js"></o-app>
-    </o-router>
+    <o-app src="./app.js"></o-app>
   </body>
 </html>

@@ -113,6 +113,11 @@ $.register({
       });
 
       oldCurrent.remove();
+
+      this.emit("router-change", {
+        name: "back",
+        delta,
+      });
     },
     async goto(src) {
       const { current: oldCurrent } = this;
@@ -144,6 +149,11 @@ $.register({
       this[HISTORY].push(oldCurrent.toJSON());
 
       oldCurrent.remove();
+
+      this.emit("router-change", {
+        name: "goto",
+        src,
+      });
     },
     async replace(src) {
       const { current: oldCurrent } = this;
@@ -167,6 +177,11 @@ $.register({
       });
 
       oldCurrent.remove();
+
+      this.emit("router-change", {
+        name: "replace",
+        src,
+      });
     },
     get current() {
       return this.$("o-page:last-of-type");

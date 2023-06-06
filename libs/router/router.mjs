@@ -1,5 +1,5 @@
-import { getRandomId } from "../stanz/public.mjs";
-import $ from "../xhear/base.mjs";
+import { getRandomId } from "../../packages/stanz/public.mjs";
+// import $ from "../../packages/xhear/base.mjs";
 
 const FIXBODY = `f-${getRandomId()}`;
 
