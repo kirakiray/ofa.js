@@ -5,9 +5,9 @@ export const loading = () => {
 };
 
 export const fail = ({ src }) => {
-  return `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;word-break:break-all;">
+  return `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;word-break:break-all;" data-testid="error-container">
     <div style="padding:20px;text-align:center;">
-      <h3>fail</h3> 
+      <h3>load fail</h3> 
       ${src}
       <div>
         <button on:click="back()">Back</button>

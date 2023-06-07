@@ -1,8 +1,12 @@
-<div>I am home {{params}}</div>
-<button on:click="toHome">to home</button>
+<div data-testid="first-div">I am home {{params}}</div>
+<button on:click="toHome" data-testid="gotohome">go to home</button>
 <br />
-<button on:click="back()">Back</button>
+<button on:click="replace('./home.mjs?count=250')" data-testid="replacetohome">
+  replace to home
+</button>
 <br />
-<button on:click="replace('./home.mjs?count=250')">replace to home</button>
-<br>
-<button on:click="goto('./hahaha.mjs')">go to failure page</button>
+<button on:click="goto('./hahaha.mjs')" data-testid="gotofail">
+  go to failure page
+</button>
+<br />
+<button on:click="back()" data-testid="back">Back</button>
