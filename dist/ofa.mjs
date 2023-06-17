@@ -1,5 +1,43 @@
 //! ofa - v4.0.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+const getOid = () => Math.random().toString(32).slice(2);
+
+class Onion {
+  constructor() {
+    this._middlewares = new Map();
+  }
+
+  use(middleware) {
+    const oid = getOid();
+    this._middlewares.set(oid, middleware);
+    return oid;
+  }
+
+  unuse(oid) {
+    return this._middlewares.delete(oid);
+  }
+
+  async run(context) {
+    let index = -1;
+
+    const middlewares = Array.from(this._middlewares.values());
+
+    const next = async () => {
+      index++;
+      if (index < middlewares.length) {
+        await middlewares[index](context, next);
+      }
+    };
+
+    await next();
+  }
+}
+
 const processor = {};
+
+const addHandler = (name, handler) => {
+  const oni = processor[name] || (processor[name] = new Onion());
+  oni.use(handler);
+};
 
 const use = (name, handler) => {
   if (name instanceof Function) {
@@ -9,39 +47,51 @@ const use = (name, handler) => {
 
   if (name instanceof Array) {
     name.forEach((name) => {
-      const tasks = processor[name] || (processor[name] = []);
-      tasks.push(handler);
+      addHandler(name, handler);
     });
     return;
   }
 
-  const tasks = processor[name] || (processor[name] = []);
-  tasks.push(handler);
+  addHandler(name, handler);
 };
 
-use(["mjs", "js"], ({ url, params }) => {
+use(["mjs", "js"], async (ctx, next) => {
+  const { url, params } = ctx;
   const d = new URL(url);
   if (params.includes("-direct")) {
-    return import(url);
+    ctx.result = await import(url);
   }
-  return import(`${d.origin}${d.pathname}`);
+  ctx.result = await import(`${d.origin}${d.pathname}`);
+
+  next();
 });
 
-use(["txt", "html"], ({ url }) => {
-  return fetch(url).then((e) => e.text());
+use(["txt", "html"], async (ctx, next) => {
+  const { url } = ctx;
+  ctx.result = await fetch(url).then((e) => e.text());
+
+  next();
 });
 
-use("json", async ({ url }) => {
-  return fetch(url).then((e) => e.json());
+use("json", async (ctx, next) => {
+  const { url } = ctx;
+
+  ctx.result = await fetch(url).then((e) => e.json());
+
+  next();
 });
 
-use("wasm", async ({ url }) => {
+use("wasm", async (ctx, next) => {
+  const { url } = ctx;
+
   const data = await fetch(url).then((e) => e.arrayBuffer());
 
   const module = await WebAssembly.compile(data);
   const instance = new WebAssembly.Instance(module);
 
-  return instance.exports;
+  ctx.result = instance.exports;
+
+  next();
 });
 
 const LOADED = Symbol("loaded");
@@ -75,22 +125,18 @@ const agent = async (url, opts) => {
 
   const type = pathname.slice(((pathname.lastIndexOf(".") - 1) >>> 0) + 2);
 
-  let data;
+  const ctx = {
+    url,
+    result: null,
+    ...opts,
+  };
 
-  const tasks = processor[type];
+  const oni = processor[type];
 
-  if (tasks) {
-    for (let f of tasks) {
-      const temp = await f({
-        url,
-        data,
-        ...opts,
-      });
-
-      temp !== undefined && (data = temp);
-    }
+  if (oni) {
+    await oni.run(ctx);
   } else {
-    data = fetch(url);
+    ctx.result = fetch(url);
   }
 
   if (opts && opts.element) {
@@ -100,7 +146,7 @@ const agent = async (url, opts) => {
     element.dispatchEvent(event);
   }
 
-  return data;
+  return ctx.result;
 };
 
 function lm(meta) {
@@ -155,6 +201,19 @@ class LoadModule extends HTMLElement {
     });
   }
 
+  connectedCallback() {
+    const event = new CustomEvent("connected");
+    event.root = this._root = this.getRootNode();
+    this.dispatchEvent(event);
+  }
+
+  disconnectedCallback() {
+    const event = new CustomEvent("disconnected");
+    event.root = this._root;
+    delete this._root;
+    this.dispatchEvent(event);
+  }
+
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === "src") {
       if (newValue && oldValue === null) {
@@ -181,12 +240,19 @@ class LM extends LoadModule {
   }
 }
 
-customElements.define("load-module", LoadModule);
-customElements.define("l-m", LM);
+const ready = () => {
+  customElements.define("load-module", LoadModule);
+  customElements.define("l-m", LM);
+  window.removeEventListener("load", ready);
+};
 
-if (typeof window !== "undefined") {
-  window.lm = lm;
+if (document.readyState === "complete") {
+  ready();
+} else {
+  window.addEventListener("load", ready);
 }
+
+window.lm = lm;
 
 const getRandomId = () => Math.random().toString(32).slice(2);
 
@@ -2793,7 +2859,7 @@ Object.defineProperty($, "COMP", {
   value: COMP,
 });
 
-lm.use(async ({ data: moduleData, url }) => {
+lm.use(async ({ result: moduleData, url }, next) => {
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {
     return;
   }
@@ -2853,6 +2919,8 @@ lm.use(async ({ data: moduleData, url }) => {
     tag: tagName,
     temp: fixRelateSource(tempContent, tempUrl),
   });
+
+  await next();
 });
 
 // import lm from "../drill.js/base.mjs";

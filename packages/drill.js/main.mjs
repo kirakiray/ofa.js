@@ -30,22 +30,18 @@ export const agent = async (url, opts) => {
 
   const type = pathname.slice(((pathname.lastIndexOf(".") - 1) >>> 0) + 2);
 
-  let data;
+  const ctx = {
+    url,
+    result: null,
+    ...opts,
+  };
 
-  const tasks = processor[type];
+  const oni = processor[type];
 
-  if (tasks) {
-    for (let f of tasks) {
-      const temp = await f({
-        url,
-        data,
-        ...opts,
-      });
-
-      temp !== undefined && (data = temp);
-    }
+  if (oni) {
+    await oni.run(ctx);
   } else {
-    data = fetch(url);
+    ctx.result = fetch(url);
   }
 
   if (opts && opts.element) {
@@ -55,7 +51,7 @@ export const agent = async (url, opts) => {
     element.dispatchEvent(event);
   }
 
-  return data;
+  return ctx.result;
 };
 
 export default function lm(meta) {

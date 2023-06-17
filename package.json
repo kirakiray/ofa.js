@@ -25,15 +25,15 @@
     "koa-static": "^5.0.0",
     "rollup": "^3.22.0",
     "shelljs": "^0.8.5",
-    "terser": "^5.17.4"
+    "@rollup/plugin-terser": "^0.4.3"
   },
   "main": "dist/ofa.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "drill.js": "^5.0.5",
-    "xhear": "^7.2.8"
+    "drill.js": "^5.1.2",
+    "xhear": "^7.2.9"
   },
   "repository": {
     "type": "git",

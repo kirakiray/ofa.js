@@ -44,6 +44,19 @@ class LoadModule extends HTMLElement {
     });
   }
 
+  connectedCallback() {
+    const event = new CustomEvent("connected");
+    event.root = this._root = this.getRootNode();
+    this.dispatchEvent(event);
+  }
+
+  disconnectedCallback() {
+    const event = new CustomEvent("disconnected");
+    event.root = this._root;
+    delete this._root;
+    this.dispatchEvent(event);
+  }
+
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === "src") {
       if (newValue && oldValue === null) {
@@ -70,5 +83,14 @@ class LM extends LoadModule {
   }
 }
 
-customElements.define("load-module", LoadModule);
-customElements.define("l-m", LM);
+const ready = () => {
+  customElements.define("load-module", LoadModule);
+  customElements.define("l-m", LM);
+  window.removeEventListener("load", ready);
+};
+
+if (document.readyState === "complete") {
+  ready();
+} else {
+  window.addEventListener("load", ready);
+}

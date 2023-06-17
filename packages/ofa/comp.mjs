@@ -10,7 +10,7 @@ Object.defineProperty($, "COMP", {
   value: COMP,
 });
 
-lm.use(async ({ data: moduleData, url }) => {
+lm.use(async ({ result: moduleData, url }, next) => {
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {
     return;
   }
@@ -70,4 +70,6 @@ lm.use(async ({ data: moduleData, url }) => {
     tag: tagName,
     temp: fixRelateSource(tempContent, tempUrl),
   });
+
+  await next();
 });
