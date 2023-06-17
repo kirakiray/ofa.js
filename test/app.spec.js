@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("test", async ({ page }) => {
+test("In-app page jumping", async ({ page }) => {
   await page.goto("http://localhost:3348/test/test-app.html");
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"1"}')
