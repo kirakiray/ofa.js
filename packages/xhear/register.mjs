@@ -1,3 +1,4 @@
+import { nextTick } from "../stanz/public.mjs";
 import {
   hyphenToUpperCase,
   capitalizeFirstLetter,
@@ -169,7 +170,19 @@ export const register = (opts = {}) => {
     }
   });
 
-  customElements.define(defaults.tag, XElement);
+  if (document.readyState !== "loading") {
+    customElements.define(defaults.tag, XElement);
+  } else {
+    const READYSTATE = "readystatechange";
+    let f;
+    document.addEventListener(
+      READYSTATE,
+      (f = () => {
+        customElements.define(defaults.tag, XElement);
+        document.removeEventListener(READYSTATE, f);
+      })
+    );
+  }
 };
 
 function isInArray(ele) {

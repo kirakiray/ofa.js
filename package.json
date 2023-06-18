@@ -4,10 +4,7 @@
   "description": "pure web front-end componentized framework that does not require the use of nodejs",
   "scripts": {
     "update": "ncu -u xhear drill.js && node scripts/update",
-    "build": "rollup -c && npm run terser",
-    "terser": "npm run terser-umd && npm run terser-esm",
-    "terser-umd": "terser dist/ofa.js -c -m -o dist/ofa.min.js",
-    "terser-esm": "terser dist/ofa.mjs -c -m -o dist/ofa.min.mjs",
+    "build": "rollup -c",
     "static-server": "node scripts/static-server",
     "test": "node scripts/ci-test",
     "playwright": "npx playwright test"
@@ -33,7 +30,7 @@
   },
   "dependencies": {
     "drill.js": "^5.1.2",
-    "xhear": "^7.2.9"
+    "xhear": "^7.2.12"
   },
   "repository": {
     "type": "git",

@@ -1,7 +1,7 @@
+import $ from "../xhear/base.mjs";
 import "./comp.mjs";
 import "./page.mjs";
 import "./app.mjs";
-import $ from "../xhear/base.mjs";
 
 $.fn.extend({
   get app() {

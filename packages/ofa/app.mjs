@@ -22,7 +22,9 @@ $.register({
   tag: "o-app",
   temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
   attrs: {
-    src: "",
+    src: null,
+  },
+  data: {
     _opts: {},
   },
   watch: {
