@@ -653,8 +653,11 @@
     if (isxdata(data)) {
       data._owner.push(receiver);
     } else if (isObject(value)) {
-      data = new Stanz(value);
-      data._owner.push(receiver);
+      const desc = Object.getOwnPropertyDescriptor(target, key);
+      if (!desc || desc.hasOwnProperty("value")) {
+        data = new Stanz(value);
+        data._owner.push(receiver);
+      }
     }
 
     const oldValue = receiver[key];
@@ -2379,7 +2382,7 @@ try{
       return expr;
     }
 
-    if (expr instanceof Element) {
+    if (expr instanceof Node) {
       return eleX(expr);
     }
 
@@ -2969,7 +2972,7 @@ try{
       async src(val) {
         const result = await initSrc(this, val);
 
-        if (result === false) {
+        if (result === false || this._settedRouters) {
           return;
         }
 
@@ -3047,17 +3050,17 @@ try{
 
         pageAddAnime({ page: this.current, key: "previous" });
 
+        this.emit("router-change", {
+          name: "back",
+          delta,
+        });
+
         await outPage({
           page: oldCurrent,
           key: "next",
         });
 
         oldCurrent.remove();
-
-        this.emit("router-change", {
-          name: "back",
-          delta,
-        });
       },
       async goto(src) {
         const { current: oldCurrent } = this;
@@ -3078,21 +3081,21 @@ try{
 
         pageAddAnime({ page: newCurrent, key: "next" });
 
-        await outPage({
-          page: oldCurrent,
-          key: "previous",
-        });
-
         // Removing child node data from historical routes
         oldCurrent.forEach((el) => el.remove());
 
-        this[HISTORY].push(oldCurrent.toJSON());
-
         oldCurrent.remove();
+
+        this[HISTORY].push(oldCurrent.toJSON());
 
         this.emit("router-change", {
           name: "goto",
           src,
+        });
+
+        await outPage({
+          page: oldCurrent,
+          key: "previous",
         });
       },
       async replace(src) {
@@ -3111,25 +3114,52 @@ try{
           key: "next",
         });
 
+        this.emit("router-change", {
+          name: "replace",
+          src,
+        });
+
         await outPage({
           page: oldCurrent,
           key: "previous",
         });
 
         oldCurrent.remove();
-
-        this.emit("router-change", {
-          name: "replace",
-          src,
-        });
       },
       get current() {
         return this.$("o-page:last-of-type");
       },
       get routers() {
-        const routers = [...this[HISTORY], this.current.toJSON()];
+        let { current } = this;
+
+        if (!current) {
+          return [];
+        }
+
+        current = current.toJSON();
+
+        Object.keys(current).forEach((key) => {
+          if (!isNaN(key)) {
+            delete current[key];
+          }
+        });
+
+        const routers = [...this[HISTORY], current];
 
         return routers;
+      },
+      set routers(_routers) {
+        this._settedRouters = 1;
+
+        this.html = "";
+
+        const historyRouters = _routers.slice();
+
+        const currentRouter = historyRouters.pop();
+
+        this[HISTORY].push(...historyRouters);
+
+        this.push(currentRouter);
       },
     },
   });

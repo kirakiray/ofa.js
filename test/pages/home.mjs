@@ -1,7 +1,7 @@
 export default async ({ params }) => {
   return {
     data: {
-      val: "1",
+      val: "1111",
       params: params || {},
     },
     proto: {

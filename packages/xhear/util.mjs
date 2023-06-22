@@ -42,7 +42,7 @@ export const createXEle = (expr, exprType) => {
     return expr;
   }
 
-  if (expr instanceof Element) {
+  if (expr instanceof Node) {
     return eleX(expr);
   }
 

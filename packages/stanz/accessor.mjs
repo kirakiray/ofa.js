@@ -9,8 +9,11 @@ export const setData = ({ target, key, value, receiver, type, succeed }) => {
   if (isxdata(data)) {
     data._owner.push(receiver);
   } else if (isObject(value)) {
-    data = new Stanz(value);
-    data._owner.push(receiver);
+    const desc = Object.getOwnPropertyDescriptor(target, key);
+    if (!desc || desc.hasOwnProperty("value")) {
+      data = new Stanz(value);
+      data._owner.push(receiver);
+    }
   }
 
   const oldValue = receiver[key];
