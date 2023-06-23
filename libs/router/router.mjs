@@ -30,6 +30,8 @@ $.register({
       app.routers = history.state.routers;
     }
 
+    let isFixState = 0;
+
     this.on("router-change", (e) => {
       switch (e.name) {
         case "goto":
@@ -51,25 +53,32 @@ $.register({
           );
           break;
         case "back":
+          if (this._isBack) {
+            delete this._isBack;
+            return;
+          }
+
+          isFixState = 1;
+          history.go(-e.delta);
+
           console.log("back => ", e);
           break;
       }
-      // console.log(
-      //   "rchange  => ",
-      //   e.name,
-      //   JSON.parse(JSON.stringify(app.routers))
-      // );
     });
 
     let popstateFunc;
     window.addEventListener(
       "popstate",
       (popstateFunc = (e) => {
-        console.log("popstate => ", e);
-
         const { state } = e;
 
+        if (isFixState) {
+          isFixState = 0;
+          return;
+        }
+
         if (!state) {
+          this._isBack = 1;
           app.back(app.routers.length - 1);
           return;
         }
@@ -79,6 +88,7 @@ $.register({
 
         if (hisRouters.length < appRouters.length) {
           // history back
+          this._isBack = 1;
           app.back(appRouters.length - hisRouters.length);
         } else if (hisRouters.length > appRouters.length) {
           // history forward
@@ -95,7 +105,7 @@ $.register({
 
           app.goto(target.src);
         } else {
-          debugger;
+          console.error(`o-router error occurred`);
         }
       })
     );

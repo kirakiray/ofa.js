@@ -238,7 +238,7 @@ const pageAddAnime = ({ page, key }) => {
       ...targetAnime,
     };
 
-    requestAnimationFrame(() => {
+    nextAnimeFrame(() => {
       page.style = {
         transition: "all ease .3s",
         ...(pageAnime.current || {}),
@@ -252,7 +252,7 @@ const outPage = ({ page, key }) =>
     const targetAnime = page.pageAnime[key];
 
     if (targetAnime) {
-      requestAnimationFrame(() => {
+      nextAnimeFrame(() => {
         page.one("transitionend", resolve);
 
         page.style = {
@@ -263,4 +263,9 @@ const outPage = ({ page, key }) =>
     } else {
       resolve();
     }
+  });
+
+const nextAnimeFrame = (func) =>
+  requestAnimationFrame(() => {
+    setTimeout(func, 5);
   });
