@@ -33,7 +33,10 @@ $.register({
     let isFixState = 0;
 
     this.on("router-change", (e) => {
+      let methodName = "pushState";
       switch (e.name) {
+        case "replace":
+          methodName = "replaceState";
         case "goto":
           const { routers } = app;
           const { pathname, search } = new URL(e.src);
@@ -43,7 +46,7 @@ $.register({
             return;
           }
 
-          history.pushState(
+          history[methodName](
             {
               routerMode: 1,
               routers,
