@@ -44,4 +44,16 @@ module.exports = [
     ],
     plugins: [terser()],
   },
+  {
+    input: "libs/router/router.mjs",
+    output: [
+      {
+        file: "libs/router/dist/router.min.js",
+        format: "umd",
+        banner,
+        sourcemap: true,
+      },
+    ],
+    plugins: [terser()],
+  },
 ];

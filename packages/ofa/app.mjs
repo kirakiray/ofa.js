@@ -5,7 +5,17 @@ import { convert } from "../xhear/render/render.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { getRandomId } from "../stanz/public.mjs";
 
-const HISTORY = Symbol("history");
+const HISTORY = "_history";
+
+const removeSubs = (current) => {
+  Object.keys(current).forEach((key) => {
+    if (!isNaN(key)) {
+      delete current[key];
+    }
+  });
+
+  return current;
+};
 
 const getLoading = ({ self: _this, src, type }) => {
   const { loading } = _this._opts;
@@ -140,12 +150,7 @@ $.register({
 
       pageAddAnime({ page: newCurrent, key: "next" });
 
-      // Removing child node data from historical routes
-      oldCurrent.forEach((el) => el.remove());
-
-      oldCurrent.remove();
-
-      this[HISTORY].push(oldCurrent.toJSON());
+      this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
 
       this.emit("router-change", {
         name: "goto",
@@ -156,6 +161,8 @@ $.register({
         page: oldCurrent,
         key: "previous",
       });
+
+      oldCurrent.remove();
     },
     async replace(src) {
       const { current: oldCurrent } = this;
@@ -197,11 +204,7 @@ $.register({
 
       current = current.toJSON();
 
-      Object.keys(current).forEach((key) => {
-        if (!isNaN(key)) {
-          delete current[key];
-        }
-      });
+      removeSubs(current);
 
       const routers = [...this[HISTORY], current];
 
@@ -216,6 +219,7 @@ $.register({
 
       const currentRouter = historyRouters.pop();
 
+      this[HISTORY].length = 0;
       this[HISTORY].push(...historyRouters);
 
       this.push(currentRouter);

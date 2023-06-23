@@ -2946,7 +2946,17 @@ try{
 
   // import lm from "../drill.js/base.mjs";
 
-  const HISTORY = Symbol("history");
+  const HISTORY = "_history";
+
+  const removeSubs = (current) => {
+    Object.keys(current).forEach((key) => {
+      if (!isNaN(key)) {
+        delete current[key];
+      }
+    });
+
+    return current;
+  };
 
   const getLoading = ({ self: _this, src, type }) => {
     const { loading } = _this._opts;
@@ -3081,12 +3091,7 @@ try{
 
         pageAddAnime({ page: newCurrent, key: "next" });
 
-        // Removing child node data from historical routes
-        oldCurrent.forEach((el) => el.remove());
-
-        oldCurrent.remove();
-
-        this[HISTORY].push(oldCurrent.toJSON());
+        this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
 
         this.emit("router-change", {
           name: "goto",
@@ -3097,6 +3102,8 @@ try{
           page: oldCurrent,
           key: "previous",
         });
+
+        oldCurrent.remove();
       },
       async replace(src) {
         const { current: oldCurrent } = this;
@@ -3138,11 +3145,7 @@ try{
 
         current = current.toJSON();
 
-        Object.keys(current).forEach((key) => {
-          if (!isNaN(key)) {
-            delete current[key];
-          }
-        });
+        removeSubs(current);
 
         const routers = [...this[HISTORY], current];
 
@@ -3157,6 +3160,7 @@ try{
 
         const currentRouter = historyRouters.pop();
 
+        this[HISTORY].length = 0;
         this[HISTORY].push(...historyRouters);
 
         this.push(currentRouter);
