@@ -2681,17 +2681,15 @@ try{
   window.lm = lm;
 
   function resolvePath(moduleName, baseURI) {
-    const baseURL = new URL(baseURI);
-    // 如果是绝对路径，则直接返回
+    const baseURL = new URL(baseURI || location.href);
     if (
-      moduleName.startsWith("/") ||
+      // moduleName.startsWith("/") ||
       moduleName.startsWith("http://") ||
       moduleName.startsWith("https://")
     ) {
       return moduleName;
     }
 
-    // 如果是相对路径，则计算出绝对路径
     const moduleURL = new URL(moduleName, baseURL);
     return moduleURL.href;
   }
@@ -2783,6 +2781,11 @@ try{
     watch: {
       async src(val) {
         let result;
+
+        if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
+          val = resolvePath(val);
+          this.ele.setAttribute("src", val);
+        }
 
         await wrapErrorCall(
           async () => {
@@ -3091,19 +3094,21 @@ try{
 
         pageAddAnime({ page: newCurrent, key: "next" });
 
-        this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
+        oldCurrent && this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
 
         this.emit("router-change", {
           name: "goto",
           src,
         });
 
-        await outPage({
-          page: oldCurrent,
-          key: "previous",
-        });
+        if (oldCurrent) {
+          await outPage({
+            page: oldCurrent,
+            key: "previous",
+          });
 
-        oldCurrent.remove();
+          oldCurrent.remove();
+        }
       },
       async replace(src) {
         const { current: oldCurrent } = this;
@@ -3125,13 +3130,14 @@ try{
           name: "replace",
           src,
         });
+        if (oldCurrent) {
+          await outPage({
+            page: oldCurrent,
+            key: "previous",
+          });
 
-        await outPage({
-          page: oldCurrent,
-          key: "previous",
-        });
-
-        oldCurrent.remove();
+          oldCurrent.remove();
+        }
       },
       get current() {
         return this.$("o-page:last-of-type");
@@ -3179,7 +3185,7 @@ try{
         ...targetAnime,
       };
 
-      requestAnimationFrame(() => {
+      nextAnimeFrame(() => {
         page.style = {
           transition: "all ease .3s",
           ...(pageAnime.current || {}),
@@ -3193,7 +3199,7 @@ try{
       const targetAnime = page.pageAnime[key];
 
       if (targetAnime) {
-        requestAnimationFrame(() => {
+        nextAnimeFrame(() => {
           page.one("transitionend", resolve);
 
           page.style = {
@@ -3204,6 +3210,11 @@ try{
       } else {
         resolve();
       }
+    });
+
+  const nextAnimeFrame = (func) =>
+    requestAnimationFrame(() => {
+      setTimeout(func, 5);
     });
 
   $.fn.extend({

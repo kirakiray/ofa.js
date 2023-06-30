@@ -150,19 +150,21 @@ $.register({
 
       pageAddAnime({ page: newCurrent, key: "next" });
 
-      this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
+      oldCurrent && this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
 
       this.emit("router-change", {
         name: "goto",
         src,
       });
 
-      await outPage({
-        page: oldCurrent,
-        key: "previous",
-      });
+      if (oldCurrent) {
+        await outPage({
+          page: oldCurrent,
+          key: "previous",
+        });
 
-      oldCurrent.remove();
+        oldCurrent.remove();
+      }
     },
     async replace(src) {
       const { current: oldCurrent } = this;
@@ -184,13 +186,14 @@ $.register({
         name: "replace",
         src,
       });
+      if (oldCurrent) {
+        await outPage({
+          page: oldCurrent,
+          key: "previous",
+        });
 
-      await outPage({
-        page: oldCurrent,
-        key: "previous",
-      });
-
-      oldCurrent.remove();
+        oldCurrent.remove();
+      }
     },
     get current() {
       return this.$("o-page:last-of-type");

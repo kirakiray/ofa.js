@@ -21,10 +21,10 @@ export const loading = () => {
       }
     }
   </style>
-  <div class="loading"></div>
+  <div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;">
+    <div class="loading"></div>
+  </div>
 `;
-
-  // return `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;">loading</div>`;
 };
 
 export const fail = ({ src }) => {

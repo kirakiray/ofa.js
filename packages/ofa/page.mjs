@@ -66,6 +66,11 @@ $.register({
     async src(val) {
       let result;
 
+      if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
+        val = resolvePath(val);
+        this.ele.setAttribute("src", val);
+      }
+
       await wrapErrorCall(
         async () => {
           result = await initSrc(this, val);

@@ -30,6 +30,10 @@ $.register({
       app.routers = history.state.routers;
     }
 
+    if (!history.state || window.location.hash) {
+      app.replace(location.hash.replace("#", ""));
+    }
+
     let isFixState = 0;
 
     this.on("router-change", (e) => {
