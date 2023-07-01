@@ -2799,19 +2799,21 @@ $.register({
 
       let tempSrc = defaults.temp;
 
-      if (!tempSrc) {
-        tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
-      }
-
-      await wrapErrorCall(
-        async () => {
-          defaults.temp = await fetch(tempSrc).then((e) => e.text());
-        },
-        {
-          self: this,
-          desc: `${selfUrl} module request for ${tempSrc} template page failed`,
+      if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
+        if (!tempSrc) {
+          tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
         }
-      );
+
+        await wrapErrorCall(
+          async () => {
+            defaults.temp = await fetch(tempSrc).then((e) => e.text());
+          },
+          {
+            self: this,
+            desc: `${selfUrl} module request for ${tempSrc} template page failed`,
+          }
+        );
+      }
 
       const template = document.createElement("template");
       template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
@@ -2979,11 +2981,15 @@ $.register({
     async src(val) {
       const result = await initSrc(this, val);
 
-      if (result === false || this._settedRouters) {
+      if (result === false) {
         return;
       }
 
       this._module = result;
+
+      if (this._settedRouters) {
+        return;
+      }
 
       const { selfUrl, defaults } = result;
 
@@ -3170,9 +3176,13 @@ $.register({
 });
 
 const pageAddAnime = ({ page, key }) => {
+  console.log(page);
+
   const { pageAnime } = page;
 
   const targetAnime = pageAnime[key];
+
+  console.log("targetAnime => ", targetAnime);
 
   if (targetAnime) {
     page.style = {

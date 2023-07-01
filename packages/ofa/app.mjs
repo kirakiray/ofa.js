@@ -41,11 +41,15 @@ $.register({
     async src(val) {
       const result = await initSrc(this, val);
 
-      if (result === false || this._settedRouters) {
+      if (result === false) {
         return;
       }
 
       this._module = result;
+
+      if (this._settedRouters) {
+        return;
+      }
 
       const { selfUrl, defaults } = result;
 
@@ -232,9 +236,13 @@ $.register({
 });
 
 const pageAddAnime = ({ page, key }) => {
+  console.log(page);
+
   const { pageAnime } = page;
 
   const targetAnime = pageAnime[key];
+
+  console.log("targetAnime => ", targetAnime);
 
   if (targetAnime) {
     page.style = {

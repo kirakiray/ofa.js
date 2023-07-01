@@ -89,19 +89,21 @@ $.register({
 
       let tempSrc = defaults.temp;
 
-      if (!tempSrc) {
-        tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
-      }
-
-      await wrapErrorCall(
-        async () => {
-          defaults.temp = await fetch(tempSrc).then((e) => e.text());
-        },
-        {
-          self: this,
-          desc: `${selfUrl} module request for ${tempSrc} template page failed`,
+      if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
+        if (!tempSrc) {
+          tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
         }
-      );
+
+        await wrapErrorCall(
+          async () => {
+            defaults.temp = await fetch(tempSrc).then((e) => e.text());
+          },
+          {
+            self: this,
+            desc: `${selfUrl} module request for ${tempSrc} template page failed`,
+          }
+        );
+      }
 
       const template = document.createElement("template");
       template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
