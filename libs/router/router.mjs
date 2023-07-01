@@ -30,8 +30,11 @@ $.register({
       app.routers = history.state.routers;
     }
 
-    if (!history.state || window.location.hash) {
-      app.replace(location.hash.replace("#", ""));
+    if (!history.state && window.location.hash) {
+      app.$("o-page")?.remove();
+      
+      // TODO: 清除掉原来 app 上的数据
+      app.goto(location.hash.replace("#", ""));
     }
 
     let isFixState = 0;
@@ -43,7 +46,7 @@ $.register({
           methodName = "replaceState";
         case "goto":
           const { routers } = app;
-          const { pathname, search } = new URL(e.src);
+          const { pathname, search } = new URL(e.src, location.href);
 
           if (this._isGoto) {
             delete this._isGoto;

@@ -84,9 +84,10 @@ $.register({
         e.target.innerHTML = "";
       });
 
-      const homeUrl = new URL(defaults.home, selfUrl).href;
-
-      this.push(`<o-page src="${homeUrl}"></o-page>`);
+      if (!this.$("o-page")) {
+        const homeUrl = new URL(defaults.home, selfUrl).href;
+        this.push(`<o-page src="${homeUrl}"></o-page>`);
+      }
 
       Object.assign(this._opts, {
         loading,
