@@ -89,3 +89,14 @@ test("o-router hash router", async ({ page }) => {
     new RegExp('{"count":"3"}')
   );
 });
+
+test("Direct access", async ({ page }) => {
+  await page.goto(
+    "http://localhost:3348/libs/router/test/router-test.html#/test/pages/home.mjs?count=501"
+  );
+
+  await new Promise((res) => setTimeout(res, 500));
+  await expect(page.getByTestId("first-div")).toHaveText(
+    new RegExp('{"count":"501"}')
+  );
+});
