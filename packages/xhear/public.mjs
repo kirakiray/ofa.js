@@ -66,4 +66,9 @@ export const removeArrayValue = (arr, target) => {
   }
 };
 
-export const searchEle = (el, expr) => Array.from(el.querySelectorAll(expr));
+export const searchEle = (el, expr) => {
+  if (el instanceof HTMLTemplateElement) {
+    return Array.from(el.content.querySelectorAll(expr));
+  }
+  return Array.from(el.querySelectorAll(expr));
+};

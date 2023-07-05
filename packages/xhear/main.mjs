@@ -64,7 +64,12 @@ export default class Xhear extends LikeArray {
   }
 
   $(expr) {
-    const target = this.ele.querySelector(expr);
+    let { ele } = this;
+    if (ele instanceof HTMLTemplateElement) {
+      ele = ele.content;
+    }
+
+    const target = ele.querySelector(expr);
     return target ? eleX(target) : null;
   }
 
@@ -243,6 +248,10 @@ export default class Xhear extends LikeArray {
 
   remove() {
     this.ele.remove();
+  }
+
+  clone(bool = true) {
+    return eleX(this.ele.cloneNode(bool));
   }
 }
 

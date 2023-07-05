@@ -1,9 +1,10 @@
 // import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
-import { initSrc } from "./page.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { getRandomId } from "../stanz/public.mjs";
+import { resolvePath } from "./public.mjs";
+import { isFunction } from "../xhear/public.mjs";
 
 const HISTORY = "_history";
 
@@ -39,11 +40,20 @@ $.register({
   },
   watch: {
     async src(val) {
-      const result = await initSrc(this, val);
-
-      if (result === false) {
+      if (this.__init_src) {
+        if (this.__init_src !== val) {
+          throw "The App that has already been initialized cannot be set with the src attribute";
+        }
         return;
       }
+
+      if (!val) {
+        return;
+      }
+
+      this.__init_src = val;
+
+      const result = await initSrc(this, val);
 
       this._module = result;
 
@@ -281,3 +291,40 @@ const nextAnimeFrame = (func) =>
   requestAnimationFrame(() => {
     setTimeout(func, 5);
   });
+
+export const initSrc = async (_this, val) => {
+  const load = lm();
+
+  const moduleData = await load(val);
+
+  let finnalDefault = {};
+
+  const { default: defaultData } = moduleData;
+
+  const selfUrl = resolvePath(val, document.location.href);
+
+  const relateLoad = lm({
+    url: selfUrl,
+  });
+
+  if (isFunction(defaultData)) {
+    finnalDefault = await defaultData({
+      load: relateLoad,
+      url: selfUrl,
+      get params() {
+        const urlObj = new URL(selfUrl);
+        return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
+      },
+    });
+  } else if (defaultData instanceof Object) {
+    finnalDefault = defaultData;
+  }
+
+  const defaults = {
+    proto: {},
+    ...moduleData,
+    ...finnalDefault,
+  };
+
+  return { selfUrl, defaults };
+};

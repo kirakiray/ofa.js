@@ -10,8 +10,9 @@ Object.defineProperty($, "COMP", {
   value: COMP,
 });
 
-lm.use(async ({ result: moduleData, url }, next) => {
+lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {
+    next();
     return;
   }
 

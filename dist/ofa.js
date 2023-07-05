@@ -160,7 +160,12 @@
     }
   };
 
-  const searchEle = (el, expr) => Array.from(el.querySelectorAll(expr));
+  const searchEle = (el, expr) => {
+    if (el instanceof HTMLTemplateElement) {
+      return Array.from(el.content.querySelectorAll(expr));
+    }
+    return Array.from(el.querySelectorAll(expr));
+  };
 
   const { assign: assign$1, freeze } = Object;
 
@@ -2139,7 +2144,12 @@ try{
     }
 
     $(expr) {
-      const target = this.ele.querySelector(expr);
+      let { ele } = this;
+      if (ele instanceof HTMLTemplateElement) {
+        ele = ele.content;
+      }
+
+      const target = ele.querySelector(expr);
       return target ? eleX(target) : null;
     }
 
@@ -2319,6 +2329,10 @@ try{
     remove() {
       this.ele.remove();
     }
+
+    clone(bool = true) {
+      return eleX(this.ele.cloneNode(bool));
+    }
   }
 
   const sfn = Stanz.prototype;
@@ -2382,7 +2396,7 @@ try{
       return expr;
     }
 
-    if (expr instanceof Node) {
+    if (expr instanceof Node || expr === window) {
       return eleX(expr);
     }
 
@@ -2482,42 +2496,50 @@ try{
   };
 
   use(["mjs", "js"], async (ctx, next) => {
-    const { url, params } = ctx;
-    const d = new URL(url);
-    if (params.includes("-direct")) {
-      ctx.result = await import(url);
+    if (!ctx.result) {
+      const { url, params } = ctx;
+      const d = new URL(url);
+      if (params.includes("-direct")) {
+        ctx.result = await import(url);
+      }
+      ctx.result = await import(`${d.origin}${d.pathname}`);
     }
-    ctx.result = await import(`${d.origin}${d.pathname}`);
 
-    next();
+    await next();
   });
 
   use(["txt", "html"], async (ctx, next) => {
-    const { url } = ctx;
-    ctx.result = await fetch(url).then((e) => e.text());
+    if (!ctx.result) {
+      const { url } = ctx;
+      ctx.result = await fetch(url).then((e) => e.text());
+    }
 
-    next();
+    await next();
   });
 
   use("json", async (ctx, next) => {
-    const { url } = ctx;
+    if (!ctx.result) {
+      const { url } = ctx;
 
-    ctx.result = await fetch(url).then((e) => e.json());
+      ctx.result = await fetch(url).then((e) => e.json());
+    }
 
-    next();
+    await next();
   });
 
   use("wasm", async (ctx, next) => {
-    const { url } = ctx;
+    if (!ctx.result) {
+      const { url } = ctx;
 
-    const data = await fetch(url).then((e) => e.arrayBuffer());
+      const data = await fetch(url).then((e) => e.arrayBuffer());
 
-    const module = await WebAssembly.compile(data);
-    const instance = new WebAssembly.Instance(module);
+      const module = await WebAssembly.compile(data);
+      const instance = new WebAssembly.Instance(module);
 
-    ctx.result = instance.exports;
+      ctx.result = instance.exports;
+    }
 
-    next();
+    await next();
   });
 
   const LOADED = Symbol("loaded");
@@ -2575,11 +2597,11 @@ try{
     return ctx.result;
   };
 
-  function lm(meta) {
+  function lm$1(meta) {
     return createLoad(meta);
   }
 
-  Object.assign(lm, {
+  Object.assign(lm$1, {
     use,
   });
 
@@ -2678,7 +2700,7 @@ try{
     window.addEventListener("load", ready);
   }
 
-  window.lm = lm;
+  window.lm = lm$1;
 
   function resolvePath(moduleName, baseURI) {
     const baseURL = new URL(baseURI || location.href);
@@ -2710,53 +2732,46 @@ try{
     return template.innerHTML;
   }
 
-  const wrapErrorCall = async (callback, { self, desc }) => {
+  const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
     try {
       await callback();
     } catch (error) {
       const err = new Error(`${desc}\n  ${error.stack}`);
       err.error = error;
-      self.emit("error", { error: err });
+      self.emit("error", { error: err, ...rest });
       throw err;
     }
   };
 
   const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
-  const initSrc = async (_this, val) => {
-    if (_this.__init_src) {
-      if (_this.__init_src !== val) {
-        throw "A page that has already been initialized cannot be set with the src attribute";
-      }
-      return false;
+  const PAGE = Symbol("Page");
+
+  Object.defineProperty($, "PAGE", {
+    value: PAGE,
+  });
+
+  lm$1.use(["js", "mjs"], async (ctx, next) => {
+    const { result: moduleData, url } = ctx;
+    if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
+      await next();
+      return;
     }
-
-    if (!val) {
-      return false;
-    }
-
-    _this.__init_src = val;
-
-    const load = lm();
-
-    const moduleData = await load(val);
 
     let finnalDefault = {};
 
     const { default: defaultData } = moduleData;
 
-    const selfUrl = resolvePath(val, document.location.href);
-
-    const relateLoad = lm({
-      url: selfUrl,
+    const relateLoad = lm$1({
+      url,
     });
 
     if (isFunction(defaultData)) {
       finnalDefault = await defaultData({
         load: relateLoad,
-        url: selfUrl,
+        url,
         get params() {
-          const urlObj = new URL(selfUrl);
+          const urlObj = new URL(url);
           return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
         },
       });
@@ -2764,14 +2779,34 @@ try{
       finnalDefault = defaultData;
     }
 
-    const defaults = {
+    const defaultsData = {
       proto: {},
       ...moduleData,
       ...finnalDefault,
     };
 
-    return { selfUrl, defaults };
-  };
+    let tempSrc = defaultsData.temp;
+
+    if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
+      if (!tempSrc) {
+        tempSrc = url.replace(/\.m?js.*/, ".html");
+      }
+
+      await wrapErrorCall(
+        async () => {
+          defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
+        },
+        {
+          targetModule: (typeof document === 'undefined' && typeof location === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : typeof document === 'undefined' ? location.href : (document.currentScript && document.currentScript.src || new URL('ofa.js', document.baseURI).href)),
+          desc: `${url} module request for ${tempSrc} template page failed`,
+        }
+      );
+    }
+
+    ctx.result = defaultsData;
+
+    await next();
+  });
 
   $.register({
     tag: "o-page",
@@ -2780,16 +2815,31 @@ try{
     },
     watch: {
       async src(val) {
-        let result;
-
         if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
           val = resolvePath(val);
           this.ele.setAttribute("src", val);
         }
 
+        if (this.__init_src) {
+          if (this.__init_src !== val) {
+            throw "A page that has already been initialized cannot be set with the src attribute";
+          }
+          return;
+        }
+
+        if (!val) {
+          return;
+        }
+
+        this.__init_src = val;
+
+        const load = lm$1();
+
+        let defaults;
+
         await wrapErrorCall(
           async () => {
-            result = await initSrc(this, val);
+            defaults = await load(val);
           },
           {
             self: this,
@@ -2797,32 +2847,8 @@ try{
           }
         );
 
-        if (result === false) {
-          return;
-        }
-
-        const { selfUrl, defaults } = result;
-
-        let tempSrc = defaults.temp;
-
-        if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
-          if (!tempSrc) {
-            tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
-          }
-
-          await wrapErrorCall(
-            async () => {
-              defaults.temp = await fetch(tempSrc).then((e) => e.text());
-            },
-            {
-              self: this,
-              desc: `${selfUrl} module request for ${tempSrc} template page failed`,
-            }
-          );
-        }
-
         const template = document.createElement("template");
-        template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
+        template.innerHTML = fixRelateSource(defaults.temp, val);
         const temps = convert(template);
 
         renderElement({
@@ -2885,8 +2911,9 @@ try{
     value: COMP,
   });
 
-  lm.use(async ({ result: moduleData, url }, next) => {
+  lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     if (typeof moduleData !== "object" || moduleData.type !== COMP) {
+      next();
       return;
     }
 
@@ -2896,7 +2923,7 @@ try{
 
     if (isFunction(defaultData)) {
       finnalDefault = await defaultData({
-        load: lm({
+        load: lm$1({
           url,
         }),
       });
@@ -2985,11 +3012,20 @@ try{
     },
     watch: {
       async src(val) {
-        const result = await initSrc(this, val);
-
-        if (result === false) {
+        if (this.__init_src) {
+          if (this.__init_src !== val) {
+            throw "The App that has already been initialized cannot be set with the src attribute";
+          }
           return;
         }
+
+        if (!val) {
+          return;
+        }
+
+        this.__init_src = val;
+
+        const result = await initSrc(this, val);
 
         this._module = result;
 
@@ -3227,6 +3263,43 @@ try{
     requestAnimationFrame(() => {
       setTimeout(func, 5);
     });
+
+  const initSrc = async (_this, val) => {
+    const load = lm();
+
+    const moduleData = await load(val);
+
+    let finnalDefault = {};
+
+    const { default: defaultData } = moduleData;
+
+    const selfUrl = resolvePath(val, document.location.href);
+
+    const relateLoad = lm({
+      url: selfUrl,
+    });
+
+    if (isFunction(defaultData)) {
+      finnalDefault = await defaultData({
+        load: relateLoad,
+        url: selfUrl,
+        get params() {
+          const urlObj = new URL(selfUrl);
+          return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
+        },
+      });
+    } else if (defaultData instanceof Object) {
+      finnalDefault = defaultData;
+    }
+
+    const defaults = {
+      proto: {},
+      ...moduleData,
+      ...finnalDefault,
+    };
+
+    return { selfUrl, defaults };
+  };
 
   $.fn.extend({
     get app() {

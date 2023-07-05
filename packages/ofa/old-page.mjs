@@ -13,27 +13,49 @@ Object.defineProperty($, "PAGE", {
   value: PAGE,
 });
 
-lm.use(["js", "mjs"], async (ctx, next) => {
-  const { result: moduleData, url } = ctx;
+lm.use(["js", "mjs"], async ({ result: moduleData, url, ...rest }, next) => {
   if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
-    await next();
+    next();
     return;
   }
+
+  debugger;
+});
+
+export const initSrc = async (_this, val) => {
+  if (_this.__init_src) {
+    if (_this.__init_src !== val) {
+      throw "A page that has already been initialized cannot be set with the src attribute";
+    }
+    return false;
+  }
+
+  if (!val) {
+    return false;
+  }
+
+  _this.__init_src = val;
+
+  const load = lm();
+
+  const moduleData = await load(val);
 
   let finnalDefault = {};
 
   const { default: defaultData } = moduleData;
 
+  const selfUrl = resolvePath(val, document.location.href);
+
   const relateLoad = lm({
-    url,
+    url: selfUrl,
   });
 
   if (isFunction(defaultData)) {
     finnalDefault = await defaultData({
       load: relateLoad,
-      url,
+      url: selfUrl,
       get params() {
-        const urlObj = new URL(url);
+        const urlObj = new URL(selfUrl);
         return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
       },
     });
@@ -41,34 +63,14 @@ lm.use(["js", "mjs"], async (ctx, next) => {
     finnalDefault = defaultData;
   }
 
-  const defaultsData = {
+  const defaults = {
     proto: {},
     ...moduleData,
     ...finnalDefault,
   };
 
-  let tempSrc = defaultsData.temp;
-
-  if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
-    if (!tempSrc) {
-      tempSrc = url.replace(/\.m?js.*/, ".html");
-    }
-
-    await wrapErrorCall(
-      async () => {
-        defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
-      },
-      {
-        targetModule: import.meta.url,
-        desc: `${url} module request for ${tempSrc} template page failed`,
-      }
-    );
-  }
-
-  ctx.result = defaultsData;
-
-  await next();
-});
+  return { selfUrl, defaults };
+};
 
 $.register({
   tag: "o-page",
@@ -77,31 +79,16 @@ $.register({
   },
   watch: {
     async src(val) {
+      let result;
+
       if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
         val = resolvePath(val);
         this.ele.setAttribute("src", val);
       }
 
-      if (this.__init_src) {
-        if (this.__init_src !== val) {
-          throw "A page that has already been initialized cannot be set with the src attribute";
-        }
-        return;
-      }
-
-      if (!val) {
-        return;
-      }
-
-      this.__init_src = val;
-
-      const load = lm();
-
-      let defaults;
-
       await wrapErrorCall(
         async () => {
-          defaults = await load(val);
+          result = await initSrc(this, val);
         },
         {
           self: this,
@@ -109,8 +96,32 @@ $.register({
         }
       );
 
+      if (result === false) {
+        return;
+      }
+
+      const { selfUrl, defaults } = result;
+
+      let tempSrc = defaults.temp;
+
+      if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
+        if (!tempSrc) {
+          tempSrc = selfUrl.replace(/\.m?js.*/, ".html");
+        }
+
+        await wrapErrorCall(
+          async () => {
+            defaults.temp = await fetch(tempSrc).then((e) => e.text());
+          },
+          {
+            self: this,
+            desc: `${selfUrl} module request for ${tempSrc} template page failed`,
+          }
+        );
+      }
+
       const template = document.createElement("template");
-      template.innerHTML = fixRelateSource(defaults.temp, val);
+      template.innerHTML = fixRelateSource(defaults.temp, tempSrc);
       const temps = convert(template);
 
       renderElement({

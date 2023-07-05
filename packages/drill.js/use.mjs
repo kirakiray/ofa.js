@@ -24,40 +24,48 @@ export const use = (name, handler) => {
 };
 
 use(["mjs", "js"], async (ctx, next) => {
-  const { url, params } = ctx;
-  const d = new URL(url);
-  if (params.includes("-direct")) {
-    ctx.result = await import(url);
+  if (!ctx.result) {
+    const { url, params } = ctx;
+    const d = new URL(url);
+    if (params.includes("-direct")) {
+      ctx.result = await import(url);
+    }
+    ctx.result = await import(`${d.origin}${d.pathname}`);
   }
-  ctx.result = await import(`${d.origin}${d.pathname}`);
 
-  next();
+  await next();
 });
 
 use(["txt", "html"], async (ctx, next) => {
-  const { url } = ctx;
-  ctx.result = await fetch(url).then((e) => e.text());
+  if (!ctx.result) {
+    const { url } = ctx;
+    ctx.result = await fetch(url).then((e) => e.text());
+  }
 
-  next();
+  await next();
 });
 
 use("json", async (ctx, next) => {
-  const { url } = ctx;
+  if (!ctx.result) {
+    const { url } = ctx;
 
-  ctx.result = await fetch(url).then((e) => e.json());
+    ctx.result = await fetch(url).then((e) => e.json());
+  }
 
-  next();
+  await next();
 });
 
 use("wasm", async (ctx, next) => {
-  const { url } = ctx;
+  if (!ctx.result) {
+    const { url } = ctx;
 
-  const data = await fetch(url).then((e) => e.arrayBuffer());
+    const data = await fetch(url).then((e) => e.arrayBuffer());
 
-  const module = await WebAssembly.compile(data);
-  const instance = new WebAssembly.Instance(module);
+    const module = await WebAssembly.compile(data);
+    const instance = new WebAssembly.Instance(module);
 
-  ctx.result = instance.exports;
+    ctx.result = instance.exports;
+  }
 
-  next();
+  await next();
 });

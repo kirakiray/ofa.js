@@ -1,3 +1,5 @@
+export const type = $.PAGE;
+
 export default async function ({ load, url, params }) {
   return {
     data: {
