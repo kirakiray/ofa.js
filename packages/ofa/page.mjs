@@ -4,6 +4,7 @@ import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { isFunction, searchEle } from "../xhear/public.mjs";
 import { fixRelateSource, resolvePath, wrapErrorCall } from "./public.mjs";
+import { getDefault } from "./app.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -20,32 +21,7 @@ lm.use(["js", "mjs"], async (ctx, next) => {
     return;
   }
 
-  let finnalDefault = {};
-
-  const { default: defaultData } = moduleData;
-
-  const relateLoad = lm({
-    url,
-  });
-
-  if (isFunction(defaultData)) {
-    finnalDefault = await defaultData({
-      load: relateLoad,
-      url,
-      get params() {
-        const urlObj = new URL(url);
-        return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
-      },
-    });
-  } else if (defaultData instanceof Object) {
-    finnalDefault = defaultData;
-  }
-
-  const defaultsData = {
-    proto: {},
-    ...moduleData,
-    ...finnalDefault,
-  };
+  const defaultsData = await getDefault(moduleData, url);
 
   let tempSrc = defaultsData.temp;
 
@@ -136,7 +112,7 @@ $.register({
     get pageAnime() {
       const { app, _pageAnime } = this;
 
-      const { pageAnime } = app?._module?.defaults || {};
+      const { pageAnime } = app?._module || {};
 
       return clone({ ...pageAnime, ...(_pageAnime || {}) });
     },

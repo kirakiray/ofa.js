@@ -53,15 +53,22 @@ $.register({
 
       this.__init_src = val;
 
-      const result = await initSrc(this, val);
+      let selfUrl = val;
+      if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
+        selfUrl = resolvePath(val);
+      }
 
-      this._module = result;
+      const load = lm();
+
+      const moduleData = await load(selfUrl);
+
+      const defaults = await getDefault(moduleData, selfUrl);
+
+      this._module = defaults;
 
       if (this._settedRouters) {
         return;
       }
-
-      const { selfUrl, defaults } = result;
 
       this.extend(defaults.proto);
 
@@ -292,27 +299,21 @@ const nextAnimeFrame = (func) =>
     setTimeout(func, 5);
   });
 
-export const initSrc = async (_this, val) => {
-  const load = lm();
-
-  const moduleData = await load(val);
-
+export const getDefault = async (moduleData, url) => {
   let finnalDefault = {};
 
   const { default: defaultData } = moduleData;
 
-  const selfUrl = resolvePath(val, document.location.href);
-
   const relateLoad = lm({
-    url: selfUrl,
+    url,
   });
 
   if (isFunction(defaultData)) {
     finnalDefault = await defaultData({
       load: relateLoad,
-      url: selfUrl,
+      url,
       get params() {
-        const urlObj = new URL(selfUrl);
+        const urlObj = new URL(url);
         return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
       },
     });
@@ -326,5 +327,5 @@ export const initSrc = async (_this, val) => {
     ...finnalDefault,
   };
 
-  return { selfUrl, defaults };
+  return defaults;
 };
