@@ -28,7 +28,18 @@ export const agent = async (url, opts) => {
   const urldata = new URL(url);
   const { pathname } = urldata;
 
-  const type = pathname.slice(((pathname.lastIndexOf(".") - 1) >>> 0) + 2);
+  let type;
+
+  opts.params &&
+    opts.params.forEach((e) => {
+      if (/^\..+/.test(e)) {
+        type = e.replace(/^\.(.+)/, "$1");
+      }
+    });
+
+  if (!type) {
+    type = pathname.slice(((pathname.lastIndexOf(".") - 1) >>> 0) + 2);
+  }
 
   const ctx = {
     url,

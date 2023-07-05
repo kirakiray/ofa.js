@@ -2,7 +2,7 @@ import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
-import { isFunction, searchEle } from "../xhear/public.mjs";
+import { searchEle } from "../xhear/public.mjs";
 import { fixRelateSource, resolvePath, wrapErrorCall } from "./public.mjs";
 import { getDefault } from "./app.mjs";
 
