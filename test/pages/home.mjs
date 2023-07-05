@@ -1,14 +1,14 @@
 export const type = $.PAGE;
 
-export default async ({ params }) => {
+export default async ({ query }) => {
   return {
     data: {
       val: "1111",
-      params: params || {},
+      query: query || {},
     },
     proto: {
       toHome() {
-        this.goto(`./home.mjs?count=${(Number(this.params.count) || 0) + 1}`);
+        this.goto(`./home.mjs?count=${(Number(this.query.count) || 0) + 1}`);
       },
     },
   };

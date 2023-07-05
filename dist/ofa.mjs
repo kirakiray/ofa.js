@@ -3056,7 +3056,7 @@ const getDefault = async (moduleData, url) => {
     finnalDefault = await defaultData({
       load: relateLoad,
       url,
-      get params() {
+      get query() {
         const urlObj = new URL(url);
         return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
       },

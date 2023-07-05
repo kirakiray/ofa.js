@@ -10,5 +10,5 @@ test("load page", async ({ page }) => {
     }
   );
 
-  await expect(pageFirstDivText).toBe('params --> {"num":"1001"}');
+  await expect(pageFirstDivText).toBe('query --> {"num":"1001"}');
 });

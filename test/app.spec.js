@@ -67,7 +67,7 @@ test("app routers", async ({ page }) => {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=1",
       val: "1111",
-      params: { count: "1" },
+      query: { count: "1" },
     },
   ]);
 
@@ -79,13 +79,13 @@ test("app routers", async ({ page }) => {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=1",
       val: "1111",
-      params: { count: "1" },
+      query: { count: "1" },
     },
     {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=2",
       val: "1111",
-      params: { count: "2" },
+      query: { count: "2" },
     },
   ]);
 
@@ -97,19 +97,19 @@ test("app routers", async ({ page }) => {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=1",
       val: "1111",
-      params: { count: "1" },
+      query: { count: "1" },
     },
     {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=2",
       val: "1111",
-      params: { count: "2" },
+      query: { count: "2" },
     },
     {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=3",
       val: "1111",
-      params: { count: "3" },
+      query: { count: "3" },
     },
   ]);
 
@@ -121,13 +121,13 @@ test("app routers", async ({ page }) => {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=1",
       val: "1111",
-      params: { count: "1" },
+      query: { count: "1" },
     },
     {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=2",
       val: "1111",
-      params: { count: "2" },
+      query: { count: "2" },
     },
   ]);
 
@@ -139,13 +139,13 @@ test("app routers", async ({ page }) => {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=1",
       val: "1111",
-      params: { count: "1" },
+      query: { count: "1" },
     },
     {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=250",
       val: "1111",
-      params: { count: "250" },
+      query: { count: "250" },
     },
   ]);
 
@@ -157,7 +157,7 @@ test("app routers", async ({ page }) => {
       tag: "o-page",
       src: "http://localhost:3348/test/pages/home.mjs?count=1",
       val: "1111",
-      params: { count: "1" },
+      query: { count: "1" },
     },
   ]);
 });

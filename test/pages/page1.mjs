@@ -1,9 +1,9 @@
 export const type = $.PAGE;
 
-export default async function ({ load, url, params }) {
+export default async function ({ load, url, query }) {
   return {
     data: {
-      pm: params,
+      pm: query,
       ia: "aaa",
     },
     proto: {
