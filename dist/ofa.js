@@ -2714,17 +2714,20 @@ try{
   window.lm = lm$1;
 
   function resolvePath(moduleName, baseURI) {
+    const [url, ...params] = moduleName.split(" ");
+
     const baseURL = new URL(baseURI || location.href);
     if (
       // moduleName.startsWith("/") ||
-      moduleName.startsWith("http://") ||
-      moduleName.startsWith("https://")
+      url.startsWith("http://") ||
+      url.startsWith("https://")
     ) {
-      return moduleName;
+      return url;
     }
 
-    const moduleURL = new URL(moduleName, baseURL);
-    return moduleURL.href;
+    const moduleURL = new URL(url, baseURL);
+
+    return `${moduleURL.href} ${params.join(" ")}`;
   }
 
   function fixRelateSource(content, path) {
@@ -2801,6 +2804,7 @@ try{
     },
     watch: {
       async src(val) {
+        debugger
         if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
           val = resolvePath(val);
           this.ele.setAttribute("src", val);
@@ -2832,6 +2836,12 @@ try{
             desc: `Request for ${val} module failed`,
           }
         );
+
+        if (defaults.type !== PAGE) {
+          const err = new Error(`The currently loaded module is not a page \nLoaded string: ${val}`);
+          this.emit("error", { error: err });
+          throw err;
+        }
 
         const template = document.createElement("template");
         template.innerHTML = fixRelateSource(defaults.temp, val);

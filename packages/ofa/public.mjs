@@ -1,17 +1,20 @@
 import { searchEle } from "../xhear/public.mjs";
 
 export function resolvePath(moduleName, baseURI) {
+  const [url, ...params] = moduleName.split(" ");
+
   const baseURL = new URL(baseURI || location.href);
   if (
     // moduleName.startsWith("/") ||
-    moduleName.startsWith("http://") ||
-    moduleName.startsWith("https://")
+    url.startsWith("http://") ||
+    url.startsWith("https://")
   ) {
-    return moduleName;
+    return url;
   }
 
-  const moduleURL = new URL(moduleName, baseURL);
-  return moduleURL.href;
+  const moduleURL = new URL(url, baseURL);
+
+  return `${moduleURL.href} ${params.join(" ")}`;
 }
 
 export function fixRelateSource(content, path) {

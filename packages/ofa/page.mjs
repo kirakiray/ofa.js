@@ -84,6 +84,12 @@ $.register({
         }
       );
 
+      if (defaults.type !== PAGE) {
+        const err = new Error(`The currently loaded module is not a page \nLoaded string => '${val}'`);
+        this.emit("error", { error: err });
+        throw err;
+      }
+
       const template = document.createElement("template");
       template.innerHTML = fixRelateSource(defaults.temp, val);
       const temps = convert(template);
