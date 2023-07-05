@@ -2,9 +2,8 @@ import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
-import { searchEle } from "../xhear/public.mjs";
+import { searchEle, isFunction } from "../xhear/public.mjs";
 import { fixRelateSource, resolvePath, wrapErrorCall } from "./public.mjs";
-import { getDefault } from "./app.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -141,4 +140,35 @@ export const dispatchLoad = async (_this, loaded) => {
   if (loaded) {
     loaded.call(_this);
   }
+};
+
+export const getDefault = async (moduleData, url) => {
+  let finnalDefault = {};
+
+  const { default: defaultData } = moduleData;
+
+  const relateLoad = lm({
+    url,
+  });
+
+  if (isFunction(defaultData)) {
+    finnalDefault = await defaultData({
+      load: relateLoad,
+      url,
+      get query() {
+        const urlObj = new URL(url);
+        return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
+      },
+    });
+  } else if (defaultData instanceof Object) {
+    finnalDefault = defaultData;
+  }
+
+  const defaults = {
+    proto: {},
+    ...moduleData,
+    ...finnalDefault,
+  };
+
+  return defaults;
 };

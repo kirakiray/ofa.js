@@ -4,7 +4,7 @@ import { convert } from "../xhear/render/render.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { getRandomId } from "../stanz/public.mjs";
 import { resolvePath } from "./public.mjs";
-import { isFunction } from "../xhear/public.mjs";
+import { getDefault } from "./page.mjs";
 
 const HISTORY = "_history";
 
@@ -298,34 +298,3 @@ const nextAnimeFrame = (func) =>
   requestAnimationFrame(() => {
     setTimeout(func, 5);
   });
-
-export const getDefault = async (moduleData, url) => {
-  let finnalDefault = {};
-
-  const { default: defaultData } = moduleData;
-
-  const relateLoad = lm({
-    url,
-  });
-
-  if (isFunction(defaultData)) {
-    finnalDefault = await defaultData({
-      load: relateLoad,
-      url,
-      get query() {
-        const urlObj = new URL(url);
-        return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
-      },
-    });
-  } else if (defaultData instanceof Object) {
-    finnalDefault = defaultData;
-  }
-
-  const defaults = {
-    proto: {},
-    ...moduleData,
-    ...finnalDefault,
-  };
-
-  return defaults;
-};
