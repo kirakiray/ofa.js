@@ -29,8 +29,9 @@ use(["mjs", "js"], async (ctx, next) => {
     const d = new URL(url);
     if (params.includes("-direct")) {
       ctx.result = await import(url);
+    } else {
+      ctx.result = await import(`${d.origin}${d.pathname}`);
     }
-    ctx.result = await import(`${d.origin}${d.pathname}`);
   }
 
   await next();

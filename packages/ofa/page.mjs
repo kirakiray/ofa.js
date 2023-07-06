@@ -13,6 +13,44 @@ Object.defineProperty($, "PAGE", {
   value: PAGE,
 });
 
+lm.use("page", async (ctx, next) => {
+  const content = await fetch(ctx.url).then((e) => e.text());
+
+  const url = dataToUrl(content, ctx.url);
+
+  ctx.result = await lm()(`${url} .mjs -direct`);
+
+  await next();
+});
+
+// const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
+
+function dataToUrl(content, url) {
+  const tempEl = $("<template></template>");
+  tempEl.html = content;
+
+  const targetTemp = tempEl.$("template[page]");
+  const scriptEl = targetTemp.$("script");
+
+  scriptEl.remove();
+
+  const fileUrl = new URL(url);
+
+  const fileContent = `
+  export const type = $.PAGE;
+  export const PATH = '${fileUrl.origin}${fileUrl.pathname}';
+  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
+  ${scriptEl.html}`;
+
+  const file = new File(
+    [fileContent],
+    location.pathname.replace(/.+\/(.+)/, "$1"),
+    { type: "text/javascript" }
+  );
+
+  return URL.createObjectURL(file);
+}
+
 lm.use(["js", "mjs"], async (ctx, next) => {
   const { result: moduleData, url } = ctx;
   if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
@@ -24,7 +62,7 @@ lm.use(["js", "mjs"], async (ctx, next) => {
 
   let tempSrc = defaultsData.temp;
 
-  if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
+  if (!/<.+>/.test(tempSrc)) {
     if (!tempSrc) {
       tempSrc = url.replace(/\.m?js.*/, ".html");
     }
@@ -84,8 +122,10 @@ $.register({
         }
       );
 
-      if (defaults.type !== PAGE) {
-        const err = new Error(`The currently loaded module is not a page \nLoaded string => '${val}'`);
+      if (!defaults || defaults.type !== PAGE) {
+        const err = new Error(
+          `The currently loaded module is not a page \nLoaded string => '${val}'`
+        );
         this.emit("error", { error: err });
         throw err;
       }
@@ -148,10 +188,12 @@ export const dispatchLoad = async (_this, loaded) => {
   }
 };
 
-export const getDefault = async (moduleData, url) => {
+export const getDefault = async (moduleData, oriUrl) => {
   let finnalDefault = {};
 
-  const { default: defaultData } = moduleData;
+  const { default: defaultData, PATH } = moduleData;
+
+  const url = PATH || oriUrl;
 
   const relateLoad = lm({
     url,

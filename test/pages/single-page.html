@@ -1,0 +1,20 @@
+<template page>
+  <div>I am singlePage page {{num}}</div>
+  <button on:click="addOne">Add One</button>
+
+  <script>
+    export default function ({ ...rest }) {
+      debugger;
+      return {
+        data: {
+          num: 1,
+        },
+        proto: {
+          addOne() {
+            this.num++;
+          },
+        },
+      };
+    }
+  </script>
+</template>

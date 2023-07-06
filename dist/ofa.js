@@ -2501,8 +2501,9 @@ try{
       const d = new URL(url);
       if (params.includes("-direct")) {
         ctx.result = await import(url);
+      } else {
+        ctx.result = await import(`${d.origin}${d.pathname}`);
       }
-      ctx.result = await import(`${d.origin}${d.pathname}`);
     }
 
     await next();
@@ -2765,6 +2766,44 @@ try{
     value: PAGE,
   });
 
+  lm$1.use("page", async (ctx, next) => {
+    const content = await fetch(ctx.url).then((e) => e.text());
+
+    const url = dataToUrl(content, ctx.url);
+
+    ctx.result = await lm$1()(`${url} .mjs -direct`);
+
+    await next();
+  });
+
+  // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
+
+  function dataToUrl(content, url) {
+    const tempEl = $("<template></template>");
+    tempEl.html = content;
+
+    const targetTemp = tempEl.$("template[page]");
+    const scriptEl = targetTemp.$("script");
+
+    scriptEl.remove();
+
+    const fileUrl = new URL(url);
+
+    const fileContent = `
+  export const type = $.PAGE;
+  export const PATH = '${fileUrl.origin}${fileUrl.pathname}';
+  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
+  ${scriptEl.html}`;
+
+    const file = new File(
+      [fileContent],
+      location.pathname.replace(/.+\/(.+)/, "$1"),
+      { type: "text/javascript" }
+    );
+
+    return URL.createObjectURL(file);
+  }
+
   lm$1.use(["js", "mjs"], async (ctx, next) => {
     const { result: moduleData, url } = ctx;
     if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
@@ -2776,7 +2815,7 @@ try{
 
     let tempSrc = defaultsData.temp;
 
-    if (!/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/.test(tempSrc)) {
+    if (!/<.+>/.test(tempSrc)) {
       if (!tempSrc) {
         tempSrc = url.replace(/\.m?js.*/, ".html");
       }
@@ -2804,7 +2843,6 @@ try{
     },
     watch: {
       async src(val) {
-        debugger
         if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
           val = resolvePath(val);
           this.ele.setAttribute("src", val);
@@ -2837,8 +2875,10 @@ try{
           }
         );
 
-        if (defaults.type !== PAGE) {
-          const err = new Error(`The currently loaded module is not a page \nLoaded string: ${val}`);
+        if (!defaults || defaults.type !== PAGE) {
+          const err = new Error(
+            `The currently loaded module is not a page \nLoaded string => '${val}'`
+          );
           this.emit("error", { error: err });
           throw err;
         }
@@ -2901,10 +2941,12 @@ try{
     }
   };
 
-  const getDefault = async (moduleData, url) => {
+  const getDefault = async (moduleData, oriUrl) => {
     let finnalDefault = {};
 
-    const { default: defaultData } = moduleData;
+    const { default: defaultData, PATH } = moduleData;
+
+    const url = PATH || oriUrl;
 
     const relateLoad = lm$1({
       url,
