@@ -2782,6 +2782,22 @@ try{
     await next();
   });
 
+  lm$1.use(["html", "htm"], async (ctx, next) => {
+    const { result: content, params } = ctx;
+
+    if (
+      content &&
+      /<template +page *>/.test(content) &&
+      !params.includes("-ignore-page")
+    ) {
+      const url = contentToUrl(content, ctx.url);
+      ctx.result = await lm$1()(`${url} .mjs`);
+      ctx.resultContent = content;
+    }
+
+    await next();
+  });
+
   // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
   function contentToUrl(content, url) {
