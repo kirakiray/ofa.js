@@ -2765,11 +2765,13 @@ Object.defineProperty($, "PAGE", {
 });
 
 lm$1.use("page", async (ctx, next) => {
-  const content = await fetch(ctx.url).then((e) => e.text());
+  if (!ctx.result) {
+    const content = await fetch(ctx.url).then((e) => e.text());
 
-  const url = contentToUrl(content, ctx.url);
+    const url = contentToUrl(content, ctx.url);
 
-  ctx.result = await lm$1()(`${url} .mjs`);
+    ctx.result = await lm$1()(`${url} .mjs`);
+  }
 
   await next();
 });
@@ -2898,10 +2900,10 @@ $.register({
       this.app.back();
     },
     goto(src) {
-      this.app.goto(new URL(src, this.src).href);
+      this.app.goto(resolvePath(src, this.src));
     },
     replace(src) {
-      this.app.replace(new URL(src, this.src).href);
+      this.app.replace(resolvePath(src, this.src));
     },
     get pageAnime() {
       const { app, _pageAnime } = this;
@@ -3142,7 +3144,7 @@ $.register({
         e.target.innerHTML = "";
       });
 
-      if (!this.$("o-page")) {
+      if (!this.$("o-page") && defaults.home) {
         const homeUrl = new URL(defaults.home, selfUrl).href;
         this.push(`<o-page src="${homeUrl}"></o-page>`);
       }

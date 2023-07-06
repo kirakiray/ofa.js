@@ -105,7 +105,7 @@ $.register({
         e.target.innerHTML = "";
       });
 
-      if (!this.$("o-page")) {
+      if (!this.$("o-page") && defaults.home) {
         const homeUrl = new URL(defaults.home, selfUrl).href;
         this.push(`<o-page src="${homeUrl}"></o-page>`);
       }
