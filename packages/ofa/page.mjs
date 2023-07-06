@@ -16,16 +16,16 @@ Object.defineProperty($, "PAGE", {
 lm.use("page", async (ctx, next) => {
   const content = await fetch(ctx.url).then((e) => e.text());
 
-  const url = dataToUrl(content, ctx.url);
+  const url = contentToUrl(content, ctx.url);
 
-  ctx.result = await lm()(`${url} .mjs -direct`);
+  ctx.result = await lm()(`${url} .mjs`);
 
   await next();
 });
 
 // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
-function dataToUrl(content, url) {
+function contentToUrl(content, url) {
   const tempEl = $("<template></template>");
   tempEl.html = content;
 
@@ -34,11 +34,9 @@ function dataToUrl(content, url) {
 
   scriptEl.remove();
 
-  const fileUrl = new URL(url);
-
   const fileContent = `
   export const type = $.PAGE;
-  export const PATH = '${fileUrl.origin}${fileUrl.pathname}';
+  export const PATH = '${url}';
   export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
   ${scriptEl.html}`;
 

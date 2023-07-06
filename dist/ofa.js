@@ -2499,7 +2499,11 @@ try{
     if (!ctx.result) {
       const { url, params } = ctx;
       const d = new URL(url);
-      if (params.includes("-direct")) {
+      if (
+        /^blob:/.test(url) ||
+        /^data:/.test(url) ||
+        params.includes("-direct")
+      ) {
         ctx.result = await import(url);
       } else {
         ctx.result = await import(`${d.origin}${d.pathname}`);
@@ -2769,16 +2773,16 @@ try{
   lm$1.use("page", async (ctx, next) => {
     const content = await fetch(ctx.url).then((e) => e.text());
 
-    const url = dataToUrl(content, ctx.url);
+    const url = contentToUrl(content, ctx.url);
 
-    ctx.result = await lm$1()(`${url} .mjs -direct`);
+    ctx.result = await lm$1()(`${url} .mjs`);
 
     await next();
   });
 
   // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
-  function dataToUrl(content, url) {
+  function contentToUrl(content, url) {
     const tempEl = $("<template></template>");
     tempEl.html = content;
 
@@ -2787,11 +2791,9 @@ try{
 
     scriptEl.remove();
 
-    const fileUrl = new URL(url);
-
     const fileContent = `
   export const type = $.PAGE;
-  export const PATH = '${fileUrl.origin}${fileUrl.pathname}';
+  export const PATH = '${url}';
   export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
   ${scriptEl.html}`;
 
