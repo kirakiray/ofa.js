@@ -3318,13 +3318,9 @@ try{
   });
 
   const pageAddAnime = ({ page, key }) => {
-    console.log(page);
-
     const { pageAnime } = page;
 
     const targetAnime = pageAnime[key];
-
-    console.log("targetAnime => ", targetAnime);
 
     if (targetAnime) {
       page.style = {

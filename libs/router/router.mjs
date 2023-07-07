@@ -1,4 +1,5 @@
 import { getRandomId } from "../../packages/stanz/public.mjs";
+import initRouter from "./init-router.mjs";
 
 const FIXBODY = `f-${getRandomId()}`;
 
@@ -24,103 +25,7 @@ $.register({
     },
   },
   attached() {
-    const app = this.$("o-app");
-
-    if (history.state && history.state.routerMode) {
-      app.routers = history.state.routers;
-    }
-
-    if (!history.state && window.location.hash) {
-      app.$("o-page")?.remove();
-      
-      // TODO: 清除掉原来 app 上的数据
-      app.goto(location.hash.replace("#", ""));
-    }
-
-    let isFixState = 0;
-
-    this.on("router-change", (e) => {
-      let methodName = "pushState";
-      switch (e.name) {
-        case "replace":
-          methodName = "replaceState";
-        case "goto":
-          const { routers } = app;
-          const { pathname, search } = new URL(e.src, location.href);
-
-          if (this._isGoto) {
-            delete this._isGoto;
-            return;
-          }
-
-          history[methodName](
-            {
-              routerMode: 1,
-              routers,
-            },
-            "",
-            `#${pathname}${search}`
-          );
-          break;
-        case "back":
-          if (this._isBack) {
-            delete this._isBack;
-            return;
-          }
-
-          isFixState = 1;
-          history.go(-e.delta);
-
-          console.log("back => ", e);
-          break;
-      }
-    });
-
-    let popstateFunc;
-    window.addEventListener(
-      "popstate",
-      (popstateFunc = (e) => {
-        const { state } = e;
-
-        if (isFixState) {
-          isFixState = 0;
-          return;
-        }
-
-        if (!state) {
-          this._isBack = 1;
-          app.back(app.routers.length - 1);
-          return;
-        }
-
-        const { routers: hisRouters } = state;
-        const { routers: appRouters } = app;
-
-        if (hisRouters.length < appRouters.length) {
-          // history back
-          this._isBack = 1;
-          app.back(appRouters.length - hisRouters.length);
-        } else if (hisRouters.length > appRouters.length) {
-          // history forward
-          const moreRouters = hisRouters.slice();
-
-          const target = moreRouters.pop();
-
-          if (moreRouters.length > appRouters.length) {
-            const canPushRouters = moreRouters.slice(app._history.length);
-            app._history.push(...canPushRouters);
-          }
-
-          this._isGoto = 1;
-
-          app.goto(target.src);
-        } else {
-          console.error(`o-router error occurred`);
-        }
-      })
-    );
-
-    this._popstateFunc = popstateFunc;
+    this._popstateFunc = initRouter(this.$("o-app"));
   },
   detached() {
     if (this._popstateFunc) {
