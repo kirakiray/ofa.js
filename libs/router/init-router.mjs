@@ -14,6 +14,7 @@ export default function initRouter(app, getStateUrl) {
         methodName = "replaceState";
       case "goto":
         const { routers } = app;
+
         const { pathname, search } = new URL(e.src, location.href);
 
         if (_isGoto) {
@@ -28,7 +29,12 @@ export default function initRouter(app, getStateUrl) {
         history[methodName](
           {
             routerMode: 1,
-            routers,
+            routers: routers.map((e) => {
+              return {
+                tag: e.tag,
+                src: e.src,
+              };
+            }),
           },
           "",
           hUrl

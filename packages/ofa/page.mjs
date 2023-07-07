@@ -17,9 +17,10 @@ lm.use("page", async (ctx, next) => {
   if (!ctx.result) {
     const content = await fetch(ctx.url).then((e) => e.text());
 
-    const url = contentToUrl(content, ctx.url);
+    const url = getContentInfo(content, ctx.url);
 
     ctx.result = await lm()(`${url} .mjs`);
+    ctx.resultContent = content;
   }
 
   await next();
@@ -33,7 +34,8 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +page *>/.test(content) &&
     !params.includes("-ignore-page")
   ) {
-    const url = contentToUrl(content, ctx.url);
+    const url = getContentInfo(content, ctx.url);
+
     ctx.result = await lm()(`${url} .mjs`);
     ctx.resultContent = content;
   }
@@ -43,9 +45,10 @@ lm.use(["html", "htm"], async (ctx, next) => {
 
 // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
-function contentToUrl(content, url) {
+function getContentInfo(content, url) {
   const tempEl = $("<template></template>");
   tempEl.html = content;
+  const titleEl = tempEl.$("title");
 
   const targetTemp = tempEl.$("template[page]");
   const scriptEl = targetTemp.$("script");
@@ -55,6 +58,7 @@ function contentToUrl(content, url) {
   const fileContent = `
   export const type = $.PAGE;
   export const PATH = '${url}';
+  ${titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
   ${scriptEl.html}`;
 
@@ -146,6 +150,8 @@ $.register({
         throw err;
       }
 
+      this._defaults = defaults;
+
       const template = document.createElement("template");
       template.innerHTML = fixRelateSource(defaults.temp, val);
       const temps = convert(template);
@@ -157,7 +163,9 @@ $.register({
         temps,
       });
 
-      dispatchLoad(this, defaults.loaded);
+      await dispatchLoad(this, defaults.loaded);
+
+      this.emit("page-loaded");
     },
   },
   proto: {

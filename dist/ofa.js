@@ -2778,9 +2778,10 @@ try{
     if (!ctx.result) {
       const content = await fetch(ctx.url).then((e) => e.text());
 
-      const url = contentToUrl(content, ctx.url);
+      const url = getContentInfo(content, ctx.url);
 
       ctx.result = await lm$1()(`${url} .mjs`);
+      ctx.resultContent = content;
     }
 
     await next();
@@ -2794,7 +2795,8 @@ try{
       /<template +page *>/.test(content) &&
       !params.includes("-ignore-page")
     ) {
-      const url = contentToUrl(content, ctx.url);
+      const url = getContentInfo(content, ctx.url);
+
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
     }
@@ -2804,9 +2806,10 @@ try{
 
   // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
-  function contentToUrl(content, url) {
+  function getContentInfo(content, url) {
     const tempEl = $("<template></template>");
     tempEl.html = content;
+    const titleEl = tempEl.$("title");
 
     const targetTemp = tempEl.$("template[page]");
     const scriptEl = targetTemp.$("script");
@@ -2816,6 +2819,7 @@ try{
     const fileContent = `
   export const type = $.PAGE;
   export const PATH = '${url}';
+  ${titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
   ${scriptEl.html}`;
 
@@ -2907,6 +2911,8 @@ try{
           throw err;
         }
 
+        this._defaults = defaults;
+
         const template = document.createElement("template");
         template.innerHTML = fixRelateSource(defaults.temp, val);
         const temps = convert(template);
@@ -2918,7 +2924,9 @@ try{
           temps,
         });
 
-        dispatchLoad(this, defaults.loaded);
+        await dispatchLoad(this, defaults.loaded);
+
+        this.emit("page-loaded");
       },
     },
     proto: {
