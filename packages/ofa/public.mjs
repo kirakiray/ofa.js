@@ -14,7 +14,11 @@ export function resolvePath(moduleName, baseURI) {
 
   const moduleURL = new URL(url, baseURL);
 
-  return `${moduleURL.href} ${params.join(" ")}`;
+  if (params.length) {
+    return `${moduleURL.href} ${params.join(" ")}`;
+  }
+
+  return moduleURL.href;
 }
 
 export function fixRelateSource(content, path) {
