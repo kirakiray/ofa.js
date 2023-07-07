@@ -25,7 +25,14 @@ $.register({
     },
   },
   attached() {
-    this._popstateFunc = initRouter(this.$("o-app"));
+    const app = this.$("o-app");
+
+    if (!history.state && window.location.hash) {
+      app.$("o-page")?.remove();
+      app.goto(location.hash.replace("#", ""));
+    }
+
+    this._popstateFunc = initRouter(app);
   },
   detached() {
     if (this._popstateFunc) {

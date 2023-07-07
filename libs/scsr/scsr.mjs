@@ -1,18 +1,14 @@
+import initRouter from "../router/init-router.mjs";
+
 (() => {
   async function ready() {
     const app = $("o-app");
     $("o-app template[page]").remove();
+
     app.push(`<o-page src="${location.pathname}"></o-page>`);
 
-    app.on("router-change", (e) => {
-      const { src, name } = e;
-
-      if (name === "goto") {
-        history.pushState({}, "", src);
-      } else if (name === "replace") {
-      }
-
-      console.log("change => ", e);
+    initRouter(app, (pathname, search) => {
+      return `${pathname}${search}`;
     });
   }
 

@@ -1,15 +1,9 @@
-export default function initRouter(app) {
+export default function initRouter(app, getStateUrl) {
   if (history.state && history.state.routerMode) {
     app.routers = history.state.routers;
   }
 
-  if (!history.state && window.location.hash) {
-    app.$("o-page")?.remove();
-
-    app.goto(location.hash.replace("#", ""));
-  }
-
-  let isFixState = 0;
+  let _isFixState = 0;
   let _isGoto;
   let _isBack;
 
@@ -27,13 +21,17 @@ export default function initRouter(app) {
           return;
         }
 
+        const hUrl = getStateUrl
+          ? getStateUrl(pathname, search, methodName)
+          : `#${pathname}${search}`;
+
         history[methodName](
           {
             routerMode: 1,
             routers,
           },
           "",
-          `#${pathname}${search}`
+          hUrl
         );
         break;
       case "back":
@@ -42,7 +40,7 @@ export default function initRouter(app) {
           return;
         }
 
-        isFixState = 1;
+        _isFixState = 1;
         history.go(-e.delta);
 
         console.log("back => ", e);
@@ -56,8 +54,8 @@ export default function initRouter(app) {
     (popstateFunc = (e) => {
       const { state } = e;
 
-      if (isFixState) {
-        isFixState = 0;
+      if (_isFixState) {
+        _isFixState = 0;
         return;
       }
 
