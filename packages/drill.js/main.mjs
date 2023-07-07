@@ -62,6 +62,10 @@ export const agent = async (url, opts) => {
     element.dispatchEvent(event);
   }
 
+  if (opts.params && opts.params.includes("-ctx")) {
+    return ctx;
+  }
+
   return ctx.result;
 };
 

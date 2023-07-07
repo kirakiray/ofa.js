@@ -134,7 +134,14 @@ $.register({
 
       await wrapErrorCall(
         async () => {
-          defaults = await load(val);
+          const ctx = await load(`${val} -ctx`);
+          const { resultContent } = ctx;
+
+          const tempEl = $({ tag: "template" });
+          tempEl.html = resultContent;
+
+          defaults = ctx.result;
+          // defaults = await load(val);
         },
         {
           self: this,

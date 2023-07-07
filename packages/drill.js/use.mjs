@@ -74,3 +74,36 @@ use("wasm", async (ctx, next) => {
 
   await next();
 });
+
+use("css", async (ctx, next) => {
+  if (!ctx.result) {
+    const { url, element } = ctx;
+
+    if (element) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = url;
+
+      const root = element.getRootNode();
+
+      if (root === document) {
+        root.head.append(link);
+      } else {
+        root.appendChild(link);
+      }
+
+      let f;
+      element.addEventListener(
+        "disconnected",
+        (f = (e) => {
+          link.remove();
+          element.removeEventListener("disconnected", f);
+        })
+      );
+    } else {
+      ctx.result = await fetch(url).then((e) => e.text());
+    }
+  }
+
+  await next();
+});

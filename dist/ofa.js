@@ -2547,6 +2547,39 @@ try{
     await next();
   });
 
+  use("css", async (ctx, next) => {
+    if (!ctx.result) {
+      const { url, element } = ctx;
+
+      if (element) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+
+        const root = element.getRootNode();
+
+        if (root === document) {
+          root.head.append(link);
+        } else {
+          root.appendChild(link);
+        }
+
+        let f;
+        element.addEventListener(
+          "disconnected",
+          (f = (e) => {
+            link.remove();
+            element.removeEventListener("disconnected", f);
+          })
+        );
+      } else {
+        ctx.result = await fetch(url).then((e) => e.text());
+      }
+    }
+
+    await next();
+  });
+
   const LOADED = Symbol("loaded");
 
   const createLoad = (meta) => {
@@ -2608,6 +2641,10 @@ try{
       element[LOADED] = true;
       const event = new Event("load");
       element.dispatchEvent(event);
+    }
+
+    if (opts.params && opts.params.includes("-ctx")) {
+      return ctx;
     }
 
     return ctx.result;
@@ -2895,7 +2932,14 @@ try{
 
         await wrapErrorCall(
           async () => {
-            defaults = await load(val);
+            const ctx = await load(`${val} -ctx`);
+            const { resultContent } = ctx;
+
+            const tempEl = $({ tag: "template" });
+            tempEl.html = resultContent;
+
+            defaults = ctx.result;
+            // defaults = await load(val);
           },
           {
             self: this,
