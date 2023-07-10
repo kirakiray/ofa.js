@@ -1,0 +1,22 @@
+<template page>
+  <style>
+    :host {
+      display: block;
+      height: 100%;
+    }
+  </style>
+  <h1>{{val}}</h1>
+
+  <button on:click="back()" data-testid="back">Back</button>
+  <script>
+    export const parent = "../parent.mjs";
+
+    export default async ({ load }) => {
+      return {
+        data: {
+          val: "I am Sub Page 1",
+        },
+      };
+    };
+  </script>
+</template>

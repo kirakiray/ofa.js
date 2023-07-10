@@ -1280,14 +1280,14 @@ try{
       const frag = document.createDocumentFragment();
 
       childs.forEach((ele) => {
-        ele.__inArray = 1;
+        ele.__internal = 1;
         frag.append(ele);
       });
 
       this.ele.append(frag);
 
       childs.forEach((ele) => {
-        delete ele.__inArray;
+        delete ele.__internal;
       });
 
       emitUpdate({
@@ -1308,14 +1308,14 @@ try{
       const frag = document.createDocumentFragment();
 
       childs.forEach((e) => {
-        e.ele.__inArray = 1;
+        e.ele.__internal = 1;
         frag.append(e.ele);
       });
 
       this.ele.append(frag);
 
       childs.forEach((e) => {
-        delete e.ele.__inArray;
+        delete e.ele.__internal;
       });
 
       emitUpdate({
@@ -1673,13 +1673,13 @@ try{
 
       connectedCallback() {
         defaults.attached &&
-          !isInArray(this) &&
+          !isInternal(this) &&
           defaults.attached.call(eleX(this));
       }
 
       disconnectedCallback() {
         defaults.detached &&
-          !isInArray(this) &&
+          !isInternal(this) &&
           defaults.detached.call(eleX(this));
       }
 
@@ -1713,11 +1713,11 @@ try{
     }
   };
 
-  function isInArray(ele) {
+  function isInternal(ele) {
     let target = ele;
 
     while (target) {
-      if (target.__inArray) {
+      if (target.__internal) {
         return true;
       }
 
@@ -2058,9 +2058,9 @@ try{
           if (oldVal.includes(current)) {
             // Data displacement occurs
             const oldEl = childs.find((e) => e.__render_data.$data === current);
-            oldEl.__inArray = 1;
+            oldEl.__internal = 1;
             parent.insertBefore(oldEl, cursorEl);
-            delete oldEl.__inArray;
+            delete oldEl.__internal;
             moveArrayValue(childs, oldEl, i);
           } else {
             // New elements added
@@ -2332,6 +2332,42 @@ try{
 
     clone(bool = true) {
       return eleX(this.ele.cloneNode(bool));
+    }
+
+    wrap(content) {
+      const $el = createXEle(content);
+
+      const { ele } = this;
+
+      ele.parentNode.insertBefore($el.ele, ele);
+
+      ele.__internal = 1;
+
+      $el.ele.appendChild(ele);
+
+      delete ele.__internal;
+
+      return this;
+    }
+
+    unwrap() {
+      const { ele } = this;
+
+      const target = ele.parentNode;
+
+      if (target.children.length > 1) {
+        throw `The target has a sibling element, so you can't use unwrap.`;
+      }
+
+      ele.__internal = 1;
+
+      target.parentNode.insertBefore(ele, target);
+
+      target.remove();
+
+      delete ele.__internal;
+
+      return this;
     }
   }
 
@@ -2955,6 +2991,25 @@ try{
           throw err;
         }
 
+        const parentPath = defaults.parent;
+
+        if (parentPath) {
+          await new Promise((resolve) => {
+            const newParentPath = resolvePath(parentPath, val);
+
+            const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
+
+            this.wrap(parentPage);
+
+            if (parentPage._loaded) {
+              resolve();
+              return;
+            }
+
+            parentPage.one("page-loaded", resolve);
+          });
+        }
+
         this._defaults = defaults;
 
         const template = document.createElement("template");
@@ -2970,7 +3025,23 @@ try{
 
         await dispatchLoad(this, defaults.loaded);
 
+        this._loaded = true;
         this.emit("page-loaded");
+
+        this.shadow.on("click", (e) => {
+          const { target } = e;
+          if (
+            this.app &&
+            target.tagName === "A" &&
+            target.attributes.hasOwnProperty("olink")
+          ) {
+            if (e.metaKey || e.shiftKey) {
+              return;
+            }
+            e.preventDefault();
+            this.app.goto(target.href);
+          }
+        });
       },
     },
     proto: {
@@ -3335,7 +3406,7 @@ try{
         }
       },
       get current() {
-        return this.$("o-page:last-of-type");
+        return this.all("o-page").slice(-1)[0];
       },
       get routers() {
         let { current } = this;
@@ -3367,6 +3438,7 @@ try{
         this.push(currentRouter);
       },
     },
+    ready() {},
   });
 
   const pageAddAnime = ({ page, key }) => {

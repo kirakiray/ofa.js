@@ -143,9 +143,9 @@ register({
         if (oldVal.includes(current)) {
           // Data displacement occurs
           const oldEl = childs.find((e) => e.__render_data.$data === current);
-          oldEl.__inArray = 1;
+          oldEl.__internal = 1;
           parent.insertBefore(oldEl, cursorEl);
-          delete oldEl.__inArray;
+          delete oldEl.__internal;
           moveArrayValue(childs, oldEl, i);
         } else {
           // New elements added

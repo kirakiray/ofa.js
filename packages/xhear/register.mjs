@@ -145,13 +145,13 @@ export const register = (opts = {}) => {
 
     connectedCallback() {
       defaults.attached &&
-        !isInArray(this) &&
+        !isInternal(this) &&
         defaults.attached.call(eleX(this));
     }
 
     disconnectedCallback() {
       defaults.detached &&
-        !isInArray(this) &&
+        !isInternal(this) &&
         defaults.detached.call(eleX(this));
     }
 
@@ -185,11 +185,11 @@ export const register = (opts = {}) => {
   }
 };
 
-function isInArray(ele) {
+function isInternal(ele) {
   let target = ele;
 
   while (target) {
-    if (target.__inArray) {
+    if (target.__internal) {
       return true;
     }
 

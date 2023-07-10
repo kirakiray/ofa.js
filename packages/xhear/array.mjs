@@ -124,14 +124,14 @@ const likeArrayFn = {
     const frag = document.createDocumentFragment();
 
     childs.forEach((ele) => {
-      ele.__inArray = 1;
+      ele.__internal = 1;
       frag.append(ele);
     });
 
     this.ele.append(frag);
 
     childs.forEach((ele) => {
-      delete ele.__inArray;
+      delete ele.__internal;
     });
 
     emitUpdate({
@@ -152,14 +152,14 @@ const likeArrayFn = {
     const frag = document.createDocumentFragment();
 
     childs.forEach((e) => {
-      e.ele.__inArray = 1;
+      e.ele.__internal = 1;
       frag.append(e.ele);
     });
 
     this.ele.append(frag);
 
     childs.forEach((e) => {
-      delete e.ele.__inArray;
+      delete e.ele.__internal;
     });
 
     emitUpdate({

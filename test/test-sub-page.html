@@ -2,15 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>app test</title>
-    <script src="../packages/ofa/main.mjs" type="module"></script>
+    <title>test sub page</title>
     <!-- <script src="../dist/ofa.js"></script> -->
+    <script type="module" src="../packages/ofa/main.mjs"></script>
     <style>
       o-app {
         display: block;
-        width: 320px;
+        width: 400px;
         height: 480px;
         border: #aaa solid 1px;
         overflow: hidden;
@@ -18,6 +17,9 @@
     </style>
   </head>
   <body>
-    <o-app src="./app.js"></o-app>
+    <o-app>
+      <o-page src="./pages/subs/sub-page01.html"></o-page>
+    </o-app>
+    <o-page src="./pages/parent.mjs" style="margin-top: 20px"> asdasd </o-page>
   </body>
 </html>

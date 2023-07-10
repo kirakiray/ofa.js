@@ -1,4 +1,4 @@
-import { eleX } from "./util.mjs";
+import { createXEle, eleX } from "./util.mjs";
 import { meetsEle, searchEle } from "./public.mjs";
 import { handler } from "./accessor.mjs";
 import renderFn from "./render/render.mjs";
@@ -252,6 +252,42 @@ export default class Xhear extends LikeArray {
 
   clone(bool = true) {
     return eleX(this.ele.cloneNode(bool));
+  }
+
+  wrap(content) {
+    const $el = createXEle(content);
+
+    const { ele } = this;
+
+    ele.parentNode.insertBefore($el.ele, ele);
+
+    ele.__internal = 1;
+
+    $el.ele.appendChild(ele);
+
+    delete ele.__internal;
+
+    return this;
+  }
+
+  unwrap() {
+    const { ele } = this;
+
+    const target = ele.parentNode;
+
+    if (target.children.length > 1) {
+      throw `The target has a sibling element, so you can't use unwrap.`;
+    }
+
+    ele.__internal = 1;
+
+    target.parentNode.insertBefore(ele, target);
+
+    target.remove();
+
+    delete ele.__internal;
+
+    return this;
   }
 }
 

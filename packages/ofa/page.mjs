@@ -157,6 +157,25 @@ $.register({
         throw err;
       }
 
+      const parentPath = defaults.parent;
+
+      if (parentPath) {
+        await new Promise((resolve) => {
+          const newParentPath = resolvePath(parentPath, val);
+
+          const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
+
+          this.wrap(parentPage);
+
+          if (parentPage._loaded) {
+            resolve();
+            return;
+          }
+
+          parentPage.one("page-loaded", resolve);
+        });
+      }
+
       this._defaults = defaults;
 
       const template = document.createElement("template");
@@ -172,7 +191,23 @@ $.register({
 
       await dispatchLoad(this, defaults.loaded);
 
+      this._loaded = true;
       this.emit("page-loaded");
+
+      this.shadow.on("click", (e) => {
+        const { target } = e;
+        if (
+          this.app &&
+          target.tagName === "A" &&
+          target.attributes.hasOwnProperty("olink")
+        ) {
+          if (e.metaKey || e.shiftKey) {
+            return;
+          }
+          e.preventDefault();
+          this.app.goto(target.href);
+        }
+      });
     },
   },
   proto: {

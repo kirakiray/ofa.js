@@ -218,7 +218,7 @@ $.register({
       }
     },
     get current() {
-      return this.$("o-page:last-of-type");
+      return this.all("o-page").slice(-1)[0];
     },
     get routers() {
       let { current } = this;
@@ -250,6 +250,7 @@ $.register({
       this.push(currentRouter);
     },
   },
+  ready() {},
 });
 
 const pageAddAnime = ({ page, key }) => {
