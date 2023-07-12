@@ -33,7 +33,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
   if (
     content &&
     /<template +page *>/.test(content) &&
-    !params.includes("-ignore-page")
+    !params.includes("-ignore-temp")
   ) {
     const url = getContentInfo(content, ctx.url);
 

@@ -2845,7 +2845,7 @@ lm$1.use("page", async (ctx, next) => {
   if (!ctx.result) {
     const content = await fetch(ctx.url).then((e) => e.text());
 
-    const url = getContentInfo(content, ctx.url);
+    const url = getContentInfo$1(content, ctx.url);
 
     ctx.result = await lm$1()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -2860,9 +2860,9 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
   if (
     content &&
     /<template +page *>/.test(content) &&
-    !params.includes("-ignore-page")
+    !params.includes("-ignore-temp")
   ) {
-    const url = getContentInfo(content, ctx.url);
+    const url = getContentInfo$1(content, ctx.url);
 
     ctx.result = await lm$1()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -2873,7 +2873,7 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
 
 // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
-function getContentInfo(content, url) {
+function getContentInfo$1(content, url) {
   const tempEl = $("<template></template>");
   tempEl.html = content;
   const titleEl = tempEl.$("title");
@@ -3132,6 +3132,49 @@ Object.defineProperty($, "COMP", {
 
 const cacheComps = {};
 
+lm$1.use(["html", "htm"], async (ctx, next) => {
+  const { url, result: content, params } = ctx;
+
+  if (
+    content &&
+    /<template +component *>/.test(content) &&
+    !params.includes("-ignore-temp")
+  ) {
+    const url = getContentInfo(content, ctx.url);
+
+    ctx.result = await lm$1()(`${url} .mjs`);
+    ctx.resultContent = content;
+  }
+
+  await next();
+});
+
+function getContentInfo(content, url) {
+  const tempEl = $("<template></template>");
+  tempEl.html = content;
+  const titleEl = tempEl.$("title");
+
+  const targetTemp = tempEl.$("template[component]");
+  const scriptEl = targetTemp.$("script");
+
+  scriptEl.remove();
+
+  const fileContent = `
+  export const type = $.COMP;
+  export const PATH = '${url}';
+  ${titleEl ? `export const title = '${titleEl.text}';` : ""}
+  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
+  ${scriptEl.html}`;
+
+  const file = new File(
+    [fileContent],
+    location.pathname.replace(/.+\/(.+)/, "$1"),
+    { type: "text/javascript" }
+  );
+
+  return URL.createObjectURL(file);
+}
+
 lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {
     next();
@@ -3154,8 +3197,10 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   const { tag, temp, PATH } = { ...moduleData, ...finnalDefault };
 
+  const path = PATH || url;
+
   let tagName = tag;
-  const matchName = url.match(/\/([^/]+)\.m?js$/);
+  const matchName = path.match(/\/([^/]+)\.m?(js|htm|html)$/);
 
   if (!tagName) {
     if (matchName) {
@@ -3165,7 +3210,7 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   const cacheUrl = cacheComps[tagName];
   if (cacheUrl) {
-    if (cacheUrl !== url) {
+    if (path !== PATH) {
       throw `${tagName} components have been registered`;
     }
 
@@ -3173,22 +3218,22 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     return;
   }
 
-  cacheComps[tagName] = url;
+  cacheComps[tagName] = path;
 
   let tempUrl, tempContent;
 
   if (/<.+>/.test(temp)) {
-    tempUrl = url;
+    tempUrl = path;
     tempContent = temp;
   } else {
     if (!temp) {
       if (tag) {
-        tempUrl = resolvePath(`${tag}.html`, url);
+        tempUrl = resolvePath(`${tag}.html`, path);
       } else {
-        tempUrl = resolvePath(`${matchName[1]}.html`, url);
+        tempUrl = resolvePath(`${matchName[1]}.html`, path);
       }
     } else {
-      tempUrl = resolvePath(temp, url);
+      tempUrl = resolvePath(temp, path);
     }
 
     tempContent = await fetch(tempUrl).then((e) => e.text());
