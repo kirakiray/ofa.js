@@ -2,9 +2,9 @@
 import $ from "../xhear/base.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { renderElement } from "../xhear/register.mjs";
-import { getRandomId } from "../stanz/public.mjs";
 import { resolvePath } from "./public.mjs";
 import { getDefault } from "./page.mjs";
+import { eleX } from "../xhear/util.mjs";
 
 const HISTORY = "_history";
 
@@ -156,21 +156,21 @@ $.register({
     async goto(src) {
       const { current: oldCurrent } = this;
 
-      const markID = "m_" + getRandomId();
+      const page = await new Promise((resolve) => {
+        const tempCon = document.createElement("div");
+        tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+        const pageEl = eleX(tempCon.querySelector("o-page"));
+
+        pageEl.one("page-loaded", () => {
+          // In the case of a child route, the parent page should be returned.
+          resolve(eleX(tempCon.querySelector("o-page")));
+        });
+      });
 
       // When the page element is initialized, the parent element is already available within the ready function
-      this.push(
-        `<o-page src="${src}" ${markID}>${getLoading({
-          self: this,
-          src,
-          type: "goto",
-        })}</o-page>`
-      );
+      this.push(page);
 
-      const newCurrent = this.$(`[${markID}]`);
-      newCurrent.ele.removeAttribute(markID);
-
-      pageAddAnime({ page: newCurrent, key: "next" });
+      pageAddAnime({ page, key: "next" });
 
       oldCurrent && this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
 

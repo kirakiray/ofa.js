@@ -4,6 +4,7 @@ import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { searchEle, isFunction } from "../xhear/public.mjs";
 import { fixRelateSource, resolvePath, wrapErrorCall } from "./public.mjs";
+import { eleX } from "../xhear/util.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -163,7 +164,11 @@ $.register({
         await new Promise((resolve) => {
           const newParentPath = resolvePath(parentPath, val);
 
-          const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
+          // Passing $ is an element generated within the template and does not depart from the component's registered functions.
+          // const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
+          let parentPage = document.createElement("o-page");
+          parentPage = eleX(parentPage);
+          parentPage.src = newParentPath;
 
           this.wrap(parentPage);
 
@@ -192,22 +197,10 @@ $.register({
       await dispatchLoad(this, defaults.loaded);
 
       this._loaded = true;
+
       this.emit("page-loaded");
 
-      this.shadow.on("click", (e) => {
-        const { target } = e;
-        if (
-          this.app &&
-          target.tagName === "A" &&
-          target.attributes.hasOwnProperty("olink")
-        ) {
-          if (e.metaKey || e.shiftKey) {
-            return;
-          }
-          e.preventDefault();
-          this.app.goto(target.href);
-        }
-      });
+      initLink(this);
     },
   },
   proto: {
@@ -232,6 +225,23 @@ $.register({
     },
   },
 });
+
+export const initLink = (_this) => {
+  _this.shadow.on("click", (e) => {
+    const { target } = e;
+    if (
+      _this.app &&
+      target.tagName === "A" &&
+      target.attributes.hasOwnProperty("olink")
+    ) {
+      if (e.metaKey || e.shiftKey) {
+        return;
+      }
+      e.preventDefault();
+      _this.app.goto(target.href);
+    }
+  });
+};
 
 export const dispatchLoad = async (_this, loaded) => {
   const shadow = _this.ele.shadowRoot;

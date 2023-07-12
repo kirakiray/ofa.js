@@ -1,7 +1,7 @@
 import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
-import { dispatchLoad } from "./page.mjs";
+import { dispatchLoad, initLink } from "./page.mjs";
 import { fixRelateSource, resolvePath } from "./public.mjs";
 
 const COMP = Symbol("Component");
@@ -9,6 +9,8 @@ const COMP = Symbol("Component");
 Object.defineProperty($, "COMP", {
   value: COMP,
 });
+
+const cacheComps = {};
 
 lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {
@@ -30,7 +32,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     finnalDefault = defaultData;
   }
 
-  const { tag, temp } = { ...moduleData, ...finnalDefault };
+  const { tag, temp, PATH } = { ...moduleData, ...finnalDefault };
 
   let tagName = tag;
   const matchName = url.match(/\/([^/]+)\.m?js$/);
@@ -41,18 +43,36 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     }
   }
 
-  let tempUrl;
-  if (!temp) {
-    if (tag) {
-      tempUrl = resolvePath(`${tag}.html`, url);
-    } else {
-      tempUrl = resolvePath(`${matchName[1]}.html`, url);
+  const cacheUrl = cacheComps[tagName];
+  if (cacheUrl) {
+    if (!(cacheUrl === url || cacheUrl === PATH)) {
+      throw `${tagName} components have been registered`;
     }
-  } else {
-    tempUrl = resolvePath(temp, url);
+
+    await next();
+    return;
   }
 
-  const tempContent = await fetch(tempUrl).then((e) => e.text());
+  cacheComps[tagName] = url;
+
+  let tempUrl, tempContent;
+
+  if (/<.+>/.test(temp)) {
+    tempUrl = url;
+    tempContent = temp;
+  } else {
+    if (!temp) {
+      if (tag) {
+        tempUrl = resolvePath(`${tag}.html`, url);
+      } else {
+        tempUrl = resolvePath(`${matchName[1]}.html`, url);
+      }
+    } else {
+      tempUrl = resolvePath(temp, url);
+    }
+
+    tempContent = await fetch(tempUrl).then((e) => e.text());
+  }
 
   const registerOpts = {
     ...moduleData,
@@ -64,12 +84,13 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   registerOpts.ready = async function (...args) {
     oldReady && oldReady.apply(this, args);
     loaded && dispatchLoad(this, loaded);
+    initLink(this);
   };
 
   $.register({
     ...registerOpts,
     tag: tagName,
-    temp: fixRelateSource(tempContent, tempUrl),
+    temp: fixRelateSource(tempContent, PATH || tempUrl),
   });
 
   await next();

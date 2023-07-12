@@ -2997,7 +2997,11 @@ try{
           await new Promise((resolve) => {
             const newParentPath = resolvePath(parentPath, val);
 
-            const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
+            // Passing $ is an element generated within the template and does not depart from the component's registered functions.
+            // const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
+            let parentPage = document.createElement("o-page");
+            parentPage = eleX(parentPage);
+            parentPage.src = newParentPath;
 
             this.wrap(parentPage);
 
@@ -3026,22 +3030,10 @@ try{
         await dispatchLoad(this, defaults.loaded);
 
         this._loaded = true;
+
         this.emit("page-loaded");
 
-        this.shadow.on("click", (e) => {
-          const { target } = e;
-          if (
-            this.app &&
-            target.tagName === "A" &&
-            target.attributes.hasOwnProperty("olink")
-          ) {
-            if (e.metaKey || e.shiftKey) {
-              return;
-            }
-            e.preventDefault();
-            this.app.goto(target.href);
-          }
-        });
+        initLink(this);
       },
     },
     proto: {
@@ -3066,6 +3058,23 @@ try{
       },
     },
   });
+
+  const initLink = (_this) => {
+    _this.shadow.on("click", (e) => {
+      const { target } = e;
+      if (
+        _this.app &&
+        target.tagName === "A" &&
+        target.attributes.hasOwnProperty("olink")
+      ) {
+        if (e.metaKey || e.shiftKey) {
+          return;
+        }
+        e.preventDefault();
+        _this.app.goto(target.href);
+      }
+    });
+  };
 
   const dispatchLoad = async (_this, loaded) => {
     const shadow = _this.ele.shadowRoot;
@@ -3127,6 +3136,8 @@ try{
     value: COMP,
   });
 
+  const cacheComps = {};
+
   lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     if (typeof moduleData !== "object" || moduleData.type !== COMP) {
       next();
@@ -3147,7 +3158,7 @@ try{
       finnalDefault = defaultData;
     }
 
-    const { tag, temp } = { ...moduleData, ...finnalDefault };
+    const { tag, temp, PATH } = { ...moduleData, ...finnalDefault };
 
     let tagName = tag;
     const matchName = url.match(/\/([^/]+)\.m?js$/);
@@ -3158,18 +3169,36 @@ try{
       }
     }
 
-    let tempUrl;
-    if (!temp) {
-      if (tag) {
-        tempUrl = resolvePath(`${tag}.html`, url);
-      } else {
-        tempUrl = resolvePath(`${matchName[1]}.html`, url);
+    const cacheUrl = cacheComps[tagName];
+    if (cacheUrl) {
+      if (cacheUrl !== url) {
+        throw `${tagName} components have been registered`;
       }
-    } else {
-      tempUrl = resolvePath(temp, url);
+
+      await next();
+      return;
     }
 
-    const tempContent = await fetch(tempUrl).then((e) => e.text());
+    cacheComps[tagName] = url;
+
+    let tempUrl, tempContent;
+
+    if (/<.+>/.test(temp)) {
+      tempUrl = url;
+      tempContent = temp;
+    } else {
+      if (!temp) {
+        if (tag) {
+          tempUrl = resolvePath(`${tag}.html`, url);
+        } else {
+          tempUrl = resolvePath(`${matchName[1]}.html`, url);
+        }
+      } else {
+        tempUrl = resolvePath(temp, url);
+      }
+
+      tempContent = await fetch(tempUrl).then((e) => e.text());
+    }
 
     const registerOpts = {
       ...moduleData,
@@ -3181,12 +3210,13 @@ try{
     registerOpts.ready = async function (...args) {
       oldReady && oldReady.apply(this, args);
       loaded && dispatchLoad(this, loaded);
+      initLink(this);
     };
 
     $.register({
       ...registerOpts,
       tag: tagName,
-      temp: fixRelateSource(tempContent, tempUrl),
+      temp: fixRelateSource(tempContent, PATH || tempUrl),
     });
 
     await next();
@@ -3344,21 +3374,21 @@ try{
       async goto(src) {
         const { current: oldCurrent } = this;
 
-        const markID = "m_" + getRandomId();
+        const page = await new Promise((resolve) => {
+          const tempCon = document.createElement("div");
+          tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+          const pageEl = eleX(tempCon.querySelector("o-page"));
+
+          pageEl.one("page-loaded", () => {
+            // In the case of a child route, the parent page should be returned.
+            resolve(eleX(tempCon.querySelector("o-page")));
+          });
+        });
 
         // When the page element is initialized, the parent element is already available within the ready function
-        this.push(
-          `<o-page src="${src}" ${markID}>${getLoading({
-          self: this,
-          src,
-          type: "goto",
-        })}</o-page>`
-        );
+        this.push(page);
 
-        const newCurrent = this.$(`[${markID}]`);
-        newCurrent.ele.removeAttribute(markID);
-
-        pageAddAnime({ page: newCurrent, key: "next" });
+        pageAddAnime({ page, key: "next" });
 
         oldCurrent && this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
 
