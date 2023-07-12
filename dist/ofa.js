@@ -2851,7 +2851,7 @@ try{
     if (!ctx.result) {
       const content = await fetch(ctx.url).then((e) => e.text());
 
-      const url = getContentInfo$1(content, ctx.url);
+      const url = getContentInfo(content, ctx.url);
 
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
@@ -2868,7 +2868,7 @@ try{
       /<template +page *>/.test(content) &&
       !params.includes("-ignore-temp")
     ) {
-      const url = getContentInfo$1(content, ctx.url);
+      const url = getContentInfo(content, ctx.url);
 
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
@@ -2879,22 +2879,22 @@ try{
 
   // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
-  function getContentInfo$1(content, url) {
+  function getContentInfo(content, url, isPage = true) {
     const tempEl = $("<template></template>");
     tempEl.html = content;
     const titleEl = tempEl.$("title");
 
-    const targetTemp = tempEl.$("template[page]");
+    const targetTemp = tempEl.$(`template[${isPage ? "page" : "component"}]`);
     const scriptEl = targetTemp.$("script");
 
-    scriptEl.remove();
+    scriptEl && scriptEl.remove();
 
     const fileContent = `
-  export const type = $.PAGE;
+  export const type = ${isPage ? "$.PAGE" : "$.COMP"};
   export const PATH = '${url}';
-  ${titleEl ? `export const title = '${titleEl.text}';` : ""}
+  ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
-  ${scriptEl.html}`;
+  ${scriptEl ? scriptEl.html : ""}`;
 
     const file = new File(
       [fileContent],
@@ -3146,7 +3146,7 @@ try{
       /<template +component *>/.test(content) &&
       !params.includes("-ignore-temp")
     ) {
-      const url = getContentInfo(content, ctx.url);
+      const url = getContentInfo(content, ctx.url, false);
 
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
@@ -3154,32 +3154,6 @@ try{
 
     await next();
   });
-
-  function getContentInfo(content, url) {
-    const tempEl = $("<template></template>");
-    tempEl.html = content;
-    const titleEl = tempEl.$("title");
-
-    const targetTemp = tempEl.$("template[component]");
-    const scriptEl = targetTemp.$("script");
-
-    scriptEl.remove();
-
-    const fileContent = `
-  export const type = $.COMP;
-  export const PATH = '${url}';
-  ${titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
-  ${scriptEl.html}`;
-
-    const file = new File(
-      [fileContent],
-      location.pathname.replace(/.+\/(.+)/, "$1"),
-      { type: "text/javascript" }
-    );
-
-    return URL.createObjectURL(file);
-  }
 
   lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     if (typeof moduleData !== "object" || moduleData.type !== COMP) {
@@ -3281,26 +3255,13 @@ try{
     return current;
   };
 
-  const getLoading = ({ self: _this, src, type }) => {
-    const { loading } = _this._opts;
-
-    let loadingContent = "";
-    if (loading) {
-      loadingContent = loading({ src, type });
-    }
-
-    return loadingContent;
-  };
-
   $.register({
     tag: "o-app",
     temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
     attrs: {
       src: null,
     },
-    data: {
-      _opts: {},
-    },
+    data: {},
     watch: {
       async src(val) {
         if (this.__init_src) {
@@ -3339,7 +3300,7 @@ try{
           defaults.ready.call(this);
         }
 
-        const { loading, fail } = defaults;
+        const { fail } = defaults;
 
         this.on("error", (e) => {
           let failContent = ``;
@@ -3372,11 +3333,6 @@ try{
           const homeUrl = new URL(defaults.home, selfUrl).href;
           this.push(`<o-page src="${homeUrl}"></o-page>`);
         }
-
-        Object.assign(this._opts, {
-          loading,
-          fail,
-        });
       },
     },
     proto: {
@@ -3395,11 +3351,6 @@ try{
         const newCurrent = this[HISTORY].splice(-delta)[0];
         this.push({
           ...newCurrent,
-          html: getLoading({
-            self: this,
-            src: newCurrent.src,
-            type: "back",
-          }),
         });
 
         pageAddAnime({ page: this.current, key: "previous" });
@@ -3422,6 +3373,10 @@ try{
         if (!oldCurrent) {
           this._initHome = src;
         }
+
+        const { loading } = this._module;
+
+        console.log("loading => ", loading);
 
         const page = await new Promise((resolve) => {
           const tempCon = document.createElement("div");
@@ -3458,13 +3413,7 @@ try{
       async replace(src) {
         const { current: oldCurrent } = this;
 
-        this.push(
-          `<o-page src="${src}">${getLoading({
-          self: this,
-          src,
-          type: "replace",
-        })}</o-page>`
-        );
+        this.push(`<o-page src="${src}"></o-page>`);
 
         pageAddAnime({
           page: this.current,

@@ -1,7 +1,7 @@
 import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
-import { dispatchLoad, initLink } from "./page.mjs";
+import { dispatchLoad, initLink, getContentInfo } from "./page.mjs";
 import { fixRelateSource, resolvePath } from "./public.mjs";
 
 const COMP = Symbol("Component");
@@ -20,7 +20,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +component *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = getContentInfo(content, ctx.url);
+    const url = getContentInfo(content, ctx.url, false);
 
     ctx.result = await lm()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -28,32 +28,6 @@ lm.use(["html", "htm"], async (ctx, next) => {
 
   await next();
 });
-
-function getContentInfo(content, url) {
-  const tempEl = $("<template></template>");
-  tempEl.html = content;
-  const titleEl = tempEl.$("title");
-
-  const targetTemp = tempEl.$("template[component]");
-  const scriptEl = targetTemp.$("script");
-
-  scriptEl.remove();
-
-  const fileContent = `
-  export const type = $.COMP;
-  export const PATH = '${url}';
-  ${titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
-  ${scriptEl.html}`;
-
-  const file = new File(
-    [fileContent],
-    location.pathname.replace(/.+\/(.+)/, "$1"),
-    { type: "text/javascript" }
-  );
-
-  return URL.createObjectURL(file);
-}
 
 lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {

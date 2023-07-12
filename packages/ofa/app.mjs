@@ -18,26 +18,13 @@ const removeSubs = (current) => {
   return current;
 };
 
-const getLoading = ({ self: _this, src, type }) => {
-  const { loading } = _this._opts;
-
-  let loadingContent = "";
-  if (loading) {
-    loadingContent = loading({ src, type });
-  }
-
-  return loadingContent;
-};
-
 $.register({
   tag: "o-app",
   temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
   attrs: {
     src: null,
   },
-  data: {
-    _opts: {},
-  },
+  data: {},
   watch: {
     async src(val) {
       if (this.__init_src) {
@@ -76,7 +63,7 @@ $.register({
         defaults.ready.call(this);
       }
 
-      const { loading, fail } = defaults;
+      const { fail } = defaults;
 
       this.on("error", (e) => {
         let failContent = ``;
@@ -109,11 +96,6 @@ $.register({
         const homeUrl = new URL(defaults.home, selfUrl).href;
         this.push(`<o-page src="${homeUrl}"></o-page>`);
       }
-
-      Object.assign(this._opts, {
-        loading,
-        fail,
-      });
     },
   },
   proto: {
@@ -132,11 +114,6 @@ $.register({
       const newCurrent = this[HISTORY].splice(-delta)[0];
       this.push({
         ...newCurrent,
-        html: getLoading({
-          self: this,
-          src: newCurrent.src,
-          type: "back",
-        }),
       });
 
       pageAddAnime({ page: this.current, key: "previous" });
@@ -159,6 +136,10 @@ $.register({
       if (!oldCurrent) {
         this._initHome = src;
       }
+
+      const { loading } = this._module;
+
+      console.log("loading => ", loading);
 
       const page = await new Promise((resolve) => {
         const tempCon = document.createElement("div");
@@ -195,13 +176,7 @@ $.register({
     async replace(src) {
       const { current: oldCurrent } = this;
 
-      this.push(
-        `<o-page src="${src}">${getLoading({
-          self: this,
-          src,
-          type: "replace",
-        })}</o-page>`
-      );
+      this.push(`<o-page src="${src}"></o-page>`);
 
       pageAddAnime({
         page: this.current,

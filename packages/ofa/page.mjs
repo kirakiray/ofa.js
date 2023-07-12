@@ -46,22 +46,22 @@ lm.use(["html", "htm"], async (ctx, next) => {
 
 // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
-function getContentInfo(content, url) {
+export function getContentInfo(content, url, isPage = true) {
   const tempEl = $("<template></template>");
   tempEl.html = content;
   const titleEl = tempEl.$("title");
 
-  const targetTemp = tempEl.$("template[page]");
+  const targetTemp = tempEl.$(`template[${isPage ? "page" : "component"}]`);
   const scriptEl = targetTemp.$("script");
 
-  scriptEl.remove();
+  scriptEl && scriptEl.remove();
 
   const fileContent = `
-  export const type = $.PAGE;
+  export const type = ${isPage ? "$.PAGE" : "$.COMP"};
   export const PATH = '${url}';
-  ${titleEl ? `export const title = '${titleEl.text}';` : ""}
+  ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
-  ${scriptEl.html}`;
+  ${scriptEl ? scriptEl.html : ""}`;
 
   const file = new File(
     [fileContent],
