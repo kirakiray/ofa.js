@@ -3368,7 +3368,7 @@ try{
           e.target.innerHTML = "";
         });
 
-        if (!this.$("o-page") && defaults.home) {
+        if (!this.$("o-page") && !this._initHome && defaults.home) {
           const homeUrl = new URL(defaults.home, selfUrl).href;
           this.push(`<o-page src="${homeUrl}"></o-page>`);
         }
@@ -3418,6 +3418,10 @@ try{
       },
       async goto(src) {
         const { current: oldCurrent } = this;
+
+        if (!oldCurrent) {
+          this._initHome = src;
+        }
 
         const page = await new Promise((resolve) => {
           const tempCon = document.createElement("div");

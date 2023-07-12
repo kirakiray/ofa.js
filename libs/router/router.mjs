@@ -29,6 +29,7 @@ $.register({
 
     if (!history.state && window.location.hash) {
       app.$("o-page")?.remove();
+      console.log("haha1 => ", app.$("o-page"));
       app.goto(location.hash.replace("#", ""));
     }
 
