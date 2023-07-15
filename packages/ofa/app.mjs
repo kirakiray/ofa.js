@@ -18,6 +18,65 @@ const removeSubs = (current) => {
   return current;
 };
 
+const createPage = async ({ src, _this }) => {
+  const { loading, fail } = _this._module || {};
+
+  let loadingEl;
+  if (loading) {
+    loadingEl = createXEle(loading());
+
+    _this.push(loadingEl);
+  }
+
+  const page = await new Promise((resolve) => {
+    const tempCon = document.createElement("div");
+    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+    const pageEl = eleX(tempCon.querySelector("o-page"));
+
+    const loadedEventId = pageEl.one("page-loaded", () => {
+      // In the case of a child route, the parent page should be returned.
+      resolve(eleX(tempCon.querySelector("o-page")));
+
+      pageEl.off(errorEventId);
+    });
+
+    const errorEventId = pageEl.one("error", (e) => {
+      let failContent = ``;
+
+      if (fail) {
+        failContent = fail({
+          target: e.target,
+          src: e.target.getAttribute("src"),
+          error: e.error,
+        });
+      }
+
+      const template = document.createElement("template");
+      template.innerHTML = failContent;
+      const temps = convert(template);
+
+      renderElement({
+        defaults: {
+          temp: " ",
+        },
+        ele: e.target,
+        template,
+        temps,
+      });
+
+      e.target.innerHTML = "";
+
+      resolve(eleX(tempCon.querySelector("o-page")));
+
+      pageEl.off(loadedEventId);
+    });
+  });
+
+  loadingEl && loadingEl.remove();
+
+  return page;
+};
+
 $.register({
   tag: "o-app",
   temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
@@ -83,19 +142,29 @@ $.register({
       delta = delta < this[HISTORY].length ? delta : this[HISTORY].length;
 
       const newCurrent = this[HISTORY].splice(-delta)[0];
+
       this.push({
         ...newCurrent,
       });
 
-      pageAddAnime({ page: this.current, key: "previous" });
+      pageAddAnime({
+        page: this.current,
+        key: "previous",
+      });
 
       this.emit("router-change", {
         name: "back",
         delta,
       });
 
+      let targetPage = oldCurrent;
+
+      while (targetPage.parent.tag === "o-page") {
+        targetPage = targetPage.parent;
+      }
+
       await outPage({
-        page: oldCurrent,
+        page: targetPage,
         key: "next",
       });
 
@@ -108,65 +177,15 @@ $.register({
         this._initHome = src;
       }
 
-      const { loading, fail } = this._module || {};
-
-      let loadingEl;
-      if (loading) {
-        loadingEl = createXEle(loading());
-
-        this.push(loadingEl);
-      }
-
-      const page = await new Promise((resolve) => {
-        const tempCon = document.createElement("div");
-        tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
-        const pageEl = eleX(tempCon.querySelector("o-page"));
-
-        const loadedId = pageEl.one("page-loaded", () => {
-          // In the case of a child route, the parent page should be returned.
-          resolve(eleX(tempCon.querySelector("o-page")));
-
-          pageEl.off(errorId);
-        });
-
-        const errorId = pageEl.one("error", (e) => {
-          let failContent = ``;
-
-          if (fail) {
-            failContent = fail({
-              target: e.target,
-              src: e.target.getAttribute("src"),
-              error: e.error,
-            });
-          }
-
-          const template = document.createElement("template");
-          template.innerHTML = failContent;
-          const temps = convert(template);
-
-          renderElement({
-            defaults: {
-              temp: " ",
-            },
-            ele: e.target,
-            template,
-            temps,
-          });
-
-          e.target.innerHTML = "";
-
-          resolve(eleX(tempCon.querySelector("o-page")));
-
-          pageEl.off(loadedId);
-        });
-      });
-
-      loadingEl && loadingEl.remove();
+      const page = await createPage({ src, _this: this });
 
       // When the page element is initialized, the parent element is already available within the ready function
       this.push(page);
 
-      pageAddAnime({ page, key: "next" });
+      pageAddAnime({
+        page,
+        key: "next",
+      });
 
       oldCurrent && this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
 
@@ -187,10 +206,12 @@ $.register({
     async replace(src) {
       const { current: oldCurrent } = this;
 
-      this.push(`<o-page src="${src}"></o-page>`);
+      const page = await createPage({ _this: this, src });
+
+      this.push(page);
 
       pageAddAnime({
-        page: this.current,
+        page,
         key: "next",
       });
 
@@ -198,6 +219,7 @@ $.register({
         name: "replace",
         src,
       });
+
       if (oldCurrent) {
         await outPage({
           page: oldCurrent,

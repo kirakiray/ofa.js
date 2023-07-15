@@ -161,3 +161,18 @@ test("app routers", async ({ page }) => {
     },
   ]);
 });
+
+test("test o-link", async ({ page }) => {
+  await page.goto("http://localhost:3348/test/test-app.html");
+  await page.getByRole("link", { name: "TO single-page in o-link" }).click();
+  await new Promise((res) => setTimeout(res, 500));
+
+  await page.getByText("I am singlePage page 1");
+  await page.getByTestId("back").click();
+  await new Promise((res) => setTimeout(res, 500));
+  await page
+    .getByRole("link", { name: "In component olink (using relative paths)" })
+    .click();
+  await new Promise((res) => setTimeout(res, 500));
+  await page.getByRole("heading", { name: "I am page1" });
+});
