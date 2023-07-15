@@ -1,31 +1,33 @@
 export const home = "./pages/home.mjs?count=1";
 
 export const loading = () => {
-  return `
-  <style>
-    .loading {
-      width: 24px;
-      height: 24px;
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #7983ff;
-      border-radius: 50%;
-      animation: loading 1s ease-in-out infinite;
-    }
-    
-    @keyframes loading {
-      0% {
-        transform: rotate(0);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
-  <div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;">
-    <div class="loading"></div>
-  </div>
-`;
+  const loadingEl = $({
+    tag: "div",
+    style: {
+      width: "100%",
+      height: "100%",
+      position: "relative",
+      zIndex: 1000,
+    },
+    html: `
+      <div style="transition: all 10s cubic-bezier(0, 0, 0.22, 0.84) 0s; height: 2px;width: 0;background-color: rgb(0, 161, 46);"></div>
+    `,
+  });
+
+  setTimeout(() => (loadingEl[0].style.width = "98%"));
+
+  loadingEl.remove = () => {
+    loadingEl[0].style["transition-duration"] = "0.1s";
+    loadingEl[0].style.width = "100%";
+    setTimeout(() => {
+      $.fn.remove.call(loadingEl);
+    }, 200);
+  };
+
+  return loadingEl;
 };
+
+// export const timeout = 1000;
 
 export const fail = ({ src }) => {
   return `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;word-break:break-all;" data-testid="error-container">

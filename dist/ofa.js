@@ -3300,35 +3300,6 @@ try{
           defaults.ready.call(this);
         }
 
-        const { fail } = defaults;
-
-        this.on("error", (e) => {
-          let failContent = ``;
-
-          if (fail) {
-            failContent = fail({
-              target: e.target,
-              src: e.target.getAttribute("src"),
-              error: e.error,
-            });
-          }
-
-          const template = document.createElement("template");
-          template.innerHTML = failContent;
-          const temps = convert(template);
-
-          renderElement({
-            defaults: {
-              temp: " ",
-            },
-            ele: e.target,
-            template,
-            temps,
-          });
-
-          e.target.innerHTML = "";
-        });
-
         if (!this.$("o-page") && !this._initHome && defaults.home) {
           const homeUrl = new URL(defaults.home, selfUrl).href;
           this.push(`<o-page src="${homeUrl}"></o-page>`);
@@ -3374,20 +3345,60 @@ try{
           this._initHome = src;
         }
 
-        const { loading } = this._module;
+        const { loading, fail } = this._module || {};
 
-        console.log("loading => ", loading);
+        let loadingEl;
+        if (loading) {
+          loadingEl = createXEle(loading());
+
+          this.push(loadingEl);
+        }
 
         const page = await new Promise((resolve) => {
           const tempCon = document.createElement("div");
           tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
           const pageEl = eleX(tempCon.querySelector("o-page"));
 
-          pageEl.one("page-loaded", () => {
+          const loadedId = pageEl.one("page-loaded", () => {
             // In the case of a child route, the parent page should be returned.
             resolve(eleX(tempCon.querySelector("o-page")));
+
+            pageEl.off(errorId);
+          });
+
+          const errorId = pageEl.one("error", (e) => {
+            let failContent = ``;
+
+            if (fail) {
+              failContent = fail({
+                target: e.target,
+                src: e.target.getAttribute("src"),
+                error: e.error,
+              });
+            }
+
+            const template = document.createElement("template");
+            template.innerHTML = failContent;
+            const temps = convert(template);
+
+            renderElement({
+              defaults: {
+                temp: " ",
+              },
+              ele: e.target,
+              template,
+              temps,
+            });
+
+            e.target.innerHTML = "";
+
+            resolve(eleX(tempCon.querySelector("o-page")));
+
+            pageEl.off(loadedId);
           });
         });
+
+        loadingEl && loadingEl.remove();
 
         // When the page element is initialized, the parent element is already available within the ready function
         this.push(page);
