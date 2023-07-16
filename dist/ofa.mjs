@@ -2788,19 +2788,8 @@ window.lm = lm$1;
 function resolvePath(moduleName, baseURI) {
   const [url, ...params] = moduleName.split(" ");
 
-  const baseURL = new URL(baseURI, location.href);
-  // let baseURL;
-  // try {
-  //   baseURL = new URL(baseURI  location.href);
-  // } catch (err) {
-  //   console.log(baseURI);
-  //   setTimeout(() => {
-  //     baseURI;
-  //     location.href;
-  //     debugger;
-  //   }, 5000);
-  //   throw err;
-  // }
+  const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
+  
   if (
     // moduleName.startsWith("/") ||
     url.startsWith("http://") ||
