@@ -1,0 +1,59 @@
+<template page>
+  <style>
+    :host {
+      display: block;
+      height: 100%;
+    }
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #sidebar {
+      background-color: #333;
+      color: #fff;
+      width: 100px;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #sidebar ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    #sidebar ul li {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    #sidebar ul li:hover {
+      background-color: #555;
+    }
+
+    #content {
+      padding: 20px;
+    }
+  </style>
+
+  <div class="container">
+    <div id="sidebar">
+      <ul>
+        <li>选项1</li>
+        <li>选项2</li>
+      </ul>
+    </div>
+
+    <div id="content">
+      <slot></slot>
+    </div>
+  </div>
+
+  <script>
+    export const parent = "./parent1.mjs";
+  </script>
+</template>

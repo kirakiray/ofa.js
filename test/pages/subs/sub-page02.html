@@ -10,14 +10,14 @@
   <button on:click="back()" data-testid="back">Back</button>
   <br>
   <br>
-  <a href="./sub-page02.html" olink>go to subpage 2</a>
+  <a href="./sub-page03.html" olink>go to subpage 3</a>
   <script>
     export const parent = "../parent1.mjs";
 
     export default async ({ load }) => {
       return {
         data: {
-          val: "I am Sub Page 1",
+          val: "I am Sub Page 2",
         },
       };
     };

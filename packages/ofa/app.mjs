@@ -18,7 +18,7 @@ const removeSubs = (current) => {
   return current;
 };
 
-const createPage = async ({ src, _this }) => {
+const appendPage = async ({ src, _this }) => {
   const { loading, fail } = _this._module || {};
 
   let loadingEl;
@@ -30,6 +30,7 @@ const createPage = async ({ src, _this }) => {
 
   const page = await new Promise((resolve) => {
     const tempCon = document.createElement("div");
+    debugger
     tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
     const pageEl = eleX(tempCon.querySelector("o-page"));
 
@@ -73,6 +74,8 @@ const createPage = async ({ src, _this }) => {
   });
 
   loadingEl && loadingEl.remove();
+
+  _this.push(page);
 
   return page;
 };
@@ -177,10 +180,8 @@ $.register({
         this._initHome = src;
       }
 
-      const page = await createPage({ src, _this: this });
-
       // When the page element is initialized, the parent element is already available within the ready function
-      this.push(page);
+      const page = await appendPage({ src, _this: this });
 
       pageAddAnime({
         page,
@@ -206,9 +207,7 @@ $.register({
     async replace(src) {
       const { current: oldCurrent } = this;
 
-      const page = await createPage({ _this: this, src });
-
-      this.push(page);
+      const page = await appendPage({ src, _this: this });
 
       pageAddAnime({
         page,

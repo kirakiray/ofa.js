@@ -2994,7 +2994,7 @@ try{
         const parentPath = defaults.parent;
 
         if (parentPath) {
-          await new Promise((resolve) => {
+          await new Promise((resolve, reject) => {
             const newParentPath = resolvePath(parentPath, val);
 
             // Passing $ is an element generated within the template and does not depart from the component's registered functions.
@@ -3002,6 +3002,15 @@ try{
             let parentPage = document.createElement("o-page");
             parentPage = eleX(parentPage);
             parentPage.src = newParentPath;
+
+            parentPage.on("error", (e) => {
+              const { error } = e;
+              const err = new Error(
+                `${val} request to parent page(${newParentPath}) fails \n  ${error.stack}`
+              );
+              err.error = error;
+              reject(err);
+            });
 
             this.wrap(parentPage);
 
