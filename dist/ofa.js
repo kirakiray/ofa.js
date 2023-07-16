@@ -2456,7 +2456,7 @@ try{
       });
   };
 
-  function $(expr) {
+  function $$1(expr) {
     if (getType(expr) === "string" && !/<.+>/.test(expr)) {
       const ele = document.querySelector(expr);
 
@@ -2466,7 +2466,7 @@ try{
     return createXEle(expr);
   }
 
-  Object.assign($, {
+  Object.assign($$1, {
     stanz,
     render,
     convert,
@@ -2839,25 +2839,76 @@ try{
     }
   };
 
+  const ISERROR = Symbol("loadError");
+
+  const getPagesData = async (src) => {
+    const load = lm();
+    const pagesData = [];
+    let defaults;
+    let pageSrc = src;
+    let beforeSrc;
+    let errorObj;
+
+    while (true) {
+      try {
+        defaults = await load(pageSrc);
+      } catch (error) {
+        if (beforeSrc) {
+          const err = new Error(
+            `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+          );
+          err.error = error;
+
+          errorObj = err;
+          // throw err;
+        } else {
+          errorObj = error;
+          // throw error;
+        }
+      }
+
+      if (errorObj) {
+        pagesData.unshift({
+          ISERROR,
+          error: errorObj,
+        });
+        break;
+      }
+
+      pagesData.unshift({
+        src: pageSrc,
+        defaults,
+      });
+
+      if (!defaults.parent) {
+        break;
+      }
+
+      beforeSrc = pageSrc;
+      pageSrc = new URL(defaults.parent, pageSrc).href;
+    }
+
+    return pagesData;
+  };
+
+  const createPage = (src, defaults) => {
+    // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
+    const tempCon = document.createElement("div");
+    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+
+    const targetPage = $(tempCon.children[0]);
+
+    targetPage._renderDefault(defaults);
+
+    return targetPage;
+  };
+
   const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
   const PAGE = Symbol("Page");
 
-  Object.defineProperty($, "PAGE", {
+  Object.defineProperty($$1, "PAGE", {
     value: PAGE,
-  });
-
-  lm$1.use("page", async (ctx, next) => {
-    if (!ctx.result) {
-      const content = await fetch(ctx.url).then((e) => e.text());
-
-      const url = getContentInfo(content, ctx.url);
-
-      ctx.result = await lm$1()(`${url} .mjs`);
-      ctx.resultContent = content;
-    }
-
-    await next();
   });
 
   lm$1.use(["html", "htm"], async (ctx, next) => {
@@ -2880,7 +2931,7 @@ try{
   // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
   function getContentInfo(content, url, isPage = true) {
-    const tempEl = $("<template></template>");
+    const tempEl = $$1("<template></template>");
     tempEl.html = content;
     const titleEl = tempEl.$("title");
 
@@ -2937,96 +2988,68 @@ try{
     await next();
   });
 
-  $.register({
+  $$1.register({
     tag: "o-page",
     attrs: {
       src: null,
     },
     watch: {
-      async src(val) {
-        if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
-          val = resolvePath(val);
-          this.ele.setAttribute("src", val);
+      async src(src) {
+        if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
+          src = resolvePath(src);
+          this.ele.setAttribute("src", src);
         }
 
         if (this.__init_src) {
-          if (this.__init_src !== val) {
+          if (this.__init_src !== src) {
             throw "A page that has already been initialized cannot be set with the src attribute";
           }
           return;
         }
 
-        if (!val) {
+        if (!src) {
           return;
         }
 
-        this.__init_src = val;
+        this.__init_src = src;
 
-        const load = lm$1();
+        if (this._defaults) {
+          return;
+        }
 
-        let defaults;
+        const pagesData = await getPagesData(src);
 
-        await wrapErrorCall(
-          async () => {
-            const ctx = await load(`${val} -ctx`);
-            const { resultContent } = ctx;
+        const target = pagesData.pop();
 
-            const tempEl = $({ tag: "template" });
-            tempEl.html = resultContent;
+        pagesData.forEach((e, i) => {
+          const parentPage = createPage(src, e.defaults);
 
-            defaults = ctx.result;
-            // defaults = await load(val);
-          },
-          {
-            self: this,
-            desc: `Request for ${val} module failed`,
-          }
-        );
+          this.wrap(parentPage);
+        });
+
+        this._renderDefault(target.defaults);
+      },
+    },
+    proto: {
+      async _renderDefault(defaults) {
+        const { src } = this;
+
+        if (this._defaults) {
+          throw "The current page has already been rendered";
+        }
+
+        this._defaults = defaults;
 
         if (!defaults || defaults.type !== PAGE) {
           const err = new Error(
-            `The currently loaded module is not a page \nLoaded string => '${val}'`
+            `The currently loaded module is not a page \nLoaded string => '${src}'`
           );
           this.emit("error", { error: err });
           throw err;
         }
 
-        const parentPath = defaults.parent;
-
-        if (parentPath) {
-          await new Promise((resolve, reject) => {
-            const newParentPath = resolvePath(parentPath, val);
-
-            // Passing $ is an element generated within the template and does not depart from the component's registered functions.
-            // const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
-            let parentPage = document.createElement("o-page");
-            parentPage = eleX(parentPage);
-            parentPage.src = newParentPath;
-
-            parentPage.on("error", (e) => {
-              const { error } = e;
-              const err = new Error(
-                `${val} request to parent page(${newParentPath}) fails \n  ${error.stack}`
-              );
-              err.error = error;
-              reject(err);
-            });
-
-            this.wrap(parentPage);
-
-            if (parentPage._loaded) {
-              resolve();
-              return;
-            }
-
-            parentPage.one("page-loaded", resolve);
-          });
-        }
-
-        this._defaults = defaults;
-
         const template = document.createElement("template");
-        template.innerHTML = fixRelateSource(defaults.temp, val);
+        template.innerHTML = fixRelateSource(defaults.temp, src);
         const temps = convert(template);
 
         renderElement({
@@ -3044,8 +3067,6 @@ try{
 
         initLink(this);
       },
-    },
-    proto: {
       back() {
         this.app.back();
       },
@@ -3141,7 +3162,7 @@ try{
 
   const COMP = Symbol("Component");
 
-  Object.defineProperty($, "COMP", {
+  Object.defineProperty($$1, "COMP", {
     value: COMP,
   });
 
@@ -3241,7 +3262,7 @@ try{
       initLink(this);
     };
 
-    $.register({
+    $$1.register({
       ...registerOpts,
       tag: tagName,
       temp: fixRelateSource(tempContent, PATH || tempUrl),
@@ -3264,7 +3285,7 @@ try{
     return current;
   };
 
-  const createPage = async ({ src, _this }) => {
+  const appendPage = async ({ src, _this }) => {
     const { loading, fail } = _this._module || {};
 
     let loadingEl;
@@ -3274,56 +3295,53 @@ try{
       _this.push(loadingEl);
     }
 
-    const page = await new Promise((resolve) => {
-      const tempCon = document.createElement("div");
-      tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
-      const pageEl = eleX(tempCon.querySelector("o-page"));
+    const page = await new Promise(async (resolve) => {
+      const pagesData = await getPagesData(src);
 
-      const loadedEventId = pageEl.one("page-loaded", () => {
-        // In the case of a child route, the parent page should be returned.
-        resolve(eleX(tempCon.querySelector("o-page")));
+      let topPage, targetPage;
 
-        pageEl.off(errorEventId);
-      });
+      pagesData.some((e) => {
+        const { defaults, ISERROR } = e;
 
-      const errorEventId = pageEl.one("error", (e) => {
-        let failContent = ``;
+        if (ISERROR) {
+          if (fail) {
+            const failContent = fail({
+              src,
+              error: e.error,
+            });
 
-        if (fail) {
-          failContent = fail({
-            target: e.target,
-            src: e.target.getAttribute("src"),
-            error: e.error,
-          });
+            topPage = createPage(e.src, {
+              type: $$1.PAGE,
+              temp: failContent,
+            });
+          }
+          return false;
         }
 
-        const template = document.createElement("template");
-        template.innerHTML = failContent;
-        const temps = convert(template);
+        const subPage = createPage(src, defaults);
 
-        renderElement({
-          defaults: {
-            temp: " ",
-          },
-          ele: e.target,
-          template,
-          temps,
-        });
+        if (!targetPage) {
+          topPage = subPage;
+        }
 
-        e.target.innerHTML = "";
+        if (targetPage) {
+          targetPage.push(subPage);
+        }
 
-        resolve(eleX(tempCon.querySelector("o-page")));
-
-        pageEl.off(loadedEventId);
+        targetPage = subPage;
       });
+
+      resolve(topPage);
     });
 
     loadingEl && loadingEl.remove();
 
+    _this.push(page);
+
     return page;
   };
 
-  $.register({
+  $$1.register({
     tag: "o-app",
     temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
     attrs: {
@@ -3423,10 +3441,8 @@ try{
           this._initHome = src;
         }
 
-        const page = await createPage({ src, _this: this });
-
         // When the page element is initialized, the parent element is already available within the ready function
-        this.push(page);
+        const page = await appendPage({ src, _this: this });
 
         pageAddAnime({
           page,
@@ -3452,9 +3468,7 @@ try{
       async replace(src) {
         const { current: oldCurrent } = this;
 
-        const page = await createPage({ _this: this, src });
-
-        this.push(page);
+        const page = await appendPage({ src, _this: this });
 
         pageAddAnime({
           page,
@@ -3554,7 +3568,7 @@ try{
       setTimeout(func, 5);
     });
 
-  $.fn.extend({
+  $$1.fn.extend({
     get app() {
       let target = this;
 
@@ -3580,9 +3594,9 @@ try{
   });
 
   if (typeof window !== "undefined") {
-    window.$ = $;
+    window.$ = $$1;
   }
 
-  return $;
+  return $$1;
 
 }));

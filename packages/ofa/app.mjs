@@ -2,7 +2,7 @@
 import $ from "../xhear/base.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { renderElement } from "../xhear/register.mjs";
-import { resolvePath } from "./public.mjs";
+import { resolvePath, getPagesData, ISERROR, createPage } from "./public.mjs";
 import { getDefault } from "./page.mjs";
 import { createXEle, eleX } from "../xhear/util.mjs";
 
@@ -28,49 +28,43 @@ const appendPage = async ({ src, _this }) => {
     _this.push(loadingEl);
   }
 
-  const page = await new Promise((resolve) => {
-    const tempCon = document.createElement("div");
-    debugger
-    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
-    const pageEl = eleX(tempCon.querySelector("o-page"));
+  const page = await new Promise(async (resolve) => {
+    const pagesData = await getPagesData(src);
 
-    const loadedEventId = pageEl.one("page-loaded", () => {
-      // In the case of a child route, the parent page should be returned.
-      resolve(eleX(tempCon.querySelector("o-page")));
+    let topPage, targetPage;
 
-      pageEl.off(errorEventId);
-    });
+    pagesData.some((e) => {
+      const { defaults, ISERROR } = e;
 
-    const errorEventId = pageEl.one("error", (e) => {
-      let failContent = ``;
+      if (ISERROR) {
+        if (fail) {
+          const failContent = fail({
+            src,
+            error: e.error,
+          });
 
-      if (fail) {
-        failContent = fail({
-          target: e.target,
-          src: e.target.getAttribute("src"),
-          error: e.error,
-        });
+          topPage = createPage(e.src, {
+            type: $.PAGE,
+            temp: failContent,
+          });
+        }
+        return false;
       }
 
-      const template = document.createElement("template");
-      template.innerHTML = failContent;
-      const temps = convert(template);
+      const subPage = createPage(src, defaults);
 
-      renderElement({
-        defaults: {
-          temp: " ",
-        },
-        ele: e.target,
-        template,
-        temps,
-      });
+      if (!targetPage) {
+        topPage = subPage;
+      }
 
-      e.target.innerHTML = "";
+      if (targetPage) {
+        targetPage.push(subPage);
+      }
 
-      resolve(eleX(tempCon.querySelector("o-page")));
-
-      pageEl.off(loadedEventId);
+      targetPage = subPage;
     });
+
+    resolve(topPage);
   });
 
   loadingEl && loadingEl.remove();

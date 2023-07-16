@@ -3,7 +3,13 @@ import $ from "../xhear/base.mjs";
 import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { searchEle, isFunction } from "../xhear/public.mjs";
-import { fixRelateSource, resolvePath, wrapErrorCall } from "./public.mjs";
+import {
+  fixRelateSource,
+  resolvePath,
+  wrapErrorCall,
+  getPagesData,
+  createPage,
+} from "./public.mjs";
 import { eleX } from "../xhear/util.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
@@ -12,19 +18,6 @@ const PAGE = Symbol("Page");
 
 Object.defineProperty($, "PAGE", {
   value: PAGE,
-});
-
-lm.use("page", async (ctx, next) => {
-  if (!ctx.result) {
-    const content = await fetch(ctx.url).then((e) => e.text());
-
-    const url = getContentInfo(content, ctx.url);
-
-    ctx.result = await lm()(`${url} .mjs`);
-    ctx.resultContent = content;
-  }
-
-  await next();
 });
 
 lm.use(["html", "htm"], async (ctx, next) => {
@@ -110,90 +103,62 @@ $.register({
     src: null,
   },
   watch: {
-    async src(val) {
-      if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
-        val = resolvePath(val);
-        this.ele.setAttribute("src", val);
+    async src(src) {
+      if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
+        src = resolvePath(src);
+        this.ele.setAttribute("src", src);
       }
 
       if (this.__init_src) {
-        if (this.__init_src !== val) {
+        if (this.__init_src !== src) {
           throw "A page that has already been initialized cannot be set with the src attribute";
         }
         return;
       }
 
-      if (!val) {
+      if (!src) {
         return;
       }
 
-      this.__init_src = val;
+      this.__init_src = src;
 
-      const load = lm();
+      if (this._defaults) {
+        return;
+      }
 
-      let defaults;
+      const pagesData = await getPagesData(src);
 
-      await wrapErrorCall(
-        async () => {
-          const ctx = await load(`${val} -ctx`);
-          const { resultContent } = ctx;
+      const target = pagesData.pop();
 
-          const tempEl = $({ tag: "template" });
-          tempEl.html = resultContent;
+      pagesData.forEach((e, i) => {
+        const parentPage = createPage(src, e.defaults);
 
-          defaults = ctx.result;
-          // defaults = await load(val);
-        },
-        {
-          self: this,
-          desc: `Request for ${val} module failed`,
-        }
-      );
+        this.wrap(parentPage);
+      });
+
+      this._renderDefault(target.defaults);
+    },
+  },
+  proto: {
+    async _renderDefault(defaults) {
+      const { src } = this;
+
+      if (this._defaults) {
+        throw "The current page has already been rendered";
+      }
+
+      this._defaults = defaults;
 
       if (!defaults || defaults.type !== PAGE) {
         const err = new Error(
-          `The currently loaded module is not a page \nLoaded string => '${val}'`
+          `The currently loaded module is not a page \nLoaded string => '${src}'`
         );
         this.emit("error", { error: err });
         throw err;
       }
 
-      const parentPath = defaults.parent;
-
-      if (parentPath) {
-        await new Promise((resolve, reject) => {
-          const newParentPath = resolvePath(parentPath, val);
-
-          // Passing $ is an element generated within the template and does not depart from the component's registered functions.
-          // const parentPage = $(`<o-page src="${newParentPath}"></o-page>`);
-          let parentPage = document.createElement("o-page");
-          parentPage = eleX(parentPage);
-          parentPage.src = newParentPath;
-
-          parentPage.on("error", (e) => {
-            const { error } = e;
-            const err = new Error(
-              `${val} request to parent page(${newParentPath}) fails \n  ${error.stack}`
-            );
-            err.error = error;
-            reject(err);
-          });
-
-          this.wrap(parentPage);
-
-          if (parentPage._loaded) {
-            resolve();
-            return;
-          }
-
-          parentPage.one("page-loaded", resolve);
-        });
-      }
-
-      this._defaults = defaults;
-
       const template = document.createElement("template");
-      template.innerHTML = fixRelateSource(defaults.temp, val);
+      template.innerHTML = fixRelateSource(defaults.temp, src);
       const temps = convert(template);
 
       renderElement({
@@ -211,8 +176,6 @@ $.register({
 
       initLink(this);
     },
-  },
-  proto: {
     back() {
       this.app.back();
     },

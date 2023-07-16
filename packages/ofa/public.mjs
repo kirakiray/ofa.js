@@ -47,3 +47,67 @@ export const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
     throw err;
   }
 };
+
+export const ISERROR = Symbol("loadError");
+
+export const getPagesData = async (src) => {
+  const load = lm();
+  const pagesData = [];
+  let defaults;
+  let pageSrc = src;
+  let beforeSrc;
+  let errorObj;
+
+  while (true) {
+    try {
+      defaults = await load(pageSrc);
+    } catch (error) {
+      if (beforeSrc) {
+        const err = new Error(
+          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+        );
+        err.error = error;
+
+        errorObj = err;
+        // throw err;
+      } else {
+        errorObj = error;
+        // throw error;
+      }
+    }
+
+    if (errorObj) {
+      pagesData.unshift({
+        ISERROR,
+        error: errorObj,
+      });
+      break;
+    }
+
+    pagesData.unshift({
+      src: pageSrc,
+      defaults,
+    });
+
+    if (!defaults.parent) {
+      break;
+    }
+
+    beforeSrc = pageSrc;
+    pageSrc = new URL(defaults.parent, pageSrc).href;
+  }
+
+  return pagesData;
+};
+
+export const createPage = (src, defaults) => {
+  // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
+  const tempCon = document.createElement("div");
+  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+
+  const targetPage = $(tempCon.children[0]);
+
+  targetPage._renderDefault(defaults);
+
+  return targetPage;
+};
