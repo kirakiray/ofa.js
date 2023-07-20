@@ -207,7 +207,12 @@ $.register({
   },
 });
 
+// Make connections within a shadow support link
 export const initLink = (_this) => {
+  const { link } = $.extensions;
+
+  _this.shadow.all("a").forEach((e) => link(e));
+
   _this.shadow.on("click", (e) => {
     const { target } = e;
 
@@ -221,7 +226,9 @@ export const initLink = (_this) => {
         if (target.getAttribute("olink") === "back") {
           _this.app.back();
         } else if (target.tagName === "A") {
-          _this.app.goto(target.href);
+          const originHref = target.getAttribute("origin-href");
+          // Prioritize the use of origin links
+          _this.app.goto(originHref || target.href);
         }
       } else {
         console.warn("olink is only allowed within o-apps");

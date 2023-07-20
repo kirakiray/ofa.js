@@ -48,8 +48,6 @@ export default function initRouter(app, getStateUrl) {
 
         _isFixState = 1;
         history.go(-e.delta);
-
-        console.log("back => ", e);
         break;
     }
   });

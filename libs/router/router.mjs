@@ -29,7 +29,7 @@ $.register({
 
     if (!history.state && window.location.hash) {
       app.$("o-page")?.remove();
-      console.log("haha1 => ", app.$("o-page"));
+      // app.goto(new URL(location.hash.replace("#", ""), location.href).href);
       app.goto(location.hash.replace("#", ""));
     }
 
@@ -41,3 +41,18 @@ $.register({
     }
   },
 });
+
+$.extensions.link = ($el) => {
+  if ($el.attr("olink") === "") {
+    const href = $el.attr("href");
+
+    $el.attr("origin-href", href);
+
+    const linkUrlObj = new URL(href);
+
+    $el.attr(
+      "href",
+      `${location.origin}/${location.pathname}#${linkUrlObj.pathname}`
+    );
+  }
+};

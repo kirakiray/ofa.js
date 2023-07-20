@@ -195,6 +195,7 @@ $.register({
     },
     async _navigate({ type, src }) {
       const { current: oldCurrent } = this;
+      src = new URL(src, location.href).href;
 
       if (!oldCurrent) {
         this._initHome = src;

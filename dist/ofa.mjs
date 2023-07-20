@@ -3139,7 +3139,12 @@ $$1.register({
   },
 });
 
+// Make connections within a shadow support link
 const initLink = (_this) => {
+  const { link } = $$1.extensions;
+
+  _this.shadow.all("a").forEach((e) => link(e));
+
   _this.shadow.on("click", (e) => {
     const { target } = e;
 
@@ -3153,7 +3158,9 @@ const initLink = (_this) => {
         if (target.getAttribute("olink") === "back") {
           _this.app.back();
         } else if (target.tagName === "A") {
-          _this.app.goto(target.href);
+          const originHref = target.getAttribute("origin-href");
+          // Prioritize the use of origin links
+          _this.app.goto(originHref || target.href);
         }
       } else {
         console.warn("olink is only allowed within o-apps");
@@ -3520,6 +3527,7 @@ $$1.register({
     },
     async _navigate({ type, src }) {
       const { current: oldCurrent } = this;
+      src = new URL(src, location.href).href;
 
       if (!oldCurrent) {
         this._initHome = src;
@@ -3670,6 +3678,14 @@ $$1.fn.extend({
     }
 
     return target;
+  },
+});
+
+Object.defineProperties($$1, {
+  extensions: {
+    value: {
+      link: (val) => val,
+    },
   },
 });
 

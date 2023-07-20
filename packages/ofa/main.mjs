@@ -28,6 +28,14 @@ $.fn.extend({
   },
 });
 
+Object.defineProperties($, {
+  extensions: {
+    value: {
+      link: (val) => val,
+    },
+  },
+});
+
 if (typeof window !== "undefined") {
   window.$ = $;
 }
