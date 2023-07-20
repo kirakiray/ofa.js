@@ -3337,27 +3337,18 @@ try{
 
   const HISTORY = "_history";
 
-  const removeSubs = (current) => {
-    Object.keys(current).forEach((key) => {
-      if (!isNaN(key)) {
-        delete current[key];
-      }
-    });
-
-    return current;
-  };
-
   const appendPage = async ({ src, _this }) => {
     const { loading, fail } = _this._module || {};
 
     const currentPages = [];
 
-    // 需要删除的页面
+    // Pages to be deleted
     let oldPage = _this.current;
-    // 下一页
+
+    // The next page to appear
     let page;
 
-    {
+    if (oldPage) {
       let target = oldPage;
 
       do {
@@ -3365,6 +3356,7 @@ try{
           page: target,
           src: target.src,
         });
+        oldPage = target;
         target = target.parent;
       } while (target.tag === "o-page");
     }
@@ -3376,20 +3368,19 @@ try{
       _this.push(loadingEl);
     }
 
-    // 用更塞入新 page 的容器；默认是 o-app，子路由的模式下或是 o-page
+    // Container for stuffing new pages; o-app by default, or o-page in subrouting mode.
     let container = _this;
 
     const oriNextPages = await getPagesData(src);
 
-    console.log("nextPages => ", oriNextPages);
-
     // Finding shared parent pages in the case of subroutes
     const publicPages = [];
     let targetIndex = -1;
+    const lastIndex = currentPages.length - 1;
     currentPages.some((e, i) => {
       const next = oriNextPages[i];
 
-      if (next.src === e.src) {
+      if (next.src === e.src && i !== lastIndex) {
         publicPages.push(e);
         targetIndex = i;
         return false;
@@ -3443,12 +3434,12 @@ try{
 
     container.push(page);
 
-    return { page, old: oldPage };
+    return { current: page, old: oldPage };
   };
 
   $$1.register({
     tag: "o-app",
-    temp: `<style>:host{position:relative;display:block}::slotted(o-page){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+    temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
     attrs: {
       src: null,
     },
@@ -3506,19 +3497,18 @@ try{
           return;
         }
 
-        // It is convenient to know that this current and the following current are not the same object
-        const { current: oldCurrent } = this;
-
+        // Delete historical data for response numbers
         delta = delta < this[HISTORY].length ? delta : this[HISTORY].length;
 
         const newCurrent = this[HISTORY].splice(-delta)[0];
 
-        this.push({
-          ...newCurrent,
+        const { current: page, old: needRemovePage } = await appendPage({
+          src: newCurrent.src,
+          _this: this,
         });
 
         pageInAnime({
-          page: this.current,
+          page,
           key: "previous",
         });
 
@@ -3527,24 +3517,21 @@ try{
           delta,
         });
 
-        const targetPage = getTopPage(oldCurrent);
-
         await pageOutAnime({
-          page: targetPage,
+          page: needRemovePage,
           key: "next",
         });
 
-        targetPage.remove();
+        needRemovePage.remove();
       },
-      async goto(src) {
+      async _navigate({ type, src }) {
         const { current: oldCurrent } = this;
 
         if (!oldCurrent) {
           this._initHome = src;
         }
 
-        // When the page element is initialized, the parent element is already available within the ready function
-        const { page, old: needRemovePage } = await appendPage({
+        const { current: page, old: needRemovePage } = await appendPage({
           src,
           _this: this,
         });
@@ -3554,10 +3541,12 @@ try{
           key: "next",
         });
 
-        oldCurrent && this[HISTORY].push(removeSubs(oldCurrent.toJSON()));
+        if (type === "goto") {
+          oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
+        }
 
         this.emit("router-change", {
-          name: "goto",
+          name: type,
           src,
         });
 
@@ -3570,31 +3559,11 @@ try{
           needRemovePage.remove();
         }
       },
-      async replace(src) {
-        const { current: oldCurrent } = this;
-
-        const { page } = await appendPage({ src, _this: this });
-
-        pageInAnime({
-          page,
-          key: "next",
-        });
-
-        this.emit("router-change", {
-          name: "replace",
-          src,
-        });
-
-        if (oldCurrent) {
-          const targetOldPage = getTopPage(oldCurrent);
-
-          await pageOutAnime({
-            page: targetOldPage,
-            key: "previous",
-          });
-
-          targetOldPage.remove();
-        }
+      goto(src) {
+        return this._navigate({ type: "goto", src });
+      },
+      replace(src) {
+        return this._navigate({ type: "replace", src });
       },
       get current() {
         return this.all("o-page").slice(-1)[0];
@@ -3606,11 +3575,12 @@ try{
           return [];
         }
 
-        current = current.toJSON();
-
-        removeSubs(current);
-
-        const routers = [...this[HISTORY], current];
+        const routers = [
+          ...this[HISTORY],
+          {
+            src: current.src,
+          },
+        ];
 
         return routers;
       },
@@ -3630,16 +3600,6 @@ try{
       },
     },
   });
-
-  const getTopPage = (page) => {
-    let targetPage = page;
-
-    while (targetPage.parent.tag === "o-page") {
-      targetPage = targetPage.parent;
-    }
-
-    return targetPage;
-  };
 
   const pageInAnime = ({ page, key }) => {
     const { pageAnime } = page;
