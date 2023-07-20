@@ -3,7 +3,7 @@ export const home = "./pages/home.mjs?count=1";
 export const loading = () => {
   const loadingEl = $({
     tag: "div",
-    style: {
+    css: {
       width: "100%",
       height: "100%",
       position: "relative",
@@ -36,7 +36,7 @@ export const fail = ({ src, error }) => {
       <p>${error.stack}</p>
       ${src}
       <div>
-        <button on:click="back()">Back</button>
+        <button olink="back">Back</button>
       </div>
     </div>
   </div>`;

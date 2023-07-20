@@ -1,5 +1,5 @@
 <template page>
-  <link rel="stylesheet" href="./pub.css">
+  <link rel="stylesheet" href="./pub.css" />
   <style>
     :host {
       display: block;
@@ -9,11 +9,12 @@
   <h1>{{val}}</h1>
 
   <button on:click="back()" data-testid="back">Back</button>
-  <br>
-  <br>
+  <br />
+  <br />
   <a href="./sub-page03.html" olink>go to subpage 3</a>
   <script>
     export const parent = "../parent1.mjs";
+
 
     export default async ({ load }) => {
       return {

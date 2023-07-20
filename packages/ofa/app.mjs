@@ -1,10 +1,9 @@
 // import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
-import { convert } from "../xhear/render/render.mjs";
-import { renderElement } from "../xhear/register.mjs";
 import { resolvePath, getPagesData, ISERROR, createPage } from "./public.mjs";
 import { getDefault } from "./page.mjs";
-import { createXEle, eleX } from "../xhear/util.mjs";
+import { createXEle } from "../xhear/util.mjs";
+import { getRandomId } from "../stanz/public.mjs";
 
 const HISTORY = "_history";
 
@@ -21,6 +20,25 @@ const removeSubs = (current) => {
 const appendPage = async ({ src, _this }) => {
   const { loading, fail } = _this._module || {};
 
+  const currentPages = [];
+
+  // 需要删除的页面
+  let oldPage = _this.current;
+  // 下一页
+  let page;
+
+  {
+    let target = oldPage;
+
+    do {
+      currentPages.unshift({
+        page: target,
+        src: target.src,
+      });
+      target = target.parent;
+    } while (target.tag === "o-page");
+  }
+
   let loadingEl;
   if (loading) {
     loadingEl = createXEle(loading());
@@ -28,50 +46,74 @@ const appendPage = async ({ src, _this }) => {
     _this.push(loadingEl);
   }
 
-  const page = await new Promise(async (resolve) => {
-    const pagesData = await getPagesData(src);
+  // 用更塞入新 page 的容器；默认是 o-app，子路由的模式下或是 o-page
+  let container = _this;
 
-    let topPage, targetPage;
+  const oriNextPages = await getPagesData(src);
 
-    pagesData.some((e) => {
-      const { defaults, ISERROR } = e;
+  console.log("nextPages => ", oriNextPages);
 
-      if (ISERROR) {
-        if (fail) {
-          const failContent = fail({
-            src,
-            error: e.error,
-          });
+  // Finding shared parent pages in the case of subroutes
+  const publicPages = [];
+  let targetIndex = -1;
+  currentPages.some((e, i) => {
+    const next = oriNextPages[i];
 
-          topPage = createPage(e.src, {
-            type: $.PAGE,
-            temp: failContent,
-          });
-        }
-        return false;
+    if (next.src === e.src) {
+      publicPages.push(e);
+      targetIndex = i;
+      return false;
+    }
+
+    return true;
+  });
+
+  let nextPages = oriNextPages;
+
+  if (targetIndex >= 0) {
+    container = publicPages.slice(-1)[0].page;
+    oldPage = container[0];
+    nextPages = oriNextPages.slice(targetIndex + 1);
+  }
+
+  let targetPage;
+
+  nextPages.some((e) => {
+    const { defaults, ISERROR: isError } = e;
+
+    if (isError === ISERROR) {
+      if (fail) {
+        const failContent = fail({
+          src,
+          error: e.error,
+        });
+
+        page = createPage(e.src, {
+          type: $.PAGE,
+          temp: failContent,
+        });
       }
+      return false;
+    }
 
-      const subPage = createPage(src, defaults);
+    const subPage = createPage(e.src, defaults);
 
-      if (!targetPage) {
-        topPage = subPage;
-      }
+    if (!targetPage) {
+      page = subPage;
+    }
 
-      if (targetPage) {
-        targetPage.push(subPage);
-      }
+    if (targetPage) {
+      targetPage.push(subPage);
+    }
 
-      targetPage = subPage;
-    });
-
-    resolve(topPage);
+    targetPage = subPage;
   });
 
   loadingEl && loadingEl.remove();
 
-  _this.push(page);
+  container.push(page);
 
-  return page;
+  return { page, old: oldPage };
 };
 
 $.register({
@@ -80,7 +122,9 @@ $.register({
   attrs: {
     src: null,
   },
-  data: {},
+  data: {
+    [HISTORY]: [],
+  },
   watch: {
     async src(val) {
       if (this.__init_src) {
@@ -126,7 +170,6 @@ $.register({
     },
   },
   proto: {
-    [HISTORY]: [],
     async back(delta = 1) {
       if (!this[HISTORY].length) {
         console.warn(`It's already the first page, can't go back`);
@@ -144,7 +187,7 @@ $.register({
         ...newCurrent,
       });
 
-      pageAddAnime({
+      pageInAnime({
         page: this.current,
         key: "previous",
       });
@@ -154,18 +197,14 @@ $.register({
         delta,
       });
 
-      let targetPage = oldCurrent;
+      const targetPage = getTopPage(oldCurrent);
 
-      while (targetPage.parent.tag === "o-page") {
-        targetPage = targetPage.parent;
-      }
-
-      await outPage({
+      await pageOutAnime({
         page: targetPage,
         key: "next",
       });
 
-      oldCurrent.remove();
+      targetPage.remove();
     },
     async goto(src) {
       const { current: oldCurrent } = this;
@@ -175,9 +214,12 @@ $.register({
       }
 
       // When the page element is initialized, the parent element is already available within the ready function
-      const page = await appendPage({ src, _this: this });
+      const { page, old: needRemovePage } = await appendPage({
+        src,
+        _this: this,
+      });
 
-      pageAddAnime({
+      pageInAnime({
         page,
         key: "next",
       });
@@ -190,20 +232,20 @@ $.register({
       });
 
       if (oldCurrent) {
-        await outPage({
-          page: oldCurrent,
+        await pageOutAnime({
+          page: needRemovePage,
           key: "previous",
         });
 
-        oldCurrent.remove();
+        needRemovePage.remove();
       }
     },
     async replace(src) {
       const { current: oldCurrent } = this;
 
-      const page = await appendPage({ src, _this: this });
+      const { page } = await appendPage({ src, _this: this });
 
-      pageAddAnime({
+      pageInAnime({
         page,
         key: "next",
       });
@@ -214,12 +256,14 @@ $.register({
       });
 
       if (oldCurrent) {
-        await outPage({
-          page: oldCurrent,
+        const targetOldPage = getTopPage(oldCurrent);
+
+        await pageOutAnime({
+          page: targetOldPage,
           key: "previous",
         });
 
-        oldCurrent.remove();
+        targetOldPage.remove();
       }
     },
     get current() {
@@ -255,22 +299,33 @@ $.register({
       this.push(currentRouter);
     },
   },
-  ready() {},
 });
 
-const pageAddAnime = ({ page, key }) => {
+const getTopPage = (page) => {
+  let targetPage = page;
+
+  while (targetPage.parent.tag === "o-page") {
+    targetPage = targetPage.parent;
+  }
+
+  return targetPage;
+};
+
+const pageInAnime = ({ page, key }) => {
   const { pageAnime } = page;
 
   const targetAnime = pageAnime[key];
 
   if (targetAnime) {
-    page.style = {
+    page.css = {
+      ...page.css,
       transition: "all ease .3s",
       ...targetAnime,
     };
 
     nextAnimeFrame(() => {
-      page.style = {
+      page.css = {
+        ...page.css,
         transition: "all ease .3s",
         ...(pageAnime.current || {}),
       };
@@ -278,7 +333,7 @@ const pageAddAnime = ({ page, key }) => {
   }
 };
 
-const outPage = ({ page, key }) =>
+const pageOutAnime = ({ page, key }) =>
   new Promise((resolve) => {
     const targetAnime = page.pageAnime[key];
 
@@ -286,7 +341,8 @@ const outPage = ({ page, key }) =>
       nextAnimeFrame(() => {
         page.one("transitionend", resolve);
 
-        page.style = {
+        page.css = {
+          ...page.css,
           transition: "all ease .3s",
           ...targetAnime,
         };

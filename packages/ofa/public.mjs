@@ -4,7 +4,7 @@ export function resolvePath(moduleName, baseURI) {
   const [url, ...params] = moduleName.split(" ");
 
   const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
-  
+
   if (
     // moduleName.startsWith("/") ||
     url.startsWith("http://") ||
@@ -104,7 +104,7 @@ export const getPagesData = async (src) => {
 export const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
-  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+  tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
 
   const targetPage = $(tempCon.children[0]);
 

@@ -39,7 +39,13 @@ lm.use(["html", "htm"], async (ctx, next) => {
 
 // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
+const cacheLink = {};
+
 export function getContentInfo(content, url, isPage = true) {
+  if (cacheLink[url]) {
+    return cacheLink[url];
+  }
+
   const tempEl = $("<template></template>");
   tempEl.html = content;
   const titleEl = tempEl.$("title");
@@ -62,7 +68,7 @@ export function getContentInfo(content, url, isPage = true) {
     { type: "text/javascript" }
   );
 
-  return URL.createObjectURL(file);
+  return (cacheLink[url] = URL.createObjectURL(file));
 }
 
 lm.use(["js", "mjs"], async (ctx, next) => {
@@ -149,6 +155,10 @@ $.register({
 
       this._defaults = defaults;
 
+      if (defaults.pageAnime) {
+        this._pageAnime = defaults.pageAnime;
+      }
+
       if (!defaults || defaults.type !== PAGE) {
         const err = new Error(
           `The currently loaded module is not a page \nLoaded string => '${src}'`
@@ -201,16 +211,22 @@ $.register({
 export const initLink = (_this) => {
   _this.shadow.on("click", (e) => {
     const { target } = e;
-    if (
-      _this.app &&
-      target.tagName === "A" &&
-      target.attributes.hasOwnProperty("olink")
-    ) {
-      if (e.metaKey || e.shiftKey) {
-        return;
+
+    if (target.attributes.hasOwnProperty("olink")) {
+      if (_this.app) {
+        if (e.metaKey || e.shiftKey) {
+          return;
+        }
+        e.preventDefault();
+
+        if (target.getAttribute("olink") === "back") {
+          _this.app.back();
+        } else if (target.tagName === "A") {
+          _this.app.goto(target.href);
+        }
+      } else {
+        console.warn("olink is only allowed within o-apps");
       }
-      e.preventDefault();
-      _this.app.goto(target.href);
     }
   });
 };

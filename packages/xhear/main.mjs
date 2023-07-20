@@ -6,12 +6,23 @@ import syncFn from "./render/sync.mjs";
 import eventFn from "./event.mjs";
 import LikeArray from "./array.mjs";
 import formFn, { initFormEle } from "./form.mjs";
+import cssFn from "./css.mjs";
 import { getType, extend } from "../stanz/public.mjs";
 import Stanz, { constructor } from "../stanz/main.mjs";
 import watchFn from "../stanz/watch.mjs";
 import "./render/condition.mjs";
 import "./render/fill.mjs";
 const { defineProperties } = Object;
+
+const styleToJSON = (style) => {
+  const obj = {};
+
+  Array.from(style).forEach((key) => {
+    obj[key] = style[key];
+  });
+
+  return obj;
+};
 
 const init = ({ _this, ele, proxySelf }) => {
   const descs = {
@@ -105,9 +116,9 @@ export default class Xhear extends LikeArray {
     return this.ele.dataset;
   }
 
-  get css() {
-    return getComputedStyle(this.ele);
-  }
+  // get css() {
+  //   return getComputedStyle(this.ele);
+  // }
 
   get shadow() {
     return eleX(this.ele.shadowRoot);
@@ -176,28 +187,6 @@ export default class Xhear extends LikeArray {
 
   get style() {
     return this.ele.style;
-  }
-
-  set style(d) {
-    if (getType(d) == "string") {
-      this.ele.style = d;
-      return;
-    }
-
-    let { style } = this;
-
-    // Covering the old style
-    let hasKeys = Array.from(style);
-    let nextKeys = Object.keys(d);
-
-    // Clear the unused key
-    hasKeys.forEach((k) => {
-      if (!nextKeys.includes(k)) {
-        style[k] = "";
-      }
-    });
-
-    Object.assign(style, d);
   }
 
   get width() {
@@ -310,3 +299,5 @@ fn.extend(
     enumerable: false,
   }
 );
+
+fn.extend(cssFn);

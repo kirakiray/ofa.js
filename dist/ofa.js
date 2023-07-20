@@ -774,12 +774,12 @@
 
       return handler$1.set(target, key, value, receiver);
     },
-    get(target, key, value, receiver) {
+    get(target, key, receiver) {
       if (!/\D/.test(String(key))) {
         return eleX(target.ele.children[key]);
       }
 
-      return Reflect.get(target, key, value, receiver);
+      return Reflect.get(target, key, receiver);
     },
     ownKeys(target) {
       let keys = Reflect.ownKeys(target);
@@ -1535,6 +1535,71 @@ try{
     },
   };
 
+  const cssHandler = {
+    set(target, key, value, receiver) {
+      target._ele.style[key] = value;
+      Reflect.set(target, key, value, receiver);
+      return true;
+    },
+    get(target, key, receiver) {
+      if (key === "length") {
+        return 0;
+      }
+
+      const { style } = target._ele;
+      if (Array.from(style).includes(key)) {
+        return style[key];
+      }
+
+      return getComputedStyle(target._ele)[key];
+    },
+  };
+
+  class XhearCSS {
+    constructor($el) {
+      const obj = {};
+
+      Object.defineProperty(obj, "_ele", {
+        enumerable: false,
+        get: () => $el.ele,
+      });
+
+      const { style } = $el.ele;
+
+      Array.from(style).forEach((key) => {
+        obj[key] = style[key];
+      });
+
+      return ($el._css = new Proxy(obj, cssHandler));
+    }
+  }
+
+  var cssFn = {
+    get css() {
+      return new XhearCSS(this);
+    },
+    set css(d) {
+      if (getType(d) == "string") {
+        this.ele.style = d;
+        return;
+      }
+
+      let { style } = this;
+
+      // Covering the old style
+      let nextKeys = Object.keys(d);
+
+      // Clear the unused key
+      Array.from(style).forEach((k) => {
+        if (!nextKeys.includes(k)) {
+          style[k] = "";
+        }
+      });
+
+      Object.assign(style, d);
+    },
+  };
+
   const COMPS = {};
 
   const renderElement = ({ defaults, ele, template, temps }) => {
@@ -2185,9 +2250,9 @@ try{
       return this.ele.dataset;
     }
 
-    get css() {
-      return getComputedStyle(this.ele);
-    }
+    // get css() {
+    //   return getComputedStyle(this.ele);
+    // }
 
     get shadow() {
       return eleX(this.ele.shadowRoot);
@@ -2256,28 +2321,6 @@ try{
 
     get style() {
       return this.ele.style;
-    }
-
-    set style(d) {
-      if (getType(d) == "string") {
-        this.ele.style = d;
-        return;
-      }
-
-      let { style } = this;
-
-      // Covering the old style
-      let hasKeys = Array.from(style);
-      let nextKeys = Object.keys(d);
-
-      // Clear the unused key
-      hasKeys.forEach((k) => {
-        if (!nextKeys.includes(k)) {
-          style[k] = "";
-        }
-      });
-
-      Object.assign(style, d);
     }
 
     get width() {
@@ -2390,6 +2433,8 @@ try{
       enumerable: false,
     }
   );
+
+  fn.extend(cssFn);
 
   const eleX = (ele) => {
     if (!ele) return null;
@@ -2795,7 +2840,7 @@ try{
     const [url, ...params] = moduleName.split(" ");
 
     const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
-    
+
     if (
       // moduleName.startsWith("/") ||
       url.startsWith("http://") ||
@@ -2895,7 +2940,7 @@ try{
   const createPage = (src, defaults) => {
     // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
     const tempCon = document.createElement("div");
-    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+    tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
 
     const targetPage = $(tempCon.children[0]);
 
@@ -2931,7 +2976,13 @@ try{
 
   // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
 
+  const cacheLink = {};
+
   function getContentInfo(content, url, isPage = true) {
+    if (cacheLink[url]) {
+      return cacheLink[url];
+    }
+
     const tempEl = $$1("<template></template>");
     tempEl.html = content;
     const titleEl = tempEl.$("title");
@@ -2954,7 +3005,7 @@ try{
       { type: "text/javascript" }
     );
 
-    return URL.createObjectURL(file);
+    return (cacheLink[url] = URL.createObjectURL(file));
   }
 
   lm$1.use(["js", "mjs"], async (ctx, next) => {
@@ -3041,6 +3092,10 @@ try{
 
         this._defaults = defaults;
 
+        if (defaults.pageAnime) {
+          this._pageAnime = defaults.pageAnime;
+        }
+
         if (!defaults || defaults.type !== PAGE) {
           const err = new Error(
             `The currently loaded module is not a page \nLoaded string => '${src}'`
@@ -3093,16 +3148,22 @@ try{
   const initLink = (_this) => {
     _this.shadow.on("click", (e) => {
       const { target } = e;
-      if (
-        _this.app &&
-        target.tagName === "A" &&
-        target.attributes.hasOwnProperty("olink")
-      ) {
-        if (e.metaKey || e.shiftKey) {
-          return;
+
+      if (target.attributes.hasOwnProperty("olink")) {
+        if (_this.app) {
+          if (e.metaKey || e.shiftKey) {
+            return;
+          }
+          e.preventDefault();
+
+          if (target.getAttribute("olink") === "back") {
+            _this.app.back();
+          } else if (target.tagName === "A") {
+            _this.app.goto(target.href);
+          }
+        } else {
+          console.warn("olink is only allowed within o-apps");
         }
-        e.preventDefault();
-        _this.app.goto(target.href);
       }
     });
   };
@@ -3289,6 +3350,25 @@ try{
   const appendPage = async ({ src, _this }) => {
     const { loading, fail } = _this._module || {};
 
+    const currentPages = [];
+
+    // 需要删除的页面
+    let oldPage = _this.current;
+    // 下一页
+    let page;
+
+    {
+      let target = oldPage;
+
+      do {
+        currentPages.unshift({
+          page: target,
+          src: target.src,
+        });
+        target = target.parent;
+      } while (target.tag === "o-page");
+    }
+
     let loadingEl;
     if (loading) {
       loadingEl = createXEle(loading());
@@ -3296,50 +3376,74 @@ try{
       _this.push(loadingEl);
     }
 
-    const page = await new Promise(async (resolve) => {
-      const pagesData = await getPagesData(src);
+    // 用更塞入新 page 的容器；默认是 o-app，子路由的模式下或是 o-page
+    let container = _this;
 
-      let topPage, targetPage;
+    const oriNextPages = await getPagesData(src);
 
-      pagesData.some((e) => {
-        const { defaults, ISERROR } = e;
+    console.log("nextPages => ", oriNextPages);
 
-        if (ISERROR) {
-          if (fail) {
-            const failContent = fail({
-              src,
-              error: e.error,
-            });
+    // Finding shared parent pages in the case of subroutes
+    const publicPages = [];
+    let targetIndex = -1;
+    currentPages.some((e, i) => {
+      const next = oriNextPages[i];
 
-            topPage = createPage(e.src, {
-              type: $$1.PAGE,
-              temp: failContent,
-            });
-          }
-          return false;
+      if (next.src === e.src) {
+        publicPages.push(e);
+        targetIndex = i;
+        return false;
+      }
+
+      return true;
+    });
+
+    let nextPages = oriNextPages;
+
+    if (targetIndex >= 0) {
+      container = publicPages.slice(-1)[0].page;
+      oldPage = container[0];
+      nextPages = oriNextPages.slice(targetIndex + 1);
+    }
+
+    let targetPage;
+
+    nextPages.some((e) => {
+      const { defaults, ISERROR: isError } = e;
+
+      if (isError === ISERROR) {
+        if (fail) {
+          const failContent = fail({
+            src,
+            error: e.error,
+          });
+
+          page = createPage(e.src, {
+            type: $$1.PAGE,
+            temp: failContent,
+          });
         }
+        return false;
+      }
 
-        const subPage = createPage(src, defaults);
+      const subPage = createPage(e.src, defaults);
 
-        if (!targetPage) {
-          topPage = subPage;
-        }
+      if (!targetPage) {
+        page = subPage;
+      }
 
-        if (targetPage) {
-          targetPage.push(subPage);
-        }
+      if (targetPage) {
+        targetPage.push(subPage);
+      }
 
-        targetPage = subPage;
-      });
-
-      resolve(topPage);
+      targetPage = subPage;
     });
 
     loadingEl && loadingEl.remove();
 
-    _this.push(page);
+    container.push(page);
 
-    return page;
+    return { page, old: oldPage };
   };
 
   $$1.register({
@@ -3348,7 +3452,9 @@ try{
     attrs: {
       src: null,
     },
-    data: {},
+    data: {
+      [HISTORY]: [],
+    },
     watch: {
       async src(val) {
         if (this.__init_src) {
@@ -3394,7 +3500,6 @@ try{
       },
     },
     proto: {
-      [HISTORY]: [],
       async back(delta = 1) {
         if (!this[HISTORY].length) {
           console.warn(`It's already the first page, can't go back`);
@@ -3412,7 +3517,7 @@ try{
           ...newCurrent,
         });
 
-        pageAddAnime({
+        pageInAnime({
           page: this.current,
           key: "previous",
         });
@@ -3422,18 +3527,14 @@ try{
           delta,
         });
 
-        let targetPage = oldCurrent;
+        const targetPage = getTopPage(oldCurrent);
 
-        while (targetPage.parent.tag === "o-page") {
-          targetPage = targetPage.parent;
-        }
-
-        await outPage({
+        await pageOutAnime({
           page: targetPage,
           key: "next",
         });
 
-        oldCurrent.remove();
+        targetPage.remove();
       },
       async goto(src) {
         const { current: oldCurrent } = this;
@@ -3443,9 +3544,12 @@ try{
         }
 
         // When the page element is initialized, the parent element is already available within the ready function
-        const page = await appendPage({ src, _this: this });
+        const { page, old: needRemovePage } = await appendPage({
+          src,
+          _this: this,
+        });
 
-        pageAddAnime({
+        pageInAnime({
           page,
           key: "next",
         });
@@ -3458,20 +3562,20 @@ try{
         });
 
         if (oldCurrent) {
-          await outPage({
-            page: oldCurrent,
+          await pageOutAnime({
+            page: needRemovePage,
             key: "previous",
           });
 
-          oldCurrent.remove();
+          needRemovePage.remove();
         }
       },
       async replace(src) {
         const { current: oldCurrent } = this;
 
-        const page = await appendPage({ src, _this: this });
+        const { page } = await appendPage({ src, _this: this });
 
-        pageAddAnime({
+        pageInAnime({
           page,
           key: "next",
         });
@@ -3482,12 +3586,14 @@ try{
         });
 
         if (oldCurrent) {
-          await outPage({
-            page: oldCurrent,
+          const targetOldPage = getTopPage(oldCurrent);
+
+          await pageOutAnime({
+            page: targetOldPage,
             key: "previous",
           });
 
-          oldCurrent.remove();
+          targetOldPage.remove();
         }
       },
       get current() {
@@ -3523,22 +3629,33 @@ try{
         this.push(currentRouter);
       },
     },
-    ready() {},
   });
 
-  const pageAddAnime = ({ page, key }) => {
+  const getTopPage = (page) => {
+    let targetPage = page;
+
+    while (targetPage.parent.tag === "o-page") {
+      targetPage = targetPage.parent;
+    }
+
+    return targetPage;
+  };
+
+  const pageInAnime = ({ page, key }) => {
     const { pageAnime } = page;
 
     const targetAnime = pageAnime[key];
 
     if (targetAnime) {
-      page.style = {
+      page.css = {
+        ...page.css,
         transition: "all ease .3s",
         ...targetAnime,
       };
 
       nextAnimeFrame(() => {
-        page.style = {
+        page.css = {
+          ...page.css,
           transition: "all ease .3s",
           ...(pageAnime.current || {}),
         };
@@ -3546,7 +3663,7 @@ try{
     }
   };
 
-  const outPage = ({ page, key }) =>
+  const pageOutAnime = ({ page, key }) =>
     new Promise((resolve) => {
       const targetAnime = page.pageAnime[key];
 
@@ -3554,7 +3671,8 @@ try{
         nextAnimeFrame(() => {
           page.one("transitionend", resolve);
 
-          page.style = {
+          page.css = {
+            ...page.css,
             transition: "all ease .3s",
             ...targetAnime,
           };

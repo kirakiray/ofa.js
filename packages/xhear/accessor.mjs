@@ -9,12 +9,12 @@ export const handler = {
 
     return stanzHandler.set(target, key, value, receiver);
   },
-  get(target, key, value, receiver) {
+  get(target, key, receiver) {
     if (!/\D/.test(String(key))) {
       return eleX(target.ele.children[key]);
     }
 
-    return Reflect.get(target, key, value, receiver);
+    return Reflect.get(target, key, receiver);
   },
   ownKeys(target) {
     let keys = Reflect.ownKeys(target);
