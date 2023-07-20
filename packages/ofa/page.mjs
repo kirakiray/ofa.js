@@ -10,7 +10,6 @@ import {
   getPagesData,
   createPage,
 } from "./public.mjs";
-import { eleX } from "../xhear/util.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -137,7 +136,7 @@ $.register({
       const target = pagesData.pop();
 
       pagesData.forEach((e, i) => {
-        const parentPage = createPage(src, e.defaults);
+        const parentPage = createPage(e.src, e.defaults);
 
         this.wrap(parentPage);
       });

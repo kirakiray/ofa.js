@@ -64,7 +64,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   const cacheUrl = cacheComps[tagName];
   if (cacheUrl) {
-    if (path !== PATH) {
+    if (path !== cacheUrl) {
       throw `${tagName} components have been registered`;
     }
 

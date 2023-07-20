@@ -254,6 +254,10 @@ $.register({
       return routers;
     },
     set routers(_routers) {
+      _routers = _routers.map((e) => {
+        return { src: e.src };
+      });
+
       this._settedRouters = 1;
 
       this.html = "";
@@ -265,7 +269,10 @@ $.register({
       this[HISTORY].length = 0;
       this[HISTORY].push(...historyRouters);
 
-      this.push(currentRouter);
+      this.push({
+        tag: "o-page",
+        src: currentRouter.src,
+      });
     },
   },
 });

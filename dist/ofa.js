@@ -3074,7 +3074,7 @@ try{
         const target = pagesData.pop();
 
         pagesData.forEach((e, i) => {
-          const parentPage = createPage(src, e.defaults);
+          const parentPage = createPage(e.src, e.defaults);
 
           this.wrap(parentPage);
         });
@@ -3282,7 +3282,7 @@ try{
 
     const cacheUrl = cacheComps[tagName];
     if (cacheUrl) {
-      if (path !== PATH) {
+      if (path !== cacheUrl) {
         throw `${tagName} components have been registered`;
       }
 
@@ -3585,6 +3585,10 @@ try{
         return routers;
       },
       set routers(_routers) {
+        _routers = _routers.map((e) => {
+          return { src: e.src };
+        });
+
         this._settedRouters = 1;
 
         this.html = "";
@@ -3596,7 +3600,10 @@ try{
         this[HISTORY].length = 0;
         this[HISTORY].push(...historyRouters);
 
-        this.push(currentRouter);
+        this.push({
+          tag: "o-page",
+          src: currentRouter.src,
+        });
       },
     },
   });
