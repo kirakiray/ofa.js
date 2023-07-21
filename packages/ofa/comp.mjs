@@ -3,6 +3,7 @@ import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
 import { dispatchLoad, getContentInfo } from "./page.mjs";
 import { fixRelatePathContent, resolvePath } from "./public.mjs";
+import { initLink } from "./link.mjs";
 
 const COMP = Symbol("Component");
 
@@ -103,6 +104,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   registerOpts.ready = async function (...args) {
     oldReady && oldReady.apply(this, args);
     loaded && dispatchLoad(this, loaded);
+    initLink(this.shadow);
   };
 
   $.register({

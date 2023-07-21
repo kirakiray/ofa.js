@@ -2969,6 +2969,81 @@ try{
     return targetPage;
   };
 
+  // Get child elements within the target element that have the href or src attribute.
+  function hasNonProtocolElements(element) {
+    const eles = element.querySelectorAll("[href], [src]");
+
+    let hasNon = false;
+
+    for (const target of eles) {
+      ["href", "src"].forEach((k) => {
+        const val = target.getAttribute(k);
+
+        if (val && !/^(https?:)?\/\/\S+/i.test(val)) {
+          hasNon = true;
+        }
+      });
+    }
+
+    return hasNon;
+  }
+
+  // Make connections within a shadow support link
+  const fixLink = async (_this) => {
+    const $ele = $$1(_this);
+
+    if (hasNonProtocolElements(_this)) {
+      if (!$ele.host) {
+        await new Promise((res) => setTimeout(res));
+        if ($ele.host && $ele.host.tag === "o-page") {
+          fixRelate(_this, $ele.host.src);
+        } else {
+          console.warn({
+            target: _this,
+            desc: "The element does not fulfill the condition of being corrected",
+          });
+          return;
+        }
+      }
+
+      // Following the correction function on the extension
+      const { link } = $$1.extensions;
+      $ele.all("a").forEach((e) => link(e));
+    }
+  };
+
+  $$1.extensions.render = (e) => {
+    fixLink(e.target);
+  };
+
+  const initLink = (_this) => {
+    const $ele = $$1(_this);
+
+    // olink click to amend
+    $ele.on("click", (e) => {
+      const { target } = e;
+
+      if (target.attributes.hasOwnProperty("olink")) {
+        if ($ele.app) {
+          if (e.metaKey || e.shiftKey) {
+            return;
+          }
+          e.preventDefault();
+
+          if (target.tagName === "A") {
+            const originHref = target.getAttribute("origin-href");
+            // Prioritize the use of origin links
+            $ele.app.goto(originHref || target.href);
+
+            e.stopPropagation();
+          }
+        } else {
+          console.warn("olink is only allowed within o-apps");
+        }
+      }
+    });
+  };
+
   const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
   const PAGE = Symbol("Page");
@@ -3140,6 +3215,8 @@ try{
         this._loaded = true;
 
         this.emit("page-loaded");
+
+        initLink(this.shadow);
       },
       back() {
         this.app.back();
@@ -3316,6 +3393,7 @@ try{
     registerOpts.ready = async function (...args) {
       oldReady && oldReady.apply(this, args);
       loaded && dispatchLoad(this, loaded);
+      initLink(this.shadow);
     };
 
     $$1.register({
@@ -3698,77 +3776,6 @@ try{
       return target;
     },
   });
-
-  // Get child elements within the target element that have the href or src attribute.
-  function hasNonProtocolElements(element) {
-    const eles = element.querySelectorAll("[href], [src]");
-
-    let hasNon = false;
-
-    for (const target of eles) {
-      ["href", "src"].forEach((k) => {
-        const val = target.getAttribute(k);
-
-        if (val && !/^(https?:)?\/\/\S+/i.test(val)) {
-          hasNon = true;
-        }
-      });
-    }
-
-    return hasNon;
-  }
-
-  // Make connections within a shadow support link
-  const initLink = async (_this) => {
-    const $ele = $$1(_this);
-
-    if (hasNonProtocolElements(_this)) {
-      if (!$ele.host) {
-        await new Promise((res) => setTimeout(res));
-        if ($ele.host && $ele.host.tag === "o-page") {
-          fixRelate(_this, $ele.host.src);
-        } else {
-          console.warn({
-            target: _this,
-            desc: "The element does not fulfill the condition of being corrected",
-          });
-          return;
-        }
-      }
-    }
-
-    // Following the correction function on the extension
-    const { link } = $$1.extensions;
-    $ele.all("a").forEach((e) => link(e));
-
-    // olink click to amend
-    $ele.on("click", (e) => {
-      const { target } = e;
-
-      if (target.attributes.hasOwnProperty("olink")) {
-        if ($ele.app) {
-          if (e.metaKey || e.shiftKey) {
-            return;
-          }
-          e.preventDefault();
-
-          if (target.tagName === "A") {
-            const originHref = target.getAttribute("origin-href");
-            // Prioritize the use of origin links
-            $ele.app.goto(originHref || target.href);
-
-            e.stopPropagation();
-          }
-        } else {
-          console.warn("olink is only allowed within o-apps");
-        }
-      }
-    });
-  };
-
-  $$1.extensions.render = (e) => {
-    initLink(e.target);
-  };
 
   if (typeof window !== "undefined") {
     window.$ = $$1;

@@ -10,6 +10,7 @@ import {
   getPagesData,
   createPage,
 } from "./public.mjs";
+import { initLink } from "./link.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -182,6 +183,8 @@ $.register({
       this._loaded = true;
 
       this.emit("page-loaded");
+
+      initLink(this.shadow);
     },
     back() {
       this.app.back();
