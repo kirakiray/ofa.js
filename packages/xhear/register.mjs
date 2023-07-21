@@ -1,11 +1,10 @@
-import { nextTick } from "../stanz/public.mjs";
 import {
   hyphenToUpperCase,
   capitalizeFirstLetter,
   toDashCase,
 } from "./public.mjs";
 import { convert, render } from "./render/render.mjs";
-import { createXEle, eleX } from "./util.mjs";
+import { eleX } from "./util.mjs";
 
 const COMPS = {};
 

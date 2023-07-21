@@ -29,6 +29,12 @@
       cursor: pointer;
     }
 
+    a {
+      display: block;
+      font-size: 12px;
+      color: inherit;
+    }
+
     #sidebar ul li:hover {
       background-color: #555;
     }
@@ -42,8 +48,8 @@
   <div class="container">
     <div id="sidebar">
       <ul>
-        <li>选项1</li>
-        <li>选项2</li>
+        <li><a href="./subs/sub-page03.html" olink>Page03(Left)</a></li>
+        <li><a href="./subs/sub-page04.html" olink>Page04(Left)</a></li>
       </ul>
     </div>
 
@@ -54,5 +60,9 @@
 
   <script>
     export const parent = "./parent1.mjs";
+
+    export const routerChange = (e) => {
+      console.log("parent02 router change => ", e);
+    };
   </script>
 </template>

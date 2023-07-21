@@ -43,6 +43,10 @@ $.register({
 });
 
 $.extensions.link = ($el) => {
+  if ($el.ele.__link_inited) {
+    return;
+  }
+
   if ($el.attr("olink") === "") {
     const href = $el.attr("href");
 
@@ -52,7 +56,9 @@ $.extensions.link = ($el) => {
 
     $el.attr(
       "href",
-      `${location.origin}/${location.pathname}#${linkUrlObj.pathname}`
+      `${location.origin}${location.pathname}#${linkUrlObj.pathname}`
     );
+
+    $el.ele.__link_inited = 1;
   }
 };

@@ -8,6 +8,8 @@ import {
 } from "../public.mjs";
 import { eleX } from "../util.mjs";
 
+import { extensions } from "../dollar.mjs";
+
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
 const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
@@ -163,6 +165,8 @@ export function render({
       }
     });
   }
+
+  extensions.render({ target });
 }
 
 export function convert(el) {

@@ -800,6 +800,28 @@
     },
   };
 
+  function $$1(expr) {
+    if (getType(expr) === "string" && !/<.+>/.test(expr)) {
+      const ele = document.querySelector(expr);
+
+      return eleX(ele);
+    }
+
+    return createXEle(expr);
+  }
+
+  const extensions = {
+    render: (e) => {
+      console.log("extensions => ", e);
+    },
+  };
+
+  Object.defineProperties($$1, {
+    extensions: {
+      value: extensions,
+    },
+  });
+
   const getRevokes = (target) => target.__revokes || (target.__revokes = []);
   const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
@@ -955,6 +977,8 @@ try{
         }
       });
     }
+
+    extensions.render({ target });
   }
 
   function convert(el) {
@@ -1991,6 +2015,8 @@ try{
     ready: xifComponentOpts.ready,
   });
 
+  // import { extensions } from "../dollar.mjs";
+
   const createItem = (d, targetTemp, temps, $host) => {
     const itemData = new Stanz({
       $data: d,
@@ -2501,16 +2527,6 @@ try{
       });
   };
 
-  function $$1(expr) {
-    if (getType(expr) === "string" && !/<.+>/.test(expr)) {
-      const ele = document.querySelector(expr);
-
-      return eleX(ele);
-    }
-
-    return createXEle(expr);
-  }
-
   Object.assign($$1, {
     stanz,
     render,
@@ -2858,11 +2874,8 @@ try{
     return moduleURL.href;
   }
 
-  function fixRelateSource(content, path) {
-    const template = document.createElement("template");
-    template.innerHTML = content;
-
-    searchEle(template.content, "[href],[src]").forEach((el) => {
+  function fixRelate(ele, path) {
+    searchEle(ele, "[href],[src]").forEach((el) => {
       ["href", "src"].forEach((name) => {
         let val = el.getAttribute(name);
         if (val) {
@@ -2870,6 +2883,13 @@ try{
         }
       });
     });
+  }
+
+  function fixRelatePathContent(content, path) {
+    const template = document.createElement("template");
+    template.innerHTML = content;
+
+    fixRelate(template.content, path);
 
     return template.innerHTML;
   }
@@ -3105,7 +3125,7 @@ try{
         }
 
         const template = document.createElement("template");
-        template.innerHTML = fixRelateSource(defaults.temp, src);
+        template.innerHTML = fixRelatePathContent(defaults.temp, src);
         const temps = convert(template);
 
         renderElement({
@@ -3120,8 +3140,6 @@ try{
         this._loaded = true;
 
         this.emit("page-loaded");
-
-        initLink(this);
       },
       back() {
         this.app.back();
@@ -3144,36 +3162,6 @@ try{
       },
     },
   });
-
-  // Make connections within a shadow support link
-  const initLink = (_this) => {
-    const { link } = $$1.extensions;
-
-    _this.shadow.all("a").forEach((e) => link(e));
-
-    _this.shadow.on("click", (e) => {
-      const { target } = e;
-
-      if (target.attributes.hasOwnProperty("olink")) {
-        if (_this.app) {
-          if (e.metaKey || e.shiftKey) {
-            return;
-          }
-          e.preventDefault();
-
-          if (target.getAttribute("olink") === "back") {
-            _this.app.back();
-          } else if (target.tagName === "A") {
-            const originHref = target.getAttribute("origin-href");
-            // Prioritize the use of origin links
-            _this.app.goto(originHref || target.href);
-          }
-        } else {
-          console.warn("olink is only allowed within o-apps");
-        }
-      }
-    });
-  };
 
   const dispatchLoad = async (_this, loaded) => {
     const shadow = _this.ele.shadowRoot;
@@ -3328,13 +3316,12 @@ try{
     registerOpts.ready = async function (...args) {
       oldReady && oldReady.apply(this, args);
       loaded && dispatchLoad(this, loaded);
-      initLink(this);
     };
 
     $$1.register({
       ...registerOpts,
       tag: tagName,
-      temp: fixRelateSource(tempContent, PATH || tempUrl),
+      temp: fixRelatePathContent(tempContent, PATH || tempUrl),
     });
 
     await next();
@@ -3441,7 +3428,20 @@ try{
 
     container.push(page);
 
-    return { current: page, old: oldPage };
+    return { current: page, old: oldPage, publics: publicPages };
+  };
+
+  const emitRouterChange = (_this, publics, type) => {
+    if (publics && publics.length) {
+      const { current } = _this;
+      publics.forEach((e) => {
+        const { routerChange } = e.page._defaults;
+
+        if (routerChange) {
+          routerChange({ type, current });
+        }
+      });
+    }
   };
 
   $$1.register({
@@ -3509,7 +3509,11 @@ try{
 
         const newCurrent = this[HISTORY].splice(-delta)[0];
 
-        const { current: page, old: needRemovePage } = await appendPage({
+        const {
+          current: page,
+          old: needRemovePage,
+          publics,
+        } = await appendPage({
           src: newCurrent.src,
           _this: this,
         });
@@ -3523,6 +3527,8 @@ try{
           name: "back",
           delta,
         });
+
+        emitRouterChange(this, publics, "back");
 
         await pageOutAnime({
           page: needRemovePage,
@@ -3539,7 +3545,11 @@ try{
           this._initHome = src;
         }
 
-        const { current: page, old: needRemovePage } = await appendPage({
+        const {
+          current: page,
+          old: needRemovePage,
+          publics,
+        } = await appendPage({
           src,
           _this: this,
         });
@@ -3557,6 +3567,8 @@ try{
           name: type,
           src,
         });
+
+        emitRouterChange(this, publics, type);
 
         if (oldCurrent) {
           await pageOutAnime({
@@ -3687,13 +3699,76 @@ try{
     },
   });
 
-  Object.defineProperties($$1, {
-    extensions: {
-      value: {
-        link: (val) => val,
-      },
-    },
-  });
+  // Get child elements within the target element that have the href or src attribute.
+  function hasNonProtocolElements(element) {
+    const eles = element.querySelectorAll("[href], [src]");
+
+    let hasNon = false;
+
+    for (const target of eles) {
+      ["href", "src"].forEach((k) => {
+        const val = target.getAttribute(k);
+
+        if (val && !/^(https?:)?\/\/\S+/i.test(val)) {
+          hasNon = true;
+        }
+      });
+    }
+
+    return hasNon;
+  }
+
+  // Make connections within a shadow support link
+  const initLink = async (_this) => {
+    const $ele = $$1(_this);
+
+    if (hasNonProtocolElements(_this)) {
+      if (!$ele.host) {
+        await new Promise((res) => setTimeout(res));
+        if ($ele.host && $ele.host.tag === "o-page") {
+          fixRelate(_this, $ele.host.src);
+        } else {
+          console.warn({
+            target: _this,
+            desc: "The element does not fulfill the condition of being corrected",
+          });
+          return;
+        }
+      }
+    }
+
+    // Following the correction function on the extension
+    const { link } = $$1.extensions;
+    $ele.all("a").forEach((e) => link(e));
+
+    // olink click to amend
+    $ele.on("click", (e) => {
+      const { target } = e;
+
+      if (target.attributes.hasOwnProperty("olink")) {
+        if ($ele.app) {
+          if (e.metaKey || e.shiftKey) {
+            return;
+          }
+          e.preventDefault();
+
+          if (target.tagName === "A") {
+            const originHref = target.getAttribute("origin-href");
+            // Prioritize the use of origin links
+            $ele.app.goto(originHref || target.href);
+
+            e.stopPropagation();
+          }
+        } else {
+          console.warn("olink is only allowed within o-apps");
+        }
+      }
+    });
+  };
+
+  $$1.extensions.render = (e) => {
+    initLink(e.target);
+  };
 
   if (typeof window !== "undefined") {
     window.$ = $$1;

@@ -7,22 +7,12 @@ import eventFn from "./event.mjs";
 import LikeArray from "./array.mjs";
 import formFn, { initFormEle } from "./form.mjs";
 import cssFn from "./css.mjs";
-import { getType, extend } from "../stanz/public.mjs";
+import { extend } from "../stanz/public.mjs";
 import Stanz, { constructor } from "../stanz/main.mjs";
 import watchFn from "../stanz/watch.mjs";
 import "./render/condition.mjs";
 import "./render/fill.mjs";
 const { defineProperties } = Object;
-
-const styleToJSON = (style) => {
-  const obj = {};
-
-  Array.from(style).forEach((key) => {
-    obj[key] = style[key];
-  });
-
-  return obj;
-};
 
 const init = ({ _this, ele, proxySelf }) => {
   const descs = {

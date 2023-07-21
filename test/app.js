@@ -36,7 +36,7 @@ export const fail = ({ src, error }) => {
       <p>${error.stack}</p>
       ${src}
       <div>
-        <button olink="back">Back</button>
+        <button on:click="back()">Back</button>
       </div>
     </div>
   </div>`;

@@ -4,7 +4,7 @@ import { renderElement } from "../xhear/register.mjs";
 import { convert } from "../xhear/render/render.mjs";
 import { searchEle, isFunction } from "../xhear/public.mjs";
 import {
-  fixRelateSource,
+  fixRelatePathContent,
   resolvePath,
   wrapErrorCall,
   getPagesData,
@@ -167,7 +167,7 @@ $.register({
       }
 
       const template = document.createElement("template");
-      template.innerHTML = fixRelateSource(defaults.temp, src);
+      template.innerHTML = fixRelatePathContent(defaults.temp, src);
       const temps = convert(template);
 
       renderElement({
@@ -182,8 +182,6 @@ $.register({
       this._loaded = true;
 
       this.emit("page-loaded");
-
-      initLink(this);
     },
     back() {
       this.app.back();
@@ -206,36 +204,6 @@ $.register({
     },
   },
 });
-
-// Make connections within a shadow support link
-export const initLink = (_this) => {
-  const { link } = $.extensions;
-
-  _this.shadow.all("a").forEach((e) => link(e));
-
-  _this.shadow.on("click", (e) => {
-    const { target } = e;
-
-    if (target.attributes.hasOwnProperty("olink")) {
-      if (_this.app) {
-        if (e.metaKey || e.shiftKey) {
-          return;
-        }
-        e.preventDefault();
-
-        if (target.getAttribute("olink") === "back") {
-          _this.app.back();
-        } else if (target.tagName === "A") {
-          const originHref = target.getAttribute("origin-href");
-          // Prioritize the use of origin links
-          _this.app.goto(originHref || target.href);
-        }
-      } else {
-        console.warn("olink is only allowed within o-apps");
-      }
-    }
-  });
-};
 
 export const dispatchLoad = async (_this, loaded) => {
   const shadow = _this.ele.shadowRoot;

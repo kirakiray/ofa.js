@@ -22,11 +22,8 @@ export function resolvePath(moduleName, baseURI) {
   return moduleURL.href;
 }
 
-export function fixRelateSource(content, path) {
-  const template = document.createElement("template");
-  template.innerHTML = content;
-
-  searchEle(template.content, "[href],[src]").forEach((el) => {
+export function fixRelate(ele, path) {
+  searchEle(ele, "[href],[src]").forEach((el) => {
     ["href", "src"].forEach((name) => {
       let val = el.getAttribute(name);
       if (val) {
@@ -34,6 +31,13 @@ export function fixRelateSource(content, path) {
       }
     });
   });
+}
+
+export function fixRelatePathContent(content, path) {
+  const template = document.createElement("template");
+  template.innerHTML = content;
+
+  fixRelate(template.content, path);
 
   return template.innerHTML;
 }

@@ -103,7 +103,20 @@ const appendPage = async ({ src, _this }) => {
 
   container.push(page);
 
-  return { current: page, old: oldPage };
+  return { current: page, old: oldPage, publics: publicPages };
+};
+
+const emitRouterChange = (_this, publics, type) => {
+  if (publics && publics.length) {
+    const { current } = _this;
+    publics.forEach((e) => {
+      const { routerChange } = e.page._defaults;
+
+      if (routerChange) {
+        routerChange({ type, current });
+      }
+    });
+  }
 };
 
 $.register({
@@ -171,7 +184,11 @@ $.register({
 
       const newCurrent = this[HISTORY].splice(-delta)[0];
 
-      const { current: page, old: needRemovePage } = await appendPage({
+      const {
+        current: page,
+        old: needRemovePage,
+        publics,
+      } = await appendPage({
         src: newCurrent.src,
         _this: this,
       });
@@ -185,6 +202,8 @@ $.register({
         name: "back",
         delta,
       });
+
+      emitRouterChange(this, publics, "back");
 
       await pageOutAnime({
         page: needRemovePage,
@@ -201,7 +220,11 @@ $.register({
         this._initHome = src;
       }
 
-      const { current: page, old: needRemovePage } = await appendPage({
+      const {
+        current: page,
+        old: needRemovePage,
+        publics,
+      } = await appendPage({
         src,
         _this: this,
       });
@@ -219,6 +242,8 @@ $.register({
         name: type,
         src,
       });
+
+      emitRouterChange(this, publics, type);
 
       if (oldCurrent) {
         await pageOutAnime({

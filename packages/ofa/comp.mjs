@@ -1,8 +1,8 @@
 import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
-import { dispatchLoad, initLink, getContentInfo } from "./page.mjs";
-import { fixRelateSource, resolvePath } from "./public.mjs";
+import { dispatchLoad, getContentInfo } from "./page.mjs";
+import { fixRelatePathContent, resolvePath } from "./public.mjs";
 
 const COMP = Symbol("Component");
 
@@ -103,13 +103,12 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   registerOpts.ready = async function (...args) {
     oldReady && oldReady.apply(this, args);
     loaded && dispatchLoad(this, loaded);
-    initLink(this);
   };
 
   $.register({
     ...registerOpts,
     tag: tagName,
-    temp: fixRelateSource(tempContent, PATH || tempUrl),
+    temp: fixRelatePathContent(tempContent, PATH || tempUrl),
   });
 
   await next();
