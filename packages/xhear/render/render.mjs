@@ -83,13 +83,23 @@ export function render({
         try {
           const { always } = $el[actionName];
 
-          const func = () =>
-            $el[actionName](...args, {
+          const func = () => {
+            const revoker = $el[actionName](...args, {
               isExpr: true,
               data,
               temps,
               ...otherOpts,
             });
+
+            extensions.render({
+              step: "refresh",
+              args,
+              name: actionName,
+              target: $el,
+            });
+
+            return revoker;
+          };
 
           let actionRevoke;
 
@@ -166,7 +176,7 @@ export function render({
     });
   }
 
-  extensions.render({ target });
+  extensions.render({ step: "init", target });
 }
 
 export function convert(el) {

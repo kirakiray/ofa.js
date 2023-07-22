@@ -24,3 +24,26 @@ export const data = {
     },
   ],
 };
+
+export const proto = {
+  resettop() {
+    this.items = [
+      {
+        name: "Page04a",
+        href: "./subs/sub-page04.html",
+      },
+      {
+        name: "Page03a",
+        href: "./subs/sub-page03.html",
+      },
+      {
+        name: "Page02a",
+        href: "./subs/sub-page02.html",
+      },
+      {
+        name: "Page01a",
+        href: "./subs/sub-page01.html",
+      },
+    ];
+  },
+};

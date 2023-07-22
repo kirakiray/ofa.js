@@ -1,51 +1,50 @@
+import { nextTick } from "../stanz/public.mjs";
 import $ from "../xhear/base.mjs";
-import { fixRelate } from "./public.mjs";
-
-// Get child elements within the target element that have the href or src attribute.
-function hasNonProtocolElements(element) {
-  const eles = element.querySelectorAll("[href], [src]");
-
-  let hasNon = false;
-
-  for (const target of eles) {
-    ["href", "src"].forEach((k) => {
-      const val = target.getAttribute(k);
-
-      if (val && !/^(https?:)?\/\/\S+/i.test(val)) {
-        hasNon = true;
-      }
-    });
-  }
-
-  return hasNon;
-}
-
-// Make connections within a shadow support link
-const fixLink = async (_this) => {
-  const $ele = $(_this);
-
-  if (hasNonProtocolElements(_this)) {
-    if (!$ele.host) {
-      await new Promise((res) => setTimeout(res));
-      if ($ele.host && $ele.host.tag === "o-page") {
-        fixRelate(_this, $ele.host.src);
-      } else {
-        console.warn({
-          target: _this,
-          desc: "The element does not fulfill the condition of being corrected",
-        });
-        return;
-      }
-    }
-
-    // Following the correction function on the extension
-    const { link } = $.extensions;
-    $ele.all("a").forEach((e) => link(e));
-  }
-};
+import { fixRelate, fixSelfRelate } from "./public.mjs";
 
 $.extensions.render = (e) => {
-  fixLink(e.target);
+  const { step, name, target } = e;
+
+  if (step === "init") {
+    // console.log("init => ", e);
+
+    // Renders the component or page only once
+    if (target.host) {
+      const { link } = $.extensions;
+
+      $(target)
+        .all("a")
+        .forEach((e) => link(e));
+    }
+  } else if (
+    name === "attr" &&
+    step === "refresh" &&
+    target.attr("olink") === ""
+  ) {
+    const top = target.parents.pop();
+
+    if (top.__fixLinkTimer) {
+      return;
+    }
+
+    top.__fixLinkTimer = nextTick(() => {
+      const { host } = target;
+
+      if (host && host.tag === "o-page") {
+        fixRelate(top.ele, host.src);
+      }
+
+      const { link } = $.extensions;
+
+      $(top)
+        .all("a")
+        .forEach((e) => link(e));
+
+      delete top.__fixLinkTimer;
+    });
+
+    // console.log("refresh => ", e);
+  }
 };
 
 export const initLink = (_this) => {

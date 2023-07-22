@@ -13,7 +13,7 @@ export default function $(expr) {
 
 export const extensions = {
   render: (e) => {
-    console.log("extensions => ", e);
+    // console.log("extensions => ", e);
   },
 };
 

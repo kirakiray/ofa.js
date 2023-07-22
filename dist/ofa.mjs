@@ -806,7 +806,7 @@ function $$1(expr) {
 
 const extensions = {
   render: (e) => {
-    console.log("extensions => ", e);
+    // console.log("extensions => ", e);
   },
 };
 
@@ -889,13 +889,23 @@ function render({
         try {
           const { always } = $el[actionName];
 
-          const func = () =>
-            $el[actionName](...args, {
+          const func = () => {
+            const revoker = $el[actionName](...args, {
               isExpr: true,
               data,
               temps,
               ...otherOpts,
             });
+
+            extensions.render({
+              step: "refresh",
+              args,
+              name: actionName,
+              target: $el,
+            });
+
+            return revoker;
+          };
 
           let actionRevoke;
 
@@ -971,8 +981,6 @@ function render({
       }
     });
   }
-
-  extensions.render({ target });
 }
 
 function convert(el) {
@@ -2868,13 +2876,18 @@ function resolvePath(moduleName, baseURI) {
   return moduleURL.href;
 }
 
+function fixSelfRelate(el, name, path) {
+  const val = el.getAttribute(name);
+
+  if (val && !/^(https?:)?\/\/\S+/.test(val)) {
+    el.setAttribute(name, resolvePath(val, path));
+  }
+}
+
 function fixRelate(ele, path) {
   searchEle(ele, "[href],[src]").forEach((el) => {
     ["href", "src"].forEach((name) => {
-      let val = el.getAttribute(name);
-      if (val) {
-        el.setAttribute(name, resolvePath(val, path));
-      }
+      fixSelfRelate(el, name, path);
     });
   });
 }
@@ -2963,51 +2976,49 @@ const createPage = (src, defaults) => {
   return targetPage;
 };
 
-// Get child elements within the target element that have the href or src attribute.
-function hasNonProtocolElements(element) {
-  const eles = element.querySelectorAll("[href], [src]");
+$$1.extensions.render = (e) => {
+  const { step, name, target } = e;
 
-  let hasNon = false;
+  if (step === "init") {
+    // console.log("init => ", e);
 
-  for (const target of eles) {
-    ["href", "src"].forEach((k) => {
-      const val = target.getAttribute(k);
+    // Renders the component or page only once
+    if (target.host) {
+      const { link } = $$1.extensions;
 
-      if (val && !/^(https?:)?\/\/\S+/i.test(val)) {
-        hasNon = true;
-      }
-    });
-  }
+      $$1(target)
+        .all("a")
+        .forEach((e) => link(e));
+    }
+  } else if (
+    name === "attr" &&
+    step === "refresh" &&
+    target.attr("olink") === ""
+  ) {
+    const top = target.parents.pop();
 
-  return hasNon;
-}
-
-// Make connections within a shadow support link
-const fixLink = async (_this) => {
-  const $ele = $$1(_this);
-
-  if (hasNonProtocolElements(_this)) {
-    if (!$ele.host) {
-      await new Promise((res) => setTimeout(res));
-      if ($ele.host && $ele.host.tag === "o-page") {
-        fixRelate(_this, $ele.host.src);
-      } else {
-        console.warn({
-          target: _this,
-          desc: "The element does not fulfill the condition of being corrected",
-        });
-        return;
-      }
+    if (top.__fixLinkTimer) {
+      return;
     }
 
-    // Following the correction function on the extension
-    const { link } = $$1.extensions;
-    $ele.all("a").forEach((e) => link(e));
-  }
-};
+    top.__fixLinkTimer = nextTick(() => {
+      const { host } = target;
 
-$$1.extensions.render = (e) => {
-  fixLink(e.target);
+      if (host && host.tag === "o-page") {
+        fixRelate(top.ele, host.src);
+      }
+
+      const { link } = $$1.extensions;
+
+      $$1(top)
+        .all("a")
+        .forEach((e) => link(e));
+
+      delete top.__fixLinkTimer;
+    });
+
+    // console.log("refresh => ", e);
+  }
 };
 
 const initLink = (_this) => {

@@ -43,22 +43,25 @@ $.register({
 });
 
 $.extensions.link = ($el) => {
-  if ($el.ele.__link_inited) {
-    return;
-  }
-
   if ($el.attr("olink") === "") {
     const href = $el.attr("href");
 
-    $el.attr("origin-href", href);
+    let urlObj;
+    try {
+      urlObj = new URL(href);
+    } catch (err) {
+      return;
+    }
 
-    const linkUrlObj = new URL(href);
+    if (!/^#\//.test(urlObj.hash)) {
+      $el.attr("origin-href", href);
 
-    $el.attr(
-      "href",
-      `${location.origin}${location.pathname}#${linkUrlObj.pathname}`
-    );
+      const linkUrlObj = new URL(href);
 
-    $el.ele.__link_inited = 1;
+      $el.attr(
+        "href",
+        `${location.origin}${location.pathname}#${linkUrlObj.pathname}`
+      );
+    }
   }
 };
