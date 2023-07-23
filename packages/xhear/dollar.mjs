@@ -11,14 +11,9 @@ export default function $(expr) {
   return createXEle(expr);
 }
 
-export const extensions = {
-  render: (e) => {
-    // console.log("extensions => ", e);
-  },
-};
-
 Object.defineProperties($, {
+  // Convenient objects for use as extensions
   extensions: {
-    value: extensions,
+    value: {},
   },
 });

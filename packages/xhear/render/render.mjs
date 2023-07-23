@@ -8,7 +8,9 @@ import {
 } from "../public.mjs";
 import { eleX } from "../util.mjs";
 
-import { extensions } from "../dollar.mjs";
+export const renderExtends = {
+  render() {},
+};
 
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
 const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
@@ -91,7 +93,7 @@ export function render({
               ...otherOpts,
             });
 
-            extensions.render({
+            renderExtends.render({
               step: "refresh",
               args,
               name: actionName,
@@ -176,7 +178,7 @@ export function render({
     });
   }
 
-  extensions.render({ step: "init", target });
+  renderExtends.render({ step: "init", target });
 }
 
 export function convert(el) {

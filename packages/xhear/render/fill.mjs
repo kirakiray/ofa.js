@@ -10,7 +10,6 @@ import {
   isArrayEqual,
   removeArrayValue,
 } from "../public.mjs";
-// import { extensions } from "../dollar.mjs";
 
 const createItem = (d, targetTemp, temps, $host) => {
   const itemData = new Stanz({

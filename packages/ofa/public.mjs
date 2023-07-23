@@ -22,18 +22,14 @@ export function resolvePath(moduleName, baseURI) {
   return moduleURL.href;
 }
 
-export function fixSelfRelate(el, name, path) {
-  const val = el.getAttribute(name);
-
-  if (val && !/^(https?:)?\/\/\S+/.test(val)) {
-    el.setAttribute(name, resolvePath(val, path));
-  }
-}
-
 export function fixRelate(ele, path) {
   searchEle(ele, "[href],[src]").forEach((el) => {
     ["href", "src"].forEach((name) => {
-      fixSelfRelate(el, name, path);
+      const val = el.getAttribute(name);
+
+      if (val && !/^(https?:)?\/\/\S+/.test(val)) {
+        el.setAttribute(name, resolvePath(val, path));
+      }
     });
   });
 }

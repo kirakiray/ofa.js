@@ -794,27 +794,9 @@ const handler = {
   },
 };
 
-function $$1(expr) {
-  if (getType(expr) === "string" && !/<.+>/.test(expr)) {
-    const ele = document.querySelector(expr);
-
-    return eleX(ele);
-  }
-
-  return createXEle(expr);
-}
-
-const extensions = {
-  render: (e) => {
-    // console.log("extensions => ", e);
-  },
+const renderExtends = {
+  render() {},
 };
-
-Object.defineProperties($$1, {
-  extensions: {
-    value: extensions,
-  },
-});
 
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
 const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
@@ -897,7 +879,7 @@ function render({
               ...otherOpts,
             });
 
-            extensions.render({
+            renderExtends.render({
               step: "refresh",
               args,
               name: actionName,
@@ -981,6 +963,8 @@ function render({
       }
     });
   }
+
+  renderExtends.render({ step: "init", target });
 }
 
 function convert(el) {
@@ -2017,8 +2001,6 @@ register({
   ready: xifComponentOpts.ready,
 });
 
-// import { extensions } from "../dollar.mjs";
-
 const createItem = (d, targetTemp, temps, $host) => {
   const itemData = new Stanz({
     $data: d,
@@ -2529,6 +2511,23 @@ const revokeAll = (target) => {
     });
 };
 
+function $$1(expr) {
+  if (getType(expr) === "string" && !/<.+>/.test(expr)) {
+    const ele = document.querySelector(expr);
+
+    return eleX(ele);
+  }
+
+  return createXEle(expr);
+}
+
+Object.defineProperties($$1, {
+  // Convenient objects for use as extensions
+  extensions: {
+    value: {},
+  },
+});
+
 Object.assign($$1, {
   stanz,
   render,
@@ -2876,18 +2875,14 @@ function resolvePath(moduleName, baseURI) {
   return moduleURL.href;
 }
 
-function fixSelfRelate(el, name, path) {
-  const val = el.getAttribute(name);
-
-  if (val && !/^(https?:)?\/\/\S+/.test(val)) {
-    el.setAttribute(name, resolvePath(val, path));
-  }
-}
-
 function fixRelate(ele, path) {
   searchEle(ele, "[href],[src]").forEach((el) => {
     ["href", "src"].forEach((name) => {
-      fixSelfRelate(el, name, path);
+      const val = el.getAttribute(name);
+
+      if (val && !/^(https?:)?\/\/\S+/.test(val)) {
+        el.setAttribute(name, resolvePath(val, path));
+      }
     });
   });
 }
@@ -2976,16 +2971,18 @@ const createPage = (src, defaults) => {
   return targetPage;
 };
 
-$$1.extensions.render = (e) => {
+renderExtends.render = (e) => {
   const { step, name, target } = e;
 
-  if (step === "init") {
-    // console.log("init => ", e);
+  const { link } = $$1.extensions;
 
+  if (!link) {
+    return;
+  }
+
+  if (step === "init") {
     // Renders the component or page only once
     if (target.host) {
-      const { link } = $$1.extensions;
-
       $$1(target)
         .all("a")
         .forEach((e) => link(e));

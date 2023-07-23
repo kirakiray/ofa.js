@@ -1,17 +1,20 @@
 import { nextTick } from "../stanz/public.mjs";
 import $ from "../xhear/base.mjs";
-import { fixRelate, fixSelfRelate } from "./public.mjs";
+import { fixRelate } from "./public.mjs";
+import { renderExtends } from "../xhear/render/render.mjs";
 
-$.extensions.render = (e) => {
+renderExtends.render = (e) => {
   const { step, name, target } = e;
 
-  if (step === "init") {
-    // console.log("init => ", e);
+  const { link } = $.extensions;
 
+  if (!link) {
+    return;
+  }
+
+  if (step === "init") {
     // Renders the component or page only once
     if (target.host) {
-      const { link } = $.extensions;
-
       $(target)
         .all("a")
         .forEach((e) => link(e));
