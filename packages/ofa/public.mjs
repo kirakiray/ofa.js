@@ -1,3 +1,4 @@
+import { nextTick } from "../stanz/public.mjs";
 import { searchEle } from "../xhear/public.mjs";
 
 export function resolvePath(moduleName, baseURI) {
@@ -112,8 +113,13 @@ export const createPage = (src, defaults) => {
   tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
 
   const targetPage = $(tempCon.children[0]);
+  targetPage._pause_init = 1;
 
-  targetPage._renderDefault(defaults);
+  nextTick(() => {
+    targetPage._renderDefault(defaults);
+
+    delete targetPage._pause_init;
+  });
 
   return targetPage;
 };

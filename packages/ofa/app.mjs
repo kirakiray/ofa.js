@@ -110,10 +110,11 @@ const emitRouterChange = (_this, publics, type) => {
   if (publics && publics.length) {
     const { current } = _this;
     publics.forEach((e) => {
-      const { routerChange } = e.page._defaults;
+      const { page } = e;
+      const { routerChange } = page._defaults;
 
       if (routerChange) {
-        routerChange({ type, current });
+        routerChange.call(page, { type, current });
       }
     });
   }

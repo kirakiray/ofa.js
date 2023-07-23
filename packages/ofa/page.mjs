@@ -128,7 +128,7 @@ $.register({
 
       this.__init_src = src;
 
-      if (this._defaults) {
+      if (this._defaults || this._pause_init) {
         return;
       }
 
@@ -164,6 +164,7 @@ $.register({
           `The currently loaded module is not a page \nLoaded string => '${src}'`
         );
         this.emit("error", { error: err });
+        this.__reject(err);
         throw err;
       }
 
@@ -180,11 +181,13 @@ $.register({
 
       await dispatchLoad(this, defaults.loaded);
 
+      initLink(this.shadow);
+
       this._loaded = true;
 
       this.emit("page-loaded");
 
-      initLink(this.shadow);
+      this.__resolve();
     },
     back() {
       this.app.back();
@@ -205,6 +208,21 @@ $.register({
     set pageAnime(val) {
       this._pageAnime = val;
     },
+  },
+
+  ready() {
+    this._rendered = new Promise((resolve, reject) => {
+      this.__resolve = () => {
+        delete this.__resolve;
+        delete this.__reject;
+        resolve();
+      };
+      this.__reject = () => {
+        delete this.__resolve;
+        delete this.__reject;
+        reject();
+      };
+    });
   },
 });
 

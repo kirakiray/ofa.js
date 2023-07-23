@@ -1089,10 +1089,27 @@ try{
 
       this.ele.setAttribute(name, value);
     },
+    class(...args) {
+      let [name, value, options] = args;
+
+      if (args.length === 1) {
+        return this.ele.classList.contains(name);
+      }
+
+      value = this._convertExpr(options, value);
+      value = getVal(value);
+
+      if (value) {
+        this.ele.classList.add(name);
+      } else {
+        this.ele.classList.remove(name);
+      }
+    },
   };
 
   defaultData.prop.always = true;
   defaultData.attr.always = true;
+  defaultData.class.always = true;
 
   var syncFn = {
     sync(propName, targetName, options) {
@@ -1126,7 +1143,12 @@ try{
   var eventFn = {
     on(name, func, options) {
       if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
+        const oriName = func;
         func = options.data.get(func);
+
+        if (!func) {
+          throw new Error(`${oriName} method does not exist`);
+        }
       } else {
         func = this._convertExpr(options, func);
       }
@@ -2008,13 +2030,14 @@ try{
   });
 
   const createItem = (d, targetTemp, temps, $host) => {
-    const itemData = new Stanz({
-      $data: d,
-      $host,
-    });
-
     const $ele = createXEle(targetTemp.innerHTML);
     const { ele } = $ele;
+
+    const itemData = new Stanz({
+      $data: d,
+      $ele,
+      $host,
+    });
 
     render({
       target: ele,
@@ -2971,8 +2994,13 @@ try{
     tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
 
     const targetPage = $(tempCon.children[0]);
+    targetPage._pause_init = 1;
 
-    targetPage._renderDefault(defaults);
+    nextTick(() => {
+      targetPage._renderDefault(defaults);
+
+      delete targetPage._pause_init;
+    });
 
     return targetPage;
   };
@@ -2982,13 +3010,9 @@ try{
 
     const { link } = $$1.extensions;
 
-    if (!link) {
-      return;
-    }
-
     if (step === "init") {
       // Renders the component or page only once
-      if (target.host) {
+      if (target.host && link) {
         $$1(target)
           .all("a")
           .forEach((e) => link(e));
@@ -3011,12 +3035,11 @@ try{
           fixRelate(top.ele, host.src);
         }
 
-        const { link } = $$1.extensions;
-
-        $$1(top)
-          .all("a")
-          .forEach((e) => link(e));
-
+        if (link) {
+          $$1(top)
+            .all("a")
+            .forEach((e) => link(e));
+        }
         delete top.__fixLinkTimer;
       });
 
@@ -3168,7 +3191,7 @@ try{
 
         this.__init_src = src;
 
-        if (this._defaults) {
+        if (this._defaults || this._pause_init) {
           return;
         }
 
@@ -3204,6 +3227,7 @@ try{
             `The currently loaded module is not a page \nLoaded string => '${src}'`
           );
           this.emit("error", { error: err });
+          this.__reject(err);
           throw err;
         }
 
@@ -3220,11 +3244,13 @@ try{
 
         await dispatchLoad(this, defaults.loaded);
 
+        initLink(this.shadow);
+
         this._loaded = true;
 
         this.emit("page-loaded");
 
-        initLink(this.shadow);
+        this.__resolve();
       },
       back() {
         this.app.back();
@@ -3245,6 +3271,21 @@ try{
       set pageAnime(val) {
         this._pageAnime = val;
       },
+    },
+
+    ready() {
+      this._rendered = new Promise((resolve, reject) => {
+        this.__resolve = () => {
+          delete this.__resolve;
+          delete this.__reject;
+          resolve();
+        };
+        this.__reject = () => {
+          delete this.__resolve;
+          delete this.__reject;
+          reject();
+        };
+      });
     },
   });
 
@@ -3521,10 +3562,11 @@ try{
     if (publics && publics.length) {
       const { current } = _this;
       publics.forEach((e) => {
-        const { routerChange } = e.page._defaults;
+        const { page } = e;
+        const { routerChange } = page._defaults;
 
         if (routerChange) {
-          routerChange({ type, current });
+          routerChange.call(page, { type, current });
         }
       });
     }

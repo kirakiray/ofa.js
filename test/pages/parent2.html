@@ -29,6 +29,10 @@
       cursor: pointer;
     }
 
+    li.active {
+      background-color: rgb(0, 145, 255);
+    }
+
     a {
       display: block;
       font-size: 12px;
@@ -48,7 +52,9 @@
   <div class="container">
     <div id="sidebar">
       <ul>
-        <li><a href="./subs/sub-page03.html" olink>Page03(Left)</a></li>
+        <li class="active">
+          <a href="./subs/sub-page03.html" olink>Page03(Left)</a>
+        </li>
         <li><a href="./subs/sub-page04.html" olink>Page04(Left)</a></li>
       </ul>
     </div>
@@ -61,8 +67,34 @@
   <script>
     export const parent = "./parent1.mjs";
 
-    export const routerChange = (e) => {
-      console.log("parent02 router change => ", e);
+    const getPathName = (path) => path.replace(/.+\/(.+)/, "$1");
+
+    export default () => {
+      return {
+        ready() {
+          this.refreshActive();
+        },
+        routerChange() {
+          this.refreshActive();
+        },
+        proto: {
+          refreshActive() {
+            const { current } = this.app;
+
+            const path = new URL(current.src).pathname;
+
+            const activeName = getPathName(path);
+
+            this.shadow.all("li").forEach((li) => {
+              li.classList.remove("active");
+
+              if (getPathName(li[0].attr("href")) === activeName) {
+                li.classList.add("active");
+              }
+            });
+          },
+        },
+      };
     };
   </script>
 </template>

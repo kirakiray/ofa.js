@@ -1,7 +1,12 @@
 export default {
   on(name, func, options) {
     if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
+      const oriName = func;
       func = options.data.get(func);
+
+      if (!func) {
+        throw new Error(`${oriName} method does not exist`);
+      }
     } else {
       func = this._convertExpr(options, func);
     }

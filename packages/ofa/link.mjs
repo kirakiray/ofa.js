@@ -8,13 +8,9 @@ renderExtends.render = (e) => {
 
   const { link } = $.extensions;
 
-  if (!link) {
-    return;
-  }
-
   if (step === "init") {
     // Renders the component or page only once
-    if (target.host) {
+    if (target.host && link) {
       $(target)
         .all("a")
         .forEach((e) => link(e));
@@ -37,12 +33,11 @@ renderExtends.render = (e) => {
         fixRelate(top.ele, host.src);
       }
 
-      const { link } = $.extensions;
-
-      $(top)
-        .all("a")
-        .forEach((e) => link(e));
-
+      if (link) {
+        $(top)
+          .all("a")
+          .forEach((e) => link(e));
+      }
       delete top.__fixLinkTimer;
     });
 

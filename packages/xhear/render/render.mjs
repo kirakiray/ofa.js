@@ -297,9 +297,26 @@ const defaultData = {
 
     this.ele.setAttribute(name, value);
   },
+  class(...args) {
+    let [name, value, options] = args;
+
+    if (args.length === 1) {
+      return this.ele.classList.contains(name);
+    }
+
+    value = this._convertExpr(options, value);
+    value = getVal(value);
+
+    if (value) {
+      this.ele.classList.add(name);
+    } else {
+      this.ele.classList.remove(name);
+    }
+  },
 };
 
 defaultData.prop.always = true;
 defaultData.attr.always = true;
+defaultData.class.always = true;
 
 export default defaultData;

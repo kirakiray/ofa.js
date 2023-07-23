@@ -12,13 +12,14 @@ import {
 } from "../public.mjs";
 
 const createItem = (d, targetTemp, temps, $host) => {
-  const itemData = new Stanz({
-    $data: d,
-    $host,
-  });
-
   const $ele = createXEle(targetTemp.innerHTML);
   const { ele } = $ele;
+
+  const itemData = new Stanz({
+    $data: d,
+    $ele,
+    $host,
+  });
 
   render({
     target: ele,

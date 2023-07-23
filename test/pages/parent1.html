@@ -27,7 +27,13 @@
 
   nav li {
     display: inline-block;
+    padding: 5px 10px;
     margin-right: 20px;
+    border-radius: 4px;
+  }
+
+  nav li.active {
+    background-color: rgb(158, 4, 4);
   }
 
   nav li a {
@@ -46,13 +52,9 @@
     <nav>
       <ul>
         <x-fill name="li" :value="items"></x-fill>
-        <!-- <li><a href="./subs/sub-page01.html" olink>Page01</a></li>
-        <li><a href="./subs/sub-page02.html" olink>Page02</a></li>
-        <li><a href="./subs/sub-page03.html" olink>Page03</a></li>
-        <li><a href="./subs/sub-page04.html" olink>Page04</a></li> -->
       </ul>
-      <br>
-      <button on:click="resettop">reset top</button>
+      <!-- <br> -->
+      <!-- <button on:click="resettop">reset top</button> -->
     </nav>
   </header>
   <div class="main" style="position: relative">
@@ -63,5 +65,7 @@
 </div>
 
 <template name="li">
-  <li><a attr:href="$data.href" olink>{{$data.name}}</a></li>
+  <li class:active="$data.active">
+    <a attr:href="$data.href" olink>{{$data.name}}</a>
+  </li>
 </template>
