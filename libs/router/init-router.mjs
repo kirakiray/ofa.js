@@ -1,11 +1,16 @@
-export default function initRouter(app, getStateUrl) {
+export default function initRouter(app, getStateUrl, fixStateUrl) {
   if (history.state && history.state.routerMode) {
     app.routers = history.state.routers;
   }
 
-  let _isFixState = 0;
+  // Application fallback, no window.history operation required
+  let _isFixState;
+  // When history moves forward
   let _isGoto;
+  // When the address is back
   let _isBack;
+  // when there is historical data, re-entering the hash address, it is necessary to replace the blank history
+  let _isFixNavigate;
 
   app.on("router-change", (e) => {
     let methodName = "pushState";
@@ -25,6 +30,11 @@ export default function initRouter(app, getStateUrl) {
         const hUrl = getStateUrl
           ? getStateUrl(pathname, search, methodName)
           : `#${pathname}${search}`;
+
+        if (_isFixNavigate) {
+          methodName = "replaceState";
+          _isFixNavigate = null;
+        }
 
         history[methodName](
           {
@@ -59,11 +69,20 @@ export default function initRouter(app, getStateUrl) {
       const { state } = e;
 
       if (_isFixState) {
-        _isFixState = 0;
+        _isFixState = null;
         return;
       }
 
       if (!state) {
+        if (fixStateUrl) {
+          const newPath = fixStateUrl(location.href);
+          if (newPath) {
+            _isFixNavigate = 1;
+            app.goto(newPath);
+            return;
+          }
+        }
+
         _isBack = 1;
         app.back(app.routers.length - 1);
         return;
