@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("test", async ({ page }) => {
+test("sub router test", async ({ page }) => {
   await page.goto("http://127.0.0.1:3348/libs/router/test/router-test.html");
   await page.getByRole("button", { name: "Go to sub page 01" }).click();
 
