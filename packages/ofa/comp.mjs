@@ -82,11 +82,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     tempContent = temp;
   } else {
     if (!temp) {
-      if (tag) {
-        tempUrl = resolvePath(`${tag}.html`, path);
-      } else {
-        tempUrl = resolvePath(`${matchName[1]}.html`, path);
-      }
+      tempUrl = resolvePath(`${matchName[1]}.html`, path);
     } else {
       tempUrl = resolvePath(temp, path);
     }
