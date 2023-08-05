@@ -3376,21 +3376,21 @@ try{
 
     let finnalDefault = {};
 
-    const { default: defaultData } = moduleData;
+    const { default: defaultData, PATH } = moduleData;
+
+    const path = PATH || url;
 
     if (isFunction(defaultData)) {
       finnalDefault = await defaultData({
         load: lm$1({
-          url,
+          url: path,
         }),
       });
     } else if (defaultData instanceof Object) {
       finnalDefault = defaultData;
     }
 
-    const { tag, temp, PATH } = { ...moduleData, ...finnalDefault };
-
-    const path = PATH || url;
+    const { tag, temp } = { ...moduleData, ...finnalDefault };
 
     let tagName = tag;
     const matchName = path.match(/\/([^/]+)\.m?(js|htm|html)$/);
