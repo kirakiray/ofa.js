@@ -23,7 +23,9 @@ try{
     return ${expr};
   }
 }catch(error){
-  console.error(error);
+  if(this.ele.isConnectd){
+    console.error(error);
+  }
 }
 `;
   return new Function("...$args", funcStr).bind(data);
