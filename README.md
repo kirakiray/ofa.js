@@ -1,17 +1,39 @@
-# ofa.js
+# ofa.js - Progressive Frontend Framework
 
-ofa.js is a Web Component-based front-end framework that helps developers build complex applications quickly and is a perfect replacement for jQuery. Unlike traditional front-end frameworks, ofa.js uses browser-supported Web Component technology directly to enable component-based development, without the need to use Node.js and npm.
+[中文教程](https://github.com/kirakiray/ofa-v4-docs/blob/main/packages/docs/cn/introduce.md)
 
-ofa.js provides a set of core components and APIs, including a template engine, routing, state management, event handling, and more, so that developers can quickly build complex applications. At the same time, ofa.js also supports the introduction of third-party component libraries, making it easier for developers to use existing components.
+## What is ofa.js?
 
-ofa.js is simple to develop and use, requiring only standard HTML, CSS, and JavaScript to create components, and can run in any browser that supports Web Component.
+ofa.js is a progressive frontend framework designed to allow developers to enter frontend development and workflows with minimal cost. It provides a set of simple yet powerful tools and APIs that make frontend development more efficient and convenient.
 
-ofa.js is a modern, lightweight, easy-to-use front-end framework that helps developers build complex applications quickly. If you are looking for a simple, efficient and reliable front-end framework, then ofa.js is definitely a good choice.
+## Existence Goals
 
-<!-- ofa.js 是一个基于 Web Component 的前端框架，可以帮助开发者快速构建复杂的应用，同时也是 jQuery 的完美替代品。与传统的前端框架不同，ofa.js 直接使用浏览器支持的 Web Component 技术来实现组件化开发，不需要使用 Node.js 和 npm。
+### Replacing jQuery
 
-ofa.js 提供了一系列的核心组件和 API，包括模板引擎、路由、状态管理、事件处理等，以便开发者可以快速构建复杂的应用。同时，ofa.js 还支持第三方组件库的引入，让开发者可以更加方便地使用已有的组件。
+In many small projects, there might not be a need to introduce large frameworks like React and Vue. Instead, developers tend to use jQuery for simple frontend operations. ofa.js improves upon jQuery's API and replaces many of jQuery's methods with properties, making ofa.js more suitable for many scenarios.
 
-ofa.js 的开发和使用非常简单，只需要通过标准的 HTML、CSS 和 JavaScript 来创建组件，并且可以在任何支持 Web Component 的浏览器中运行。
+### Simplifying Frontend Development and Workflows
 
-ofa.js 是一个现代化、轻量级、易用性强的前端框架，可以帮助开发者快速构建复杂的应用。如果您正在寻找一个简单、高效、可靠的前端框架，那么 ofa.js 绝对是一个不错的选择。 -->
+The aim of ofa.js is to simplify the cumbersome frontend development process. It allows developers to build frontend applications more quickly without having to learn complex tools like Node.js, npm, and scaffolding. With ofa.js, you can revert to an experience where you only need to include a single library to start development.
+
+### Becoming a Silver Bullet Frontend Development Framework
+
+ofa.js aims to be a "silver bullet," capable of addressing various frontend development issues and providing comprehensive solutions. It's not just a utility library but also a holistic frontend development framework.
+
+## Features
+
+### Easy-to-Start Component Development
+
+Developing components using ofa.js comes with almost no learning curve. ofa.js provides a concise and intuitive API that enables developers to swiftly create and integrate components while keeping the code clean and maintainable.
+
+### Built-in Modularity, State Management, and Application Integration Solutions
+
+ofa.js already integrates solutions for modularity, state management, and application integration, eliminating the need for developers to search for third-party libraries or tools to accomplish complex frontend development tasks.
+
+### Officially Provided Routing and SSG (Static Site Generation) Solutions
+
+ofa.js also offers official solutions for routing and SSG, assisting developers in effectively managing frontend routes and generating static sites. This improves application performance and SEO friendliness.
+
+### Compact Code Size
+
+ofa.js's code has been meticulously optimized, and the size of the minified .min file is only 38kb (just 14kb when gzipped). This makes ofa.js an efficient frontend framework that can load and operate swiftly in various network environments.
