@@ -1,0 +1,23 @@
+<template page>
+  <link rel="stylesheet" href="./pub.css" />
+  <style>
+    :host {
+      display: block;
+      height: 100%;
+    }
+  </style>
+  <h1>{{val}}</h1>
+
+  <button on:click="back()" data-testid="back">Back</button>
+  <script>
+    export const parent = "../parent2.html";
+
+    export default async ({ load }) => {
+      return {
+        data: {
+          val: "I am Sub Page 4",
+        },
+      };
+    };
+  </script>
+</template>

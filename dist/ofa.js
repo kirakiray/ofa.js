@@ -1,4742 +1,3841 @@
-/*!
- * ofa v3.0.13
- * https://github.com/kirakiray/ofa.js
- * 
- * (c) 2018-2023 YAO
- * Released under the MIT License.
- */
-((glo) => {
-    "use strict";
-    // public function
-    const getRandomId = () => Math.random().toString(32).substr(2);
-    // const getRandomId = (len = 40) => {
-    //     return Array.from(crypto.getRandomValues(new Uint8Array(len / 2)), dec => ('0' + dec.toString(16)).substr(-2)).join('');
-    // }
-    var objectToString = Object.prototype.toString;
-    var getType = (value) =>
-        objectToString
-        .call(value)
-        .toLowerCase()
-        .replace(/(\[object )|(])/g, "");
-    const isFunction = (d) => getType(d).search("function") > -1;
-    var isEmptyObj = (obj) => !Object.keys(obj).length;
-    const defineProperties = Object.defineProperties;
-    const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-    const isxdata = (obj) => obj instanceof XData;
-
-    const isDebug = document.currentScript.getAttribute("debug") !== null;
-
-    const nextTick = (() => {
-        if (isDebug) {
-            let nMap = new Map();
-            return (fun, key) => {
-                if (!key) {
-                    key = getRandomId();
-                }
-
-                let timer = nMap.get(key);
-                clearTimeout(timer);
-                nMap.set(
-                    key,
-                    setTimeout(() => {
-                        fun();
-                        nMap.delete(key);
-                    })
-                );
-            };
-        }
-
-        let nextTickMap = new Map();
-
-        let pnext = (func) => Promise.resolve().then(() => func());
-
-        if (typeof process === "object" && process.nextTick) {
-            pnext = process.nextTick;
-        }
-
-        let inTick = false;
-        return (fun, key) => {
-            if (!key) {
-                key = getRandomId();
-            }
-
-            nextTickMap.set(key, {
-                key,
-                fun,
-            });
-
-            if (inTick) {
-                return;
-            }
-
-            inTick = true;
-
-            pnext(() => {
-                if (nextTickMap.size) {
-                    nextTickMap.forEach(({
-                        key,
-                        fun
-                    }) => {
-                        try {
-                            fun();
-                        } catch (e) {
-                            console.error(e);
-                        }
-                        nextTickMap.delete(key);
-                    });
-                }
-
-                nextTickMap.clear();
-                inTick = false;
-            });
-        };
-    })();
-
-    // Collects the data returned over a period of time and runs it once as a parameter after a period of time.
-    const collect = (func, time) => {
-        let arr = [];
-        let timer;
-        const reFunc = (e) => {
-            arr.push({
-                ...e
-            });
-            if (time) {
-                clearTimeout(timer);
-                timer = setTimeout(() => {
-                    func(arr);
-                    arr.length = 0;
-                }, time);
-            } else {
-                nextTick(() => {
-                    func(arr);
-                    arr.length = 0;
-                }, reFunc);
-            }
-        };
-
-        return reFunc;
-    };
-
-    // Enhanced methods for extending objects
-    const extend = (_this, proto, descriptor = {}) => {
-        Object.keys(proto).forEach((k) => {
-            let {
-                get,
-                set,
-                value
-            } = getOwnPropertyDescriptor(proto, k);
-
-            if (value) {
-                if (_this.hasOwnProperty(k)) {
-                    _this[k] = value;
-                } else {
-                    Object.defineProperty(_this, k, {
-                        ...descriptor,
-                        value,
-                    });
-                }
-            } else {
-                Object.defineProperty(_this, k, {
-                    ...descriptor,
-                    get,
-                    set,
-                });
-            }
-        });
-    };
-
-
-    const XDATASELF = Symbol("self");
-    const PROXYSELF = Symbol("proxy");
-    const WATCHS = Symbol("watchs");
-    const CANUPDATE = Symbol("can_update");
-
-    const cansetXtatus = new Set(["root", "sub", "revoke"]);
-
-    const emitUpdate = (target, opts, path, unupdate) => {
-        if (path && path.includes(target[PROXYSELF])) {
-            console.warn("Circular references appear");
-            return;
-        }
-        let new_path;
-        if (!path) {
-            new_path = opts.path = [target[PROXYSELF]];
-        } else {
-            new_path = opts.path = [target[PROXYSELF], ...path];
-        }
-
-        // trigger watch callback
-        target[WATCHS].forEach((f) => f(opts));
-
-        if (unupdate || target._unupdate) {
-            return;
-        }
-
-        // Bubbling change events to the parent object
-        target.owner &&
-            target.owner.forEach((parent) =>
-                emitUpdate(parent, opts, new_path.slice())
-            );
-    };
-
-    class XData {
-        constructor(obj, status) {
-            let proxy_self;
-
-            if (obj.get) {
-                proxy_self = new Proxy(this, {
-                    get: obj.get,
-                    ownKeys: obj.ownKeys,
-                    getOwnPropertyDescriptor: obj.getOwnPropertyDescriptor,
-                    set: xdataHandler.set,
-                });
-
-                delete obj.get;
-                delete obj.ownKeys;
-                delete obj.getOwnPropertyDescriptor;
-            } else {
-                proxy_self = new Proxy(this, xdataHandler);
-            }
-
-            // status of the object
-            let xtatus = status;
-
-            // Attributes that are available for each instance
-            defineProperties(this, {
-                [XDATASELF]: {
-                    value: this,
-                },
-                [PROXYSELF]: {
-                    value: proxy_self,
-                },
-                // Each object must have an id
-                xid: {
-                    value: "x_" + getRandomId(),
-                },
-                _xtatus: {
-                    get() {
-                        return xtatus;
-                    },
-                    set(val) {
-                        if (!cansetXtatus.has(val)) {
-                            throw {
-                                target: proxy_self,
-                                desc: `xtatus not allowed to be set ${val}`,
-                            };
-                        }
-                        const size = this.owner.size;
-
-                        if (val === "revoke" && size) {
-                            throw {
-                                target: proxy_self,
-                                desc: "the owner is not empty",
-                            };
-                        } else if (xtatus === "revoke" && val !== "revoke") {
-                            if (!size) {
-                                fixXDataOwner(this);
-                            }
-                        } else if (xtatus === "sub" && val === "root") {
-                            throw {
-                                target: proxy_self,
-                                desc: "cannot modify sub to root",
-                            };
-                        }
-                        xtatus = val;
-                    },
-                },
-                // Save all parent objects
-                owner: {
-                    configurable: true,
-                    writable: true,
-                    value: new Set(),
-                },
-                length: {
-                    configurable: true,
-                    writable: true,
-                    value: 0,
-                },
-                // Save the object of the listener function
-                [WATCHS]: {
-                    value: new Map(),
-                },
-                [CANUPDATE]: {
-                    writable: true,
-                    value: 0,
-                },
-            });
-
-            let maxNum = -1;
-            Object.keys(obj).forEach((key) => {
-                let descObj = getOwnPropertyDescriptor(obj, key);
-                let {
-                    value,
-                    get,
-                    set
-                } = descObj;
-
-                if (key === "get") {
-                    return;
-                }
-                if (!/\D/.test(key)) {
-                    key = parseInt(key);
-                    if (key > maxNum) {
-                        maxNum = key;
-                    }
-                }
-                if (get || set) {
-                    defineProperties(this, {
-                        [key]: descObj,
-                    });
-                } else {
-                    // Set the function directly
-                    proxy_self[key] = value;
-                }
-            });
-
-            if (maxNum > -1) {
-                this.length = maxNum + 1;
-            }
-
-            this[CANUPDATE] = 1;
-
-            return proxy_self;
-        }
-
-        watch(callback) {
-            const wid = "e_" + getRandomId();
-
-            this[WATCHS].set(wid, callback);
-
-            return wid;
-        }
-
-        unwatch(wid) {
-            return this[WATCHS].delete(wid);
-        }
-
-        setData(key, value) {
-            let valueType = getType(value);
-            if (valueType == "array" || valueType == "object") {
-                value = createXData(value, "sub");
-
-                // Adding a parent object to an object
-                value.owner.add(this);
-            }
-
-            let oldVal;
-            const descObj = Object.getOwnPropertyDescriptor(this, key);
-            const p_self = this[PROXYSELF];
-            try {
-                // The case of only set but not get
-                oldVal = p_self[key];
-            } catch (err) {}
-
-            if (oldVal === value) {
-                return true;
-            }
-
-            let reval;
-            if (descObj && descObj.set) {
-                descObj.set.call(p_self, value);
-                reval = true;
-            } else {
-                reval = Reflect.set(this, key, value);
-            }
-
-            if (this[CANUPDATE]) {
-                // Need bubble processing after changing data
-                emitUpdate(this, {
-                    xid: this.xid,
-                    name: "setData",
-                    args: [key, value],
-                });
-            }
-
-            clearXDataOwner(oldVal, this);
-
-            return reval;
-        }
-
-        // Proactively trigger update events
-        // Convenient get type data trigger watch
-        update(opts = {}) {
-            emitUpdate(
-                this,
-                Object.assign({}, opts, {
-                    xid: this.xid,
-                    isCustom: true,
-                })
-            );
-        }
-
-        delete(key) {
-            // The _ prefix or symbol can be deleted directly
-            if (/^_/.test(key) || typeof key === "symbol") {
-                return Reflect.deleteProperty(this, key);
-            }
-
-            if (!key) {
-                return false;
-            }
-
-            // Adjustment of internal data, not using proxy objects
-            const _this = this[XDATASELF];
-
-            let val = _this[key];
-            // Clear the parent on the owner
-            clearXDataOwner(val, _this);
-
-            let reval = Reflect.deleteProperty(_this, key);
-
-            // Bubbling behavior after data changes
-            emitUpdate(this, {
-                xid: this.xid,
-                name: "delete",
-                args: [key],
-            });
-
-            return reval;
-        }
-    }
-
-    // Proxy Handler for relaying XData
-    const xdataHandler = {
-        set(target, key, value, receiver) {
-            if (typeof key === "symbol") {
-                return Reflect.set(target, key, value, receiver);
-            }
-
-            // Set properties with _ prefix directly
-            if (/^_/.test(key)) {
-                if (!target.hasOwnProperty(key)) {
-                    defineProperties(target, {
-                        [key]: {
-                            writable: true,
-                            configurable: true,
-                            value,
-                        },
-                    });
-                } else {
-                    Reflect.set(target, key, value, receiver);
-                }
-                return true;
-            }
-
-            try {
-                return target.setData(key, value);
-            } catch (e) {
-                throw {
-                    desc: `failed to set ${key}`,
-                    key,
-                    value,
-                    target: receiver,
-                };
-            }
-        },
-        deleteProperty: function(target, key) {
-            return target.delete(key);
-        },
-    };
-
-    // Clear xdata's owner data
-    const clearXDataOwner = (xdata, parent) => {
-        if (!isxdata(xdata)) {
-            return;
-        }
-
-        const {
-            owner
-        } = xdata;
-        owner.delete(parent);
-
-        if (!owner.size) {
-            xdata._xtatus = "revoke";
-            Object.values(xdata).forEach((child) => {
-                clearXDataOwner(child, xdata[XDATASELF]);
-            });
-        }
-    };
-
-    // Fix xdata's owner data
-    const fixXDataOwner = (xdata) => {
-        if (xdata._xtatus === "revoke") {
-            // Restoration status
-            Object.values(xdata).forEach((e) => {
-                if (isxdata(e)) {
-                    fixXDataOwner(e);
-                    e.owner.add(xdata);
-                    e._xtatus = "sub";
-                }
-            });
-        }
-    };
-
-    const createXData = (obj, status = "root") => {
-        if (isxdata(obj)) {
-            obj._xtatus = status;
-            return obj;
-        }
-        return new XData(obj, status);
-    };
-
-
-    extend(XData.prototype, {
-        seek(expr) {
-            let arr = [];
-
-            if (!isFunction(expr)) {
-                let f = new Function(`with(this){return ${expr}}`);
-                expr = (_this) => {
-                    try {
-                        return f.call(_this, _this);
-                    } catch (e) {}
-                };
-            }
-
-            if (expr.call(this, this)) {
-                arr.push(this);
-            }
-
-            Object.values(this).forEach((e) => {
-                if (isxdata(e)) {
-                    arr.push(...e.seek(expr));
-                }
-            });
-
-            return arr;
-        },
-        // watch asynchronous collection version
-        watchTick(func, time) {
-            return this.watch(collect(func, time));
-        },
-        // Listening until the expression succeeds
-        watchUntil(expr) {
-            let isFunc = isFunction(expr);
-            if (!isFunc && /[^=><]=[^=]/.test(expr)) {
-                throw "cannot use single =";
-            }
-
-            return new Promise((resolve) => {
-                // Ignore errors
-                let exprFun = isFunc ?
-                    expr.bind(this) :
-                    new Function(`
-        try{with(this){
-            return ${expr}
-        }}catch(e){}`).bind(this);
-
-                let f;
-                const wid = this.watchTick(
-                    (f = () => {
-                        let reVal = exprFun();
-                        if (reVal) {
-                            this.unwatch(wid);
-                            resolve(reVal);
-                        }
-                    })
-                );
-                f();
-            });
-        },
-        // Listen to the corresponding key
-        watchKey(obj, immediately) {
-            if (immediately) {
-                Object.keys(obj).forEach((key) => obj[key].call(this, this[key]));
-            }
-
-            let oldVal = {};
-            Object.keys(obj).forEach((key) => {
-                oldVal[key] = this[key];
-            });
-
-            return this.watch(
-                collect((arr) => {
-                    Object.keys(obj).forEach((key) => {
-                        let val = this[key];
-                        let old = oldVal[key];
-
-                        if (old !== val) {
-                            obj[key].call(this, val, {
-                                old
-                            });
-                        } else if (isxdata(val)) {
-                            // Whether the current array has changes to this key
-                            let hasChange = arr.some((e) => {
-                                let p = e.path[1];
-
-                                return p == val;
-                            });
-
-                            if (hasChange) {
-                                obj[key].call(this, val, {
-                                    old
-                                });
-                            }
-                        }
-
-                        oldVal[key] = val;
-                    });
-                })
-            );
-        },
-        toJSON() {
-            let obj = {};
-
-            let isPureArray = true;
-            let maxId = 0;
-
-            Object.keys(this).forEach((k) => {
-                let val = this[k];
-
-                if (!/\D/.test(k)) {
-                    k = parseInt(k);
-                    if (k > maxId) {
-                        maxId = k;
-                    }
-                } else {
-                    isPureArray = false;
-                }
-
-                if (isxdata(val)) {
-                    val = val.toJSON();
-                }
-
-                obj[k] = val;
-            });
-
-            if (isPureArray) {
-                obj.length = maxId + 1;
-                obj = Array.from(obj);
-            }
-
-            const xid = this.xid;
-            defineProperties(obj, {
-                xid: {
-                    get: () => xid,
-                },
-            });
-
-            return obj;
-        },
-        toString() {
-            return JSON.stringify(this.toJSON());
-        },
+//! ofa.js - v4.0.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.$ = factory());
+})(this, (function () { 'use strict';
+
+  const getRandomId = () => Math.random().toString(32).slice(2);
+
+  const objectToString = Object.prototype.toString;
+  const getType = (value) =>
+    objectToString
+      .call(value)
+      .toLowerCase()
+      .replace(/(\[object )|(])/g, "");
+
+  const isObject = (obj) => {
+    const type = getType(obj);
+    return type === "array" || type === "object";
+  };
+
+  const tickSets = new Set();
+  function nextTick(callback) {
+    const tickId = `t-${getRandomId()}`;
+    tickSets.add(tickId);
+    Promise.resolve().then(() => {
+      if (tickSets.has(tickId)) {
+        callback();
+        tickSets.delete(tickId);
+      }
     });
+    return tickId;
+  }
 
+  function debounce(func, wait = 0) {
+    let timeout = null;
+    let hisArgs = [];
 
-    // Submerged hooks that do not affect the original structure of the data
+    return function (...args) {
+      hisArgs.push(...args);
+
+      if (wait > 0) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          func.call(this, hisArgs);
+          hisArgs = [];
+          timeout = null;
+        }, wait);
+      } else {
+        if (timeout === null) {
+          timeout = 1;
+          nextTick(() => {
+            func.call(this, hisArgs);
+            hisArgs = [];
+            timeout = null;
+          });
+        }
+      }
+    };
+  }
+
+  // Enhanced methods for extending objects
+  const extend = (_this, proto, descriptor = {}) => {
     [
-        "concat",
-        "every",
-        "filter",
-        "find",
-        "findIndex",
-        "forEach",
-        "map",
-        "slice",
-        "some",
-        "indexOf",
-        "lastIndexOf",
-        "includes",
-        "join",
-    ].forEach((methodName) => {
-        let arrayFnFunc = Array.prototype[methodName];
-        if (arrayFnFunc) {
-            defineProperties(XData.prototype, {
-                [methodName]: {
-                    value: arrayFnFunc
-                },
-            });
-        }
-    });
+      ...Object.getOwnPropertyNames(proto),
+      ...Object.getOwnPropertySymbols(proto),
+    ].forEach((k) => {
+      const result = Object.getOwnPropertyDescriptor(proto, k);
+      const { configurable, enumerable, writable, get, set, value } = result;
 
-    const arraySplice = Array.prototype.splice;
-
-    extend(XData.prototype, {
-        splice(index, howmany, ...items) {
-            let self = this[XDATASELF];
-
-            // Fix the properties of new objects
-            items = items.map((e) => {
-                let valueType = getType(e);
-                if (valueType == "array" || valueType == "object") {
-                    e = createXData(e, "sub");
-                    e.owner.add(self);
-                }
-
-                return e;
-            });
-
-            const b_howmany =
-                getType(howmany) == "number" ? howmany : this.length - index;
-
-            // Follow the native split method
-            const rmArrs = arraySplice.call(self, index, b_howmany, ...items);
-
-            rmArrs.forEach((e) => clearXDataOwner(e, self));
-
-            emitUpdate(this, {
-                xid: this.xid,
-                name: "splice",
-                args: [index, howmany, ...items],
-            });
-
-            return rmArrs;
-        },
-        unshift(...items) {
-            this.splice(0, 0, ...items);
-            return this.length;
-        },
-        push(...items) {
-            this.splice(this.length, 0, ...items);
-            return this.length;
-        },
-        shift() {
-            return this.splice(0, 1)[0];
-        },
-        pop() {
-            return this.splice(this.length - 1, 1)[0];
-        },
-    });
-
-    ["sort", "reverse"].forEach((methodName) => {
-        const arrayFnFunc = Array.prototype[methodName];
-
-        if (arrayFnFunc) {
-            defineProperties(XData.prototype, {
-                [methodName]: {
-                    value(...args) {
-                        let reval = arrayFnFunc.apply(this[XDATASELF], args);
-
-                        emitUpdate(this, {
-                            xid: this.xid,
-                            name: methodName,
-                        });
-
-                        return reval;
-                    },
-                },
-            });
-        }
-    });
-    const createXEle = (ele) => {
-        if (!ele) {
-            return null;
-        }
-        return ele.__xEle__ ? ele.__xEle__ : (ele.__xEle__ = new XEle(ele));
-    };
-
-    // Determine if an element is eligible
-    const meetTemp = document.createElement("template");
-    const meetsEle = (ele, expr) => {
-        if (!ele.tagName) {
-            return false;
-        }
-        if (ele === expr) {
-            return true;
-        }
-        if (ele === document) {
-            return false;
-        }
-        meetTemp.innerHTML = `<${ele.tagName.toLowerCase()} ${Array.from(
-    ele.attributes
-  )
-    .map((e) => e.name + '="' + e.value + '"')
-    .join(" ")} />`;
-        return !!meetTemp.content.querySelector(expr);
-    };
-
-    // Converting strings to elements
-    const parseStringToDom = (str) => {
-        const pstTemp = document.createElement("div");
-        pstTemp.innerHTML = str;
-        let childs = Array.from(pstTemp.children);
-        return childs.map(function(e) {
-            pstTemp.removeChild(e);
-            return e;
-        });
-    };
-
-    // Converting objects to elements
-    const parseDataToDom = (objData) => {
-        if (!objData.tag) {
-            console.error("this data need tag =>", objData);
-            throw "";
-        }
-
-        let ele = document.createElement(objData.tag);
-
-        // add data
-        objData.class && ele.setAttribute("class", objData.class);
-        objData.slot && ele.setAttribute("slot", objData.slot);
-
-        const xele = createXEle(ele);
-
-        // merge data
-        xele[CANSETKEYS].forEach((k) => {
-            if (objData[k]) {
-                xele[k] = objData[k];
-            }
-        });
-
-        // append child elements
-        let akey = 0;
-        while (akey in objData) {
-            let childEle = parseDataToDom(objData[akey]);
-            ele.appendChild(childEle);
-            akey++;
-        }
-
-        return ele;
-    };
-
-    //  Converts element attribute horizontal bar to case mode
-    const attrToProp = (key) => {
-        // Determine if there is a horizontal line
-        if (/\-/.test(key)) {
-            key = key.replace(/\-[\D]/g, (letter) => letter.substr(1).toUpperCase());
-        }
-        return key;
-    };
-    const propToAttr = (key) => {
-        if (/[A-Z]/.test(key)) {
-            key = key.replace(/[A-Z]/g, (letter) => "-" + letter.toLowerCase());
-        }
-        return key;
-    };
-
-    // object to get the value, optimize the string with multiple '.'
-    const getXData = (xdata, key) => {
-        if (typeof key === "string" && key.includes(".")) {
-            let tar = xdata;
-            key.split(".").forEach((k) => {
-                tar = tar[k];
-            });
-            return tar;
+      if ("value" in result) {
+        if (_this.hasOwnProperty(k)) {
+          _this[k] = value;
         } else {
-            return xdata[key];
+          Object.defineProperty(_this, k, {
+            enumerable,
+            configurable,
+            writable,
+            ...descriptor,
+            value,
+          });
         }
-    };
-
-    // object to set the value, optimize the string with multiple '.'
-    const setXData = (xdata, key, value) => {
-        if (typeof key === "string" && key.includes(".")) {
-            let tar = xdata,
-                tarKey = key;
-            let key_arr = key.split("."),
-                lastid = key_arr.length - 1;
-            key_arr.forEach((k, index) => {
-                if (index === lastid) {
-                    tarKey = k;
-                    return;
-                }
-                tar = xdata[k];
-            });
-
-            tar[tarKey] = value;
-        } else {
-            xdata[key] = value;
-        }
-    };
-
-    const XEleHandler = {
-        get(target, key, receiver) {
-            if (typeof key === "string" && !/\D/.test(key)) {
-                return createXEle(target.ele.children[key]);
-            }
-            return Reflect.get(target, key, receiver);
-        },
-        ownKeys(target) {
-            let keys = Reflect.ownKeys(target);
-            let len = target.ele.children.length;
-            for (let i = 0; i < len; i++) {
-                keys.push(String(i));
-            }
-            return keys;
-        },
-        getOwnPropertyDescriptor(target, key) {
-            if (typeof key === "string" && !/\D/.test(key)) {
-                return {
-                    enumerable: true,
-                    configurable: true,
-                };
-            }
-            return Reflect.getOwnPropertyDescriptor(target, key);
-        },
-    };
-
-    const EVENTS = Symbol("events");
-    const xSetData = XData.prototype.setData;
-
-    // It can use the keys of set
-    const xEleDefaultSetKeys = ["text", "html", "show", "style"];
-    const CANSETKEYS = Symbol("cansetkeys");
-
-    class XEle extends XData {
-        constructor(ele) {
-            super(Object.assign({}, XEleHandler));
-            // super(XEleHandler);
-
-            const self = this[XDATASELF];
-
-            self.tag = ele.tagName ? ele.tagName.toLowerCase() : "";
-
-            // self.owner = new WeakSet();
-            // XEle is not allowed to have an owner
-            // self.owner = null;
-            // delete self.owner;
-            defineProperties(self, {
-                owner: {
-                    get() {
-                        let par = ele.parentNode;
-
-                        return par ? [createXEle(par)] : [];
-                    },
-                },
-            });
-
-            defineProperties(self, {
-                ele: {
-                    get: () => ele,
-                },
-                [EVENTS]: {
-                    writable: true,
-                    value: "",
-                },
-            });
-
-            delete self.length;
-
-            if (
-                self.tag === "input" ||
-                self.tag === "textarea" ||
-                self.tag === "select" ||
-                self.tag === "button"
-            ) {
-                renderInput(self);
-            }
-        }
-
-        setData(key, value) {
-            if (!this[CANSETKEYS] || this[CANSETKEYS].has(key)) {
-                return xSetData.call(this, key, value);
-            }
-        }
-
-        get root() {
-            return createXEle(this.ele.getRootNode());
-        }
-
-        get host() {
-            let root = this.ele.getRootNode();
-            let {
-                host
-            } = root;
-            return host ? createXEle(host) : null;
-        }
-
-        get shadow() {
-            return createXEle(this.ele.shadowRoot);
-        }
-
-        get parent() {
-            let {
-                parentNode
-            } = this.ele;
-            return !parentNode || parentNode === document ?
-                null :
-                createXEle(parentNode);
-        }
-
-        get index() {
-            let {
-                parentNode
-            } = this.ele;
-
-            if (!parentNode) {
-                return null;
-            }
-
-            return Array.prototype.indexOf.call(parentNode.children, this.ele);
-        }
-
-        get length() {
-            return this.ele.children.length;
-        }
-
-        get text() {
-            return this.ele.textContent;
-        }
-
-        set text(val) {
-            this.ele.textContent = val;
-        }
-
-        get html() {
-            return this.ele.innerHTML;
-        }
-
-        set html(val) {
-            this.ele.innerHTML = val;
-        }
-
-        get class() {
-            return this.ele.classList;
-        }
-
-        get data() {
-            return this.ele.dataset;
-        }
-
-        get css() {
-            return getComputedStyle(this.ele);
-        }
-
-        get style() {
-            return this.ele.style;
-        }
-
-        set style(d) {
-            if (getType(d) == "string") {
-                this.ele.style = d;
-                return;
-            }
-
-            let {
-                style
-            } = this;
-
-            // Covering the old style
-            let hasKeys = Array.from(style);
-            let nextKeys = Object.keys(d);
-
-            // Clear the unused key
-            hasKeys.forEach((k) => {
-                if (!nextKeys.includes(k)) {
-                    style[k] = "";
-                }
-            });
-
-            Object.assign(style, d);
-        }
-
-        get show() {
-            return this.ele.style.display !== "none";
-        }
-
-        set show(val) {
-            if (val) {
-                this.ele.style.display = "";
-            } else {
-                this.ele.style.display = "none";
-            }
-        }
-
-        get position() {
-            return {
-                top: this.ele.offsetTop,
-                left: this.ele.offsetLeft,
-            };
-        }
-
-        get offset() {
-            let reobj = {
-                top: 0,
-                left: 0,
-            };
-
-            let tar = this.ele;
-            while (tar && tar !== document) {
-                reobj.top += tar.offsetTop;
-                reobj.left += tar.offsetLeft;
-                tar = tar.offsetParent;
-            }
-            return reobj;
-        }
-
-        get width() {
-            return parseInt(getComputedStyle(this.ele).width);
-        }
-
-        get height() {
-            return parseInt(getComputedStyle(this.ele).height);
-        }
-
-        get innerWidth() {
-            return this.ele.clientWidth;
-        }
-
-        get innerHeight() {
-            return this.ele.clientHeight;
-        }
-
-        get offsetWidth() {
-            return this.ele.offsetWidth;
-        }
-
-        get offsetHeight() {
-            return this.ele.offsetHeight;
-        }
-
-        get outerWidth() {
-            let computedStyle = getComputedStyle(this.ele);
-            return (
-                this.ele.offsetWidth +
-                parseInt(computedStyle["margin-left"]) +
-                parseInt(computedStyle["margin-right"])
-            );
-        }
-
-        get outerHeight() {
-            let computedStyle = getComputedStyle(this.ele);
-            return (
-                this.ele.offsetHeight +
-                parseInt(computedStyle["margin-top"]) +
-                parseInt(computedStyle["margin-bottom"])
-            );
-        }
-
-        get next() {
-            const nextEle = this.ele.nextElementSibling;
-            return nextEle ? createXEle(nextEle) : null;
-        }
-
-        get prev() {
-            const prevEle = this.ele.previousElementSibling;
-            return prevEle ? createXEle(prevEle) : null;
-        }
-
-        $(expr) {
-            const target = this.ele.querySelector(expr);
-            return target ? createXEle(target) : null;
-        }
-
-        all(expr) {
-            return Array.from(this.ele.querySelectorAll(expr)).map((e) => {
-                return createXEle(e);
-            });
-        }
-
-        is(expr) {
-            return meetsEle(this.ele, expr);
-        }
-
-        attr(...args) {
-            let [key, value] = args;
-
-            let {
-                ele
-            } = this;
-
-            if (args.length == 1) {
-                if (key instanceof Object) {
-                    Object.keys(key).forEach((k) => {
-                        ele.setAttribute(k, key[k]);
-                    });
-                }
-                return ele.getAttribute(key);
-            }
-
-            if (value === null) {
-                ele.removeAttribute(key);
-            } else {
-                ele.setAttribute(key, value);
-            }
-        }
-
-        siblings(expr) {
-            // Get adjacent elements
-            let parChilds = Array.from(this.parent.ele.children);
-
-            // delete self
-            let tarId = parChilds.indexOf(this.ele);
-            parChilds.splice(tarId, 1);
-
-            // Delete the non-conforming
-            if (expr) {
-                parChilds = parChilds.filter((e) => {
-                    if (meetsEle(e, expr)) {
-                        return true;
-                    }
-                });
-            }
-
-            return parChilds.map((e) => createXEle(e));
-        }
-
-        parents(expr, until) {
-            let pars = [];
-            let tempTar = this.parent;
-
-            if (!expr) {
-                while (tempTar) {
-                    pars.push(tempTar);
-                    tempTar = tempTar.parent;
-                }
-            } else {
-                if (getType(expr) == "string") {
-                    while (tempTar && tempTar) {
-                        if (meetsEle(tempTar.ele, expr)) {
-                            pars.push(tempTar);
-                        }
-                        tempTar = tempTar.parent;
-                    }
-                }
-            }
-
-            if (until) {
-                if (until instanceof XEle) {
-                    let newPars = [];
-                    pars.some((e) => {
-                        if (e === until) {
-                            return true;
-                        }
-                        newPars.push(e);
-                    });
-                    pars = newPars;
-                } else if (getType(until) == "string") {
-                    let newPars = [];
-                    pars.some((e) => {
-                        if (e.is(until)) {
-                            return true;
-                        }
-                        newPars.push(e);
-                    });
-                    pars = newPars;
-                }
-            }
-
-            return pars;
-        }
-
-        clone() {
-            let cloneEle = createXEle(this.ele.cloneNode(true));
-
-            // reset data
-            Object.keys(this).forEach((key) => {
-                if (key !== "tag") {
-                    cloneEle[key] = this[key];
-                }
-            });
-
-            return cloneEle;
-        }
-
-        remove() {
-            const {
-                parent
-            } = this;
-            parent.splice(parent.indexOf(this), 1);
-        }
-
-        // Plugin method extend
-        extend(proto) {
-            const descObj = Object.getOwnPropertyDescriptors(proto);
-            Object.entries(descObj).forEach(([key, obj]) => {
-                if (obj.set) {
-                    // The extension has set of writable
-                    this[CANSETKEYS].add(key);
-                }
-            });
-            extend(this, proto, {
-                configurable: true,
-            });
-        }
-
-        // This api is deprecated, please use CSS Container Query instead.
-        // Listening for size changes
-        //   initSizeObs(time = 300) {
-        //     if (this._initedSizeObs) {
-        //       console.warn({
-        //         target: this.ele,
-        //         desc: "initRect is runned",
-        //       });
-        //       return;
-        //     }
-        //     this._initedSizeObs = 1;
-
-        //     let resizeTimer;
-        //     // Element Size Correction
-        //     const fixSize = () => {
-        //       clearTimeout(resizeTimer);
-
-        //       setTimeout(() => {
-        //         emitUpdate(
-        //           this,
-        //           {
-        //             xid: this.xid,
-        //             name: "sizeUpdate",
-        //           },
-        //           undefined,
-        //           false
-        //         );
-        //       }, time);
-        //     };
-        //     fixSize();
-        //     if (window.ResizeObserver) {
-        //       const resizeObserver = new ResizeObserver((entries) => {
-        //         fixSize();
-        //       });
-        //       resizeObserver.observe(this.ele);
-
-        //       return () => {
-        //         resizeObserver.disconnect();
-        //       };
-        //     } else {
-        //       let f;
-        //       window.addEventListener(
-        //         "resize",
-        //         (f = (e) => {
-        //           fixSize();
-        //         })
-        //       );
-        //       return () => {
-        //         window.removeEventListener("resize", f);
-        //       };
-        //     }
-        //   }
+      } else {
+        Object.defineProperty(_this, k, {
+          enumerable,
+          configurable,
+          ...descriptor,
+          get,
+          set,
+        });
+      }
+    });
+
+    return _this;
+  };
+
+  const isFunction = (val) => getType(val).includes("function");
+
+  const hyphenToUpperCase = (str) =>
+    str.replace(/-([a-z])/g, (match, p1) => {
+      return p1.toUpperCase();
+    });
+
+  function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  const isArrayEqual = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+    for (let i = 0, len = arr1.length; i < len; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const toDashCase = (str) => {
+    return str.replace(/[A-Z]/g, function (match) {
+      return "-" + match.toLowerCase();
+    });
+  };
+
+  // Determine if an element is eligible
+  const meetsEle = (ele, expr) => {
+    const temp = document.createElement("template");
+    temp.content.append(ele.cloneNode());
+    return !!temp.content.querySelector(expr);
+  };
+
+  function isEmptyObject(obj) {
+    if (!obj) {
+      return false;
+    }
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function moveArrayValue(arr, oldValue, newIndex) {
+    const oldIndex = arr.indexOf(oldValue);
+
+    if (oldIndex === -1) {
+      throw new Error("Value not found in array");
     }
 
-    // Allowed key values to be set
-    defineProperties(XEle.prototype, {
-        [CANSETKEYS]: {
-            // writable: true,
-            value: new Set(xEleDefaultSetKeys),
+    arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
+    return arr;
+  }
+
+  const removeArrayValue = (arr, target) => {
+    const index = arr.indexOf(target);
+    if (index > -1) {
+      arr.splice(index, 1);
+    }
+  };
+
+  const searchEle = (el, expr) => {
+    if (el instanceof HTMLTemplateElement) {
+      return Array.from(el.content.querySelectorAll(expr));
+    }
+    return Array.from(el.querySelectorAll(expr));
+  };
+
+  const { assign: assign$1, freeze } = Object;
+
+  class Watcher {
+    constructor(opts) {
+      assign$1(this, opts);
+      freeze(this);
+    }
+
+    hasModified(k) {
+      if (this.type === "array") {
+        return this.path.includes(this.currentTarget.get(k));
+      }
+
+      const keys = k.split(".");
+
+      if (this.currentTarget === this.target && this.name === keys[0]) {
+        return true;
+      }
+
+      const modifieds = getModifieds(this, keys);
+
+      const positionIndex = modifieds.indexOf(this.target);
+      if (positionIndex > -1) {
+        const currentKeys = keys.slice(positionIndex + 1);
+
+        if (!currentKeys.length) {
+          // This is listening for changes in the child object itself
+          return true;
+        }
+
+        return this.name === currentKeys[0];
+      }
+
+      // Data belonging to the chain of change
+      return this.path.includes(this.currentTarget[k]);
+    }
+
+    hasReplaced(k) {
+      if (this.type !== "set") {
+        return false;
+      }
+
+      const keys = k.split(".");
+
+      if (this.target === this.currentTarget && this.name === keys[0]) {
+        return true;
+      }
+
+      const modifieds = getModifieds(this, keys);
+
+      const positionIndex = modifieds.indexOf(this.target);
+
+      if (positionIndex > -1) {
+        const currentKeys = keys.slice(positionIndex + 1);
+
+        return currentKeys[0] === this.name;
+      }
+
+      return false;
+    }
+  }
+
+  const getModifieds = (_this, keys) => {
+    const modifieds = [];
+
+    const cloneKeys = keys.slice();
+    let target = _this.currentTarget;
+    while (cloneKeys.length) {
+      const targetKey = cloneKeys.shift();
+      if (target) {
+        target = target[targetKey];
+      }
+
+      modifieds.push(target);
+    }
+
+    return modifieds;
+  };
+
+  class Watchers extends Array {
+    constructor(arr) {
+      super(...arr);
+    }
+
+    hasModified(key) {
+      return this.some((e) => e.hasModified(key));
+    }
+
+    hasReplaced(key) {
+      return this.some((e) => e.hasReplaced(key));
+    }
+  }
+
+  const emitUpdate = ({
+    type,
+    currentTarget,
+    target,
+    name,
+    value,
+    oldValue,
+    args,
+    path = [],
+  }) => {
+    if (path && path.includes(currentTarget)) {
+      console.warn("Circular references appear");
+      return;
+    }
+
+    let options = {
+      type,
+      target,
+      name,
+      oldValue,
+      value,
+    };
+
+    if (type === "array") {
+      delete options.value;
+      options.args = args;
+    }
+
+    if (currentTarget._hasWatchs) {
+      const watcher = new Watcher({
+        currentTarget,
+        ...options,
+        path: [...path],
+      });
+
+      currentTarget[WATCHS].forEach((func) => {
+        func(watcher);
+      });
+    }
+
+    currentTarget._update &&
+      currentTarget.owner.forEach((parent) => {
+        emitUpdate({
+          currentTarget: parent,
+          ...options,
+          path: [currentTarget, ...path],
+        });
+      });
+  };
+
+  var watchFn = {
+    watch(callback) {
+      const wid = "w-" + getRandomId();
+
+      this[WATCHS].set(wid, callback);
+
+      return wid;
+    },
+
+    unwatch(wid) {
+      return this[WATCHS].delete(wid);
+    },
+
+    watchTick(callback, wait) {
+      return this.watch(
+        debounce((arr) => {
+          try {
+            this.xid;
+          } catch (err) {
+            // console.warn(`The revoked object cannot use watchTick : `, this);
+            return;
+          }
+          arr = arr.filter((e) => {
+            try {
+              e.path.forEach((item) => item.xid);
+            } catch (err) {
+              return false;
+            }
+
+            return true;
+          });
+
+          callback(new Watchers(arr));
+        }, wait || 0)
+      );
+    },
+  };
+
+  const mutatingMethods$1 = [
+    "push",
+    "pop",
+    "shift",
+    "unshift",
+    "splice",
+    "reverse",
+    "sort",
+    "fill",
+    "copyWithin",
+  ];
+
+  const holder = Symbol("placeholder");
+
+  function compareArrays(oldArray, newArray) {
+    const backupNewArray = Array.from(newArray);
+    const backupOldArray = Array.from(oldArray);
+    const deletedItems = [];
+    const addedItems = new Map();
+
+    const oldLen = oldArray.length;
+    for (let i = 0; i < oldLen; i++) {
+      const oldItem = oldArray[i];
+      const newIndex = backupNewArray.indexOf(oldItem);
+      if (newIndex > -1) {
+        backupNewArray[newIndex] = holder;
+      } else {
+        deletedItems.push(oldItem);
+      }
+    }
+
+    const newLen = newArray.length;
+    for (let i = 0; i < newLen; i++) {
+      const newItem = newArray[i];
+      const oldIndex = backupOldArray.indexOf(newItem);
+      if (oldIndex > -1) {
+        backupOldArray[oldIndex] = holder;
+      } else {
+        addedItems.set(i, newItem);
+      }
+    }
+
+    return { deletedItems, addedItems };
+  }
+
+  const fn$1 = {};
+
+  const arrayFn$1 = Array.prototype;
+
+  mutatingMethods$1.forEach((methodName) => {
+    if (arrayFn$1[methodName]) {
+      fn$1[methodName] = function (...args) {
+        const backupArr = Array.from(this);
+
+        const reval = arrayFn$1[methodName].apply(this[SELF], args);
+
+        const { deletedItems, addedItems } = compareArrays(backupArr, this);
+
+        // Refactoring objects as proxy instances
+        for (let [key, value] of addedItems) {
+          if (isxdata(value)) {
+            value._owner.push(this);
+          } else if (isObject(value)) {
+            this.__unupdate = 1;
+            this[key] = value;
+            delete this.__unupdate;
+          }
+        }
+
+        for (let item of deletedItems) {
+          clearData(item, this);
+        }
+
+        emitUpdate({
+          type: "array",
+          currentTarget: this,
+          target: this,
+          args,
+          name: methodName,
+          oldValue: backupArr,
+        });
+
+        if (reval === this[SELF]) {
+          return this[PROXY];
+        }
+
+        return reval;
+      };
+    }
+  });
+
+  const { defineProperties: defineProperties$2, getOwnPropertyDescriptor, entries } = Object;
+
+  const SELF = Symbol("self");
+  const PROXY = Symbol("proxy");
+  const WATCHS = Symbol("watchs");
+  const ISXDATA = Symbol("isxdata");
+
+  const isxdata = (val) => val && !!val[ISXDATA];
+
+  function constructor(data, handler = handler$1) {
+    // const proxySelf = new Proxy(this, handler);
+    let { proxy: proxySelf, revoke } = Proxy.revocable(this, handler);
+
+    // Determines the properties of the listener bubble
+    proxySelf._update = 1;
+
+    let watchs;
+
+    defineProperties$2(this, {
+      xid: { value: data.xid || getRandomId() },
+      // Save all parent objects
+      _owner: {
+        value: [],
+      },
+      owner: {
+        configurable: true,
+        get() {
+          return new Set(this._owner);
         },
+      },
+      [ISXDATA]: {
+        value: true,
+      },
+      [SELF]: {
+        configurable: true,
+        get: () => this,
+      },
+      [PROXY]: {
+        configurable: true,
+        get: () => proxySelf,
+      },
+      // Save the object of the listener function
+      [WATCHS]: {
+        get: () => watchs || (watchs = new Map()),
+      },
+      _hasWatchs: {
+        get: () => !!watchs,
+      },
+      _revoke: {
+        value: revoke,
+      },
     });
 
-    // Normalize the form component because forms are so commonly used
-    // Methods for rendering form elements
-    const renderInput = (xele) => {
-        let type = xele.attr("type") || "text";
-        const {
-            ele
-        } = xele;
+    Object.keys(data).forEach((key) => {
+      const descObj = getOwnPropertyDescriptor(data, key);
+      let { value, get, set } = descObj;
 
-        let d_opts = {
-            type: {
-                enumerable: true,
-                get: () => type,
-            },
-            name: {
-                enumerable: true,
-                get: () => ele.name,
-            },
-            value: {
-                enumerable: true,
-                get() {
-                    return ele.hasOwnProperty("__value") ? ele.__value : ele.value;
-                },
-                set(val) {
-                    // Conversion of input numbers to characters
-                    ele.value = ele.__value = val;
+      if (get || set) {
+        defineProperties$2(this, {
+          [key]: descObj,
+        });
+      } else {
+        // Set the function directly
+        proxySelf[key] = value;
+      }
+    });
 
-                    emitUpdate(xele, {
-                        xid: xele.xid,
-                        name: "setData",
-                        args: ["value", val],
-                    });
-                },
+    return proxySelf;
+  }
+
+  class Stanz extends Array {
+    constructor(data) {
+      super();
+
+      return constructor.call(this, data);
+    }
+
+    // This method is still in the experimental period
+    revoke() {
+      const self = this[SELF];
+
+      if (self._onrevokes) {
+        self._onrevokes.forEach((f) => f());
+        self._onrevokes.length = 0;
+      }
+
+      self.__unupdate = 1;
+
+      self[WATCHS].clear();
+
+      entries(this).forEach(([name, value]) => {
+        if (isxdata(value)) {
+          this[name] = null;
+        }
+      });
+
+      self._owner.forEach((parent) => {
+        entries(parent).forEach(([name, value]) => {
+          if (value === this) {
+            parent[name] = null;
+          }
+        });
+      });
+
+      delete self[SELF];
+      delete self[PROXY];
+      self._revoke();
+    }
+
+    toJSON() {
+      let obj = {};
+
+      let isPureArray = true;
+      let maxId = 0;
+
+      Object.keys(this).forEach((k) => {
+        let val = this[k];
+
+        if (!/\D/.test(k)) {
+          k = parseInt(k);
+          if (k > maxId) {
+            maxId = k;
+          }
+        } else {
+          isPureArray = false;
+        }
+
+        if (isxdata(val)) {
+          val = val.toJSON();
+        }
+
+        obj[k] = val;
+      });
+
+      if (isPureArray) {
+        obj.length = maxId + 1;
+        obj = Array.from(obj);
+      }
+
+      const xid = this.xid;
+      defineProperties$2(obj, {
+        xid: {
+          get: () => xid,
+        },
+      });
+
+      return obj;
+    }
+
+    toString() {
+      return JSON.stringify(this.toJSON());
+    }
+
+    extend(obj, desc) {
+      return extend(this, obj, desc);
+    }
+
+    get(key) {
+      if (/\./.test(key)) {
+        const keys = key.split(".");
+        let target = this;
+        for (let i = 0, len = keys.length; i < len; i++) {
+          try {
+            target = target[keys[i]];
+          } catch (error) {
+            const err = new Error(
+              `Failed to get data : ${keys.slice(0, i).join(".")} \n${
+              error.stack
+            }`
+            );
+            Object.assign(err, {
+              error,
+              target,
+            });
+            throw err;
+          }
+        }
+
+        return target;
+      }
+
+      return this[key];
+    }
+    set(key, value) {
+      if (/\./.test(key)) {
+        const keys = key.split(".");
+        const lastKey = keys.pop();
+        let target = this;
+        for (let i = 0, len = keys.length; i < len; i++) {
+          try {
+            target = target[keys[i]];
+          } catch (error) {
+            const err = new Error(
+              `Failed to get data : ${keys.slice(0, i).join(".")} \n${
+              error.stack
+            }`
+            );
+            Object.assign(err, {
+              error,
+              target,
+            });
+            throw err;
+          }
+        }
+
+        return (target[lastKey] = value);
+      }
+
+      return (this[key] = value);
+    }
+  }
+
+  Stanz.prototype.extend(
+    { ...watchFn, ...fn$1 },
+    {
+      enumerable: false,
+    }
+  );
+
+  const { defineProperties: defineProperties$1 } = Object;
+
+  const setData = ({ target, key, value, receiver, type, succeed }) => {
+    let data = value;
+    if (isxdata(data)) {
+      data._owner.push(receiver);
+    } else if (isObject(value)) {
+      const desc = Object.getOwnPropertyDescriptor(target, key);
+      if (!desc || desc.hasOwnProperty("value")) {
+        data = new Stanz(value);
+        data._owner.push(receiver);
+      }
+    }
+
+    const oldValue = receiver[key];
+    const isSame = oldValue === value;
+
+    if (!isSame && isxdata(oldValue)) {
+      clearData(oldValue, receiver);
+    }
+
+    const reval = succeed(data);
+
+    !isSame &&
+      !target.__unupdate &&
+      emitUpdate({
+        type: type || "set",
+        target: receiver,
+        currentTarget: receiver,
+        name: key,
+        value,
+        oldValue,
+      });
+
+    return reval;
+  };
+
+  const clearData = (val, target) => {
+    if (isxdata(val)) {
+      const index = val._owner.indexOf(target);
+      if (index > -1) {
+        val._owner.splice(index, 1);
+      } else {
+        console.error({
+          desc: "This data is wrong, the owner has no boarding object at the time of deletion",
+          target,
+          mismatch: val,
+        });
+      }
+    }
+  };
+
+  const handler$1 = {
+    set(target, key, value, receiver) {
+      if (typeof key === "symbol") {
+        return Reflect.set(target, key, value, receiver);
+      }
+
+      // Set properties with _ prefix directly
+      if (/^_/.test(key)) {
+        if (!target.hasOwnProperty(key)) {
+          defineProperties$1(target, {
+            [key]: {
+              writable: true,
+              configurable: true,
+              value,
             },
-            disabled: {
-                enumerable: true,
-                get() {
-                    return ele.disabled;
-                },
-                set(val) {
-                    ele.disabled = val;
-                },
-            },
-            // error message
-            msg: {
-                writable: true,
-                value: null,
-            },
-            [CANSETKEYS]: {
-                value: new Set(["value", "disabled", "msg", ...xEleDefaultSetKeys]),
-            },
+          });
+        } else {
+          Reflect.set(target, key, value, receiver);
+        }
+        return true;
+      }
+
+      try {
+        return setData({
+          target,
+          key,
+          value,
+          receiver,
+          succeed(data) {
+            return Reflect.set(target, key, data, receiver);
+          },
+        });
+      } catch (error) {
+        const err = new Error(`failed to set ${key} \n ${error.stack}`);
+
+        Object.assign(err, {
+          key,
+          value,
+          target: receiver,
+          error,
+        });
+
+        throw err;
+      }
+    },
+    deleteProperty(target, key) {
+      if (/^_/.test(key) || typeof key === "symbol") {
+        return Reflect.deleteProperty(target, key);
+      }
+
+      return setData({
+        target,
+        key,
+        value: undefined,
+        receiver: target[PROXY],
+        type: "delete",
+        succeed() {
+          return Reflect.deleteProperty(target, key);
+        },
+      });
+    },
+  };
+
+  const handler = {
+    set(target, key, value, receiver) {
+      if (!/\D/.test(key)) {
+        return Reflect.set(target, key, value, receiver);
+      }
+
+      return handler$1.set(target, key, value, receiver);
+    },
+    get(target, key, receiver) {
+      if (!/\D/.test(String(key))) {
+        return eleX(target.ele.children[key]);
+      }
+
+      return Reflect.get(target, key, receiver);
+    },
+    ownKeys(target) {
+      let keys = Reflect.ownKeys(target);
+      let len = target.ele.children.length;
+      for (let i = 0; i < len; i++) {
+        keys.push(String(i));
+      }
+      return keys;
+    },
+    getOwnPropertyDescriptor(target, key) {
+      if (typeof key === "string" && !/\D/.test(key)) {
+        return {
+          enumerable: true,
+          configurable: true,
         };
+      }
+      return Reflect.getOwnPropertyDescriptor(target, key);
+    },
+  };
 
-        switch (type) {
-            case "radio":
-            case "checkbox":
-                Object.assign(d_opts, {
-                    checked: {
-                        enumerable: true,
-                        get() {
-                            return ele.checked;
-                        },
-                        set(val) {
-                            ele.checked = val;
-                        },
-                    },
-                    name: {
-                        enumerable: true,
-                        get() {
-                            return ele.name;
-                        },
-                    },
-                });
+  const renderExtends = {
+    render() {},
+  };
 
-                // radio or checkbox does not have the property msg
-                delete d_opts.msg;
+  const getRevokes = (target) => target.__revokes || (target.__revokes = []);
+  const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
-                xele.on("change", (e) => {
-                    emitUpdate(xele, {
-                        xid: xele.xid,
-                        name: "setData",
-                        args: ["checked", ele.checked],
-                    });
-                });
+  const convertToFunc = (expr, data) => {
+    const funcStr = `
+const [$event] = $args;
+try{
+  with(this){
+    return ${expr};
+  }
+}catch(error){
+  if(this.ele.isConnectd){
+    console.error(error);
+  }
+}
+`;
+    return new Function("...$args", funcStr).bind(data);
+  };
 
-                d_opts[CANSETKEYS].value.add("checked");
-                break;
-            case "file":
-                Object.assign(d_opts, {
-                    accept: {
-                        enumerable: true,
-                        get() {
-                            return ele.accept;
-                        },
-                    },
-                });
-                break;
-            case "text":
-            default:
-                xele.on("input", (e) => {
-                    delete ele.__value;
+  function render({
+    data,
+    target,
+    template,
+    temps,
+    isRenderSelf,
+    ...otherOpts
+  }) {
+    const content = template && template.innerHTML;
 
-                    emitUpdate(xele, {
-                        xid: xele.xid,
-                        name: "setData",
-                        args: ["value", ele.value],
-                    });
-                });
-                break;
-        }
-
-        defineProperties(xele, d_opts);
-    };
-
-    class FromXData extends XData {
-        constructor(obj, {
-            selector,
-            delay,
-            _target
-        }) {
-            super(obj, "root");
-
-            this._selector = selector;
-            this._target = _target;
-            this._delay = delay;
-
-            let isInit = 0;
-
-            let backupData;
-
-            let watchFun = () => {
-                const eles = this.eles();
-                const obj = getFromEleData(eles, this);
-
-                const objKeys = Object.keys(obj);
-                Object.keys(this)
-                    .filter((e) => {
-                        return !objKeys.includes(e);
-                    })
-                    .forEach((k) => {
-                        delete this[k];
-                    });
-
-                Object.assign(this, obj);
-
-                backupData = this.toJSON();
-
-                if (!isInit) {
-                    return;
-                }
-
-                verifyFormEle(eles);
-            };
-
-            let timer;
-            this._wid = _target.watch(() => {
-                clearTimeout(timer);
-                timer = setTimeout(() => {
-                    watchFun();
-                }, this._delay);
-            });
-
-            // Data initialization
-            watchFun();
-
-            isInit = 1;
-
-            // Reverse data binding
-            this.watchTick((e) => {
-                let data = this.toJSON();
-
-                Object.entries(data).forEach(([k, value]) => {
-                    let oldVal = backupData[k];
-
-                    if (
-                        value !== oldVal ||
-                        (typeof value == "object" &&
-                            typeof oldVal == "object" &&
-                            JSON.stringify(value) !== JSON.stringify(oldVal))
-                    ) {
-                        this.eles(k).forEach((ele) => {
-                            switch (ele.type) {
-                                case "checkbox":
-                                    if (value.includes(ele.value)) {
-                                        ele.checked = true;
-                                    } else {
-                                        ele.checked = false;
-                                    }
-                                    break;
-                                case "radio":
-                                    if (ele.value == value) {
-                                        ele.checked = true;
-                                    } else {
-                                        ele.checked = false;
-                                    }
-                                    break;
-                                case "text":
-                                default:
-                                    ele.value = value;
-                                    break;
-                            }
-                        });
-                    }
-                });
-
-                backupData = data;
-            });
-        }
-
-        // Get form elements
-        eles(propName) {
-            let eles = this._target.all(this._selector);
-
-            if (propName) {
-                return eles.filter((e) => e.name === propName);
-            }
-
-            return eles;
-        }
+    if (content) {
+      target.innerHTML = content;
     }
 
-    // Get form data from an elements
-    const getFromEleData = (eles, oldData) => {
-        const obj = {};
+    const texts = searchEle(target, "xtext");
 
-        eles.forEach((ele) => {
-            const {
-                name,
-                type,
-                value
-            } = ele;
+    const tasks = [];
+    const revokes = getRevokes(target);
 
-            switch (type) {
-                case "radio":
-                    if (ele.checked) {
-                        obj[name] = value;
-                    }
-                    break;
-                case "checkbox":
-                    let tar_arr =
-                        obj[name] || (obj[name] = oldData[name]) || (obj[name] = []);
-                    if (ele.checked) {
-                        if (!tar_arr.includes(ele.value)) {
-                            tar_arr.push(value);
-                        }
-                    } else if (tar_arr.includes(ele.value)) {
-                        // Delete if included
-                        tar_arr.splice(tar_arr.indexOf(ele.value), 1);
-                    }
-                    break;
-                case "text":
-                default:
-                    obj[name] = value;
-            }
-        });
+    texts.forEach((el) => {
+      const textEl = document.createTextNode("");
+      const { parentNode } = el;
+      parentNode.insertBefore(textEl, el);
+      parentNode.removeChild(el);
 
-        return obj;
-    };
+      const func = convertToFunc(el.getAttribute("expr"), data);
+      const renderFunc = () => {
+        textEl.textContent = func();
+      };
+      tasks.push(renderFunc);
 
-    const verifyFormEle = (eles) => {
-        // Re-run the verification
-        eles.forEach((e) => {
-            const event = new CustomEvent("verify", {
-                bubbles: false,
-            });
-            event.msg = "";
-            event.formData = this;
-            event.$target = e;
-
-            e.trigger(event);
-
-            if (!e.hasOwnProperty("msg")) {
-                return;
-            }
-
-            const {
-                msg
-            } = event;
-            const msg_type = getType(msg);
-
-            // msg can only be Error or a string
-            if (msg_type == "string") {
-                e.msg = msg || null;
-            } else if (msg_type == "error") {
-                if (getType(e.msg) !== "error" || e.msg.message !== msg.message) {
-                    e.msg = msg;
-                }
-            } else {
-                console.warn({
-                    target: e,
-                    msg,
-                    desc: `msg can only be Error or String`,
-                });
-            }
-        });
-    };
-
-    extend(XEle.prototype, {
-        // Plug-in methods specifically for forms
-        form(opts) {
-            const defs = {
-                selector: "input,textarea,select",
-                delay: 100,
-            };
-
-            if (getType(opts) === "string") {
-                defs.selector = opts;
-            } else {
-                Object.assign(defs, opts);
-            }
-
-            // Returned object data
-            const formdata = new FromXData({}, {
-                selector: defs.selector,
-                delay: defs.delay,
-                _target: this,
-            });
-
-            return formdata;
-        },
+      const textRevoke = () => {
+        removeArrayValue(revokes, textRevoke);
+        removeArrayValue(tasks, renderFunc);
+        removeArrayValue(getRevokes(textEl), textRevoke);
+      };
+      revokes.push(textRevoke);
+      addRevoke(textEl, textRevoke);
     });
 
-    // rebuild array methods
-    [
-        "concat",
-        "every",
-        "filter",
-        "find",
-        "findIndex",
-        "forEach",
-        "map",
-        "slice",
-        "some",
-        "indexOf",
-        "lastIndexOf",
-        "includes",
-        "join",
-    ].forEach((methodName) => {
-        const arrayFnFunc = Array.prototype[methodName];
-        if (arrayFnFunc) {
-            Object.defineProperty(XEle.prototype, methodName, {
-                value(...args) {
-                    return arrayFnFunc.apply(
-                        Array.from(this.ele.children).map(createXEle),
-                        args
-                    );
-                },
-            });
-        }
-    });
+    const eles = searchEle(target, `[x-bind-data]`);
 
-    extend(XEle.prototype, {
-        splice(index, howmany, ...items) {
-            const {
-                ele
-            } = this;
-            const children = Array.from(ele.children);
+    if (isRenderSelf && meetsEle(target, `[x-bind-data]`)) {
+      eles.unshift(target);
+    }
 
-            // Delete the corresponding element
-            const removes = [];
-            let b_index = index;
-            let b_howmany =
-                getType(howmany) == "number" ? howmany : this.length - index;
-            let target = children[b_index];
-            while (target && b_howmany > 0) {
-                removes.push(target);
-                ele.removeChild(target);
-                b_index++;
-                b_howmany--;
-                target = children[b_index];
-            }
+    eles.forEach((el) => {
+      const bindData = JSON.parse(el.getAttribute("x-bind-data"));
 
-            // add new elements
-            if (items.length) {
-                let fragEle = document.createDocumentFragment();
-                items.forEach((e) => {
-                    if (e instanceof Element) {
-                        fragEle.appendChild(e);
-                        return;
-                    }
+      const $el = eleX(el);
 
-                    if (e instanceof XEle) {
-                        fragEle.appendChild(e.ele);
-                        return;
-                    }
+      for (let [actionName, arr] of Object.entries(bindData)) {
+        arr.forEach((args) => {
+          try {
+            const { always } = $el[actionName];
 
-                    let type = getType(e);
-
-                    if (type == "string") {
-                        parseStringToDom(e).forEach((e2) => {
-                            fragEle.appendChild(e2);
-                        });
-                    } else if (type == "object") {
-                        fragEle.appendChild(parseDataToDom(e));
-                    }
-                });
-
-                if (index >= this.length) {
-                    // push element at the end
-                    ele.appendChild(fragEle);
-                } else {
-                    // Index to insert
-                    ele.insertBefore(fragEle, ele.children[index]);
-                }
-            }
-
-            // Bubbling behavior after data changes
-            emitUpdate(this, {
-                xid: this.xid,
-                name: "splice",
-                args: [index, howmany, ...items],
-            });
-
-            return removes;
-        },
-        sort(sortCall) {
-            const selfEle = this.ele;
-            const childs = Array.from(selfEle.children).map(createXEle).sort(sortCall);
-
-            rebuildXEleArray(selfEle, childs);
-
-            emitUpdate(this, {
-                xid: this.xid,
-                name: "sort",
-            });
-            return this;
-        },
-        reverse() {
-            const selfEle = this.ele;
-            const childs = Array.from(selfEle.children).reverse();
-            rebuildXEleArray(selfEle, childs);
-            emitUpdate(this, {
-                xid: this.xid,
-                name: "reverse",
-            });
-
-            return this;
-        },
-    });
-
-    // Sorting elements according to sequential arrays
-    const rebuildXEleArray = (container, rearray) => {
-        const {
-            children
-        } = container;
-
-        rearray.forEach((e, index) => {
-            let ele = e.ele || e;
-
-            const targetChild = children[index];
-
-            if (!targetChild) {
-                container.appendChild(ele);
-            } else if (ele !== targetChild) {
-                container.insertBefore(ele, targetChild);
-            }
-        });
-    };
-
-    const getEventsMap = (target) => {
-        return target[EVENTS] ? target[EVENTS] : (target[EVENTS] = new Map());
-    };
-
-    const MOUSEEVENT = glo.MouseEvent || Event;
-    const TOUCHEVENT = glo.TouchEvent || Event;
-
-    const EventMap = new Map([
-        ["click", MOUSEEVENT],
-        ["mousedown", MOUSEEVENT],
-        ["mouseup", MOUSEEVENT],
-        ["mousemove", MOUSEEVENT],
-        ["mouseenter", MOUSEEVENT],
-        ["mouseleave", MOUSEEVENT],
-        ["touchstart", TOUCHEVENT],
-        ["touchend", TOUCHEVENT],
-        ["touchmove", TOUCHEVENT],
-    ]);
-
-    // Trigger native events
-    const triggerEvenet = (_this, name, data, options = {}) => {
-        let TargeEvent = EventMap.get(name) || CustomEvent;
-
-        const event =
-            name instanceof Event ?
-            name :
-            new TargeEvent(name, {
-                bubbles: true,
-                cancelable: true,
-                ...options,
-            });
-
-        event.data = data;
-
-        return _this.ele.dispatchEvent(event);
-    };
-
-    extend(XEle.prototype, {
-        on(name, selector, callback) {
-            if (isFunction(selector)) {
-                callback = selector;
-                selector = undefined;
-            } else {
-                const real_callback = callback;
-                const {
-                    ele
-                } = this;
-                callback = (event) => {
-                    let path;
-                    if (event.path) {
-                        path = event.path;
-                    } else {
-                        path = createXEle(event.target)
-                            .parents(null, ele)
-                            .map((e) => e.ele);
-                        path.unshift(event.target);
-                    }
-
-                    path.some((pTarget) => {
-                        if (pTarget == ele) {
-                            return true;
-                        }
-
-                        if (createXEle(pTarget).is(selector)) {
-                            event.selector = pTarget;
-                            real_callback(event);
-                            delete event.selector;
-                        }
-                    });
-                };
-            }
-
-            this.ele.addEventListener(name, callback);
-            const eid = "e_" + getRandomId();
-            getEventsMap(this).set(eid, {
-                name,
-                selector,
-                callback,
-            });
-            return eid;
-        },
-        off(eid) {
-            let d = getEventsMap(this).get(eid);
-
-            if (!d) {
-                return false;
-            }
-
-            this.ele.removeEventListener(d.name, d.callback);
-            this[EVENTS].delete(eid);
-            return true;
-        },
-        one(name, selector, callback) {
-            let eid, func;
-            if (typeof selector == "string") {
-                func = callback;
-                callback = (e) => {
-                    func(e);
-                    this.off(eid);
-                };
-            } else {
-                func = selector;
-                selector = (e) => {
-                    func(e);
-                    this.off(eid);
-                };
-            }
-
-            eid = this.on(name, selector, callback);
-
-            return eid;
-        },
-        trigger(name, data, options = {}) {
-            return triggerEvenet(this, name, data, options);
-        },
-        triggerHandler(name, data) {
-            return triggerEvenet(this, name, data, {
-                bubbles: false,
-            });
-        },
-    });
-
-    // Wrapping common events
-    ["click", "focus", "blur"].forEach((name) => {
-        extend(XEle.prototype, {
-            [name](callback) {
-                if (isFunction(callback)) {
-                    this.on(name, callback);
-                } else {
-                    return this.trigger(name, callback);
-                }
-            },
-        });
-    });
-
-    // All registered components
-    const Components = {};
-    const ComponentResolves = {};
-
-    // get component
-    const getComp = (name) => {
-        name = attrToProp(name);
-
-        // Return directly if you have registration
-        if (Components[name]) {
-            return Components[name];
-        }
-
-        // Creating Mounted Components
-        let pms = new Promise((res) => {
-            ComponentResolves[name] = res;
-        });
-        Components[name] = pms;
-
-        return pms;
-    };
-
-    // render elements
-    const renderXEle = async ({
-        xele,
-        defs,
-        temps,
-        _this
-    }) => {
-        Object.assign(xele, defs.data, defs.attrs);
-
-        defs.created && defs.created.call(xele);
-
-        if (defs.temp) {
-            // Add shadow root
-            const sroot = _this.attachShadow({
-                mode: "open"
-            });
-
-            sroot.innerHTML = defs.temp;
-
-            // Rendering elements
-            renderTemp({
-                host: xele,
-                xdata: xele,
-                content: sroot,
+            const func = () => {
+              const revoker = $el[actionName](...args, {
+                isExpr: true,
+                data,
                 temps,
-            });
+                ...otherOpts,
+              });
 
-            // Child elements have changes that trigger element rendering
-            xele.shadow &&
-                xele.shadow.watchTick((e) => {
-                    if (e.some((e2) => e2.path.length > 1)) {
-                        emitUpdate(xele, {
-                            xid: xele.xid,
-                            name: "forceUpdate",
-                        });
-                    }
-                }, 10);
+              renderExtends.render({
+                step: "refresh",
+                args,
+                name: actionName,
+                target: $el,
+              });
 
-            const links = sroot.querySelectorAll("link");
-            if (links && links.length) {
-                await Promise.all(
-                    Array.from(links).map((linkEle) => {
-                        return new Promise((resolve, reject) => {
-                            if (linkEle.sheet) {
-                                resolve();
-                            } else {
-                                let succeedCall, errCall;
-                                linkEle.addEventListener(
-                                    "load",
-                                    (succeedCall = (e) => {
-                                        linkEle.removeEventListener("load", succeedCall);
-                                        linkEle.removeEventListener("error", errCall);
-                                        resolve();
-                                    })
-                                );
-                                linkEle.addEventListener(
-                                    "error",
-                                    (errCall = (e) => {
-                                        linkEle.removeEventListener("load", succeedCall);
-                                        linkEle.removeEventListener("error", errCall);
-                                        reject({
-                                            desc: "link load error",
-                                            ele: linkEle,
-                                            target: xele.ele,
-                                        });
-                                    })
-                                );
-                            }
-                        });
-                    })
-                );
-            }
-        }
+              return revoker;
+            };
 
-        defs.ready && defs.ready.call(xele);
+            let actionRevoke;
 
-        // atributes listening
-        if (!isEmptyObj(defs.attrs)) {
-            const {
-                ele
-            } = xele;
-            // First determine if there is a value to get
-            Object.keys(defs.attrs).forEach((k) => {
-                if (ele.hasAttribute(k)) {
-                    xele[k] = ele.getAttribute(k);
-                }
-            });
+            if (always) {
+              // Run every data update
+              tasks.push(func);
 
-            xele.watchTick((e) => {
-                _this.__set_attr = 1;
-                Object.keys(defs.attrs).forEach((key) => {
-                    let val = xele[key];
-                    if (val === null || val === undefined) {
-                        _this.removeAttribute(propToAttr(key));
-                    } else {
-                        _this.setAttribute(propToAttr(key), xele[key]);
-                    }
-                });
-                delete _this.__set_attr;
-            });
-        }
+              actionRevoke = () => {
+                removeArrayValue(revokes, actionRevoke);
+                removeArrayValue(tasks, func);
+                removeArrayValue(getRevokes(el), actionRevoke);
+                // delete el.__revoke;
+              };
+            } else {
+              const revokeFunc = func();
 
-        // The watch function triggers
-        let d_watch = defs.watch;
-        if (!isEmptyObj(d_watch)) {
-            xele.watchKey(d_watch, true);
-        }
-    };
-
-    // The revoke function has been run
-    const RUNNDEDREVOKE = Symbol("runned_revoke");
-
-    // Registering component functions
-    const register = (opts) => {
-        const defs = {
-            // Registered component name
-            tag: "",
-            // Body content string
-            temp: "",
-            // Keys bound to attributes
-            attrs: {},
-            // Initialization data after element creation
-            data: {},
-            // The listener function for the element
-            watch: {},
-            // Methods merged into the prototype
-            proto: {},
-            // Function triggered when the component is created (data initialization complete)
-            // created() { },
-            // Function triggered after component data initialization is complete (initial rendering completed)
-            // ready() { },
-            // Functions that are added to the document trigger
-            // attached() { },
-            // Functions triggered by moving out of the document
-            // detached() { },
-            // The container element is changed
-            // slotchange() { }
-        };
-
-        Object.assign(defs, opts);
-
-        let temps;
-
-        if (defs.temp) {
-            const d = transTemp(defs.temp, defs.tag);
-            defs.temp = d.html;
-            temps = d.temps;
-        }
-
-        // Generate a new XEle class
-        let compName = attrToProp(opts.tag);
-
-        // const CustomXEle = Components[compName] = class extends XEle {
-        const CustomXEle = class extends XEle {
-            constructor(ele) {
-                super(ele);
-
-                ele.isCustom = true;
+              if (isFunction(revokeFunc)) {
+                actionRevoke = () => {
+                  removeArrayValue(revokes, actionRevoke);
+                  removeArrayValue(getRevokes(el), actionRevoke);
+                  revokeFunc();
+                  // delete el.__revoke;
+                };
+              } else {
+                console.warn(`${actionName} render method need return revoke`);
+              }
+              // el.__revoke = actionRevoke;
             }
 
-            // Forced view refresh
-            forceUpdate() {
-                emitUpdate(this, {
-                    xid: this.xid,
-                    name: "forceUpdate",
-                });
-            }
-            // Recycle all data within the element (prevent garbage collection failure)
-            revoke() {
-                if (this[RUNNDEDREVOKE]) {
-                    return;
-                }
-                this[RUNNDEDREVOKE] = 1;
-                Object.values(this).forEach((child) => {
-                    if (!(child instanceof XEle) && isxdata(child)) {
-                        clearXDataOwner(child, this[XDATASELF]);
-                    }
-                });
+            revokes.push(actionRevoke);
+            addRevoke(el, actionRevoke);
+          } catch (error) {
+            const err = new Error(
+              `Execution of the ${actionName} method reports an error :\n ${error.stack}`
+            );
+            err.error = error;
+            throw err;
+          }
+        });
+      }
 
-                removeElementBind(this.shadow.ele);
-            }
-        };
+      el.removeAttribute("x-bind-data");
+    });
 
-        extend(CustomXEle.prototype, defs.proto);
+    if (!target.__render_temps && !isEmptyObject(temps)) {
+      target.__render_temps = temps;
+    }
 
-        const cansetKeys = getCansetKeys(defs);
+    if (tasks.length) {
+      if (target.__render_data && target.__render_data !== data) {
+        const error = new Error(
+          `An old listener already exists and the rendering of this element may be wrong`
+        );
 
-        // Extending CANSETKEYS
-        defineProperties(CustomXEle.prototype, {
-            [CANSETKEYS]: {
-                writable: true,
-                value: new Set([...xEleDefaultSetKeys, ...cansetKeys]),
-            },
+        Object.assign(error, {
+          element: target,
+          old: target.__render_data,
+          new: data,
         });
 
-        // Registering native components
-        const XhearElement = class extends HTMLElement {
-            constructor(...args) {
-                super(...args);
+        throw error;
+      }
 
-                this.__xEle__ = new CustomXEle(this);
+      target.__render_data = data;
 
-                const xele = createXEle(this);
+      tasks.forEach((func) => func());
 
-                renderXEle({
-                    xele,
-                    defs,
-                    temps,
-                    _this: this,
-                }).then((e) => {
-                    if (this.__x_connected) {
-                        this.setAttribute("x-render", 1);
-                    } else {
-                        this.x_render = 1;
-                    }
-                });
-            }
-
-            connectedCallback() {
-                // console.log("connectedCallback => ", this);
-                if (this.x_render) {
-                    this.setAttribute("x-render", this.x_render);
-                }
-                this.__x_connected = true;
-                if (defs.attached && !this.__x_runned_connected) {
-                    nextTick(() => {
-                        if (this.__x_connected && !this.__x_runned_connected) {
-                            this.__x_runned_connected = true;
-                            defs.attached.call(createXEle(this));
-                        }
-                    });
-                }
-            }
-
-            // adoptedCallback() {
-            //     console.log("adoptedCallback => ", this);
-            // }
-
-            disconnectedCallback() {
-                // console.log("disconnectedCallback => ", this);
-                this.__x_connected = false;
-                if (defs.detached && !this.__x_runnded_disconnected) {
-                    nextTick(() => {
-                        if (!this.__x_connected && !this.__x_runnded_disconnected) {
-                            this.__x_runnded_disconnected = true;
-                            defs.detached.call(createXEle(this));
-                        }
-                    });
-                }
-            }
-
-            attributeChangedCallback(name, oldValue, newValue) {
-                if (this.__set_attr) return;
-
-                createXEle(this)[attrToProp(name)] = newValue;
-            }
-
-            static get observedAttributes() {
-                return Object.keys(defs.attrs).map((e) => propToAttr(e));
-            }
-        };
-
-        customElements.define(defs.tag, XhearElement);
-
-        // Setup registration complete
-        if (ComponentResolves[compName]) {
-            ComponentResolves[compName](CustomXEle);
-            delete ComponentResolves[compName];
+      const wid = data.watchTick((e) => {
+        if (tasks.length) {
+          tasks.forEach((func) => func());
         } else {
-            Components[compName] = Promise.resolve(CustomXEle);
+          data.unwatch(wid);
         }
+      });
+    }
+
+    renderExtends.render({ step: "init", target });
+  }
+
+  function convert(el) {
+    let temps = {};
+
+    const { tagName } = el;
+    if (tagName === "TEMPLATE") {
+      let content = el.innerHTML;
+      const matchs = content.match(/{{.+?}}/g);
+
+      if (matchs) {
+        matchs.forEach((str) => {
+          content = content.replace(
+            str,
+            `<xtext expr="${str.replace(/{{(.+?)}}/, "$1")}"></xtext>`
+          );
+        });
+
+        el.innerHTML = content;
+      }
+
+      const tempName = el.getAttribute("name");
+
+      if (tempName) {
+        if (el.content.children.length > 1) {
+          console.warn({
+            target: el,
+            content: el.innerHTML,
+            desc: `Only the first child element inside the template will be used`,
+          });
+        }
+        temps[tempName] = el;
+        el.remove();
+      }
+
+      temps = { ...temps, ...convert(el.content) };
+    } else if (tagName) {
+      const obj = {};
+
+      Array.from(el.attributes).forEach((attr) => {
+        const matchData = /(.*):(.+)/.exec(attr.name);
+
+        if (!matchData) {
+          return;
+        }
+
+        let [, actionName, param0] = matchData;
+
+        if (!actionName) {
+          actionName = "prop";
+        }
+
+        const targetActions = obj[actionName] || (obj[actionName] = []);
+
+        targetActions.push([param0, attr.value]);
+
+        el.removeAttribute(attr.name);
+      });
+
+      const keys = Object.keys(obj);
+
+      if (keys.length) {
+        el.setAttribute("x-bind-data", JSON.stringify(obj));
+      }
+    }
+
+    if (el.children) {
+      Array.from(el.children).forEach((el) => {
+        temps = { ...temps, ...convert(el) };
+      });
+    }
+
+    return temps;
+  }
+
+  const getVal = (val) => {
+    if (isFunction(val)) {
+      return val();
+    }
+
+    return val;
+  };
+
+  const defaultData = {
+    _convertExpr(options = {}, expr) {
+      const { isExpr, data } = options;
+
+      if (!isExpr) {
+        return expr;
+      }
+
+      return convertToFunc(expr, data);
+    },
+    prop(...args) {
+      let [name, value, options] = args;
+
+      if (args.length === 1) {
+        return this[name];
+      }
+
+      value = this._convertExpr(options, value);
+      value = getVal(value);
+      name = hyphenToUpperCase(name);
+
+      this[name] = value;
+    },
+    attr(...args) {
+      let [name, value, options] = args;
+
+      if (args.length === 1) {
+        return this.ele.getAttribute(name);
+      }
+
+      value = this._convertExpr(options, value);
+      value = getVal(value);
+
+      this.ele.setAttribute(name, value);
+    },
+    class(...args) {
+      let [name, value, options] = args;
+
+      if (args.length === 1) {
+        return this.ele.classList.contains(name);
+      }
+
+      value = this._convertExpr(options, value);
+      value = getVal(value);
+
+      if (value) {
+        this.ele.classList.add(name);
+      } else {
+        this.ele.classList.remove(name);
+      }
+    },
+  };
+
+  defaultData.prop.always = true;
+  defaultData.attr.always = true;
+  defaultData.class.always = true;
+
+  var syncFn = {
+    sync(propName, targetName, options) {
+      if (!options) {
+        throw `Sync is only allowed within the renderer`;
+      }
+
+      const { data } = options;
+
+      this[propName] = data.get(targetName);
+
+      const wid1 = this.watch((e) => {
+        if (e.hasModified(propName)) {
+          data.set(targetName, this.get(propName));
+        }
+      });
+
+      const wid2 = data.watch((e) => {
+        if (e.hasModified(targetName)) {
+          this.set(propName, data.get(targetName));
+        }
+      });
+
+      return () => {
+        this.unwatch(wid1);
+        data.unwatch(wid2);
+      };
+    },
+  };
+
+  var eventFn = {
+    on(name, func, options) {
+      if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
+        const oriName = func;
+        func = options.data.get(func);
+
+        if (!func) {
+          throw new Error(`${oriName} method does not exist`);
+        }
+      } else {
+        func = this._convertExpr(options, func);
+      }
+
+      if (options && options.data) {
+        func = func.bind(options.data);
+      }
+
+      this.ele.addEventListener(name, func);
+
+      if (options) {
+        return () => this.ele.removeEventListener(name, func);
+      }
+
+      return this;
+    },
+    one(name, func, options) {
+      const callback = (e) => {
+        this.off(name, callback);
+        func(e);
+      };
+
+      this.on(name, callback, options);
+
+      return this;
+    },
+    off(name, func) {
+      this.ele.removeEventListener(name, func);
+      return this;
+    },
+    emit(name, data, opts) {
+      let event;
+
+      if (name instanceof Event) {
+        event = name;
+      } else if (name) {
+        event = new Event(name, { bubbles: true, ...opts });
+      }
+
+      data && Object.assign(event, data);
+
+      this.ele.dispatchEvent(event);
+
+      return this;
+    },
+  };
+
+  const originSplice = (ele, start, count, ...items) => {
+    const { children } = ele;
+    const removes = [];
+    for (let i = start, len = start + count; i < len; i++) {
+      const target = children[i];
+      removes.push(target);
+    }
+
+    removes.forEach((el) => el.remove());
+
+    if (items.length) {
+      const frag = document.createDocumentFragment();
+      items.forEach((e) => frag.append(createXEle(e).ele));
+
+      const positionEle = children[start];
+      if (positionEle) {
+        ele.insertBefore(frag, positionEle);
+      } else {
+        ele.appendChild(frag);
+      }
+    }
+
+    return removes;
+  };
+
+  const mutatingMethods = [
+    "push",
+    "pop",
+    "shift",
+    "unshift",
+    "splice",
+    "reverse",
+    "sort",
+    "fill",
+    "copyWithin",
+  ];
+
+  const likeArrayFn = {
+    push(...args) {
+      const { ele } = this;
+
+      originSplice(ele, ele.children.length, 0, ...args);
+
+      emitUpdate({
+        type: "array",
+        currentTarget: this,
+        target: this,
+        args,
+        name: "push",
+      });
+
+      return ele.children.length;
+    },
+
+    pop(...args) {
+      const { ele } = this;
+
+      const targets = originSplice(ele, ele.children.length - 1, 1, ...args);
+
+      emitUpdate({
+        type: "array",
+        currentTarget: this,
+        target: this,
+        args,
+        name: "pop",
+      });
+
+      return eleX(targets[0]);
+    },
+
+    shift(...args) {
+      const { ele } = this;
+
+      const targets = originSplice(ele, 0, 1, ...args);
+
+      emitUpdate({
+        type: "array",
+        currentTarget: this,
+        target: this,
+        args,
+        name: "shift",
+      });
+
+      return eleX(targets[0]);
+    },
+
+    unshift(...args) {
+      const { ele } = this;
+
+      originSplice(ele, 0, 0, ...args);
+
+      emitUpdate({
+        type: "array",
+        currentTarget: this,
+        target: this,
+        args,
+        name: "unshift",
+      });
+
+      return ele.children.length;
+    },
+    splice(...args) {
+      const reVal = originSplice(this.ele, ...args);
+
+      emitUpdate({
+        type: "array",
+        currentTarget: this,
+        target: this,
+        args,
+        name: "splice",
+      });
+
+      return reVal.map(eleX);
+    },
+    reverse(...args) {
+      const childs = Array.from(this.ele.childNodes);
+
+      arrayFn.reverse.call(childs, ...args);
+
+      const frag = document.createDocumentFragment();
+
+      childs.forEach((ele) => {
+        ele.__internal = 1;
+        frag.append(ele);
+      });
+
+      this.ele.append(frag);
+
+      childs.forEach((ele) => {
+        delete ele.__internal;
+      });
+
+      emitUpdate({
+        type: "array",
+        currentTarget: this,
+        target: this,
+        args,
+        name: "reverse",
+      });
+
+      return this;
+    },
+    sort(...args) {
+      const childs = Array.from(this.ele.children).map(eleX);
+
+      arrayFn.sort.call(childs, ...args);
+
+      const frag = document.createDocumentFragment();
+
+      childs.forEach((e) => {
+        e.ele.__internal = 1;
+        frag.append(e.ele);
+      });
+
+      this.ele.append(frag);
+
+      childs.forEach((e) => {
+        delete e.ele.__internal;
+      });
+
+      emitUpdate({
+        type: "array",
+        currentTarget: this,
+        target: this,
+        args,
+        name: "sort",
+      });
+
+      return this;
+    },
+  };
+
+  const arrayFn = Array.prototype;
+
+  Object.keys(Object.getOwnPropertyDescriptors(arrayFn)).forEach((key) => {
+    if (
+      key === "constructor" ||
+      key === "length" ||
+      mutatingMethods.includes(key)
+    ) {
+      return;
+    }
+
+    const targetFunc = arrayFn[key];
+
+    if (isFunction(targetFunc)) {
+      likeArrayFn[key] = function (...args) {
+        return targetFunc.apply(Array.from(this.ele.children).map(eleX), args);
+      };
+    }
+  });
+
+  class LikeArray {}
+
+  for (let [name, value] of Object.entries(likeArrayFn)) {
+    Object.defineProperty(LikeArray.prototype, name, {
+      value,
+    });
+  }
+
+  const stanz = (data) => {
+    return new Stanz(data);
+  };
+
+  Object.assign(stanz, { is: isxdata });
+
+  const { defineProperty, assign } = Object;
+
+  const hasValueEleNames = ["input", "textarea", "select"];
+
+  const setKeys = (keys, $ele) => {
+    const { ele } = $ele;
+
+    keys.forEach((k) => {
+      if (k in ele) {
+        let isNum = false;
+        defineProperty($ele, k, {
+          enumerable: true,
+          get: () => {
+            if (isNum) {
+              return Number(ele[k]);
+            }
+            return ele[k];
+          },
+          set: (val) => {
+            isNum = typeof val === "number";
+            ele[k] = val;
+          },
+        });
+      }
+    });
+  };
+
+  const formEleNames = new Set([
+    ...hasValueEleNames,
+    "option",
+    "button",
+    "label",
+    "fieldset",
+    "legend",
+    "form",
+  ]);
+
+  const bindProp = ($ele, opts = {}) => {
+    const { name: keyName, type } = opts;
+
+    const { ele } = $ele;
+    let old = ele[keyName];
+
+    $ele.on(type, () => {
+      emitUpdate({
+        type: "set",
+        target: $ele,
+        currentTarget: $ele,
+        name: keyName,
+        value: ele[keyName],
+        oldValue: old,
+      });
+
+      old = ele[keyName];
+    });
+  };
+
+  const initFormEle = ($ele) => {
+    const { tag } = $ele;
+
+    if (!formEleNames.has(tag)) {
+      return;
+    }
+
+    setKeys(["type", "name", "disabled"], $ele);
+
+    switch (tag) {
+      case "input":
+        initInput($ele);
+        break;
+      case "textarea":
+        setKeys(["value"], $ele);
+        bindProp($ele, { name: "value", type: "input" });
+        break;
+      case "option":
+        setKeys(["selected", "value"], $ele);
+        break;
+      case "select":
+        setKeys(["value"], $ele);
+        bindProp($ele, { name: "value", type: "change" });
+        break;
+    }
+  };
+
+  const initInput = ($ele) => {
+    const type = $ele.attr("type");
+
+    switch (type) {
+      case "file":
+        setKeys(["multiple", "files"], $ele);
+        bindProp($ele, { name: "files", type: "change" });
+        break;
+      case "checkbox":
+        setKeys(["checked", "multiple"], $ele);
+        bindProp($ele, { name: "checked", type: "change" });
+        break;
+      case "radio":
+        setKeys(["checked"], $ele);
+        bindProp($ele, { name: "checked", type: "change" });
+        break;
+      case "text":
+      default:
+        setKeys(["placeholder", "value"], $ele);
+        bindProp($ele, { name: "value", type: "input" });
+        break;
+    }
+  };
+
+  const getFormData = (target, expr) => {
+    const data = {};
+
+    target.all(expr).forEach(($el) => {
+      const { name, tag, ele } = $el;
+
+      if (tag === "input") {
+        switch ($el.type) {
+          case "checkbox":
+            if (!(name in data)) {
+              data[name] = [];
+            }
+
+            if (ele.checked) {
+              data[name].push(ele.value);
+            }
+            break;
+          case "radio":
+            if (ele.checked) {
+              data[name] = ele.value;
+            }
+            break;
+          case "file":
+            data[name] = ele.files;
+            break;
+          default:
+            data[name] = ele.value;
+        }
+      } else if (tag === "textarea") {
+        data[name] = ele.value;
+      } else if (tag === "select") {
+        const selectedsOpt = searchEle(ele, `option:checked`);
+
+        if (ele.multiple) {
+          data[name] = selectedsOpt.map((e) => e.value || e.textContent);
+        } else {
+          const [e] = selectedsOpt;
+          data[name] = e.value || e.textContent;
+        }
+      } else {
+        // custom element
+        data[name] = $el.value;
+      }
+    });
+
+    return data;
+  };
+
+  var formFn = {
+    // This method is still being tested
+    formData(expr, opts = { wait: 200 }) {
+      const data = stanz({});
+
+      assign(data, getFormData(this, expr || "input,select,textarea"));
+
+      this.watchTick((e) => {
+        assign(data, getFormData(this, expr || "input,select,textarea"));
+      }, opts.wait);
+
+      return data;
+    },
+  };
+
+  const cssHandler = {
+    set(target, key, value, receiver) {
+      target._ele.style[key] = value;
+      Reflect.set(target, key, value, receiver);
+      return true;
+    },
+    get(target, key, receiver) {
+      if (key === "length") {
+        return 0;
+      }
+
+      const { style } = target._ele;
+      if (Array.from(style).includes(key)) {
+        return style[key];
+      }
+
+      return getComputedStyle(target._ele)[key];
+    },
+  };
+
+  class XhearCSS {
+    constructor($el) {
+      const obj = {};
+
+      Object.defineProperty(obj, "_ele", {
+        enumerable: false,
+        get: () => $el.ele,
+      });
+
+      const { style } = $el.ele;
+
+      Array.from(style).forEach((key) => {
+        obj[key] = style[key];
+      });
+
+      return ($el._css = new Proxy(obj, cssHandler));
+    }
+  }
+
+  var cssFn = {
+    get css() {
+      return new XhearCSS(this);
+    },
+    set css(d) {
+      if (getType(d) == "string") {
+        this.ele.style = d;
+        return;
+      }
+
+      let { style } = this;
+
+      // Covering the old style
+      let nextKeys = Object.keys(d);
+
+      // Clear the unused key
+      Array.from(style).forEach((k) => {
+        if (!nextKeys.includes(k)) {
+          style[k] = "";
+        }
+      });
+
+      Object.assign(style, d);
+    },
+  };
+
+  const COMPS = {};
+
+  const renderElement = ({ defaults, ele, template, temps }) => {
+    const data = {
+      ...defaults.data,
+      ...defaults.attrs,
     };
 
-    // Get the settable keys according to defaults
-    const getCansetKeys = (defs) => {
-        const {
-            attrs,
-            data,
-            watch,
-            proto
-        } = defs;
+    const $ele = eleX(ele);
 
-        const keys = [
-            ...Object.keys(attrs),
-            ...Object.keys(data),
-            ...Object.keys(watch),
+    defaults.proto && $ele.extend(defaults.proto, { enumerable: false });
+
+    for (let [key, value] of Object.entries(data)) {
+      if (!$ele.hasOwnProperty(key)) {
+        $ele[key] = value;
+      }
+    }
+
+    if (defaults.temp) {
+      const root = ele.attachShadow({ mode: "open" });
+
+      root.innerHTML = template.innerHTML;
+
+      render({
+        target: root,
+        data: $ele,
+        temps,
+      });
+    }
+
+    defaults.ready && defaults.ready.call($ele);
+
+    if (defaults.watch) {
+      const wen = Object.entries(defaults.watch);
+
+      $ele.watchTick((e) => {
+        for (let [name, func] of wen) {
+          if (e.hasModified(name)) {
+            func.call($ele, $ele[name], {
+              watchers: e,
+            });
+          }
+        }
+      });
+
+      for (let [name, func] of wen) {
+        func.call($ele, $ele[name], {});
+      }
+    }
+  };
+
+  const register = (opts = {}) => {
+    const defaults = {
+      // Registered component name
+      tag: "",
+      // Body content string
+      temp: "",
+      // Initialization data after element creation
+      data: {},
+      // Values that will not be traversed
+      proto: {},
+      // Keys bound to attributes
+      // attrs: {},
+      // The listener function for the element
+      // watch: {},
+      // Function triggered when the component is created (data initialization complete)
+      // created() { },
+      // Function triggered after component data initialization is complete (initial rendering completed)
+      // ready() { },
+      // Functions that are added to the document trigger
+      // attached() { },
+      // Functions triggered by moving out of the document
+      // detached() { },
+      // The container element is changed
+      // slotchange() { }
+      ...opts,
+    };
+
+    validateTagName(defaults.tag);
+
+    const name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
+
+    if (COMPS[name]) {
+      throw `Component ${name} already exists`;
+    }
+
+    const template = document.createElement("template");
+    template.innerHTML = defaults.temp;
+    const temps = convert(template);
+
+    const getAttrKeys = (attrs) => {
+      let attrKeys;
+
+      if (attrs instanceof Array) {
+        attrKeys = [...attrs];
+      } else {
+        attrKeys = Object.keys(attrs);
+      }
+
+      return attrKeys;
+    };
+    const XElement = (COMPS[name] = class extends HTMLElement {
+      constructor(...args) {
+        super(...args);
+
+        const $ele = eleX(this);
+
+        defaults.created && defaults.created.call($ele);
+
+        if (defaults.attrs) {
+          const attrKeys = getAttrKeys(defaults.attrs);
+
+          // fix self attribule value
+          $ele.watchTick((e) => {
+            attrKeys.forEach((key) => {
+              if (e.hasModified(key)) {
+                const val = $ele[key];
+                const attrName = toDashCase(key);
+                if (val === null || val === undefined) {
+                  this.removeAttribute(attrName);
+                } else {
+                  this.setAttribute(attrName, val);
+                }
+              }
+            });
+          });
+        }
+
+        renderElement({
+          defaults,
+          ele: this,
+          template,
+          temps,
+        });
+      }
+
+      connectedCallback() {
+        defaults.attached &&
+          !isInternal(this) &&
+          defaults.attached.call(eleX(this));
+      }
+
+      disconnectedCallback() {
+        defaults.detached &&
+          !isInternal(this) &&
+          defaults.detached.call(eleX(this));
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        const $ele = eleX(this);
+
+        if (!/[^\d.]/.test(newValue) && typeof $ele[name] === "number") {
+          newValue = Number(newValue);
+        }
+
+        $ele[hyphenToUpperCase(name)] = newValue;
+      }
+
+      static get observedAttributes() {
+        return getAttrKeys(defaults.attrs || {}).map((e) => toDashCase(e));
+      }
+    });
+
+    if (document.readyState !== "loading") {
+      customElements.define(defaults.tag, XElement);
+    } else {
+      const READYSTATE = "readystatechange";
+      let f;
+      document.addEventListener(
+        READYSTATE,
+        (f = () => {
+          customElements.define(defaults.tag, XElement);
+          document.removeEventListener(READYSTATE, f);
+        })
+      );
+    }
+  };
+
+  function isInternal(ele) {
+    let target = ele;
+
+    while (target) {
+      if (target.__internal) {
+        return true;
+      }
+
+      target = target.parentNode || target.host;
+
+      if (!target || (target.tagName && target.tagName === "BODY")) {
+        break;
+      }
+    }
+
+    return false;
+  }
+
+  function validateTagName(str) {
+    // Check if the string starts or ends with '-'
+    if (str.charAt(0) === "-" || str.charAt(str.length - 1) === "-") {
+      throw new Error(`The string "${str}" cannot start or end with "-"`);
+    }
+
+    // Check if the string has consecutive '-' characters
+    for (let i = 0; i < str.length - 1; i++) {
+      if (str.charAt(i) === "-" && str.charAt(i + 1) === "-") {
+        throw new Error(
+          `The string "${str}" cannot have consecutive "-" characters`
+        );
+      }
+    }
+
+    // Check if the string has at least one '-' character
+    if (!str.includes("-")) {
+      throw new Error(`The string "${str}" must contain at least one "-"`);
+    }
+
+    return true;
+  }
+
+  function getConditionEles(_this, isEnd = true) {
+    const $eles = [];
+
+    let target = isEnd ? _this.__marked_end : _this.__marked_start;
+    while (true) {
+      target = isEnd ? target.nextSibling : target.previousSibling;
+      if (target instanceof Comment) {
+        if (target.__$ele) {
+          $eles.push(target.__$ele);
+          target = isEnd ? target.__end : target.__start;
+        }
+      } else if (!(target instanceof Text)) {
+        break;
+      }
+    }
+
+    return $eles;
+  }
+  const proto$1 = {
+    _getRenderData() {
+      let target = this.__marked_end;
+      while (target && !target.__render_data) {
+        target = target.parentNode;
+      }
+
+      if (target) {
+        return {
+          target,
+          data: target.__render_data,
+          temps: target.__render_temps,
+        };
+      }
+
+      return null;
+    },
+    _renderMarked() {
+      const { ele } = this;
+      const { parentNode } = ele;
+
+      const markedText = `${this.tag}: ${this.__originHTML
+      .trim()
+      .slice(0, 20)
+      .replace(/\n/g, "")} ...`;
+
+      const markedStart = document.createComment(markedText + " --start");
+      const markedEnd = document.createComment(markedText + " --end");
+      markedStart.__end = markedEnd;
+      markedEnd.__start = markedStart;
+      markedEnd.__$ele = markedStart.__$ele = this;
+      parentNode.insertBefore(markedStart, ele);
+      parentNode.insertBefore(markedEnd, ele);
+      this.__marked_start = markedStart;
+      this.__marked_end = markedEnd;
+
+      Object.defineProperties(ele, {
+        __revokes: {
+          set(val) {
+            markedStart.__revokes = val;
+          },
+          get() {
+            return markedStart.__revokes;
+          },
+        },
+      });
+    },
+    _renderContent() {
+      const e = this._getRenderData();
+
+      if (!e) {
+        return;
+      }
+
+      const { target, data, temps } = e;
+
+      const markedEnd = this.__marked_end;
+
+      const temp = document.createElement("template");
+      temp.innerHTML = this.__originHTML;
+      markedEnd.parentNode.insertBefore(temp.content, markedEnd);
+
+      render({ target, data, temps });
+    },
+    _revokeRender() {
+      const markedStart = this.__marked_start;
+      const markedEnd = this.__marked_end;
+
+      let target = markedEnd.previousSibling;
+
+      while (true) {
+        if (!target || target === markedStart) {
+          break;
+        }
+
+        revokeAll(target);
+        const oldTarget = target;
+        target = target.previousSibling;
+        oldTarget.remove();
+      }
+    },
+    _refreshCondition() {
+      const $eles = [this];
+
+      if (this._refreshing) {
+        return;
+      }
+
+      switch (this.tag) {
+        case "x-if":
+          $eles.push(...getConditionEles(this));
+          break;
+        case "x-else-if":
+          $eles.unshift(...getConditionEles(this, false));
+          $eles.push(...getConditionEles(this));
+          break;
+      }
+
+      $eles.forEach((e) => (e._refreshing = true));
+      nextTick(() => {
+        let isOK = false;
+        $eles.forEach(($ele) => {
+          delete $ele._refreshing;
+
+          if (isOK) {
+            $ele._revokeRender();
+            return;
+          }
+
+          if ($ele.value || $ele.tag === "x-else") {
+            $ele._renderContent();
+            isOK = true;
+            return;
+          }
+
+          $ele._revokeRender();
+        });
+      });
+    },
+  };
+
+  const xifComponentOpts = {
+    tag: "x-if",
+    data: {
+      value: null,
+    },
+    watch: {
+      value() {
+        this._refreshCondition();
+      },
+    },
+    proto: proto$1,
+    ready() {
+      this.__originHTML = this.html;
+      this.html = "";
+      this._renderMarked();
+
+      nextTick(() => this.ele.remove());
+    },
+  };
+
+  register(xifComponentOpts);
+
+  register({
+    ...xifComponentOpts,
+    tag: "x-else-if",
+  });
+
+  register({
+    tag: "x-else",
+    proto: proto$1,
+    ready: xifComponentOpts.ready,
+  });
+
+  const createItem = (d, targetTemp, temps, $host) => {
+    const $ele = createXEle(targetTemp.innerHTML);
+    const { ele } = $ele;
+
+    const itemData = new Stanz({
+      $data: d,
+      $ele,
+      $host,
+    });
+
+    render({
+      target: ele,
+      data: itemData,
+      temps,
+      $host,
+      isRenderSelf: true,
+    });
+
+    const revokes = ele.__revokes;
+
+    const revoke = () => {
+      removeArrayValue(revokes, revoke);
+      itemData.revoke();
+    };
+
+    revokes.push(revoke);
+
+    return { ele, itemData };
+  };
+
+  const proto = {
+    _getRenderData: proto$1._getRenderData,
+    _renderMarked: proto$1._renderMarked,
+    _getChilds() {
+      const childs = [];
+
+      const { __marked_end, __marked_start } = this;
+
+      if (!__marked_start) {
+        return [];
+      }
+
+      let target = __marked_start;
+
+      while (true) {
+        target = target.nextSibling;
+
+        if (!target || target === __marked_end) {
+          break;
+        }
+        if (target instanceof Element) {
+          childs.push(target);
+        }
+      }
+
+      return childs;
+    },
+  };
+
+  register({
+    tag: "x-fill",
+    data: {
+      value: null,
+    },
+    watch: {
+      value(val) {
+        const childs = this._getChilds();
+
+        if (!val) {
+          childs &&
+            childs.forEach((el) => {
+              revokeAll(el);
+              el.remove();
+            });
+          return;
+        }
+
+        if (!(val instanceof Array)) {
+          console.warn(
+            `The value of x-fill component must be of type Array, and the type of the current value is ${getType(
+            val
+          )}`
+          );
+
+          childs &&
+            childs.forEach((el) => {
+              revokeAll(el);
+              el.remove();
+            });
+          return;
+        }
+
+        const newVal = Array.from(val);
+        const oldVal = childs.map((e) => e.__render_data.$data);
+
+        if (isArrayEqual(oldVal, newVal)) {
+          return;
+        }
+
+        const tempName = this._name;
+
+        const { data, temps } = this._getRenderData();
+
+        if (!temps) {
+          return;
+        }
+
+        const targetTemp = temps[hyphenToUpperCase(tempName)];
+
+        const markEnd = this.__marked_end;
+        const parent = markEnd.parentNode;
+        const backupChilds = childs.slice();
+        const $host = data.$host || data;
+
+        for (let i = 0, len = val.length; i < len; i++) {
+          const current = val[i];
+          const cursorEl = childs[i];
+
+          if (!cursorEl) {
+            const { ele } = createItem(current, targetTemp, temps, $host);
+            parent.insertBefore(ele, markEnd);
+            continue;
+          }
+
+          const cursorData = cursorEl.__render_data.$data;
+
+          if (current === cursorData) {
+            continue;
+          }
+
+          if (oldVal.includes(current)) {
+            // Data displacement occurs
+            const oldEl = childs.find((e) => e.__render_data.$data === current);
+            oldEl.__internal = 1;
+            parent.insertBefore(oldEl, cursorEl);
+            delete oldEl.__internal;
+            moveArrayValue(childs, oldEl, i);
+          } else {
+            // New elements added
+            const { ele } = createItem(current, targetTemp, temps, $host);
+            parent.insertBefore(ele, cursorEl);
+            childs.splice(i, 0, ele);
+          }
+        }
+
+        backupChilds.forEach((current, i) => {
+          const data = oldVal[i];
+
+          // need to be deleted
+          if (!newVal.includes(data)) {
+            revokeAll(current);
+            current.remove();
+          }
+        });
+      },
+    },
+    proto,
+    ready() {
+      this.__originHTML = "origin";
+      this._name = this.attr("name");
+      this._renderMarked();
+
+      nextTick(() => this.ele.remove());
+    },
+  });
+
+  const { defineProperties } = Object;
+
+  const init = ({ _this, ele, proxySelf }) => {
+    const descs = {
+      owner: {
+        get() {
+          const { parentNode } = ele;
+          const { _owner } = _this;
+          const arr = parentNode ? [eleX(parentNode), ..._owner] : [..._owner];
+          return new Set(arr);
+        },
+      },
+      ele: {
+        get: () => ele,
+      },
+    };
+
+    const tag = ele.tagName && ele.tagName.toLowerCase();
+
+    if (tag) {
+      descs.tag = {
+        enumerable: true,
+        value: tag,
+      };
+    }
+
+    defineProperties(_this, descs);
+
+    initFormEle(proxySelf);
+  };
+
+  class Xhear extends LikeArray {
+    constructor({ ele }) {
+      super();
+
+      const proxySelf = constructor.call(this, {}, handler);
+
+      init({
+        _this: this,
+        ele,
+        proxySelf,
+      });
+
+      ele.__xhear__ = proxySelf;
+
+      return proxySelf;
+    }
+
+    get length() {
+      return this.ele.children.length;
+    }
+
+    $(expr) {
+      let { ele } = this;
+      if (ele instanceof HTMLTemplateElement) {
+        ele = ele.content;
+      }
+
+      const target = ele.querySelector(expr);
+      return target ? eleX(target) : null;
+    }
+
+    all(expr) {
+      return searchEle(this.ele, expr).map(eleX);
+    }
+
+    extend(obj, desc) {
+      return extend(this, obj, desc);
+    }
+
+    get text() {
+      return this.ele.textContent;
+    }
+
+    set text(val) {
+      this.ele.textContent = val;
+    }
+
+    get html() {
+      return this.ele.innerHTML;
+    }
+
+    set html(val) {
+      this.ele.innerHTML = val;
+    }
+
+    get classList() {
+      return this.ele.classList;
+    }
+
+    get data() {
+      return this.ele.dataset;
+    }
+
+    // get css() {
+    //   return getComputedStyle(this.ele);
+    // }
+
+    get shadow() {
+      return eleX(this.ele.shadowRoot);
+    }
+
+    get root() {
+      const rootNode = this.ele.getRootNode();
+      return rootNode ? eleX(rootNode) : null;
+    }
+    get host() {
+      let root = this.ele.getRootNode();
+      let { host } = root;
+      return host ? eleX(host) : null;
+    }
+
+    get parent() {
+      let { parentNode } = this.ele;
+      return !parentNode || parentNode === document ? null : eleX(parentNode);
+    }
+
+    get parents() {
+      const parents = [];
+      let target = this;
+      while (target.parent) {
+        target = target.parent;
+        parents.push(target);
+      }
+      return parents;
+    }
+
+    get next() {
+      const nextEle = this.ele.nextElementSibling;
+      return nextEle ? eleX(nextEle) : null;
+    }
+
+    get nexts() {
+      const { parent } = this;
+      const selfIndex = this.index;
+      return parent.filter((e, i) => i > selfIndex);
+    }
+
+    get prev() {
+      const prevEle = this.ele.previousElementSibling;
+      return prevEle ? eleX(prevEle) : null;
+    }
+
+    get prevs() {
+      const { parent } = this;
+      const selfIndex = this.index;
+      return parent.filter((e, i) => i < selfIndex);
+    }
+
+    get siblings() {
+      return this.parent.filter((e) => e !== this);
+    }
+
+    get index() {
+      let { parentNode } = this.ele;
+
+      if (!parentNode) {
+        return null;
+      }
+
+      return Array.prototype.indexOf.call(parentNode.children, this.ele);
+    }
+
+    get style() {
+      return this.ele.style;
+    }
+
+    get width() {
+      return parseInt(getComputedStyle(this.ele).width);
+    }
+
+    get height() {
+      return parseInt(getComputedStyle(this.ele).height);
+    }
+
+    get clientWidth() {
+      return this.ele.clientWidth;
+    }
+
+    get clientHeight() {
+      return this.ele.clientHeight;
+    }
+
+    get offsetWidth() {
+      return this.ele.offsetWidth;
+    }
+
+    get offsetHeight() {
+      return this.ele.offsetHeight;
+    }
+
+    get outerWidth() {
+      let computedStyle = getComputedStyle(this.ele);
+      return (
+        this.ele.offsetWidth +
+        parseInt(computedStyle["margin-left"]) +
+        parseInt(computedStyle["margin-right"])
+      );
+    }
+
+    get outerHeight() {
+      let computedStyle = getComputedStyle(this.ele);
+      return (
+        this.ele.offsetHeight +
+        parseInt(computedStyle["margin-top"]) +
+        parseInt(computedStyle["margin-bottom"])
+      );
+    }
+
+    is(expr) {
+      return meetsEle(this.ele, expr);
+    }
+
+    remove() {
+      this.ele.remove();
+    }
+
+    clone(bool = true) {
+      return eleX(this.ele.cloneNode(bool));
+    }
+
+    wrap(content) {
+      const $el = createXEle(content);
+
+      const { ele } = this;
+
+      ele.parentNode.insertBefore($el.ele, ele);
+
+      ele.__internal = 1;
+
+      $el.ele.appendChild(ele);
+
+      delete ele.__internal;
+
+      return this;
+    }
+
+    unwrap() {
+      const { ele } = this;
+
+      const target = ele.parentNode;
+
+      if (target.children.length > 1) {
+        throw `The target has a sibling element, so you can't use unwrap.`;
+      }
+
+      ele.__internal = 1;
+
+      target.parentNode.insertBefore(ele, target);
+
+      target.remove();
+
+      delete ele.__internal;
+
+      return this;
+    }
+  }
+
+  const sfn = Stanz.prototype;
+  const fn = Xhear.prototype;
+
+  fn.extend(
+    {
+      get: sfn.get,
+      set: sfn.set,
+      toJSON: sfn.toJSON,
+      toString: sfn.toString,
+      ...watchFn,
+      ...eventFn,
+      ...defaultData,
+      ...syncFn,
+      ...formFn,
+    },
+    {
+      enumerable: false,
+    }
+  );
+
+  fn.extend(cssFn);
+
+  const eleX = (ele) => {
+    if (!ele) return null;
+
+    if (ele.__xhear__) {
+      return ele.__xhear__;
+    }
+
+    return new Xhear({ ele });
+  };
+
+  const objToXEle = (obj) => {
+    const data = { ...obj };
+
+    if (!obj.tag) {
+      return null;
+    }
+
+    const ele = document.createElement(obj.tag);
+    delete data.tag;
+    const $ele = eleX(ele);
+
+    Object.assign($ele, data);
+
+    return $ele;
+  };
+
+  const temp = document.createElement("template");
+
+  const strToXEle = (str) => {
+    temp.innerHTML = str;
+    const ele = temp.content.children[0] || temp.content.childNodes[0];
+    temp.innerHTML = "";
+
+    return eleX(ele);
+  };
+
+  const createXEle = (expr, exprType) => {
+    if (expr instanceof Xhear) {
+      return expr;
+    }
+
+    if (expr instanceof Node || expr === window) {
+      return eleX(expr);
+    }
+
+    const type = getType(expr);
+
+    switch (type) {
+      case "object":
+        return objToXEle(expr);
+      case "string":
+        return strToXEle(expr);
+    }
+  };
+
+  const revokeAll = (target) => {
+    if (target.__revokes) {
+      Array.from(target.__revokes).forEach((f) => f && f());
+    }
+    target.childNodes &&
+      Array.from(target.childNodes).forEach((el) => {
+        revokeAll(el);
+      });
+  };
+
+  function $$1(expr) {
+    if (getType(expr) === "string" && !/<.+>/.test(expr)) {
+      const ele = document.querySelector(expr);
+
+      return eleX(ele);
+    }
+
+    return createXEle(expr);
+  }
+
+  Object.defineProperties($$1, {
+    // Convenient objects for use as extensions
+    extensions: {
+      value: {},
+    },
+  });
+
+  Object.assign($$1, {
+    stanz,
+    render,
+    convert,
+    register,
+    fn: Xhear.prototype,
+    all: (expr) => searchEle(document, expr).map(eleX),
+  });
+
+  const getOid = () => Math.random().toString(32).slice(2);
+
+  class Onion {
+    constructor() {
+      this._middlewares = new Map();
+    }
+
+    use(middleware) {
+      const oid = getOid();
+      this._middlewares.set(oid, middleware);
+      return oid;
+    }
+
+    unuse(oid) {
+      return this._middlewares.delete(oid);
+    }
+
+    async run(context) {
+      let index = -1;
+
+      const middlewares = Array.from(this._middlewares.values());
+
+      const next = async () => {
+        index++;
+        if (index < middlewares.length) {
+          await middlewares[index](context, next);
+        }
+      };
+
+      await next();
+    }
+  }
+
+  const processor = {};
+
+  const addHandler = (name, handler) => {
+    const oni = processor[name] || (processor[name] = new Onion());
+    oni.use(handler);
+  };
+
+  const use = (name, handler) => {
+    if (name instanceof Function) {
+      handler = name;
+      name = ["js", "mjs"];
+    }
+
+    if (name instanceof Array) {
+      name.forEach((name) => {
+        addHandler(name, handler);
+      });
+      return;
+    }
+
+    addHandler(name, handler);
+  };
+
+  use(["mjs", "js"], async (ctx, next) => {
+    if (!ctx.result) {
+      const { url, params } = ctx;
+      const d = new URL(url);
+      if (
+        /^blob:/.test(url) ||
+        /^data:/.test(url) ||
+        params.includes("-direct")
+      ) {
+        ctx.result = await import(url);
+      } else {
+        ctx.result = await import(`${d.origin}${d.pathname}`);
+      }
+    }
+
+    await next();
+  });
+
+  use(["txt", "html", "htm"], async (ctx, next) => {
+    if (!ctx.result) {
+      const { url } = ctx;
+      ctx.result = await fetch(url).then((e) => e.text());
+    }
+
+    await next();
+  });
+
+  use("json", async (ctx, next) => {
+    if (!ctx.result) {
+      const { url } = ctx;
+
+      ctx.result = await fetch(url).then((e) => e.json());
+    }
+
+    await next();
+  });
+
+  use("wasm", async (ctx, next) => {
+    if (!ctx.result) {
+      const { url } = ctx;
+
+      const data = await fetch(url).then((e) => e.arrayBuffer());
+
+      const module = await WebAssembly.compile(data);
+      const instance = new WebAssembly.Instance(module);
+
+      ctx.result = instance.exports;
+    }
+
+    await next();
+  });
+
+  use("css", async (ctx, next) => {
+    if (!ctx.result) {
+      const { url, element } = ctx;
+
+      if (element) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+
+        const root = element.getRootNode();
+
+        if (root === document) {
+          root.head.append(link);
+        } else {
+          root.appendChild(link);
+        }
+
+        let f;
+        element.addEventListener(
+          "disconnected",
+          (f = (e) => {
+            link.remove();
+            element.removeEventListener("disconnected", f);
+          })
+        );
+      } else {
+        ctx.result = await fetch(url).then((e) => e.text());
+      }
+    }
+
+    await next();
+  });
+
+  const LOADED = Symbol("loaded");
+
+  const createLoad = (meta) => {
+    if (!meta) {
+      meta = {
+        url: document.location.href,
+      };
+    }
+    const load = (ourl) => {
+      let reurl = "";
+      const [url, ...params] = ourl.split(" ");
+
+      if (meta.resolve) {
+        reurl = meta.resolve(url);
+      } else {
+        const currentUrl = new URL(meta.url);
+        const resolvedUrl = new URL(url, currentUrl);
+        reurl = resolvedUrl.href;
+      }
+
+      return agent(reurl, { params });
+    };
+    return load;
+  };
+
+  const agent = async (url, opts) => {
+    const urldata = new URL(url);
+    const { pathname } = urldata;
+
+    let type;
+
+    opts.params &&
+      opts.params.forEach((e) => {
+        if (/^\..+/.test(e)) {
+          type = e.replace(/^\.(.+)/, "$1");
+        }
+      });
+
+    if (!type) {
+      type = pathname.slice(((pathname.lastIndexOf(".") - 1) >>> 0) + 2);
+    }
+
+    const ctx = {
+      url,
+      result: null,
+      ...opts,
+    };
+
+    const oni = processor[type];
+
+    if (oni) {
+      await oni.run(ctx);
+    } else {
+      ctx.result = fetch(url);
+    }
+
+    if (opts && opts.element) {
+      const { element } = opts;
+      element[LOADED] = true;
+      const event = new Event("load");
+      element.dispatchEvent(event);
+    }
+
+    if (opts.params && opts.params.includes("-ctx")) {
+      return ctx;
+    }
+
+    return ctx.result;
+  };
+
+  function lm$1(meta) {
+    return createLoad(meta);
+  }
+
+  Object.assign(lm$1, {
+    use,
+  });
+
+  class LoadModule extends HTMLElement {
+    constructor(...args) {
+      super(...args);
+
+      this[LOADED] = false;
+
+      Object.defineProperties(this, {
+        loaded: {
+          get: () => this[LOADED],
+        },
+      });
+
+      this._init();
+    }
+
+    _init() {
+      if (this.__initSrc || this.attributes.hasOwnProperty("pause")) {
+        return;
+      }
+
+      let src = this.getAttribute("src");
+
+      if (!src) {
+        return;
+        // throw `The ${this.tagName.toLowerCase()} element requires the src attribut `;
+      }
+      this.__initSrc = src;
+
+      src = new URL(src, location.href).href;
+      Object.defineProperties(this, {
+        src: {
+          configurable: true,
+          value: src,
+        },
+      });
+
+      const [url, ...params] = src.split(" ");
+
+      agent(url, {
+        element: this,
+        params,
+      });
+    }
+
+    connectedCallback() {
+      const event = new CustomEvent("connected");
+      event.root = this._root = this.getRootNode();
+      this.dispatchEvent(event);
+    }
+
+    disconnectedCallback() {
+      const event = new CustomEvent("disconnected");
+      event.root = this._root;
+      delete this._root;
+      this.dispatchEvent(event);
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (name === "src") {
+        if (newValue && oldValue === null) {
+          this._init();
+        } else if (this.__initSrc && oldValue && newValue !== this.__initSrc) {
+          console.warn(
+            `${this.tagName.toLowerCase()} change src is invalid, only the first change will be loaded`
+          );
+          this.setAttribute("src", this.__initSrc);
+        }
+      } else if (name === "pause" && newValue === null) {
+        this._init();
+      }
+    }
+
+    static get observedAttributes() {
+      return ["src", "pause"];
+    }
+  }
+
+  class LM extends LoadModule {
+    constructor(...args) {
+      super(...args);
+    }
+  }
+
+  const ready = () => {
+    customElements.define("load-module", LoadModule);
+    customElements.define("l-m", LM);
+    window.removeEventListener("load", ready);
+  };
+
+  if (document.readyState === "complete") {
+    ready();
+  } else {
+    window.addEventListener("load", ready);
+  }
+
+  window.lm = lm$1;
+
+  function resolvePath(moduleName, baseURI) {
+    const [url, ...params] = moduleName.split(" ");
+
+    const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
+
+    if (
+      // moduleName.startsWith("/") ||
+      url.startsWith("http://") ||
+      url.startsWith("https://")
+    ) {
+      return url;
+    }
+
+    const moduleURL = new URL(url, baseURL);
+
+    if (params.length) {
+      return `${moduleURL.href} ${params.join(" ")}`;
+    }
+
+    return moduleURL.href;
+  }
+
+  function fixRelate(ele, path) {
+    searchEle(ele, "[href],[src]").forEach((el) => {
+      ["href", "src"].forEach((name) => {
+        const val = el.getAttribute(name);
+
+        if (val && !/^(https?:)?\/\/\S+/.test(val)) {
+          el.setAttribute(name, resolvePath(val, path));
+        }
+      });
+    });
+  }
+
+  function fixRelatePathContent(content, path) {
+    const template = document.createElement("template");
+    template.innerHTML = content;
+
+    fixRelate(template.content, path);
+
+    return template.innerHTML;
+  }
+
+  const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
+    try {
+      await callback();
+    } catch (error) {
+      const err = new Error(`${desc}\n  ${error.stack}`);
+      err.error = error;
+      self.emit("error", { error: err, ...rest });
+      throw err;
+    }
+  };
+
+  const ISERROR = Symbol("loadError");
+
+  const getPagesData = async (src) => {
+    const load = lm();
+    const pagesData = [];
+    let defaults;
+    let pageSrc = src;
+    let beforeSrc;
+    let errorObj;
+
+    while (true) {
+      try {
+        defaults = await load(pageSrc);
+      } catch (error) {
+        if (beforeSrc) {
+          const err = new Error(
+            `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+          );
+          err.error = error;
+
+          errorObj = err;
+          // throw err;
+        } else {
+          errorObj = error;
+          // throw error;
+        }
+      }
+
+      if (errorObj) {
+        pagesData.unshift({
+          ISERROR,
+          error: errorObj,
+        });
+        break;
+      }
+
+      pagesData.unshift({
+        src: pageSrc,
+        defaults,
+      });
+
+      if (!defaults.parent) {
+        break;
+      }
+
+      beforeSrc = pageSrc;
+      pageSrc = new URL(defaults.parent, pageSrc).href;
+    }
+
+    return pagesData;
+  };
+
+  const createPage = (src, defaults) => {
+    // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
+    const tempCon = document.createElement("div");
+    tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
+
+    const targetPage = $(tempCon.children[0]);
+    targetPage._pause_init = 1;
+
+    nextTick(() => {
+      targetPage._renderDefault(defaults);
+
+      delete targetPage._pause_init;
+    });
+
+    return targetPage;
+  };
+
+  renderExtends.render = (e) => {
+    const { step, name, target } = e;
+
+    const { link } = $$1.extensions;
+
+    if (step === "init") {
+      // Renders the component or page only once
+      if (target.host && link) {
+        $$1(target)
+          .all("a")
+          .forEach((e) => link(e));
+      }
+    } else if (
+      name === "attr" &&
+      step === "refresh" &&
+      target.attr("olink") === ""
+    ) {
+      const top = target.parents.pop();
+
+      if (top.__fixLinkTimer) {
+        return;
+      }
+
+      top.__fixLinkTimer = nextTick(() => {
+        const { host } = target;
+
+        if (host && host.tag === "o-page") {
+          fixRelate(top.ele, host.src);
+        }
+
+        if (link) {
+          $$1(top)
+            .all("a")
+            .forEach((e) => link(e));
+        }
+        delete top.__fixLinkTimer;
+      });
+
+      // console.log("refresh => ", e);
+    }
+  };
+
+  const initLink = (_this) => {
+    const $ele = $$1(_this);
+
+    // olink click to amend
+    $ele.on("click", (e) => {
+      const { target } = e;
+
+      if (target.attributes.hasOwnProperty("olink")) {
+        if ($ele.app) {
+          if (e.metaKey || e.shiftKey) {
+            return;
+          }
+          e.preventDefault();
+
+          if (target.tagName === "A") {
+            const originHref = target.getAttribute("origin-href");
+            // Prioritize the use of origin links
+            $ele.app.goto(originHref || target.href);
+
+            e.stopPropagation();
+          }
+        } else {
+          console.warn("olink is only allowed within o-apps");
+        }
+      }
+    });
+  };
+
+  const clone = (obj) => JSON.parse(JSON.stringify(obj));
+
+  const PAGE = Symbol("Page");
+
+  Object.defineProperty($$1, "PAGE", {
+    value: PAGE,
+  });
+
+  lm$1.use(["html", "htm"], async (ctx, next) => {
+    const { result: content, params } = ctx;
+
+    if (
+      content &&
+      /<template +page *>/.test(content) &&
+      !params.includes("-ignore-temp")
+    ) {
+      const url = getContentInfo(content, ctx.url);
+
+      ctx.result = await lm$1()(`${url} .mjs`);
+      ctx.resultContent = content;
+    }
+
+    await next();
+  });
+
+  // const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
+
+  const cacheLink = {};
+
+  function getContentInfo(content, url, isPage = true) {
+    if (cacheLink[url]) {
+      return cacheLink[url];
+    }
+
+    const tempEl = $$1("<template></template>");
+    tempEl.html = content;
+    const titleEl = tempEl.$("title");
+
+    const targetTemp = tempEl.$(`template[${isPage ? "page" : "component"}]`);
+    const scriptEl = targetTemp.$("script");
+
+    scriptEl && scriptEl.remove();
+
+    const fileContent = `
+  export const type = ${isPage ? "$.PAGE" : "$.COMP"};
+  export const PATH = '${url}';
+  ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
+  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
+  ${scriptEl ? scriptEl.html : ""}`;
+
+    const file = new File(
+      [fileContent],
+      location.pathname.replace(/.+\/(.+)/, "$1"),
+      { type: "text/javascript" }
+    );
+
+    return (cacheLink[url] = URL.createObjectURL(file));
+  }
+
+  lm$1.use(["js", "mjs"], async (ctx, next) => {
+    const { result: moduleData, url } = ctx;
+    if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
+      await next();
+      return;
+    }
+
+    const defaultsData = await getDefault(moduleData, url);
+
+    let tempSrc = defaultsData.temp;
+
+    if (!/<.+>/.test(tempSrc)) {
+      if (!tempSrc) {
+        tempSrc = url.replace(/\.m?js.*/, ".html");
+      }
+
+      await wrapErrorCall(
+        async () => {
+          defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
+        },
+        {
+          targetModule: (typeof document === 'undefined' && typeof location === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : typeof document === 'undefined' ? location.href : (document.currentScript && document.currentScript.src || new URL('ofa.js', document.baseURI).href)),
+          desc: `${url} module request for ${tempSrc} template page failed`,
+        }
+      );
+    }
+
+    ctx.result = defaultsData;
+
+    await next();
+  });
+
+  $$1.register({
+    tag: "o-page",
+    attrs: {
+      src: null,
+    },
+    watch: {
+      async src(src) {
+        if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
+          src = resolvePath(src);
+          this.ele.setAttribute("src", src);
+        }
+
+        if (this.__init_src) {
+          if (this.__init_src !== src) {
+            throw "A page that has already been initialized cannot be set with the src attribute";
+          }
+          return;
+        }
+
+        if (!src) {
+          return;
+        }
+
+        this.__init_src = src;
+
+        if (this._defaults || this._pause_init) {
+          return;
+        }
+
+        const pagesData = await getPagesData(src);
+
+        const target = pagesData.pop();
+
+        pagesData.forEach((e, i) => {
+          const parentPage = createPage(e.src, e.defaults);
+
+          this.wrap(parentPage);
+        });
+
+        this._renderDefault(target.defaults);
+      },
+    },
+    proto: {
+      async _renderDefault(defaults) {
+        const { src } = this;
+
+        if (this._defaults) {
+          throw "The current page has already been rendered";
+        }
+
+        this._defaults = defaults;
+
+        if (defaults.pageAnime) {
+          this._pageAnime = defaults.pageAnime;
+        }
+
+        if (!defaults || defaults.type !== PAGE) {
+          const err = new Error(
+            `The currently loaded module is not a page \nLoaded string => '${src}'`
+          );
+          this.emit("error", { error: err });
+          this.__reject(err);
+          throw err;
+        }
+
+        const template = document.createElement("template");
+        template.innerHTML = fixRelatePathContent(defaults.temp, src);
+        const temps = convert(template);
+
+        renderElement({
+          defaults,
+          ele: this.ele,
+          template,
+          temps,
+        });
+
+        await dispatchLoad(this, defaults.loaded);
+
+        initLink(this.shadow);
+
+        this._loaded = true;
+
+        this.emit("page-loaded");
+
+        this.__resolve();
+      },
+      back() {
+        this.app.back();
+      },
+      goto(src) {
+        this.app.goto(resolvePath(src, this.src));
+      },
+      replace(src) {
+        this.app.replace(resolvePath(src, this.src));
+      },
+      get pageAnime() {
+        const { app, _pageAnime } = this;
+
+        const { pageAnime } = app?._module || {};
+
+        return clone({ ...pageAnime, ...(_pageAnime || {}) });
+      },
+      set pageAnime(val) {
+        this._pageAnime = val;
+      },
+    },
+
+    ready() {
+      this._rendered = new Promise((resolve, reject) => {
+        this.__resolve = () => {
+          delete this.__resolve;
+          delete this.__reject;
+          resolve();
+        };
+        this.__reject = () => {
+          delete this.__resolve;
+          delete this.__reject;
+          reject();
+        };
+      });
+    },
+  });
+
+  const dispatchLoad = async (_this, loaded) => {
+    const shadow = _this.ele.shadowRoot;
+    if (shadow) {
+      const srcEles = searchEle(shadow, `l-m,load-module`);
+      await Promise.all(
+        srcEles.map(
+          (el) =>
+            new Promise((res) => {
+              el.addEventListener("load", (e) => {
+                res();
+              });
+            })
+        )
+      );
+    }
+
+    if (loaded) {
+      loaded.call(_this);
+    }
+  };
+
+  const getDefault = async (moduleData, oriUrl) => {
+    let finnalDefault = {};
+
+    const { default: defaultData, PATH } = moduleData;
+
+    const url = PATH || oriUrl;
+
+    const relateLoad = lm$1({
+      url,
+    });
+
+    if (isFunction(defaultData)) {
+      finnalDefault = await defaultData({
+        load: relateLoad,
+        url,
+        get query() {
+          const urlObj = new URL(url);
+          return Object.fromEntries(Array.from(urlObj.searchParams.entries()));
+        },
+      });
+    } else if (defaultData instanceof Object) {
+      finnalDefault = defaultData;
+    }
+
+    const defaults = {
+      proto: {},
+      ...moduleData,
+      ...finnalDefault,
+    };
+
+    return defaults;
+  };
+
+  const COMP = Symbol("Component");
+
+  Object.defineProperty($$1, "COMP", {
+    value: COMP,
+  });
+
+  const cacheComps = {};
+
+  lm$1.use(["html", "htm"], async (ctx, next) => {
+    const { url, result: content, params } = ctx;
+
+    if (
+      content &&
+      /<template +component *>/.test(content) &&
+      !params.includes("-ignore-temp")
+    ) {
+      const url = getContentInfo(content, ctx.url, false);
+
+      ctx.result = await lm$1()(`${url} .mjs`);
+      ctx.resultContent = content;
+    }
+
+    await next();
+  });
+
+  lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
+    if (typeof moduleData !== "object" || moduleData.type !== COMP) {
+      next();
+      return;
+    }
+
+    let finnalDefault = {};
+
+    const { default: defaultData, PATH } = moduleData;
+
+    const path = PATH || url;
+
+    if (isFunction(defaultData)) {
+      finnalDefault = await defaultData({
+        load: lm$1({
+          url: path,
+        }),
+      });
+    } else if (defaultData instanceof Object) {
+      finnalDefault = defaultData;
+    }
+
+    const { tag, temp } = { ...moduleData, ...finnalDefault };
+
+    let tagName = tag;
+    const matchName = path.match(/\/([^/]+)\.m?(js|htm|html)$/);
+
+    if (!tagName) {
+      if (matchName) {
+        tagName = toDashCase(matchName[1]);
+      }
+    }
+
+    const cacheUrl = cacheComps[tagName];
+    if (cacheUrl) {
+      if (path !== cacheUrl) {
+        throw `${tagName} components have been registered`;
+      }
+
+      await next();
+      return;
+    }
+
+    cacheComps[tagName] = path;
+
+    let tempUrl, tempContent;
+
+    if (/<.+>/.test(temp)) {
+      tempUrl = path;
+      tempContent = temp;
+    } else {
+      if (!temp) {
+        tempUrl = resolvePath(`${matchName[1]}.html`, path);
+      } else {
+        tempUrl = resolvePath(temp, path);
+      }
+
+      tempContent = await fetch(tempUrl).then((e) => e.text());
+    }
+
+    const registerOpts = {
+      ...moduleData,
+      ...finnalDefault,
+    };
+
+    const oldReady = registerOpts.ready;
+    const { loaded } = registerOpts;
+    registerOpts.ready = async function (...args) {
+      oldReady && oldReady.apply(this, args);
+      loaded && dispatchLoad(this, loaded);
+      initLink(this.shadow);
+    };
+
+    $$1.register({
+      ...registerOpts,
+      tag: tagName,
+      temp: fixRelatePathContent(tempContent, PATH || tempUrl),
+    });
+
+    await next();
+  });
+
+  // import lm from "../drill.js/base.mjs";
+
+  const HISTORY = "_history";
+
+  const appendPage = async ({ src, _this }) => {
+    const { loading, fail } = _this._module || {};
+
+    const currentPages = [];
+
+    // Pages to be deleted
+    let oldPage = _this.current;
+
+    // The next page to appear
+    let page;
+
+    if (oldPage) {
+      let target = oldPage;
+
+      do {
+        currentPages.unshift({
+          page: target,
+          src: target.src,
+        });
+        oldPage = target;
+        target = target.parent;
+      } while (target.tag === "o-page");
+    }
+
+    let loadingEl;
+    if (loading) {
+      loadingEl = createXEle(loading());
+
+      _this.push(loadingEl);
+    }
+
+    // Container for stuffing new pages; o-app by default, or o-page in subrouting mode.
+    let container = _this;
+
+    const oriNextPages = await getPagesData(src);
+
+    // Finding shared parent pages in the case of subroutes
+    const publicPages = [];
+    let targetIndex = -1;
+    const lastIndex = currentPages.length - 1;
+    currentPages.some((e, i) => {
+      const next = oriNextPages[i];
+
+      if (next.src === e.src && i !== lastIndex) {
+        publicPages.push(e);
+        targetIndex = i;
+        return false;
+      }
+
+      return true;
+    });
+
+    let nextPages = oriNextPages;
+
+    if (targetIndex >= 0) {
+      container = publicPages.slice(-1)[0].page;
+      oldPage = container[0];
+      nextPages = oriNextPages.slice(targetIndex + 1);
+    }
+
+    let targetPage;
+
+    nextPages.some((e) => {
+      const { defaults, ISERROR: isError } = e;
+
+      if (isError === ISERROR) {
+        if (fail) {
+          const failContent = fail({
+            src,
+            error: e.error,
+          });
+
+          page = createPage(e.src, {
+            type: $$1.PAGE,
+            temp: failContent,
+          });
+        }
+        return false;
+      }
+
+      const subPage = createPage(e.src, defaults);
+
+      if (!targetPage) {
+        page = subPage;
+      }
+
+      if (targetPage) {
+        targetPage.push(subPage);
+      }
+
+      targetPage = subPage;
+    });
+
+    loadingEl && loadingEl.remove();
+
+    container.push(page);
+
+    return { current: page, old: oldPage, publics: publicPages };
+  };
+
+  const emitRouterChange = (_this, publics, type) => {
+    if (publics && publics.length) {
+      const { current } = _this;
+      publics.forEach((e) => {
+        const { page } = e;
+        const { routerChange } = page._defaults;
+
+        if (routerChange) {
+          routerChange.call(page, { type, current });
+        }
+      });
+    }
+  };
+
+  $$1.register({
+    tag: "o-app",
+    temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+    attrs: {
+      src: null,
+    },
+    data: {
+      [HISTORY]: [],
+    },
+    watch: {
+      async src(val) {
+        if (this.__init_src) {
+          if (this.__init_src !== val) {
+            throw "The App that has already been initialized cannot be set with the src attribute";
+          }
+          return;
+        }
+
+        if (!val) {
+          return;
+        }
+
+        this.__init_src = val;
+
+        let selfUrl = val;
+        if (val && !val.startsWith("//") && !/[a-z]+:\/\//.test(val)) {
+          selfUrl = resolvePath(val);
+        }
+
+        const load = lm();
+
+        const moduleData = await load(selfUrl);
+
+        const defaults = await getDefault(moduleData, selfUrl);
+
+        this._module = defaults;
+
+        if (this._settedRouters) {
+          return;
+        }
+
+        this.extend(defaults.proto);
+
+        if (defaults.ready) {
+          defaults.ready.call(this);
+        }
+
+        if (!this.$("o-page") && !this._initHome && defaults.home) {
+          const homeUrl = new URL(defaults.home, selfUrl).href;
+          this.push(`<o-page src="${homeUrl}"></o-page>`);
+        }
+      },
+    },
+    proto: {
+      async back(delta = 1) {
+        if (!this[HISTORY].length) {
+          console.warn(`It's already the first page, can't go back`);
+          return;
+        }
+
+        // Delete historical data for response numbers
+        delta = delta < this[HISTORY].length ? delta : this[HISTORY].length;
+
+        const newCurrent = this[HISTORY].splice(-delta)[0];
+
+        const {
+          current: page,
+          old: needRemovePage,
+          publics,
+        } = await appendPage({
+          src: newCurrent.src,
+          _this: this,
+        });
+
+        pageInAnime({
+          page,
+          key: "previous",
+        });
+
+        this.emit("router-change", {
+          name: "back",
+          delta,
+        });
+
+        emitRouterChange(this, publics, "back");
+
+        await pageOutAnime({
+          page: needRemovePage,
+          key: "next",
+        });
+
+        needRemovePage.remove();
+      },
+      async _navigate({ type, src }) {
+        const { current: oldCurrent } = this;
+        src = new URL(src, location.href).href;
+
+        if (!oldCurrent) {
+          this._initHome = src;
+        }
+
+        const {
+          current: page,
+          old: needRemovePage,
+          publics,
+        } = await appendPage({
+          src,
+          _this: this,
+        });
+
+        pageInAnime({
+          page,
+          key: "next",
+        });
+
+        if (type === "goto") {
+          oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
+        }
+
+        this.emit("router-change", {
+          name: type,
+          src,
+        });
+
+        emitRouterChange(this, publics, type);
+
+        if (oldCurrent) {
+          await pageOutAnime({
+            page: needRemovePage,
+            key: "previous",
+          });
+
+          needRemovePage.remove();
+        }
+      },
+      goto(src) {
+        return this._navigate({ type: "goto", src });
+      },
+      replace(src) {
+        return this._navigate({ type: "replace", src });
+      },
+      get current() {
+        return this.all("o-page").slice(-1)[0];
+      },
+      get routers() {
+        let { current } = this;
+
+        if (!current) {
+          return [];
+        }
+
+        const routers = [
+          ...this[HISTORY],
+          {
+            src: current.src,
+          },
         ];
 
-        const protoDesp = Object.getOwnPropertyDescriptors(proto);
-        Object.keys(protoDesp).forEach((keyName) => {
-            let {
-                set
-            } = protoDesp[keyName];
-
-            if (set) {
-                keys.push(keyName);
-            }
+        return routers;
+      },
+      set routers(_routers) {
+        _routers = _routers.map((e) => {
+          return { src: e.src };
         });
 
-        return keys;
-    };
+        this._settedRouters = 1;
 
-    // Convert temp into a renderable template
-    const transTemp = (temp, regTagName) => {
-        // Removing commented code
-        temp = temp.replace(/<!--.+?-->/g, "");
+        this.html = "";
 
-        // Custom String Conversion
-        var textDataArr = temp.match(/{{.+?}}/g);
-        textDataArr &&
-            textDataArr.forEach((e) => {
-                var key = /{{(.+?)}}/.exec(e);
-                if (key) {
-                    // temp = temp.replace(e, `<span :text="${key[1]}"></span>`);
-                    temp = temp.replace(e, `<x-span prop="${encodeURI(key[1])}"></x-span>`);
-                }
-            });
+        const historyRouters = _routers.slice();
 
-        const tsTemp = document.createElement("template");
-        tsTemp.innerHTML = temp;
+        const currentRouter = historyRouters.pop();
 
-        // Fix temp:xxx template on native elements
-        let addTemps = [],
-            removeRegEles = [];
+        this[HISTORY].length = 0;
+        this[HISTORY].push(...historyRouters);
 
-        Array.from(tsTemp.content.querySelectorAll("*")).forEach((ele) => {
-            const bindData = {};
-
-            // Properties that need to be removed
-            const needRemoveAttrs = [];
-
-            Array.from(ele.attributes).forEach((attrObj) => {
-                let {
-                    name,
-                    value
-                } = attrObj;
-
-                // Template Extraction
-                let tempMatch = /^temp:(.+)/.exec(name);
-                if (tempMatch) {
-                    let [, tempName] = tempMatch;
-                    let tempEle = document.createElement("template");
-                    tempEle.setAttribute("name", tempName);
-                    ele.removeAttribute(name);
-                    tempEle.innerHTML = ele.outerHTML;
-                    addTemps.push(tempEle);
-                    removeRegEles.push(ele);
-                    return true;
-                }
-
-                let command;
-                let target;
-
-                if (/^#/.test(name)) {
-                    command = "cmd";
-                    target = name.replace(/^#/, "");
-                } else if (/^@/.test(name)) {
-                    command = "on";
-                    target = name.replace(/^@/, "");
-                } else if (name.includes(":")) {
-                    // Fixed with command separator
-                    let m_arr = name.split(":");
-
-                    if (m_arr.length == 2) {
-                        // Assign values if the template is correct
-                        command = m_arr[0];
-                        target = m_arr[1];
-
-                        if (command === "") {
-                            // Fix Attribute Binding
-                            command = "prop";
-                        }
-                    } else {
-                        // Error in binding identification
-                        throw {
-                            desc: "template binding mark error",
-                            target: ele,
-                            expr: name,
-                        };
-                    }
-                }
-
-                if (command) {
-                    let data = bindData[command] || (bindData[command] = {});
-                    if (command == "on") {
-                        data[target] = {
-                            name: value,
-                        };
-                    } else if (target) {
-                        data[target] = value;
-                    }
-                    needRemoveAttrs.push(name);
-                }
-            });
-
-            if (needRemoveAttrs.length) {
-                // ele.setAttribute("bind-data", JSON.stringify(bindData));
-                // ele.setAttribute('bind-keys', Object.keys(bindData).join(" "));
-
-                // Restore original properties
-                Object.keys(bindData).forEach((bName) => {
-                    let data = bindData[bName];
-                    if (bName == "cmd") {
-                        Object.keys(data).forEach((dName) => {
-                            ele.setAttribute(`x-cmd-${dName}`, data[dName]);
-                        });
-                    } else {
-                        ele.setAttribute(`x-${bName}`, JSON.stringify(data));
-                    }
-                });
-
-                needRemoveAttrs.forEach((name) => ele.removeAttribute(name));
-            }
+        this.push({
+          tag: "o-page",
+          src: currentRouter.src,
         });
+      },
+    },
+  });
 
-        if (addTemps.length) {
-            addTemps.forEach((ele) => {
-                tsTemp.content.appendChild(ele);
-            });
-            removeRegEles.forEach((ele) => {
-                tsTemp.content.removeChild(ele);
-            });
-        }
+  const pageInAnime = ({ page, key }) => {
+    const { pageAnime } = page;
 
-        // Convert template data
-        Array.from(tsTemp.content.querySelectorAll("template")).forEach((e) => {
-            e.innerHTML = transTemp(e.innerHTML).html;
-        });
+    const targetAnime = pageAnime[key];
 
-        // fix x-cmd-if elements
-        wrapIfTemp(tsTemp);
+    if (targetAnime) {
+      page.css = {
+        ...page.css,
+        transition: "all ease .3s",
+        ...targetAnime,
+      };
 
-        // get templates
-        let temps = new Map();
-
-        Array.from(tsTemp.content.querySelectorAll(`template[name]`)).forEach((e) => {
-            temps.set(e.getAttribute("name"), {
-                ele: e,
-                code: e.content.children[0].outerHTML,
-            });
-            e.parentNode.removeChild(e);
-        });
-
-        // Inspection of the template
-        if (temps.size) {
-            for (let [key, e] of temps.entries()) {
-                const {
-                    children
-                } = e.ele.content;
-                if (children.length !== 1) {
-                    throw {
-                        name: key,
-                        html: e.code,
-                        tag: regTagName,
-                        desc: "register error, only one element must exist in the template",
-                    };
-                } else {
-                    if (children[0].getAttribute("x-cmd-if")) {
-                        throw {
-                            name: key,
-                            html: e.code,
-                            tag: regTagName,
-                            desc: "register error, cannot use if on template first element",
-                        };
-                    }
-                }
-            }
-        }
-
-        return {
-            temps,
-            html: tsTemp.innerHTML,
+      nextAnimeFrame(() => {
+        page.css = {
+          ...page.css,
+          transition: "all ease .3s",
+          ...(pageAnime.current || {}),
         };
-    };
-
-    // Wrap the template around the x-cmd-if element
-    const wrapIfTemp = (tempEle) => {
-        let iEles = tempEle.content.querySelectorAll(
-            "[x-cmd-if],[x-cmd-else-if],[x-cmd-else],[x-cmd-await],[x-cmd-then],[x-cmd-catch]"
-        );
-
-        iEles.forEach((ele) => {
-            if (ele.tagName.toLowerCase() == "template") {
-                return;
-            }
-
-            let ifTempEle = document.createElement("template");
-            [
-                "x-cmd-if",
-                "x-cmd-else-if",
-                "x-cmd-else",
-                "x-cmd-await",
-                "x-cmd-then",
-                "x-cmd-catch",
-            ].forEach((name) => {
-                let val = ele.getAttribute(name);
-
-                if (val === null) {
-                    return;
-                }
-
-                ifTempEle.setAttribute(name, val);
-                ele.removeAttribute(name);
-            });
-
-            ele.parentNode.insertBefore(ifTempEle, ele);
-            ifTempEle.content.appendChild(ele);
-        });
-
-        // The internal template is also wrapped
-        Array.from(tempEle.content.querySelectorAll("template")).forEach(wrapIfTemp);
-    };
-
-    // Get all renderable elements that match the expression
-    const getCanRenderEles = (root, expr) => {
-        let arr = Array.from(root.querySelectorAll(expr));
-        if (root instanceof Element && meetsEle(root, expr)) {
-            arr.push(root);
-        }
-        return arr;
-    };
-
-    // Remove the original element and add a positioning element
-    const postionNode = (e) => {
-        let marker = new Comment("x-marker");
-
-        let parent = e.parentNode;
-        parent.insertBefore(marker, e);
-        parent.removeChild(e);
-
-        return {
-            marker,
-            parent,
-        };
-    };
-
-    // Converting expressions to functions
-    const exprToFunc = (expr) => {
-        return new Function(
-            "...$args",
-            `
-const [$e,$target] = $args;
-
-try{
-    with(this){
-        ${expr};
+      });
     }
-}catch(e){
-    throw {
-        message:e.message || "run error",
-        expr:\`${expr.replace(/`/g, "\\`")}\`,
-        target:this,
-        error:e
-    };
-}`
-        );
-    };
+  };
 
-    // Clear the expression property and add the data to the element object
-    const moveAttrExpr = (ele, exprName, propData) => {
-        ele.removeAttribute(exprName);
+  const pageOutAnime = ({ page, key }) =>
+    new Promise((resolve) => {
+      const targetAnime = page.pageAnime[key];
 
-        let renderedData = ele.__renderData;
-        if (!renderedData) {
-            renderedData = ele.__renderData = {};
+      if (targetAnime) {
+        nextAnimeFrame(() => {
+          page.one("transitionend", resolve);
 
-            // Adding rendered data
-            ele.setAttribute("x-rendered", "");
-        }
-
-        renderedData[exprName] = propData;
-    };
-
-    // Binding function listener, added to the record array
-    const bindWatch = (data, func, bindings) => {
-        let eid = data.watchTick(func);
-        bindings.push({
-            eid,
-            target: data,
+          page.css = {
+            ...page.css,
+            transition: "all ease .3s",
+            ...targetAnime,
+          };
         });
-    };
-
-    // Get the target data get function
-    const renderXdataGetFunc = (expr, xdata) => {
-        let runFunc;
-
-        if (regIsFuncExpr.test(expr)) {
-            runFunc = exprToFunc("return " + expr).bind(xdata);
-        } else {
-            runFunc = () => getXData(xdata, expr);
-        }
-
-        return runFunc;
-    };
-
-    // Watch function binding on the renderer
-    // 'expr' is used as the basis for determining xdata or host, not for execution
-    const renderInWatch = ({
-        xdata,
-        host,
-        expr,
-        watchFun
-    }) => {
-        const bindings = [];
-
-        // if (host !== xdata) {
-        if (!(xdata instanceof XEle)) {
-            // Refill rendering within fill
-            // xdata is responsible for listening to $index
-            // xdata.$data is the item data itself
-            // $host is the component data
-            if (expr.includes("$host")) {
-                if (expr.includes("$index")) {
-                    bindWatch(xdata, watchFun, bindings);
-                }
-                bindWatch(host, watchFun, bindings);
-            } else if (expr.includes("$index") || expr.includes("$item")) {
-                bindWatch(xdata, watchFun, bindings);
-                isxdata(xdata.$data) && bindWatch(xdata.$data, watchFun, bindings);
-            } else if (expr.includes("$data")) {
-                isxdata(xdata.$data) && bindWatch(xdata.$data, watchFun, bindings);
-            }
-            // else {
-            //     throw {
-            //         desc: "fill element must use $data $host $item or $index",
-            //         target: host,
-            //         expr
-            //     };
-            // }
-        } else {
-            // host data binding
-            bindWatch(xdata, watchFun, bindings);
-        }
-
-        return bindings;
-    };
-
-    // Expression to value setting
-    const exprToSet = ({
-        xdata,
-        host,
-        expr,
-        callback,
-        isArray
-    }) => {
-        // Instant-running judgment functions
-        let runFunc = renderXdataGetFunc(expr, xdata);
-
-        // Backing up data for comparison
-        let backup_val, backup_ids, backup_objstr;
-
-        // Rendering functions that run directly
-        const watchFun = (modifys) => {
-            const val = runFunc();
-
-            if (isxdata(val)) {
-                if (isArray) {
-                    // If it is an array, only listen to the array changes
-                    let ids = val.map((e) => (e && e.xid ? e.xid : e)).join(",");
-                    if (backup_ids !== ids) {
-                        callback({
-                            val,
-                            modifys
-                        });
-                        backup_ids = ids;
-                    }
-                } else {
-                    // Object Listening
-                    let obj_str = val.toJSON();
-
-                    if (backup_val !== val || obj_str !== backup_objstr) {
-                        callback({
-                            val,
-                            modifys
-                        });
-                        backup_objstr = obj_str;
-                    }
-                }
-            } else if (backup_val !== val) {
-                callback({
-                    val,
-                    modifys
-                });
-                backup_objstr = null;
-            }
-            backup_val = val;
-        };
-
-        // First execute once
-        watchFun();
-
-        return renderInWatch({
-            xdata,
-            host,
-            expr,
-            watchFun,
-        });
-    };
-
-    // Add listening data
-    const addBindingData = (target, bindings) => {
-        let _binds = target.__bindings || (target.__bindings = []);
-        _binds.push(...bindings);
-    };
-
-    const regIsFuncExpr = /[\(\)\;\=\>\<\|\!\?\+\-\*\/\&\|\{\}`]/;
-
-    // Element depth loop function
-    const elementDeepEach = (ele, callback) => {
-        Array.from(ele.childNodes).forEach((target) => {
-            callback(target);
-
-            if (target instanceof Element) {
-                elementDeepEach(target, callback);
-            }
-        });
-    };
-
-    // Remove data binding relationships based on if statements
-    const removeElementBind = (target) => {
-        elementDeepEach(target, (ele) => {
-            if (ele.isCustom) {
-                createXEle(ele).revoke();
-            }
-
-            if (ele.__bindings) {
-                ele.__bindings.forEach((e) => {
-                    let {
-                        target,
-                        eid
-                    } = e;
-                    target.unwatch(eid);
-                });
-            }
-        });
-    };
-
-    // Adding elements inside a rendered template item
-    const addTempItemEle = ({
-        temp,
-        temps,
-        marker,
-        parent,
-        host,
-        xdata
-    }) => {
-        // add elements
-        let targets = parseStringToDom(temp.innerHTML);
-        targets.forEach((ele) => {
-            parent.insertBefore(ele, marker);
-            renderTemp({
-                host,
-                xdata,
-                content: ele,
-                temps
-            });
-        });
-        return targets;
-    };
-
-    // Delete the elements inside the rendered template item
-    const removeTempItemEle = (arr) => {
-        arr.forEach((item) => {
-            // Removing data binding
-            removeElementBind(item);
-
-            item.parentNode.removeChild(item);
-        });
-    };
-
-    // Logic for rendering components
-    // host :body component element; holds the body of the method
-    // xdata: rendering target data; host in single-level rendering, concrete data in x-fill mode
-    // content: rendering target element
-    const renderTemp = ({
-        host,
-        xdata,
-        content,
-        temps
-    }) => {
-        // Event Binding
-        getCanRenderEles(content, "[x-on]").forEach((target) => {
-            let eventInfo = JSON.parse(target.getAttribute("x-on"));
-
-            let eids = [];
-
-            const $tar = createXEle(target);
-
-            Object.keys(eventInfo).forEach((eventName) => {
-                let {
-                    name
-                } = eventInfo[eventName];
-
-                let eid;
-
-                // Determine if the function
-                if (regIsFuncExpr.test(name)) {
-                    // Function Binding
-                    const func = exprToFunc(name);
-                    eid = $tar.on(eventName, (event) => {
-                        func.call(xdata, event, $tar);
-                    });
-                } else {
-                    // Function name binding
-                    eid = $tar.on(eventName, (event) => {
-                        const func = getXData(xdata, name);
-                        if (func) {
-                            if (isFunction(func)) {
-                                func.call(host, event);
-                            } else {
-                                console.error({
-                                    target: xdata,
-                                    host,
-                                    name,
-                                    value: func,
-                                    desc: "bind value is not function",
-                                });
-                            }
-                        } else {
-                            console.error({
-                                target: xdata,
-                                host,
-                                name,
-                                desc: "no binding function",
-                            });
-                        }
-                    });
-                }
-
-                eids.push(eid);
-            });
-
-            moveAttrExpr(target, "x-on", eventInfo);
-        });
-
-        // Attribute Binding
-        getCanRenderEles(content, "[x-attr]").forEach((ele) => {
-            const attrData = JSON.parse(ele.getAttribute("x-attr"));
-
-            moveAttrExpr(ele, "x-attr", attrData);
-
-            Object.keys(attrData).forEach((attrName) => {
-                const bindings = exprToSet({
-                    xdata,
-                    host,
-                    expr: attrData[attrName],
-                    callback: ({
-                        val
-                    }) => {
-                        if (val === null || val === undefined) {
-                            ele.removeAttribute(attrName);
-                        } else {
-                            ele.setAttribute(attrName, val);
-                        }
-                    },
-                });
-
-                addBindingData(ele, bindings);
-            });
-        });
-
-        // class binding
-        getCanRenderEles(content, "[x-class]").forEach((ele) => {
-            const classListData = JSON.parse(ele.getAttribute("x-class"));
-
-            moveAttrExpr(ele, "x-class", classListData);
-
-            Object.keys(classListData).forEach((className) => {
-                const bindings = exprToSet({
-                    xdata,
-                    host,
-                    expr: classListData[className],
-                    callback: ({
-                        val
-                    }) => {
-                        // ele.setAttribute(className, val);
-                        if (val) {
-                            ele.classList.add(className);
-                        } else {
-                            ele.classList.remove(className);
-                        }
-                    },
-                });
-
-                addBindingData(ele, bindings);
-            });
-        });
-
-        // Property Binding
-        getCanRenderEles(content, "[x-prop]").forEach((ele) => {
-            const propData = JSON.parse(ele.getAttribute("x-prop"));
-            const xEle = createXEle(ele);
-
-            moveAttrExpr(ele, "x-prop", propData);
-
-            Object.keys(propData).forEach((propName) => {
-                const bindings = exprToSet({
-                    xdata,
-                    host,
-                    expr: propData[propName],
-                    callback: ({
-                        val
-                    }) => {
-                        propName = attrToProp(propName);
-
-                        try {
-                            xEle[propName] = val;
-                        } catch (error) {
-                            throw {
-                                target: ele,
-                                host: host.ele,
-                                desc: `failed to set property ${propName} (:${propName} or prop:${propName}), did you want to use attr:${propName}?`,
-                                error,
-                            };
-                        }
-                    },
-                });
-
-                addBindingData(ele, bindings);
-            });
-        });
-
-        // Two-way data binding
-        getCanRenderEles(content, "[x-sync]").forEach((ele) => {
-            const propData = JSON.parse(ele.getAttribute("x-sync"));
-            const xEle = createXEle(ele);
-
-            Object.keys(propData).forEach((propName) => {
-                let hostPropName = propData[propName];
-                if (regIsFuncExpr.test(hostPropName)) {
-                    throw {
-                        desc: "sync only accepts attribute names",
-                    };
-                }
-
-                const bindings1 = exprToSet({
-                    xdata,
-                    host,
-                    expr: hostPropName,
-                    callback: ({
-                        val
-                    }) => {
-                        setXData(xEle, propName, val);
-                    },
-                });
-
-                const bindings2 = exprToSet({
-                    xdata: xEle,
-                    host,
-                    expr: propName,
-                    callback: ({
-                        val
-                    }) => {
-                        setXData(xdata, hostPropName, val);
-                    },
-                });
-
-                addBindingData(ele, [...bindings1, ...bindings2]);
-            });
-        });
-
-        // Text Binding
-        getCanRenderEles(content, "x-span").forEach((ele) => {
-            let expr = decodeURI(ele.getAttribute("prop"));
-
-            let {
-                marker,
-                parent
-            } = postionNode(ele);
-
-            // Changing markup elements to textNode
-            const textnode = document.createTextNode("");
-            parent.replaceChild(textnode, marker);
-
-            // Data Binding
-            const bindings = exprToSet({
-                xdata,
-                host,
-                expr,
-                callback: ({
-                    val
-                }) => {
-                    textnode.textContent = val;
-                },
-            });
-
-            addBindingData(textnode, bindings);
-        });
-
-        // Conditional expression element rendering
-        getCanRenderEles(content, "[x-cmd-if]").forEach((ele) => {
-            const conditionEles = [ele];
-            // Pick up the subsequent else-if and else
-            let {
-                nextElementSibling
-            } = ele;
-            while (
-                nextElementSibling &&
-                (nextElementSibling.hasAttribute("x-cmd-else-if") ||
-                    nextElementSibling.hasAttribute("x-cmd-else"))
-            ) {
-                nextElementSibling.parentNode.removeChild(nextElementSibling);
-                conditionEles.push(nextElementSibling);
-                nextElementSibling = ele.nextElementSibling;
-            }
-
-            let all_expr = "";
-
-            // Converting concatenated conditional elements into conditional functions
-            const conditions = conditionEles.map((e, index) => {
-                let callback;
-
-                const expr =
-                    e.getAttribute("x-cmd-else-if") || e.getAttribute("x-cmd-if");
-
-                if (expr) {
-                    callback = renderXdataGetFunc(expr, xdata);
-                    all_expr += `${index == 0 ? "if" : "else-if"}(${expr})...`;
-                }
-
-                return {
-                    callback,
-                    tempEle: e,
-                };
-            });
-
-            // Positioning text elements
-            let {
-                marker,
-                parent
-            } = postionNode(ele);
-
-            // Generated target elements
-            let oldTargetEle = null;
-            let oldConditionId = -1;
-
-            const watchFun = (modifys) => {
-                let tempEle,
-                    conditionId = -1;
-                let conditionVal;
-                conditions.some((e, index) => {
-                    if (e.callback) {
-                        conditionVal = !!e.callback();
-
-                        if (conditionVal) {
-                            tempEle = e.tempEle;
-                            conditionId = index;
-                            return true;
-                        }
-                    } else {
-                        // The final else condition
-                        tempEle = e.tempEle;
-                        conditionId = index;
-                    }
-                });
-
-                // The value or serial number is different, both can enter the corrected link
-                if (oldConditionId !== conditionId) {
-                    // Old template destruction
-                    if (oldTargetEle) {
-                        removeElementBind(oldTargetEle);
-
-                        oldTargetEle.parentNode.removeChild(oldTargetEle);
-                        oldTargetEle = null;
-                    }
-
-                    // Confirm that templates can be added
-                    if (tempEle) {
-                        // add element
-                        oldTargetEle = parseStringToDom(
-                            tempEle.content.children[0].outerHTML
-                        )[0];
-
-                        parent.insertBefore(oldTargetEle, marker);
-
-                        // Rerendering
-                        renderTemp({
-                            host,
-                            xdata,
-                            content: oldTargetEle,
-                            temps
-                        });
-                    }
-                }
-
-                oldConditionId = conditionId;
-            };
-
-            // First execute once
-            watchFun();
-
-            addBindingData(
-                marker,
-                renderInWatch({
-                    xdata,
-                    host,
-                    expr: all_expr,
-                    watchFun,
-                })
-            );
-        });
-
-        // await element rendering
-        getCanRenderEles(content, "[x-cmd-await]").forEach((ele) => {
-            let awaitTemp = ele,
-                thenTemp,
-                catchTemp;
-            // Pick up the subsequent else-if and else
-            let {
-                nextElementSibling
-            } = ele;
-            while (
-                nextElementSibling &&
-                (nextElementSibling.hasAttribute("x-cmd-then") ||
-                    nextElementSibling.hasAttribute("x-cmd-catch"))
-            ) {
-                if (nextElementSibling.hasAttribute("x-cmd-then")) {
-                    thenTemp = nextElementSibling;
-                } else if (nextElementSibling.hasAttribute("x-cmd-catch")) {
-                    catchTemp = nextElementSibling;
-                }
-                nextElementSibling.parentNode.removeChild(nextElementSibling);
-                nextElementSibling = ele.nextElementSibling;
-            }
-
-            // Add Location
-            let {
-                marker,
-                parent
-            } = postionNode(ele);
-
-            let expr = ele.getAttribute("x-cmd-await");
-
-            let beforePms, beforeTargets;
-            const bindings = exprToSet({
-                xdata,
-                host,
-                expr,
-                callback: ({
-                    val
-                }) => {
-                    // Clear the previous data
-                    if (beforeTargets) {
-                        removeTempItemEle(beforeTargets);
-                        beforeTargets = null;
-                    }
-
-                    // add elements
-                    beforeTargets = addTempItemEle({
-                        temp: awaitTemp,
-                        temps,
-                        marker,
-                        parent,
-                        host,
-                        xdata,
-                    });
-
-                    beforePms = val;
-
-                    val
-                        .then((e) => {
-                            if (beforePms !== val) {
-                                return;
-                            }
-                            removeTempItemEle(beforeTargets);
-                            beforeTargets = null;
-                            if (thenTemp) {
-                                beforeTargets = addTempItemEle({
-                                    temp: thenTemp,
-                                    temps,
-                                    marker,
-                                    parent,
-                                    host,
-                                    xdata: {
-                                        [thenTemp.getAttribute("x-cmd-then")]: e,
-                                        $host: host,
-                                    },
-                                });
-                            }
-                        })
-                        .catch((err) => {
-                            if (beforePms !== val) {
-                                return;
-                            }
-                            removeTempItemEle(beforeTargets);
-                            beforeTargets = null;
-                            if (catchTemp) {
-                                beforeTargets = addTempItemEle({
-                                    temp: catchTemp,
-                                    temps,
-                                    marker,
-                                    parent,
-                                    host,
-                                    xdata: {
-                                        [catchTemp.getAttribute("x-cmd-catch")]: err,
-                                        $host: host,
-                                    },
-                                });
-                            }
-                        });
-                },
-            });
-
-            addBindingData(marker, bindings);
-        });
-
-        // Fill Binding
-        getCanRenderEles(content, "[x-fill]").forEach((ele) => {
-            const fillData = JSON.parse(ele.getAttribute("x-fill"));
-            let fillKeys = ele.getAttribute("x-item");
-            fillKeys && (fillKeys = JSON.parse(fillKeys));
-
-            const container = ele;
-
-            createXEle(container)._unupdate = 1;
-
-            let [tempName, propName] = Object.entries(fillData)[0];
-
-            let old_xid;
-
-            // Remove the x-fill attribute in advance to prevent double rendering
-            moveAttrExpr(ele, "x-fill", fillData);
-            moveAttrExpr(ele, "x-item", fillKeys);
-
-            const bindings = exprToSet({
-                xdata,
-                host,
-                expr: propName,
-                isArray: 1,
-                callback: (d) => {
-                    const targetArr = d.val;
-
-                    // Get Template
-                    let tempData = temps.get(tempName);
-
-                    if (!tempData) {
-                        throw {
-                            target: host.ele,
-                            desc: `this template was not found`,
-                            name: tempName,
-                        };
-                    }
-
-                    if (!old_xid) {
-                        // Completely filled
-                        targetArr.forEach((data, index) => {
-                            const itemEle = createFillItem({
-                                host,
-                                data,
-                                index,
-                                tempData,
-                                temps,
-                            });
-
-                            if (fillKeys) {
-                                initKeyToItem(itemEle, fillKeys, xdata, host);
-                            }
-
-                            // Add to container
-                            container.appendChild(itemEle.ele);
-                        });
-
-                        old_xid = targetArr.xid;
-                    } else {
-                        const childs = Array.from(container.children);
-                        const oldArr = childs.map((e) => e.__fill_item.$data);
-
-                        const holder = Symbol("holder");
-
-                        const afterChilds = [];
-                        targetArr.forEach((e, index) => {
-                            let oldIndex = oldArr.indexOf(e);
-                            if (oldIndex === -1) {
-                                let newItem = createFillItem({
-                                    host,
-                                    data: e,
-                                    index,
-                                    tempData,
-                                    temps,
-                                });
-
-                                if (fillKeys) {
-                                    initKeyToItem(newItem, fillKeys, xdata, host);
-                                }
-
-                                afterChilds.push(newItem.ele);
-                            } else {
-                                // belongs to the element displacement
-                                let targetEle = childs[oldIndex];
-                                // update index
-                                targetEle.__fill_item.$index = index;
-                                afterChilds.push(targetEle);
-
-                                oldArr[oldIndex] = holder;
-                            }
-                        });
-
-                        // that need to be cleared of data
-                        const needRemoves = [];
-
-                        // Delete elements that are not in the data
-                        oldArr.forEach((e, i) => {
-                            if (e !== holder) {
-                                let e2 = childs[i];
-                                needRemoves.push(e2);
-                                container.removeChild(e2);
-                            }
-                        });
-
-                        // Removing data binding
-                        needRemoves.forEach((e) => removeElementBind(e));
-
-                        // Reconstructing arrays
-                        rebuildXEleArray(container, afterChilds);
-                    }
-                },
-            });
-
-            addBindingData(ele, bindings);
-        });
-    };
-
-    const initKeyToItem = (itemEle, fillKeys, xdata, host) => {
-        let fData = itemEle.$item;
-        Object.keys(fillKeys).forEach((key) => {
-            let expr = fillKeys[key];
-
-            const propName = attrToProp(key);
-            let itemBindings = exprToSet({
-                xdata,
-                host,
-                expr,
-                callback: ({
-                    val
-                }) => {
-                    fData[propName] = val;
-                },
-            });
-
-            addBindingData(itemEle.ele, itemBindings);
-        });
-    };
-
-    const createFillItem = ({
-        host,
-        data,
-        index,
-        tempData,
-        temps
-    }) => {
-        const itemEle = createXEle(parseStringToDom(tempData.code)[0]);
-
-        const itemData = createXData({
-            get $host() {
-                return host;
-            },
-            // $data: data,
-            $index: index,
-            get $data() {
-                return data;
-            },
-            get $item() {
-                // get self
-                return itemData;
-            },
-            // get $index() {
-            //     return this._index;
-            // },
-            // _index: index
-        });
-
-        defineProperties(itemEle, {
-            $item: {
-                get: () => itemData,
-            },
-            $data: {
-                get: () => data,
-            },
-        });
-
-        itemEle.ele.__fill_item = itemData;
-
-        renderTemp({
-            host,
-            xdata: itemData,
-            content: itemEle.ele,
-            temps
-        });
-
-        return itemEle;
-    };
-
-
-    function $(expr) {
-        if (expr instanceof Element) {
-            return createXEle(expr);
-        }
-
-        const exprType = getType(expr);
-
-        // The final element to be returned
-        let ele;
-
-        if (exprType == "string") {
-            if (!/\<.+\>/.test(expr)) {
-                ele = document.querySelector(expr);
-            } else {
-                ele = parseStringToDom(expr)[0];
-            }
-        } else if (exprType == "object") {
-            ele = parseDataToDom(expr);
-        } else if (expr === document || expr instanceof DocumentFragment) {
-            ele = expr;
-        }
-
-        if (ele) {
-            return createXEle(ele);
-        }
-
-        return null;
-    }
-
-    Object.assign($, {
-        all(expr) {
-            return Array.from(document.querySelectorAll(expr)).map((e) =>
-                createXEle(e)
-            );
-        },
-        register,
-        xdata: (obj) => createXData(obj),
-        nextTick,
-        fn: XEle.prototype,
-        tag: getComp,
-    });
-    /*!
-     * drill.js v4.0.0
-     * https://github.com/kirakiray/drill.js
-     * 
-     * (c) 2018-2023 YAO
-     * Released under the MIT License.
-     */
-    ((glo) => {
-        "use strict";
-        // functions
-        const getRandomId = () => Math.random().toString(32).substr(2);
-        const objectToString = Object.prototype.toString;
-        const getType = (value) =>
-            objectToString
-            .call(value)
-            .toLowerCase()
-            .replace(/(\[object )|(])/g, "");
-        const isFunction = (d) => getType(d).search("function") > -1;
-        const isEmptyObj = (obj) => !(0 in Object.keys(obj));
-
-        const {
-            defineProperties
-        } = Object;
-
-        const nextTick = (() => {
-            const pnext = (func) => Promise.resolve().then(() => func());
-
-            if (typeof process === "object" && process.nextTick) {
-                pnext = process.nextTick;
-            }
-
-            return pnext;
-        })();
-
-        // Process handling operations for js types
-        const processor = new Map();
-
-        // Functions for adding process types
-        const addProcess = (name, callback) => {
-            processor.set(name, callback);
-
-            defineProperties(glo, {
-                [name]: {
-                    value: (respone) => {
-                        let nowSrc = document.currentScript.src;
-
-                        // Check if there is a record
-                        let record = getBag(nowSrc);
-
-                        if (!record) {
-                            record = new BagRecord(nowSrc);
-                            setBag(nowSrc, record);
-                        }
-
-                        // Set the loading status
-                        record.status = 1;
-
-                        record.ptype = name;
-
-                        callback({
-                            respone,
-                            record,
-                            relativeLoad(...args) {
-                                let repms = new Drill(...args);
-
-                                // Set relative directory
-                                repms.__relative__ = nowSrc;
-
-                                return repms;
-                            },
-                        });
-                    },
-                },
-            });
-        };
-
-        // Initial module type: define
-        addProcess("define", async ({
-            respone,
-            record,
-            relativeLoad
-        }) => {
-            // Functions for returning module content
-            let getPack;
-
-            if (isFunction(respone)) {
-                const exports = {};
-
-                // Run first to return results
-                let result = await respone({
-                    load: relativeLoad,
-                    FILE: record.src,
-                    exports,
-                });
-
-                if (result === undefined && !isEmptyObj(exports)) {
-                    result = exports;
-                }
-
-                getPack = (pkg) => {
-                    return result;
-                };
-            } else {
-                // Assign the result directly
-                getPack = (pkg) => {
-                    return respone;
-                };
-            }
-
-            // Return the getPack function
-            record.done(getPack);
-        });
-
-        // Initial module type: task
-        addProcess("task", async ({
-            respone,
-            record,
-            relativeLoad
-        }) => {
-            if (!isFunction(respone)) {
-                throw "task must be a function";
-            }
-
-            record.done(async (pkg) => {
-                return await respone({
-                    data: pkg.data,
-                    load: relativeLoad,
-                    FILE: record.src,
-                });
-            });
-        });
-
-        const loaders = new Map();
-
-        // function for adding loaders
-        const addLoader = (type, callback) => {
-            loaders.set(type, (src) => {
-                const record = getBag(src);
-
-                record.type = type;
-
-                return callback({
-                    src,
-                    record,
-                });
-            });
-        };
-
-        addLoader("js", ({
-            src,
-            record
-        }) => {
-            return new Promise((resolve, reject) => {
-                // main script element
-                let script = document.createElement("script");
-
-                script.type = "text/javascript";
-                script.async = true;
-                script.src = src;
-
-                // Mounted script element
-                record.sourceElement = script;
-
-                script.addEventListener("load", async () => {
-                    // Script load completion time
-                    record.loadedTime = Date.now();
-
-                    // Determine if a resource has been set to loading or completed status
-                    if (record.status == 0) {
-                        record.ptype = "script";
-
-                        // No 1 or 2 state, it means it's a normal js file, just execute done
-                        record.done((pkg) => {});
-                    }
-
-                    resolve();
-                });
-                script.addEventListener("error", (event) => {
-                    // load error
-                    reject({
-                        desc: "load script error",
-                        event,
-                    });
-                });
-
-                document.head.appendChild(script);
-            });
-        });
-
-        addLoader("mjs", async ({
-            src,
-            record
-        }) => {
-            let d = await import(src);
-
-            record.done(() => d);
-        });
-
-        addLoader("wasm", async ({
-            src,
-            record
-        }) => {
-            let data = await fetch(src).then((e) => e.arrayBuffer());
-
-            let module = await WebAssembly.compile(data);
-            const instance = new WebAssembly.Instance(module);
-
-            record.done(() => instance.exports);
-        });
-
-        addLoader("json", async ({
-            src,
-            record
-        }) => {
-            let data = await fetch(src);
-
-            data = await data.json();
-
-            record.done(() => data);
-        });
-
-        addLoader("css", async ({
-            src,
-            record
-        }) => {
-            let link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.type = "text/css";
-            link.href = src;
-
-            record.sourceElement = link;
-
-            let isAppend = false;
-
-            record.done(async (pkg) => {
-                if (pkg.params.includes("-unpull")) {
-                    // If there is an unpull parameter, the link element is returned and not added to the head
-                    return link;
-                }
-
-                // By default it is added to the head and does not return a value
-                if (!isAppend) {
-                    document.head.appendChild(link);
-                    isAppend = true;
-                }
-
-                // Wait if not finished loading
-                if (!link.sheet) {
-                    await new Promise((resolve) => {
-                        link.addEventListener("load", (e) => {
-                            resolve();
-                        });
-                    });
-                }
-            });
-        });
-
-        // The following types return utf8 strings
-        ["html"].forEach((name) => {
-            addLoader(name, async ({
-                src,
-                record
-            }) => {
-                let data = await fetch(src).then((e) => e.text());
-
-                record.done(() => data);
-            });
-        });
-
-        const loadByFetch = async ({
-            src,
-            record
-        }) => {
-            let response = await fetch(src);
-
-            if (!response.ok) {
-                throw {
-                    desc: "fetch " + response.statusText,
-                    response,
-                };
-            }
-
-            // Reset getPack
-            record.done(() => response);
-        };
-
-        // So the information about the file exists on this object
-        const bag = new Map();
-
-        const setBag = (src, record) => {
-            let o = new URL(src);
-            bag.set(o.origin + o.pathname, record);
-        };
-
-        const getBag = (src) => {
-            let o = new URL(src);
-            return bag.get(o.origin + o.pathname);
-        };
-
-        class BagRecord {
-            constructor(src) {
-                this.src = src;
-                // 0 Loading
-                // 1 Loaded resources successfully (but dependencies not completed)
-                // 2 Loading completed
-                // -1 Load failure
-                this.status = 0;
-                this.bid = "b_" + getRandomId();
-
-                // repository of the getPack function
-                this.data = new Promise((res, rej) => {
-                    this.__resolve = res;
-                    this.__reject = rej;
-                });
-
-                this.startTime = Date.now();
-            }
-
-            done(data) {
-                this.status = 2;
-                this.__resolve(data);
-
-                delete this.__resolve;
-                delete this.__reject;
-
-                this.doneTime = Date.now();
-            }
-
-            fail(err) {
-                this.status = -1;
-                this.__reject(data);
-
-                delete this.__resolve;
-                delete this.__reject;
-
-                this.doneTime = Date.now();
-            }
-        }
-
-        const notfindLoader = {};
-
-        // Agent resource requests
-        async function agent(pkg) {
-            let record = getBag(pkg.src);
-
-            if (record) {
-                if (record.status == -1) {
-                    throw {
-                        expr: pkg.url,
-                        src: record.src,
-                    };
-                }
-
-                const getPack = await record.data;
-
-                return await getPack(pkg);
-            }
-
-            record = new BagRecord(pkg.src);
-
-            setBag(pkg.src, record);
-
-            // Get loader by suffix name
-            let loader = loaders.get(pkg.ftype);
-
-            try {
-                if (loader) {
-                    // Loading resource
-                    await loader(record.src);
-                } else {
-                    if (!notfindLoader[pkg.ftype]) {
-                        // No such loader exists
-                        console.warn({
-                            desc: "did not find this loader",
-                            type: pkg.ftype,
-                        });
-
-                        notfindLoader[pkg.ftype] = 1;
-                    }
-
-                    // loadByUtf8({
-                    await loadByFetch({
-                        src: record.src,
-                        record,
-                    });
-                }
-            } catch (err) {
-                record.fail(err);
-            }
-
-            const getPack = await record.data;
-
-            return await getPack(pkg);
-        }
-
-        // Save shortcut path in this object
-        const pathsMap = new Map();
-
-        class DPackage {
-            constructor(str, bag) {
-                let [url, ...params] = str.split(" ");
-                this.url = url;
-                this.params = params;
-                this.bag = bag;
-            }
-
-            get src() {
-                let {
-                    url
-                } = this;
-
-                // Add the part in front of the shortcut path
-                if (/^@.+/.test(url)) {
-                    for (let [keyReg, path] of pathsMap) {
-                        if (keyReg.test(url)) {
-                            url = url.replace(keyReg, path);
-                            break;
-                        }
-                    }
-                }
-
-                // If there is a -p parameter, fix the link path
-                if (this.params.includes("-p")) {
-                    let packName = url.replace(/.+\/(.+)/, "$1");
-                    url += `/${packName}.js`;
-                }
-
-                let obj = new URL(url, this.relative);
-                return obj.href;
-            }
-
-            // File type, the type used by the loader, usually takes the path suffix
-            get ftype() {
-                const urlObj = new URL(this.src);
-
-                // Determine if the parameter has :xxx , correction type
-                let type = urlObj.pathname.replace(/.+\.(.+)/, "$1");
-                this.params.some((e) => {
-                    if (/^:(.+)/.test(e)) {
-                        type = e.replace(/^:(.+)/, "$1");
-                        return true;
-                    }
-                });
-                return type;
-                // return this.url.replace(/.+\.(.+)/, "$1");
-            }
-
-            // Get the data passed during the module
-            get data() {
-                return this.bag[POST_DATA];
-            }
-            get relative() {
-                return this.bag.__relative__ || location.href;
-            }
-        }
-
-        // Main distribution function
-        function buildUp(dBag) {
-            dBag.args.forEach((e) => dBag.result.push(undefined));
-
-            // Number of successful requests 
-            let count = 0;
-            let iserror = false;
-
-            let {
-                result
-            } = dBag;
-
-            const pendFunc = dBag[DRILL_PENDFUNC];
-
-            // Packaged into distributable objects
-            dBag.args.forEach((str, index) => {
-                let pkg = new DPackage(str, dBag);
-
-                // Execution completion function
-                let done = (data) => {
-                    result[index] = data;
-                    count++;
-
-                    if (pendFunc) {
-                        pendFunc({
-                            index,
-                            pkg,
-                            data,
-                        });
-                    }
-
-                    if (dBag.args.length === 1) {
-                        dBag[DRILL_RESOLVE](data);
-                    } else if (count === dBag.args.length && !iserror) {
-                        dBag[DRILL_RESOLVE](result);
-                    }
-
-                    done = null;
-                };
-
-                // If the -link parameter is present, the link is returned directly
-                if (pkg.params.includes("-link")) {
-                    done(pkg.src);
-                } else if (pkg.params.includes("-pkg")) {
-                    done(pkg);
-                } else {
-                    // Proxy Forwarding
-                    agent(pkg)
-                        .then(done)
-                        .catch((err) => {
-                            iserror = true;
-
-                            if (err) {
-                                console.error({
-                                    expr: str,
-                                    src: pkg.src,
-                                    ...err,
-                                });
-                            }
-
-                            result[index] = err;
-
-                            dBag[DRILL_REJECT]({
-                                expr: str,
-                                src: pkg.src,
-                                error: err,
-                            });
-
-                            done = null;
-                        });
-                }
-            });
-        }
-
-        const DRILL_RESOLVE = Symbol("resolve");
-        const DRILL_REJECT = Symbol("reject");
-        const POST_DATA = Symbol("postData");
-        const DRILL_PENDFUNC = Symbol("pendFunc");
-
-        class Drill extends Promise {
-            constructor(...args) {
-                if (isFunction(args[0])) {
-                    super(...args);
-                    return this;
-                }
-                let res, rej;
-
-                super((resolve, reject) => {
-                    res = resolve;
-                    rej = reject;
-                });
-
-                this.id = "d_" + getRandomId();
-
-                defineProperties(this, {
-                    [DRILL_RESOLVE]: {
-                        value: res,
-                    },
-                    [DRILL_REJECT]: {
-                        value: rej,
-                    },
-                    // Parameters for load modules
-                    args: {
-                        value: args,
-                    },
-                    // The final array of returned results
-                    result: {
-                        value: [],
-                    },
-                    // Relative path to load module
-                    __relative__: {
-                        writable: true,
-                        value: "",
-                    },
-                });
-
-                nextTick(() => buildUp(this));
-            }
-
-            pend(func) {
-                if (this[DRILL_PENDFUNC]) {
-                    throw {
-                        desc: "pend has been used",
-                        target: this,
-                    };
-                }
-                defineProperties(this, {
-                    [DRILL_PENDFUNC]: {
-                        value: func,
-                    },
-                });
-
-                return this;
-            }
-
-            // Passing data to the module to be loaded
-            post(data) {
-                if (this[POST_DATA]) {
-                    throw {
-                        desc: "post has been used",
-                        target: this,
-                    };
-                }
-                defineProperties(this, {
-                    [POST_DATA]: {
-                        value: data,
-                    },
-                });
-
-                return this;
-            }
-        }
-
-
-        const load = (glo.load = (...args) => new Drill(...args));
-
-        const config = (opts) => {
-            let {
-                paths
-            } = opts;
-            if (paths) {
-                // Shortcut path
-                Object.keys(paths).forEach((k) => {
-                    let val = paths[k];
-
-                    // Definitions that do not start/end with @ are not legal
-                    if (!/^@.+\/$/.test(k)) {
-                        throw {
-                            desc: "incorrect definition of paths",
-                            key: k,
-                        };
-                    }
-
-                    if (!/.+\/$/.test(k)) {
-                        throw {
-                            desc: "incorrect definition of paths",
-                            key: k,
-                            path: val,
-                        };
-                    }
-
-                    // pathsMap.set(k, val);
-                    pathsMap.set(new RegExp(`^` + k), val);
-                });
-            }
-        };
-
-        const drill = {
-            load,
-            config,
-            // Whether the resource has been loaded
-            async has(src) {
-                let path = await load(`${src} -link`);
-
-                return !!getBag(path);
-            },
-            // Delete this resource cache
-            async remove(src) {
-                let path = await load(`${src} -link`);
-                let record = getBag(path);
-
-                // Delete Mounted Elements
-                let sele = record.sourceElement;
-                if (sele) {
-                    sele.parentNode.removeChild(sele);
-                }
-
-                // Delete cached data
-                bag.delete(path);
-            },
-            // Secondary development extension method
-            ext(callback) {
-                callback({
-                    bag,
-                    addLoader,
-                    addProcess,
-                });
-            },
-            bag,
-            version: "4.0.0",
-            v: 4000000,
-        };
-
-        // Global Functions
-        defineProperties(glo, {
-            drill: {
-                value: drill,
-            },
-        });
-    })(typeof globalThis != "undefined" ? globalThis : window);
-    // Customized Components
-    drill.ext(({
-        addProcess
-    }) => {
-        addProcess("Component", async ({
-            respone,
-            record,
-            relativeLoad
-        }) => {
-            let result = respone;
-
-            if (isFunction(respone)) {
-                result = await respone({
-                    load: relativeLoad,
-                    FILE: record.src,
-                });
-            }
-
-            const defaults = await getDefaults(record, relativeLoad, result);
-
-            // Register Component
-            register(defaults);
-
-            record.done(async (pkg) => {});
-        });
+      } else {
+        resolve();
+      }
     });
 
-    const getDefaults = async (record, relativeLoad, result) => {
-        const defaults = {
-            // Static template
-            temp: "",
-            // static template address
-            tempsrc: "",
-            // The following are the component data that comes with X shear
-            // tag: "",
-            data: {},
-            attrs: {},
-            proto: {},
-            watch: {},
-            // created() { },
-            // ready() { },
-            // attached() { },
-            // detached() { },
-        };
+  const nextAnimeFrame = (func) =>
+    requestAnimationFrame(() => {
+      setTimeout(func, 5);
+    });
 
-        Object.assign(defaults, result);
+  $$1.fn.extend({
+    get app() {
+      let target = this;
 
-        let defineName = new URL(record.src).pathname
-            .replace(/.*\/(.+)/, "$1")
-            .replace(/\.js$/, "");
+      while (target && target !== "o-app") {
+        if (target.tag === "o-page") {
+          const result = target.parents.find((el) => el.tag === "o-app");
 
-        // Component name correction
-        if (!defaults.tag) {
-            defaults.tag = defineName;
+          if (result) {
+            target = result;
+            break;
+          }
         }
 
-        // Get Template
-        if (defaults.temp === "") {
-            let {
-                tempsrc
-            } = defaults;
+        target = target.host;
 
-            // Get temp of the same name as the module
-            let temp = await relativeLoad(tempsrc || `./${defineName}.html`);
-
-            defaults.temp = await fixRelativeSource(temp, relativeLoad);
+        if (!target) {
+          break;
         }
+      }
 
-        return defaults;
-    };
+      return target;
+    },
+  });
 
-    // Fix the resource address in temp
-    const fixRelativeSource = async (temp, relativeLoad) => {
-        // Fix all resource addresses to include content within the template
-        let tempEle = document.createElement("template");
-        tempEle.innerHTML = temp;
+  if (typeof window !== "undefined") {
+    window.$ = $$1;
+  }
 
-        // Fix all links
-        let hrefEles = tempEle.content.querySelectorAll("[href]");
-        let srcEles = tempEle.content.querySelectorAll("[src]");
-        let hasStyleEle = tempEle.content.querySelectorAll(`[style*="url("]`);
+  return $$1;
 
-        // All processes
-        const pms = [];
-
-        hrefEles &&
-            Array.from(hrefEles).forEach((ele) => {
-                pms.push(
-                    (async () => {
-                        let relative_href = await relativeLoad(
-                            `${ele.getAttribute("href")} -link`
-                        );
-                        ele.setAttribute("href", relative_href);
-                    })()
-                );
-            });
-
-        srcEles &&
-            Array.from(srcEles).forEach((ele) => {
-                pms.push(
-                    (async () => {
-                        let relative_src = await relativeLoad(
-                            `${ele.getAttribute("src")} -link`
-                        );
-                        ele.setAttribute("src", relative_src);
-                    })()
-                );
-            });
-
-        // Fix style resource address
-        hasStyleEle &&
-            Array.from(hasStyleEle).forEach((ele) => {
-                pms.push(
-                    (async () => {
-                        ele.setAttribute(
-                            "style",
-                            await fixStyleUrl(ele.getAttribute("style"), relativeLoad)
-                        );
-                    })()
-                );
-            });
-
-        let styles = tempEle.content.querySelectorAll("style");
-        styles &&
-            Array.from(styles).forEach((style) => {
-                pms.push(
-                    (async () => {
-                        style.innerHTML = await fixStyleUrl(style.innerHTML, relativeLoad);
-                    })()
-                );
-            });
-
-        await Promise.all(pms);
-
-        return tempEle.innerHTML;
-    };
-
-    // Fix the resource address on the style string
-    const fixStyleUrl = async (styleStr, relativeLoad) => {
-        let m_arr = styleStr.match(/url\(.+?\)/g);
-
-        if (m_arr) {
-            await Promise.all(
-                m_arr.map(async (url) => {
-                    let url_str = url.replace(/url\((.+?)\)/, "$1");
-                    let n_url = await relativeLoad(`${url_str} -link`);
-
-                    styleStr = styleStr.replace(url, `url(${n_url})`);
-                })
-            );
-        }
-
-        return styleStr;
-    };
-
-    drill.ext(({
-        addProcess
-    }) => {
-        addProcess("Page", async ({
-            respone,
-            record,
-            relativeLoad
-        }) => {
-            let result = respone;
-
-            if (isFunction(respone)) {
-                result = await respone({
-                    load: relativeLoad,
-                    FILE: record.src,
-                });
-            }
-
-            // Conversion Templates
-            const defaults = await getDefaults(record, relativeLoad, result);
-            let d = transTemp(defaults.temp);
-            defaults.temp = d.html;
-
-            // Get settable keys
-            const cansetKeys = getCansetKeys(defaults);
-
-            record.done(async (pkg) => {
-                return {
-                    defaults,
-                    cansetKeys,
-                    temps: d.temps
-                };
-            });
-        });
-    });
-
-    const PAGESTATUS = Symbol("page_status");
-
-    // Get the o-page on the o-app layer
-    const getCurrentPage = (host) => {
-        if (host.parent.is("o-app")) {
-            return host;
-        }
-
-        while (host.host) {
-            host = host.host;
-            if (host.is("o-page") && host.parent.is("o-app")) {
-                return host;
-            }
-        }
-    };
-
-    register({
-        tag: "o-page",
-        attrs: {
-            // Resource Address
-            src: null,
-        },
-        data: {
-            // Status of the current page
-            // empty: blank state, waiting for the page to be loaded
-            // loading : loading
-            // loaded: loaded successfully
-            // error: loading resource failed
-            [PAGESTATUS]: "empty",
-        },
-        proto: {
-            get status() {
-                return this[PAGESTATUS];
-            },
-            get app() {
-                let target = getCurrentPage(this);
-
-                if (target) {
-                    return target.parent;
-                }
-                console.warn({
-                    desc: `cannot find the app`,
-                    target: this,
-                });
-                return null;
-            },
-            get query() {
-                const searchParams = new URLSearchParams(
-                    this.src.replace(/.+(\?.+)/, "$1")
-                );
-
-                let obj = {};
-
-                for (const [key, value] of searchParams.entries()) {
-                    obj[key] = value;
-                }
-
-                return obj;
-            },
-            // Jump to the corresponding page
-            navigateTo(src) {
-                let cPage = getCurrentPage(this);
-
-                if (!cPage) {
-                    throw {
-                        desc: "cannot use navigateTo without in app",
-                        target: this,
-                    };
-                }
-
-                // Find the id of the current page
-                const {
-                    router
-                } = this.app;
-                let id = router.findIndex((e) => e._page == cPage);
-
-                router.splice(id + 1, router.length, src);
-            },
-            // Replacement Jump
-            replaceTo(src) {
-                let cPage = getCurrentPage(this);
-
-                if (!cPage) {
-                    throw {
-                        desc: "cannot use replaceTo without in app",
-                        target: this,
-                    };
-                }
-
-                // Find the id of the current page
-                const {
-                    router
-                } = this.app;
-                let id = router.findIndex((e) => e._page == cPage);
-
-                router.splice(id, router.length, src);
-            },
-            // back page
-            back() {
-                let {
-                    app
-                } = this;
-                app && app.back();
-            },
-        },
-        watch: {
-            async src(src) {
-                if (!src) {
-                    return;
-                }
-                if (this[PAGESTATUS] !== "empty") {
-                    throw {
-                        desc: "src can only be set once",
-                        target: this,
-                    };
-                }
-
-                this[PAGESTATUS] = "loading";
-
-                if (this._waiting) {
-                    // Waiting to load
-                    await this._waiting;
-                }
-
-                let defaults;
-
-                // Get rendering data
-                try {
-                    let data = await load(src);
-
-                    this._realsrc = await load(src + " -link");
-
-                    // Revise modifiable fields
-                    const n_keys = new Set([
-                        ...Array.from(this[CANSETKEYS]),
-                        ...data.cansetKeys,
-                    ]);
-                    n_keys.delete("src");
-                    this[CANSETKEYS] = n_keys;
-
-                    defaults = data.defaults;
-
-                    // Merging data in the prototype chain
-                    extend(this, defaults.proto);
-
-                    // Render the element again
-                    renderXEle({
-                        xele: this,
-                        defs: Object.assign({}, defaults, {
-                            // o-page does not allow attrs
-                            attrs: {},
-                        }),
-                        temps: data.temps,
-                        _this: this.ele,
-                    }).then((e) => {
-                        this.ele.x_render = 2;
-                        this.attr("x-render", 2);
-                    });
-                } catch (err) {
-                    if (glo.ofa) {
-                        this.html = ofa.onState.loadError(err);
-                        this[PAGESTATUS] = "error";
-                    }
-                    return;
-                }
-
-                this[PAGESTATUS] = "loaded";
-
-                emitUpdate(this, {
-                    xid: this.xid,
-                    name: "setData",
-                    args: ["status", this[PAGESTATUS]],
-                });
-
-                defaults.attached &&
-                    this.__attached_pms.then(() => defaults.attached.call(this));
-                defaults.detached &&
-                    this.__detached_pms.then(() => defaults.detached.call(this));
-            },
-        },
-        created() {
-            this.__attached_pms = new Promise((res) => (this.__attached_resolve = res));
-            this.__detached_pms = new Promise((res) => (this.__detached_resolve = res));
-            this.__loaded
-        },
-        attached() {
-            this.__attached_resolve();
-        },
-        detached() {
-            this.__detached_resolve();
-        },
-    });
-
-    const ROUTERPAGE = Symbol("router_page");
-
-    // All app elements
-    const apps = [];
-
-    // Number of waiters waiting to be loaded
-    let waitCount = 2;
-
-    register({
-        tag: "o-app",
-        temp: `<style>:host{display:block}::slotted(o-page){position:absolute;left:0;top:0;width:100%;height:100%}::slotted(o-page[page-area]){transform:translate(0,0);transition:all ease-in-out .25s;z-index:2}::slotted(o-page[page-area=back]){transform:translate(-30%,0);opacity:0;z-index:1}::slotted(o-page[page-area=next]){transform:translate(30%,0);opacity:0;z-index:1}.container{display:flex;flex-direction:column;width:100%;height:100%}.main{position:relative;flex:1}.article{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}</style><style id="initStyle">::slotted(o-page[page-area]){transition:none}</style><div class="container"><div><slot name="header"></slot></div><div class="main"><div class="article" part="body"><slot></slot></div></div></div>`,
-        attrs: {
-            // Home Address
-            home: "",
-            // Cite the resource address
-            src: "",
-        },
-        data: {
-            router: [],
-            // router: [{
-            //     path: "",
-            //     _page:""
-            // }]
-            // rect: {
-            //     width: "",
-            //     height: "",
-            // },
-            visibility: document.hidden ? 0 : 1,
-        },
-        watch: {
-            async src(src) {
-                if (!src || this._loaded_src) {
-                    return;
-                }
-                this._loaded_src = 1;
-
-                // Load the appropriate module and execute
-                let m = await load(src);
-
-                m.data && Object.assign(this, m.data);
-
-                if (m.proto) {
-                    // Extended Options
-                    this.extend(m.proto);
-                }
-
-                if (m.ready) {
-                    m.ready.call(this);
-                }
-
-                if (this.home && !this.router.length) {
-                    // When home exists and no other pages are routed, add home
-                    this.router.push({
-                        path: this.home,
-                    });
-                }
-            },
-            home(src) {
-                if (!this.src && src && !this.router.length) {
-                    this.router.push({
-                        path: src,
-                    });
-                }
-            },
-            router(router) {
-                if (!router.length) {
-                    return;
-                }
-                // Change page routing based on router values
-                let backRouter = this._backup_router;
-                if (!backRouter) {
-                    // Initial Storage
-                    backRouter = this._backup_router = [];
-                }
-
-                // Pages waiting to be deleted
-                const needRemove = backRouter.filter((e) => !router.includes(e));
-
-                // Waiting for the new page to be added
-                const needAdd = [];
-
-                let lastIndex = router.length - 1;
-                const newRouter = router.map((e, index) => {
-                    // Corrected data
-                    if (typeof e == "string") {
-                        e = createXData({
-                            path: e,
-                        });
-
-                        e.owner.add(router[XDATASELF]);
-                    }
-
-                    if (!e._page) {
-                        // Adding page elements
-                        let page = (e._page = $({
-                            tag: "o-page",
-                            src: e.path,
-                        }));
-
-                        // Add loading
-                        if (glo.ofa && ofa.onState.loading) {
-                            page.push(
-                                ofa.onState.loading({
-                                    src: e.path,
-                                })
-                            );
-                        }
-
-                        let w_resolve;
-                        // Add waiting period related properties
-                        page._waiting = new Promise((res) => (w_resolve = res));
-                        page.__waiter_resolve = w_resolve;
-                    }
-
-                    if (e.state && e._page.state === undefined) {
-                        let state = e.state;
-                        extend(e._page, {
-                            get state() {
-                                return state;
-                            },
-                        });
-                    }
-
-                    if (!backRouter.includes(e)) {
-                        needAdd.push(e);
-                    }
-
-                    // fix page-area
-                    if (index < lastIndex) {
-                        // hide page
-                        e._page.attr("page-area", "back");
-                    } else if (index == lastIndex) {
-                        // current page
-                        if (e._page.attr("page-area") === null) {
-                            e._page.attr("page-area", "next");
-                            // firefox will not work
-                            // requestAnimationFrame(() => {
-                            //     e._page.attr("page-area", "");
-                            // });
-                            setTimeout(() => {
-                                // If it has been changed, there is no need to modify it again
-                                if (e._page.attr("page-area") === "next") {
-                                    e._page.attr("page-area", "");
-                                }
-                            }, 10);
-                        } else {
-                            e._page.attr("page-area", "");
-                        }
-                    }
-
-                    // Fix the loading of the waiter
-                    if (index + waitCount > lastIndex && e._page.__waiter_resolve) {
-                        e._page.__waiter_resolve();
-                        delete e._page.__waiter_resolve;
-                    }
-
-                    return e;
-                });
-
-                // Add page
-                needAdd.forEach((e) => {
-                    this.push(e._page);
-                });
-
-                // delete page
-                needRemove.forEach((e) => {
-                    e._page.attr("page-area", "next");
-                    if (parseFloat(e._page.css.transitionDuration) > 0) {
-                        // If the animation deletion is invalid, it will be deleted by setTimeout
-                        let timer = setTimeout(() => e._page.remove(), 500);
-                        //  If there is an animation, perform an end-of-animation operation
-                        e._page.one("transitionend", () => {
-                            e._page.remove();
-                            clearTimeout(timer);
-                        });
-                    } else {
-                        // No animation directly deleted
-                        e._page.remove();
-                    }
-                });
-
-                // Correction of routing data
-                router[XDATASELF].splice(0, 1000, ...newRouter);
-
-                this._backup_router = router.slice();
-
-                // Triggers the activation event of the current page
-                router.slice(-1)[0]._page.trigger("activepage");
-            },
-        },
-        proto: {
-            get currentPage() {
-                return this.router.slice(-1)[0]._page;
-            },
-            // Back to page
-            back() {
-                const event = new Event("back", {
-                    cancelable: true,
-                });
-                event.delta = 1;
-                this.triggerHandler(event);
-
-                // Block page return behavior when returnValue is false
-                if (event.returnValue) {
-                    if (this.router.length > 1) {
-                        this.router.splice(-1, 1);
-                    }
-                }
-            },
-            // get globalData() {
-            //   return globalAppData;
-            // },
-            postback(data) {
-                let target;
-                if (top !== window) {
-                    target = top;
-                } else if (opener) {
-                    target = opener;
-                } else {
-                    console.warn("can't use postback");
-                    return false;
-                }
-
-                target.postMessage({
-                        type: "web-app-postback-data",
-                        data,
-                    },
-                    "*"
-                );
-
-                return true;
-            },
-            // Used when you don't want to expose your real address or ensure address uniqueness
-            // get shareHash() {
-            //     return encodeURIComponent(this.currentPage.src);
-            // }
-            // set shareHash() {
-            //     return encodeURIComponent(this.currentPage.src);
-            // }
-        },
-        ready() {
-            window.addEventListener("visibilitychange", (e) => {
-                this.visibility = document.hidden ? 0 : 1;
-            });
-
-            // The moment it starts, no animation required
-            setTimeout(() => {
-                this.shadow.$("#initStyle").remove();
-            }, 150);
-        },
-        attached() {
-            apps.push(this);
-        },
-        detached() {
-            let id = apps.indexOf(this);
-            if (id > -1) {
-                apps.splice(id, 1);
-            }
-        },
-    });
-
-
-    $.fn.extend({
-        get page() {
-            let host = this;
-            while (host && !host.is("o-page")) {
-                host = host.host;
-            }
-            return host;
-        },
-    });
-
-    let init_ofa = glo.ofa;
-
-    const ofa = {
-        v: 3000013,
-        version: "3.0.13",
-        // Configure the base information
-        get config() {
-            return drill.config;
-        },
-        onState: {
-            // Content displayed in loading
-            loading(e) {
-                return `<div style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;font-size:14px;color:#aaa;">Loading</div>`;
-            },
-            // Contents of the load failure display
-            loadError(e) {
-                return `<div style="text-align:center;"><h2>load Error</h2><div style="color:#aaa;">error expr:${e.expr} <br>error src:${e.src}</div></div>`;
-            },
-        },
-        get apps() {
-            return apps.slice();
-        },
-    };
-
-    defineProperties(glo, {
-        ofa: {
-            set(val) {
-                val(ofa);
-            },
-            get() {
-                return ofa;
-            },
-        },
-    });
-
-    init_ofa && init_ofa(ofa);
-
-    drill.config({
-        paths: {
-            "@lib/": "https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/lib/",
-        },
-    });
-
-    glo.$ = $;
-})(window);
+}));

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static Client-side Rendering 0301</title>
+    <link rel="stylesheet" href="../public.css" />
+    <script src="../../../../packages/ofa/main.mjs" type="module"></script>
+    <script src="../../scsr.mjs" type="module"></script>
+  </head>
+  <body>
+    <o-app src="../app.mjs">
+      <template page>
+        <h1>I am scsr page 0301</h1>
+        <div>num => {{num}}</div>
+        <button on:click="addOne">Add One</button>
+        <br />
+        <button on:click="back()">Back</button>
+
+        <script>
+          export default function () {
+            return {
+              data: {
+                num: 301,
+              },
+              proto: {
+                addOne() {
+                  this.num++;
+                },
+              },
+            };
+          }
+        </script>
+      </template>
+    </o-app>
+  </body>
+</html>

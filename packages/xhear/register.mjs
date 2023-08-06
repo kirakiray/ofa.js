@@ -1,0 +1,226 @@
+import {
+  hyphenToUpperCase,
+  capitalizeFirstLetter,
+  toDashCase,
+} from "./public.mjs";
+import { convert, render } from "./render/render.mjs";
+import { eleX } from "./util.mjs";
+
+const COMPS = {};
+
+export const renderElement = ({ defaults, ele, template, temps }) => {
+  const data = {
+    ...defaults.data,
+    ...defaults.attrs,
+  };
+
+  const $ele = eleX(ele);
+
+  defaults.proto && $ele.extend(defaults.proto, { enumerable: false });
+
+  for (let [key, value] of Object.entries(data)) {
+    if (!$ele.hasOwnProperty(key)) {
+      $ele[key] = value;
+    }
+  }
+
+  if (defaults.temp) {
+    const root = ele.attachShadow({ mode: "open" });
+
+    root.innerHTML = template.innerHTML;
+
+    render({
+      target: root,
+      data: $ele,
+      temps,
+    });
+  }
+
+  defaults.ready && defaults.ready.call($ele);
+
+  if (defaults.watch) {
+    const wen = Object.entries(defaults.watch);
+
+    $ele.watchTick((e) => {
+      for (let [name, func] of wen) {
+        if (e.hasModified(name)) {
+          func.call($ele, $ele[name], {
+            watchers: e,
+          });
+        }
+      }
+    });
+
+    for (let [name, func] of wen) {
+      func.call($ele, $ele[name], {});
+    }
+  }
+};
+
+export const register = (opts = {}) => {
+  const defaults = {
+    // Registered component name
+    tag: "",
+    // Body content string
+    temp: "",
+    // Initialization data after element creation
+    data: {},
+    // Values that will not be traversed
+    proto: {},
+    // Keys bound to attributes
+    // attrs: {},
+    // The listener function for the element
+    // watch: {},
+    // Function triggered when the component is created (data initialization complete)
+    // created() { },
+    // Function triggered after component data initialization is complete (initial rendering completed)
+    // ready() { },
+    // Functions that are added to the document trigger
+    // attached() { },
+    // Functions triggered by moving out of the document
+    // detached() { },
+    // The container element is changed
+    // slotchange() { }
+    ...opts,
+  };
+
+  validateTagName(defaults.tag);
+
+  const name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
+
+  if (COMPS[name]) {
+    throw `Component ${name} already exists`;
+  }
+
+  const template = document.createElement("template");
+  template.innerHTML = defaults.temp;
+  const temps = convert(template);
+
+  const getAttrKeys = (attrs) => {
+    let attrKeys;
+
+    if (attrs instanceof Array) {
+      attrKeys = [...attrs];
+    } else {
+      attrKeys = Object.keys(attrs);
+    }
+
+    return attrKeys;
+  };
+  const XElement = (COMPS[name] = class extends HTMLElement {
+    constructor(...args) {
+      super(...args);
+
+      const $ele = eleX(this);
+
+      defaults.created && defaults.created.call($ele);
+
+      if (defaults.attrs) {
+        const attrKeys = getAttrKeys(defaults.attrs);
+
+        // fix self attribule value
+        $ele.watchTick((e) => {
+          attrKeys.forEach((key) => {
+            if (e.hasModified(key)) {
+              const val = $ele[key];
+              const attrName = toDashCase(key);
+              if (val === null || val === undefined) {
+                this.removeAttribute(attrName);
+              } else {
+                this.setAttribute(attrName, val);
+              }
+            }
+          });
+        });
+      }
+
+      renderElement({
+        defaults,
+        ele: this,
+        template,
+        temps,
+      });
+    }
+
+    connectedCallback() {
+      defaults.attached &&
+        !isInternal(this) &&
+        defaults.attached.call(eleX(this));
+    }
+
+    disconnectedCallback() {
+      defaults.detached &&
+        !isInternal(this) &&
+        defaults.detached.call(eleX(this));
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      const $ele = eleX(this);
+
+      if (!/[^\d.]/.test(newValue) && typeof $ele[name] === "number") {
+        newValue = Number(newValue);
+      }
+
+      $ele[hyphenToUpperCase(name)] = newValue;
+    }
+
+    static get observedAttributes() {
+      return getAttrKeys(defaults.attrs || {}).map((e) => toDashCase(e));
+    }
+  });
+
+  if (document.readyState !== "loading") {
+    customElements.define(defaults.tag, XElement);
+  } else {
+    const READYSTATE = "readystatechange";
+    let f;
+    document.addEventListener(
+      READYSTATE,
+      (f = () => {
+        customElements.define(defaults.tag, XElement);
+        document.removeEventListener(READYSTATE, f);
+      })
+    );
+  }
+};
+
+function isInternal(ele) {
+  let target = ele;
+
+  while (target) {
+    if (target.__internal) {
+      return true;
+    }
+
+    target = target.parentNode || target.host;
+
+    if (!target || (target.tagName && target.tagName === "BODY")) {
+      break;
+    }
+  }
+
+  return false;
+}
+
+function validateTagName(str) {
+  // Check if the string starts or ends with '-'
+  if (str.charAt(0) === "-" || str.charAt(str.length - 1) === "-") {
+    throw new Error(`The string "${str}" cannot start or end with "-"`);
+  }
+
+  // Check if the string has consecutive '-' characters
+  for (let i = 0; i < str.length - 1; i++) {
+    if (str.charAt(i) === "-" && str.charAt(i + 1) === "-") {
+      throw new Error(
+        `The string "${str}" cannot have consecutive "-" characters`
+      );
+    }
+  }
+
+  // Check if the string has at least one '-' character
+  if (!str.includes("-")) {
+    throw new Error(`The string "${str}" must contain at least one "-"`);
+  }
+
+  return true;
+}

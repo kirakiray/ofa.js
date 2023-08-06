@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static Client-side Rendering 1</title>
+    <link rel="stylesheet" href="./public.css" />
+    <script src="../../../dist/ofa.min.js"></script>
+    <script src="../dist/scsr.min.js"></script>
+    <!-- <script src="../../../packages/ofa/main.mjs" type="module"></script>
+    <script src="../scsr.mjs" type="module"></script> -->
+  </head>
+  <body>
+    <o-app src="./app.mjs">
+      <template page>
+        <l-m src="./comps/btn/t-btn.js"></l-m>
+        <h1>I am scsr page 01</h1>
+        <div>num => {{num}}</div>
+        <button on:click="addOne">Add One</button>
+        <br />
+        <br />
+        <t-btn on:click="goto('./scsr02.html')">Goto Page02</t-btn>
+        <br />
+        <br />
+        <button on:click="back()">Back</button>
+
+        <script>
+          export default function () {
+            return {
+              data: {
+                num: 10,
+              },
+              proto: {
+                addOne() {
+                  this.num++;
+                },
+              },
+            };
+          }
+        </script>
+      </template>
+    </o-app>
+  </body>
+</html>

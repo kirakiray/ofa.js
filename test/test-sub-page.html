@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test sub page</title>
+    <!-- <script src="../dist/ofa.js"></script> -->
+    <script type="module" src="../packages/ofa/main.mjs"></script>
+    <style>
+      o-app {
+        display: block;
+        width: 400px;
+        height: 480px;
+        border: #aaa solid 1px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <o-app>
+      <o-page src="./pages/subs/sub-page01.html"></o-page>
+    </o-app>
+    <br />
+    <o-page src="./pages/parent1.mjs"> parent 1 </o-page>
+    <br />
+    <br />
+    <o-page src="./pages/parent2.html"> parent 2 </o-page>
+  </body>
+</html>

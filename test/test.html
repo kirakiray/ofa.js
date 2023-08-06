@@ -1,42 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ofa test</title>
-    <script src="ok.js"></script>
-    <script src="../dist/ofa.js"></script>
-    <script src="Nexter.js"></script>
-    <!-- <script src="comp/test-comp/test-comp.js"></script> -->
-    <script>
-        load("comp/test-comp -p");
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test-ofajs</title>
+    <script type="module">
+      import $ from "../packages/ofa/main.mjs";
     </script>
-    <style>
-        #testapp {
-            width: 200px;
-            height: 200px;
-            background-color: #eee;
-            overflow: hidden;
-        }
-
-        /* 取消o-app内的换页动画 */
-        /* #testapp o-page {
-            transition: none;
-        } */
-    </style>
-</head>
-
-<body>
+    <l-m src="./comps/test-comp.mjs"></l-m>
+  </head>
+  <body>
     <test-comp></test-comp>
-    <br>
-    <br>
-    <o-page id="testpage" src="pages/testpage -p"></o-page>
-    <br>
-    <br>
-    <o-app id="testapp" home="pages/p1 -p"></o-app>
-    <script src="test.js" async></script>
-</body>
-
+    <br />
+    <br />
+    <o-page src="./pages/page1.mjs?a=aaa&b=bbb"></o-page>
+    <br />
+    <br />
+  </body>
 </html>

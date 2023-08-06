@@ -1,0 +1,71 @@
+<style>
+  :host {
+    display: block;
+    height: 100%;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    background-color: #eee;
+  }
+
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav li {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-right: 20px;
+    border-radius: 4px;
+  }
+
+  nav li.active {
+    background-color: rgb(158, 4, 4);
+  }
+
+  nav li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .main {
+    flex: 1;
+  }
+</style>
+
+<div class="container">
+  <header>
+    <nav>
+      <ul>
+        <x-fill name="li" :value="items"></x-fill>
+      </ul>
+      <!-- <br> -->
+      <!-- <button on:click="resettop">reset top</button> -->
+    </nav>
+  </header>
+  <div class="main" style="position: relative">
+    <div style="position: absolute; height: 100%; width: 100%; left: 0; top: 0">
+      <slot></slot>
+    </div>
+  </div>
+</div>
+
+<template name="li">
+  <li class:active="$data.active">
+    <a attr:href="$data.href" olink>{{$data.name}}</a>
+  </li>
+</template>

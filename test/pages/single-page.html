@@ -1,0 +1,27 @@
+<template page>
+  <div>I am singlePage page {{num}}</div>
+  <button on:click="addOne">Add One</button>
+  <div data-testid="que">{{query}}</div>
+  <button on:click="back()" data-testid="back">Back</button>
+  <h4>page1 html ⬇️</h4>
+  <div data-testid="page1">{{page1}}</div>
+
+  <script>
+    export default async function ({ load, query }) {
+      const page1 = await load("./page1.html");
+
+      return {
+        data: {
+          num: 1,
+          page1,
+          query,
+        },
+        proto: {
+          addOne() {
+            this.num++;
+          },
+        },
+      };
+    }
+  </script>
+</template>
