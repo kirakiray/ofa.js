@@ -41,5 +41,15 @@
     "url": "https://github.com/kirakiray/ofa.js/issues"
   },
   "homepage": "https://github.com/kirakiray/ofa.js",
-  "startyear": "2018"
+  "startyear": "2018",
+  "keywords": [
+    "drill.js",
+    "drill",
+    "drilljs",
+    "script",
+    "modules",
+    "module loader",
+    "loader",
+    "es modules"
+  ]
 }
