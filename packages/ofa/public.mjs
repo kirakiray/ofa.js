@@ -41,6 +41,15 @@ export function fixRelatePathContent(content, path) {
 
   fixRelate(template.content, path);
 
+  // fix Resource references within style
+  searchEle(template.content, "style").forEach((styleEl) => {
+    const html = styleEl.innerHTML;
+
+    styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, adapted) => {
+      return `url(${resolvePath(adapted, path)})`;
+    });
+  });
+
   return template.innerHTML;
 }
 

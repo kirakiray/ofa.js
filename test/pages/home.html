@@ -1,5 +1,12 @@
 <!-- <l-m src="../comps/btn/a-btn.mjs"></l-m> -->
 <l-m src="../comps/btn/a-btn.html"></l-m>
+<style>
+  .test-bg {
+    width: 30px;
+    height: 30px;
+    background-image: url(../testimg.jpeg);
+  }
+</style>
 
 <div data-testid="first-div">I am home {{query}}</div>
 <button on:click="toHome" data-testid="gotohome">go to home</button>
@@ -26,3 +33,6 @@
 <br />
 <br />
 <a-btn data-testid="olink"></a-btn>
+<br />
+<div class="test-bg" data-testid="testbg"></div>
+<!-- <img src="../testimg.jpeg" alt=""> -->

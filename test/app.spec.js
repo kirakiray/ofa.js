@@ -143,3 +143,16 @@ test("test o-link", async ({ page }) => {
   await new Promise((res) => setTimeout(res, 500));
   await page.getByRole("heading", { name: "I am page1" });
 });
+
+test("test style url", async ({ page }) => {
+  await page.goto("http://localhost:3348/test/test-app.html");
+
+  await new Promise((res) => setTimeout(res, 300));
+
+  const backgroundUrl = await page.$eval("[data-testid='testbg']", (el) => {
+    const style = window.getComputedStyle(el);
+    return style.backgroundImage;
+  });
+
+  expect(backgroundUrl).toBe('url("http://localhost:3348/test/testimg.jpeg")');
+});
