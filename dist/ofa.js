@@ -1,4 +1,4 @@
-//! ofa.js - v4.0.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.0.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -2930,6 +2930,15 @@ try{
     template.innerHTML = content;
 
     fixRelate(template.content, path);
+
+    // fix Resource references within style
+    searchEle(template.content, "style").forEach((styleEl) => {
+      const html = styleEl.innerHTML;
+
+      styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, adapted) => {
+        return `url(${resolvePath(adapted, path)})`;
+      });
+    });
 
     return template.innerHTML;
   }
