@@ -42,38 +42,11 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
     const target = originLineArr[rowId];
 
-    mappings += `AA${vlcEncode(rowId - beforeRowIndex)}A;`;
+    let rowStr = `AA${vlcEncode(rowId - beforeRowIndex)}A`;
+
+    mappings += `${rowStr};`;
     beforeRowIndex = rowId;
   }
-
-  // debugger;
-
-  // Determine the starting line number of the source file.
-  // let originStarRowIndex = originLineArr.findIndex(
-  //   (lineContent) => lineContent.trim() === "<script>"
-  // );
-
-  // Since the valid code starts from the next line, increment the starting line number by one.
-  // originStarRowIndex++;
-
-  // Determine the ending line number of the source file.
-  // let originEndRowIndex = originLineArr.findIndex(
-  //   (lineContent) => lineContent.trim() === "</script>"
-  // );
-  // Since the line with the script tag is not valid code, decrease the ending line number by one.
-  // originEndRowIndex--;
-
-  // Calculate the actual count of valid code lines.
-  // let usefullLineCount = originEndRowIndex - originStarRowIndex;
-
-  // mappings += `AA${vlcEncode(originStarRowIndex)}A;`;
-
-  // if (originStarRowIndex > -1 && originEndRowIndex > 0) {
-  //   while (usefullLineCount) {
-  //     mappings += `AACA;`;
-  //     usefullLineCount--;
-  //   }
-  // }
 
   console.log("mappings => ", mappings);
 
