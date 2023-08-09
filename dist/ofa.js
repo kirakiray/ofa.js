@@ -2253,7 +2253,7 @@ try{
     }
 
     get length() {
-      return this.ele.children.length;
+      return this.ele && this.ele.children.length;
     }
 
     $(expr) {
