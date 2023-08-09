@@ -1,7 +1,8 @@
 import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
-import { dispatchLoad, getContentInfo } from "./page.mjs";
+import { dispatchLoad } from "./page.mjs";
+import { getContentInfo } from "./draw-template.mjs";
 import { fixRelatePathContent, resolvePath } from "./public.mjs";
 import { initLink } from "./link.mjs";
 
@@ -14,7 +15,7 @@ Object.defineProperty($, "COMP", {
 const cacheComps = {};
 
 lm.use(["html", "htm"], async (ctx, next) => {
-  const { url, result: content, params } = ctx;
+  const { result: content, params } = ctx;
 
   if (
     content &&

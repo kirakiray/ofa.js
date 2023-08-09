@@ -12,6 +12,8 @@ import {
 } from "./public.mjs";
 import { initLink } from "./link.mjs";
 
+import { getContentInfo } from "./draw-template.mjs";
+
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
 const PAGE = Symbol("Page");
@@ -36,40 +38,6 @@ lm.use(["html", "htm"], async (ctx, next) => {
 
   await next();
 });
-
-// const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
-
-const cacheLink = {};
-
-export function getContentInfo(content, url, isPage = true) {
-  if (cacheLink[url]) {
-    return cacheLink[url];
-  }
-
-  const tempEl = $("<template></template>");
-  tempEl.html = content;
-  const titleEl = tempEl.$("title");
-
-  const targetTemp = tempEl.$(`template[${isPage ? "page" : "component"}]`);
-  const scriptEl = targetTemp.$("script");
-
-  scriptEl && scriptEl.remove();
-
-  const fileContent = `
-  export const type = ${isPage ? "$.PAGE" : "$.COMP"};
-  export const PATH = '${url}';
-  ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;
-  ${scriptEl ? scriptEl.html : ""}`;
-
-  const file = new File(
-    [fileContent],
-    location.pathname.replace(/.+\/(.+)/, "$1"),
-    { type: "text/javascript" }
-  );
-
-  return (cacheLink[url] = URL.createObjectURL(file));
-}
 
 lm.use(["js", "mjs"], async (ctx, next) => {
   const { result: moduleData, url } = ctx;

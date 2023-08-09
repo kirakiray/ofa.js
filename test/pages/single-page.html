@@ -1,6 +1,8 @@
 <template page>
   <div>I am singlePage page {{num}}</div>
   <button on:click="addOne">Add One</button>
+  <br />
+  <button on:click="addNum(10)">Add Ten</button>
   <div data-testid="que">{{query}}</div>
   <button on:click="back()" data-testid="back">Back</button>
   <h4>page1 html ⬇️</h4>
@@ -18,7 +20,14 @@
         },
         proto: {
           addOne() {
+            console.log("addOne start => ", this.num);
             this.num++;
+            console.log("addOne end => ", this.num);
+          },
+          addNum(num) {
+            console.log("addNum start => ", this.num);
+            this.num += num;
+            console.log("addNum end => ", this.num);
           },
         },
       };
