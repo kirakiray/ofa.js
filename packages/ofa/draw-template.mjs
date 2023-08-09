@@ -76,10 +76,16 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
 
 const cacheLink = new Map();
 
-export async function drawWithUrl(content, url, isPage = true) {
+export async function drawUrl(content, url, isPage = true) {
   let targetUrl = cacheLink.get(url);
   if (targetUrl) {
     return targetUrl;
+  }
+
+  let isDebug = true;
+
+  if ($.hasOwnProperty("debugMode")) {
+    isDebug = $.debugMode;
   }
 
   const tempEl = $("<template></template>");
@@ -100,11 +106,15 @@ export async function drawWithUrl(content, url, isPage = true) {
   const fileContent = `${beforeContent};
 ${scriptEl ? scriptEl.html : ""}`;
 
-  const sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
-    url,
-    content,
-    beforeContent.split("\n").length
-  )}`;
+  let sourcemapStr = "";
+
+  if (isDebug) {
+    sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
+      url,
+      content,
+      beforeContent.split("\n").length
+    )}`;
+  }
 
   const finalContent = `${fileContent}\n${sourcemapStr}`;
 

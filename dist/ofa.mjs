@@ -3165,10 +3165,16 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
 
 const cacheLink = new Map();
 
-async function drawWithUrl(content, url, isPage = true) {
+async function drawUrl(content, url, isPage = true) {
   let targetUrl = cacheLink.get(url);
   if (targetUrl) {
     return targetUrl;
+  }
+
+  let isDebug = true;
+
+  if ($.hasOwnProperty("debugMode")) {
+    isDebug = $.debugMode;
   }
 
   const tempEl = $("<template></template>");
@@ -3189,11 +3195,15 @@ async function drawWithUrl(content, url, isPage = true) {
   const fileContent = `${beforeContent};
 ${scriptEl ? scriptEl.html : ""}`;
 
-  const sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
-    url,
-    content,
-    beforeContent.split("\n").length
-  )}`;
+  let sourcemapStr = "";
+
+  if (isDebug) {
+    sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
+      url,
+      content,
+      beforeContent.split("\n").length
+    )}`;
+  }
 
   const finalContent = `${fileContent}\n${sourcemapStr}`;
 
@@ -3245,7 +3255,7 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
     /<template +page *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = await drawWithUrl(content, ctx.url);
+    const url = await drawUrl(content, ctx.url);
 
     ctx.result = await lm$1()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -3479,7 +3489,7 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
     /<template +component *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = await drawWithUrl(content, ctx.url, false);
+    const url = await drawUrl(content, ctx.url, false);
 
     ctx.result = await lm$1()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -3942,6 +3952,14 @@ $$1.fn.extend({
     return target;
   },
 });
+
+if (document.currentScript) {
+  const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
+
+  Object.defineProperty($$1, "debugMode", {
+    value: isDebug,
+  });
+}
 
 if (typeof window !== "undefined") {
   window.$ = $$1;
