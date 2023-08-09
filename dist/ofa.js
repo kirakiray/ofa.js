@@ -3109,6 +3109,7 @@ try{
     let originStarRowIndex = originLineArr.findIndex(
       (lineContent) => lineContent.trim() === "<script>"
     );
+
     // Since the valid code starts from the next line, increment the starting line number by one.
     originStarRowIndex++;
 
@@ -3124,9 +3125,11 @@ try{
 
     mappings += `AA${vlcEncode(originStarRowIndex)}A;`;
 
-    while (usefullLineCount) {
-      mappings += `AACA;`;
-      usefullLineCount--;
+    if (originStarRowIndex > -1 && originEndRowIndex > 0) {
+      while (usefullLineCount) {
+        mappings += `AACA;`;
+        usefullLineCount--;
+      }
     }
 
     const str = `{"version": 3,
