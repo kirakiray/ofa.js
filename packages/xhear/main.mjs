@@ -61,7 +61,7 @@ export default class Xhear extends LikeArray {
   }
 
   get length() {
-    return this.ele.children.length;
+    return this.ele && this.ele.children.length;
   }
 
   $(expr) {
