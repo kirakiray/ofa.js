@@ -22,7 +22,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +component *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = getContentInfo(content, ctx.url, false);
+    const url = await getContentInfo(content, ctx.url, false);
 
     ctx.result = await lm()(`${url} .mjs`);
     ctx.resultContent = content;

@@ -3093,10 +3093,26 @@ try{
     });
   };
 
-  const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
+  const strToBase64DataURI = async (str, type) => {
+    const mime = type === "js" ? "text/javascript" : "application/json";
+
+    const file = new File([str], "test", { type: mime });
+
+    const result = await new Promise((resolve) => {
+      const fr = new FileReader();
+
+      fr.onload = (e) => {
+        resolve(e.target.result);
+      };
+
+      fr.readAsDataURL(file);
+    });
+
+    return result;
+  };
 
   // In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
-  const getSourcemapUrl = (filePath, originContent, startLine) => {
+  const getSourcemapUrl = async (filePath, originContent, startLine) => {
     const originLineArr = originContent.split("\n");
 
     let mappings = "";
@@ -3137,14 +3153,15 @@ try{
     "sources": ["${filePath}"],
     "mappings": "${mappings}"}`;
 
-    return strToBase64DataURI(str);
+    return await strToBase64DataURI(str);
   };
 
-  const cacheLink = {};
+  const cacheLink = new Map();
 
-  function getContentInfo(content, url, isPage = true) {
-    if (cacheLink[url]) {
-      return cacheLink[url];
+  async function getContentInfo(content, url, isPage = true) {
+    let targetUrl = cacheLink.get(url);
+    if (targetUrl) {
+      return targetUrl;
     }
 
     const tempEl = $("<template></template>");
@@ -3165,7 +3182,7 @@ try{
     const fileContent = `${beforeContent};
 ${scriptEl ? scriptEl.html : ""}`;
 
-    const sourcemapStr = `//# sourceMappingURL=${getSourcemapUrl(
+    const sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
     url,
     content,
     beforeContent.split("\n").length
@@ -3173,13 +3190,11 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     const finalContent = `${fileContent}\n${sourcemapStr}`;
 
-    const file = new File(
-      [finalContent],
-      location.pathname.replace(/.+\/(.+)/, "$1"),
-      { type: "text/javascript" }
-    );
+    targetUrl = strToBase64DataURI(finalContent, "js");
 
-    return (cacheLink[url] = URL.createObjectURL(file));
+    cacheLink.set(url, targetUrl);
+
+    return targetUrl;
   }
 
   const base64 =
@@ -3221,7 +3236,7 @@ ${scriptEl ? scriptEl.html : ""}`;
       /<template +page *>/.test(content) &&
       !params.includes("-ignore-temp")
     ) {
-      const url = getContentInfo(content, ctx.url);
+      const url = await getContentInfo(content, ctx.url);
 
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
@@ -3455,7 +3470,7 @@ ${scriptEl ? scriptEl.html : ""}`;
       /<template +component *>/.test(content) &&
       !params.includes("-ignore-temp")
     ) {
-      const url = getContentInfo(content, ctx.url, false);
+      const url = await getContentInfo(content, ctx.url, false);
 
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
