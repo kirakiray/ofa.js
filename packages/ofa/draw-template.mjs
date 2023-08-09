@@ -42,13 +42,25 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
     const target = originLineArr[rowId];
 
-    let rowStr = `AA${vlcEncode(rowId - beforeRowIndex)}A`;
+    let rowStr = "";
+
+    Array.from(target).forEach((e, colId) => {
+      const currentStr = `AA${vlcEncode(rowId - beforeRowIndex)}${vlcEncode(
+        colId - beforeColIndex
+      )}`;
+
+      if (!rowStr) {
+        rowStr = currentStr;
+      } else {
+        rowStr += `,${currentStr}`;
+      }
+
+      beforeRowIndex = rowId;
+      beforeColIndex = colId;
+    });
 
     mappings += `${rowStr};`;
-    beforeRowIndex = rowId;
   }
-
-  console.log("mappings => ", mappings);
 
   const str = `{"version": 3,
     "file": "${filePath.replace(/.+\/(.+?)/, "$1").replace(".html", ".js")}",

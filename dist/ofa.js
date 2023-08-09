@@ -3122,31 +3122,45 @@ try{
     }
 
     // Determine the starting line number of the source file.
-    let originStarRowIndex = originLineArr.findIndex(
+    const originStarRowIndex = originLineArr.findIndex(
       (lineContent) => lineContent.trim() === "<script>"
     );
 
-    // Since the valid code starts from the next line, increment the starting line number by one.
-    originStarRowIndex++;
-
     // Determine the ending line number of the source file.
-    let originEndRowIndex = originLineArr.findIndex(
+    const originEndRowIndex = originLineArr.findIndex(
       (lineContent) => lineContent.trim() === "</script>"
     );
-    // Since the line with the script tag is not valid code, decrease the ending line number by one.
-    originEndRowIndex--;
 
-    // Calculate the actual count of valid code lines.
-    let usefullLineCount = originEndRowIndex - originStarRowIndex;
+    let beforeRowIndex = 0;
+    let beforeColIndex = 0;
 
-    mappings += `AA${vlcEncode(originStarRowIndex)}A;`;
+    for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
+      const target = originLineArr[rowId];
 
-    if (originStarRowIndex > -1 && originEndRowIndex > 0) {
-      while (usefullLineCount) {
-        mappings += `AACA;`;
-        usefullLineCount--;
-      }
+      // let rowStr = `AA${vlcEncode(rowId - beforeRowIndex)}A`;
+      let rowStr = "";
+
+      Array.from(target).forEach((e, colId) => {
+        const currentStr = `AA${vlcEncode(rowId - beforeRowIndex)}${vlcEncode(
+        colId - beforeColIndex
+      )}`;
+
+        if (!rowStr) {
+          rowStr = currentStr;
+        } else {
+          rowStr += `,${currentStr}`;
+        }
+
+        beforeRowIndex = rowId;
+        beforeColIndex = colId;
+      });
+
+      // debugger;
+
+      mappings += `${rowStr};`;
     }
+
+    console.log("mappings => ", mappings);
 
     const str = `{"version": 3,
     "file": "${filePath.replace(/.+\/(.+?)/, "$1").replace(".html", ".js")}",
