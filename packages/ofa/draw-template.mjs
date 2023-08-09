@@ -1,7 +1,11 @@
-const strToBase64DataURI = async (str, type) => {
+const strToBase64DataURI = async (str, type, isb64 = true) => {
   const mime = type === "js" ? "text/javascript" : "application/json";
 
-  const file = new File([str], "test", { type: mime });
+  const file = new File([str], "genfile", { type: mime });
+
+  if (!isb64) {
+    return URL.createObjectURL(file);
+  }
 
   const result = await new Promise((resolve) => {
     const fr = new FileReader();
@@ -67,12 +71,12 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
     "sources": ["${filePath}"],
     "mappings": "${mappings}"}`;
 
-  return await strToBase64DataURI(str);
+  return await strToBase64DataURI(str, null);
 };
 
 const cacheLink = new Map();
 
-export async function getContentInfo(content, url, isPage = true) {
+export async function drawWithUrl(content, url, isPage = true) {
   let targetUrl = cacheLink.get(url);
   if (targetUrl) {
     return targetUrl;
@@ -104,7 +108,9 @@ ${scriptEl ? scriptEl.html : ""}`;
 
   const finalContent = `${fileContent}\n${sourcemapStr}`;
 
-  targetUrl = strToBase64DataURI(finalContent, "js");
+  const isFirefox = navigator.userAgent.includes("Firefox");
+
+  targetUrl = strToBase64DataURI(finalContent, "js", isFirefox ? false : true);
 
   cacheLink.set(url, targetUrl);
 

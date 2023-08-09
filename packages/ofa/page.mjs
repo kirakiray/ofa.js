@@ -12,7 +12,7 @@ import {
 } from "./public.mjs";
 import { initLink } from "./link.mjs";
 
-import { getContentInfo } from "./draw-template.mjs";
+import { drawWithUrl } from "./draw-template.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -30,7 +30,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +page *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = await getContentInfo(content, ctx.url);
+    const url = await drawWithUrl(content, ctx.url);
 
     ctx.result = await lm()(`${url} .mjs`);
     ctx.resultContent = content;

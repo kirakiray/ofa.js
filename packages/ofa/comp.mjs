@@ -2,7 +2,7 @@ import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
 import { dispatchLoad } from "./page.mjs";
-import { getContentInfo } from "./draw-template.mjs";
+import { drawWithUrl } from "./draw-template.mjs";
 import { fixRelatePathContent, resolvePath } from "./public.mjs";
 import { initLink } from "./link.mjs";
 
@@ -22,7 +22,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +component *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = await getContentInfo(content, ctx.url, false);
+    const url = await drawWithUrl(content, ctx.url, false);
 
     ctx.result = await lm()(`${url} .mjs`);
     ctx.resultContent = content;

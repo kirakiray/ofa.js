@@ -3093,10 +3093,14 @@ try{
     });
   };
 
-  const strToBase64DataURI = async (str, type) => {
+  const strToBase64DataURI = async (str, type, isb64 = true) => {
     const mime = type === "js" ? "text/javascript" : "application/json";
 
-    const file = new File([str], "test", { type: mime });
+    const file = new File([str], "genfile", { type: mime });
+
+    if (!isb64) {
+      return URL.createObjectURL(file);
+    }
 
     const result = await new Promise((resolve) => {
       const fr = new FileReader();
@@ -3137,7 +3141,6 @@ try{
     for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
       const target = originLineArr[rowId];
 
-      // let rowStr = `AA${vlcEncode(rowId - beforeRowIndex)}A`;
       let rowStr = "";
 
       Array.from(target).forEach((e, colId) => {
@@ -3155,24 +3158,20 @@ try{
         beforeColIndex = colId;
       });
 
-      // debugger;
-
       mappings += `${rowStr};`;
     }
-
-    console.log("mappings => ", mappings);
 
     const str = `{"version": 3,
     "file": "${filePath.replace(/.+\/(.+?)/, "$1").replace(".html", ".js")}",
     "sources": ["${filePath}"],
     "mappings": "${mappings}"}`;
 
-    return await strToBase64DataURI(str);
+    return await strToBase64DataURI(str, null);
   };
 
   const cacheLink = new Map();
 
-  async function getContentInfo(content, url, isPage = true) {
+  async function drawWithUrl(content, url, isPage = true) {
     let targetUrl = cacheLink.get(url);
     if (targetUrl) {
       return targetUrl;
@@ -3204,7 +3203,9 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     const finalContent = `${fileContent}\n${sourcemapStr}`;
 
-    targetUrl = strToBase64DataURI(finalContent, "js");
+    const isFirefox = navigator.userAgent.includes("Firefox");
+
+    targetUrl = strToBase64DataURI(finalContent, "js", isFirefox ? false : true);
 
     cacheLink.set(url, targetUrl);
 
@@ -3250,7 +3251,7 @@ ${scriptEl ? scriptEl.html : ""}`;
       /<template +page *>/.test(content) &&
       !params.includes("-ignore-temp")
     ) {
-      const url = await getContentInfo(content, ctx.url);
+      const url = await drawWithUrl(content, ctx.url);
 
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
@@ -3484,7 +3485,7 @@ ${scriptEl ? scriptEl.html : ""}`;
       /<template +component *>/.test(content) &&
       !params.includes("-ignore-temp")
     ) {
-      const url = await getContentInfo(content, ctx.url, false);
+      const url = await drawWithUrl(content, ctx.url, false);
 
       ctx.result = await lm$1()(`${url} .mjs`);
       ctx.resultContent = content;
