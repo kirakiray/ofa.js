@@ -29,6 +29,14 @@ $.fn.extend({
   },
 });
 
+if (document.currentScript) {
+  const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
+
+  Object.defineProperty($, "debugMode", {
+    value: isDebug,
+  });
+}
+
 if (typeof window !== "undefined") {
   window.$ = $;
 }

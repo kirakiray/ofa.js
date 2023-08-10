@@ -3,7 +3,7 @@ import { handler as stanzHandler } from "../stanz/accessor.mjs";
 
 export const handler = {
   set(target, key, value, receiver) {
-    if (!/\D/.test(key)) {
+    if (!/\D/.test(String(key))) {
       return Reflect.set(target, key, value, receiver);
     }
 

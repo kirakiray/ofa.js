@@ -1,7 +1,27 @@
-const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
+const strToBase64DataURI = async (str, type, isb64 = true) => {
+  const mime = type === "js" ? "text/javascript" : "application/json";
+
+  const file = new File([str], "genfile", { type: mime });
+
+  if (!isb64) {
+    return URL.createObjectURL(file);
+  }
+
+  const result = await new Promise((resolve) => {
+    const fr = new FileReader();
+
+    fr.onload = (e) => {
+      resolve(e.target.result);
+    };
+
+    fr.readAsDataURL(file);
+  });
+
+  return result;
+};
 
 // In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
-const getSourcemapUrl = (filePath, originContent, startLine) => {
+const getSourcemapUrl = async (filePath, originContent, startLine) => {
   const originLineArr = originContent.split("\n");
 
   let mappings = "";
@@ -11,30 +31,39 @@ const getSourcemapUrl = (filePath, originContent, startLine) => {
   }
 
   // Determine the starting line number of the source file.
-  let originStarRowIndex = originLineArr.findIndex(
+  const originStarRowIndex = originLineArr.findIndex(
     (lineContent) => lineContent.trim() === "<script>"
   );
 
-  // Since the valid code starts from the next line, increment the starting line number by one.
-  originStarRowIndex++;
-
   // Determine the ending line number of the source file.
-  let originEndRowIndex = originLineArr.findIndex(
+  const originEndRowIndex = originLineArr.findIndex(
     (lineContent) => lineContent.trim() === "</script>"
   );
-  // Since the line with the script tag is not valid code, decrease the ending line number by one.
-  originEndRowIndex--;
 
-  // Calculate the actual count of valid code lines.
-  let usefullLineCount = originEndRowIndex - originStarRowIndex;
+  let beforeRowIndex = 0;
+  let beforeColIndex = 0;
 
-  mappings += `AA${vlcEncode(originStarRowIndex)}A;`;
+  for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
+    const target = originLineArr[rowId];
 
-  if (originStarRowIndex > -1 && originEndRowIndex > 0) {
-    while (usefullLineCount) {
-      mappings += `AACA;`;
-      usefullLineCount--;
-    }
+    let rowStr = "";
+
+    Array.from(target).forEach((e, colId) => {
+      const currentStr = `AA${vlcEncode(rowId - beforeRowIndex)}${vlcEncode(
+        colId - beforeColIndex
+      )}`;
+
+      if (!rowStr) {
+        rowStr = currentStr;
+      } else {
+        rowStr += `,${currentStr}`;
+      }
+
+      beforeRowIndex = rowId;
+      beforeColIndex = colId;
+    });
+
+    mappings += `${rowStr};`;
   }
 
   const str = `{"version": 3,
@@ -42,14 +71,21 @@ const getSourcemapUrl = (filePath, originContent, startLine) => {
     "sources": ["${filePath}"],
     "mappings": "${mappings}"}`;
 
-  return strToBase64DataURI(str);
+  return await strToBase64DataURI(str, null);
 };
 
-const cacheLink = {};
+const cacheLink = new Map();
 
-export function getContentInfo(content, url, isPage = true) {
-  if (cacheLink[url]) {
-    return cacheLink[url];
+export async function drawUrl(content, url, isPage = true) {
+  let targetUrl = cacheLink.get(url);
+  if (targetUrl) {
+    return targetUrl;
+  }
+
+  let isDebug = true;
+
+  if ($.hasOwnProperty("debugMode")) {
+    isDebug = $.debugMode;
   }
 
   const tempEl = $("<template></template>");
@@ -70,21 +106,25 @@ export function getContentInfo(content, url, isPage = true) {
   const fileContent = `${beforeContent};
 ${scriptEl ? scriptEl.html : ""}`;
 
-  const sourcemapStr = `//# sourceMappingURL=${getSourcemapUrl(
-    url,
-    content,
-    beforeContent.split("\n").length
-  )}`;
+  let sourcemapStr = "";
+
+  if (isDebug) {
+    sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
+      url,
+      content,
+      beforeContent.split("\n").length
+    )}`;
+  }
 
   const finalContent = `${fileContent}\n${sourcemapStr}`;
 
-  const file = new File(
-    [finalContent],
-    location.pathname.replace(/.+\/(.+)/, "$1"),
-    { type: "text/javascript" }
-  );
+  const isFirefox = navigator.userAgent.includes("Firefox");
 
-  return (cacheLink[url] = URL.createObjectURL(file));
+  targetUrl = strToBase64DataURI(finalContent, "js", isFirefox ? false : true);
+
+  cacheLink.set(url, targetUrl);
+
+  return targetUrl;
 }
 
 const base64 =

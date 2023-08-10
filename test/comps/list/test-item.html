@@ -1,0 +1,19 @@
+<template component>
+  <link rel="stylesheet" href="./itemtohost.css" host />
+  <style host>
+    .interfered-element-2 {
+      color: green;
+    }
+  </style>
+  <style>
+    :host {
+      display: block;
+      padding: 8px 0;
+      margin: 8px 0;
+      border: rgb(0, 128, 0) solid 1px;
+    }
+  </style>
+  <div class="con">
+    <slot></slot>
+  </div>
+</template>

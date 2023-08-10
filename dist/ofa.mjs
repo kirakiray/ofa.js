@@ -1,4 +1,4 @@
-//! ofa.js - v4.0.2 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -769,7 +769,7 @@ const handler$1 = {
 
 const handler = {
   set(target, key, value, receiver) {
-    if (!/\D/.test(key)) {
+    if (!/\D/.test(String(key))) {
       return Reflect.set(target, key, value, receiver);
     }
 
@@ -1090,7 +1090,11 @@ const defaultData = {
     value = this._convertExpr(options, value);
     value = getVal(value);
 
-    this.ele.setAttribute(name, value);
+    if (value === null) {
+      this.ele.removeAttribute(name);
+    } else {
+      this.ele.setAttribute(name, value);
+    }
   },
   class(...args) {
     let [name, value, options] = args;
@@ -1860,6 +1864,17 @@ function validateTagName(str) {
   return true;
 }
 
+/**
+ * `x-if` first replaces all neighboring conditional elements with token elements and triggers the rendering process once; the rendering process is triggered again after each `value` change.
+ * The rendering process is as follows:
+ * 1. First, collect all conditional elements adjacent to `x-if`.
+ * 2. Mark these elements and wait for the `value` of each conditional element to be set successfully before proceeding to the next step.
+ * 3. Based on the marking, perform a judgment operation asynchronously, the element that satisfies the condition first will be rendered; after successful rendering, the subsequent conditional elements will clear the rendered content.
+ */
+
+
+const RENDERED = Symbol("already-rendered");
+
 function getConditionEles(_this, isEnd = true) {
   const $eles = [];
 
@@ -1926,6 +1941,10 @@ const proto$1 = {
     });
   },
   _renderContent() {
+    if (this[RENDERED]) {
+      return;
+    }
+
     const e = this._getRenderData();
 
     if (!e) {
@@ -1941,6 +1960,8 @@ const proto$1 = {
     markedEnd.parentNode.insertBefore(temp.content, markedEnd);
 
     render({ target, data, temps });
+
+    this[RENDERED] = true;
   },
   _revokeRender() {
     const markedStart = this.__marked_start;
@@ -1958,14 +1979,18 @@ const proto$1 = {
       target = target.previousSibling;
       oldTarget.remove();
     }
+
+    this[RENDERED] = false;
   },
   _refreshCondition() {
+    // Used to store adjacent conditional elements
     const $eles = [this];
 
     if (this._refreshing) {
       return;
     }
 
+    // Pull in the remaining sibling conditional elements as well
     switch (this.tag) {
       case "x-if":
         $eles.push(...getConditionEles(this));
@@ -3087,10 +3112,30 @@ const initLink = (_this) => {
   });
 };
 
-const strToBase64DataURI = (str) => `data:application/json;base64,${btoa(str)}`;
+const strToBase64DataURI = async (str, type, isb64 = true) => {
+  const mime = type === "js" ? "text/javascript" : "application/json";
+
+  const file = new File([str], "genfile", { type: mime });
+
+  if (!isb64) {
+    return URL.createObjectURL(file);
+  }
+
+  const result = await new Promise((resolve) => {
+    const fr = new FileReader();
+
+    fr.onload = (e) => {
+      resolve(e.target.result);
+    };
+
+    fr.readAsDataURL(file);
+  });
+
+  return result;
+};
 
 // In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
-const getSourcemapUrl = (filePath, originContent, startLine) => {
+const getSourcemapUrl = async (filePath, originContent, startLine) => {
   const originLineArr = originContent.split("\n");
 
   let mappings = "";
@@ -3100,30 +3145,39 @@ const getSourcemapUrl = (filePath, originContent, startLine) => {
   }
 
   // Determine the starting line number of the source file.
-  let originStarRowIndex = originLineArr.findIndex(
+  const originStarRowIndex = originLineArr.findIndex(
     (lineContent) => lineContent.trim() === "<script>"
   );
 
-  // Since the valid code starts from the next line, increment the starting line number by one.
-  originStarRowIndex++;
-
   // Determine the ending line number of the source file.
-  let originEndRowIndex = originLineArr.findIndex(
+  const originEndRowIndex = originLineArr.findIndex(
     (lineContent) => lineContent.trim() === "</script>"
   );
-  // Since the line with the script tag is not valid code, decrease the ending line number by one.
-  originEndRowIndex--;
 
-  // Calculate the actual count of valid code lines.
-  let usefullLineCount = originEndRowIndex - originStarRowIndex;
+  let beforeRowIndex = 0;
+  let beforeColIndex = 0;
 
-  mappings += `AA${vlcEncode(originStarRowIndex)}A;`;
+  for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
+    const target = originLineArr[rowId];
 
-  if (originStarRowIndex > -1 && originEndRowIndex > 0) {
-    while (usefullLineCount) {
-      mappings += `AACA;`;
-      usefullLineCount--;
-    }
+    let rowStr = "";
+
+    Array.from(target).forEach((e, colId) => {
+      const currentStr = `AA${vlcEncode(rowId - beforeRowIndex)}${vlcEncode(
+        colId - beforeColIndex
+      )}`;
+
+      if (!rowStr) {
+        rowStr = currentStr;
+      } else {
+        rowStr += `,${currentStr}`;
+      }
+
+      beforeRowIndex = rowId;
+      beforeColIndex = colId;
+    });
+
+    mappings += `${rowStr};`;
   }
 
   const str = `{"version": 3,
@@ -3131,14 +3185,21 @@ const getSourcemapUrl = (filePath, originContent, startLine) => {
     "sources": ["${filePath}"],
     "mappings": "${mappings}"}`;
 
-  return strToBase64DataURI(str);
+  return await strToBase64DataURI(str, null);
 };
 
-const cacheLink = {};
+const cacheLink = new Map();
 
-function getContentInfo(content, url, isPage = true) {
-  if (cacheLink[url]) {
-    return cacheLink[url];
+async function drawUrl(content, url, isPage = true) {
+  let targetUrl = cacheLink.get(url);
+  if (targetUrl) {
+    return targetUrl;
+  }
+
+  let isDebug = true;
+
+  if ($.hasOwnProperty("debugMode")) {
+    isDebug = $.debugMode;
   }
 
   const tempEl = $("<template></template>");
@@ -3159,21 +3220,25 @@ function getContentInfo(content, url, isPage = true) {
   const fileContent = `${beforeContent};
 ${scriptEl ? scriptEl.html : ""}`;
 
-  const sourcemapStr = `//# sourceMappingURL=${getSourcemapUrl(
-    url,
-    content,
-    beforeContent.split("\n").length
-  )}`;
+  let sourcemapStr = "";
+
+  if (isDebug) {
+    sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
+      url,
+      content,
+      beforeContent.split("\n").length
+    )}`;
+  }
 
   const finalContent = `${fileContent}\n${sourcemapStr}`;
 
-  const file = new File(
-    [finalContent],
-    location.pathname.replace(/.+\/(.+)/, "$1"),
-    { type: "text/javascript" }
-  );
+  const isFirefox = navigator.userAgent.includes("Firefox");
 
-  return (cacheLink[url] = URL.createObjectURL(file));
+  targetUrl = strToBase64DataURI(finalContent, "js", isFirefox ? false : true);
+
+  cacheLink.set(url, targetUrl);
+
+  return targetUrl;
 }
 
 const base64 =
@@ -3215,7 +3280,7 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
     /<template +page *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = getContentInfo(content, ctx.url);
+    const url = await drawUrl(content, ctx.url);
 
     ctx.result = await lm$1()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -3449,7 +3514,7 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
     /<template +component *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = getContentInfo(content, ctx.url, false);
+    const url = await drawUrl(content, ctx.url, false);
 
     ctx.result = await lm$1()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -3531,14 +3596,108 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     initLink(this.shadow);
   };
 
+  let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
+
+  const fixResult = fixHostAndGlobalCSS(regTemp, tagName);
+
+  if (fixResult) {
+    regTemp = fixResult.temp;
+    const { hostLinks } = fixResult;
+
+    const { attached: oldAttached, detached: oldDetached } = registerOpts;
+
+    Object.assign(registerOpts, {
+      attached(...args) {
+        const target = this.root;
+        // Finds out if the item already exists; if not, adds it; if it does, adds a tag to it.
+        const injectedLinks = [];
+
+        hostLinks.forEach((link) => {
+          let realLink;
+
+          if (link.tagName === "LINK") {
+            realLink = target.$(`link[href="${link.href}"][inject-host]`);
+          } else {
+            realLink = target.$(
+              `style[inject-id="${link.getAttribute(
+                "inject-id"
+              )}"][inject-host]`
+            );
+          }
+
+          if (realLink) {
+            realLink = realLink.ele;
+            realLink.__operators.push(this.ele);
+          } else {
+            realLink = link.cloneNode(true);
+            realLink.__operators = [this.ele];
+            target.unshift(realLink);
+          }
+
+          injectedLinks.push(realLink);
+        });
+
+        this.__injectedLinks = injectedLinks;
+
+        oldAttached && oldAttached.call(this, ...args);
+      },
+      detached(...args) {
+        const injectedLinks = this.__injectedLinks;
+        this.__injectedLinks = null;
+        if (injectedLinks) {
+          injectedLinks.forEach((link) => {
+            const operators = link.__operators;
+            const targetIndex = operators.indexOf(this.ele);
+
+            if (targetIndex > -1) {
+              if (operators.length === 1) {
+                link.remove();
+              }
+              operators.splice(targetIndex, 1);
+            }
+          });
+        }
+
+        oldDetached && oldDetached.call(this, ...args);
+      },
+    });
+  }
+
   $$1.register({
     ...registerOpts,
     tag: tagName,
-    temp: fixRelatePathContent(tempContent, PATH || tempUrl),
+    temp: regTemp,
   });
 
   await next();
 });
+
+const fixHostAndGlobalCSS = (temp, tagName) => {
+  const tempEl = $$1(`<template>${temp}</template>`);
+  const links = tempEl.all("link,style");
+
+  const hostLinks = [];
+
+  links.forEach((e) => {
+    if (typeof e.attr("host") === "string") {
+      hostLinks.push(e.ele);
+      e.remove();
+      e.attr("host", null);
+      e.attr("inject-host", "");
+
+      if (e.tag === "style") {
+        e.attr("inject-id", `${tagName}-${getRandomId()}`);
+      }
+    }
+  });
+
+  if (hostLinks.length) {
+    return {
+      hostLinks,
+      temp: tempEl.html,
+    };
+  }
+};
 
 // import lm from "../drill.js/base.mjs";
 
@@ -3912,6 +4071,14 @@ $$1.fn.extend({
     return target;
   },
 });
+
+if (document.currentScript) {
+  const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
+
+  Object.defineProperty($$1, "debugMode", {
+    value: isDebug,
+  });
+}
 
 if (typeof window !== "undefined") {
   window.$ = $$1;

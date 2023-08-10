@@ -2,9 +2,10 @@ import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { isFunction, toDashCase } from "../xhear/public.mjs";
 import { dispatchLoad } from "./page.mjs";
-import { getContentInfo } from "./draw-template.mjs";
+import { drawUrl } from "./draw-template.mjs";
 import { fixRelatePathContent, resolvePath } from "./public.mjs";
 import { initLink } from "./link.mjs";
+import { getRandomId } from "../stanz/public.mjs";
 
 const COMP = Symbol("Component");
 
@@ -22,7 +23,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +component *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = getContentInfo(content, ctx.url, false);
+    const url = await drawUrl(content, ctx.url, false);
 
     ctx.result = await lm()(`${url} .mjs`);
     ctx.resultContent = content;
@@ -104,11 +105,105 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     initLink(this.shadow);
   };
 
+  let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
+
+  const fixResult = fixHostAndGlobalCSS(regTemp, tagName);
+
+  if (fixResult) {
+    regTemp = fixResult.temp;
+    const { hostLinks } = fixResult;
+
+    const { attached: oldAttached, detached: oldDetached } = registerOpts;
+
+    Object.assign(registerOpts, {
+      attached(...args) {
+        const target = this.root;
+        // Finds out if the item already exists; if not, adds it; if it does, adds a tag to it.
+        const injectedLinks = [];
+
+        hostLinks.forEach((link) => {
+          let realLink;
+
+          if (link.tagName === "LINK") {
+            realLink = target.$(`link[href="${link.href}"][inject-host]`);
+          } else {
+            realLink = target.$(
+              `style[inject-id="${link.getAttribute(
+                "inject-id"
+              )}"][inject-host]`
+            );
+          }
+
+          if (realLink) {
+            realLink = realLink.ele;
+            realLink.__operators.push(this.ele);
+          } else {
+            realLink = link.cloneNode(true);
+            realLink.__operators = [this.ele];
+            target.unshift(realLink);
+          }
+
+          injectedLinks.push(realLink);
+        });
+
+        this.__injectedLinks = injectedLinks;
+
+        oldAttached && oldAttached.call(this, ...args);
+      },
+      detached(...args) {
+        const injectedLinks = this.__injectedLinks;
+        this.__injectedLinks = null;
+        if (injectedLinks) {
+          injectedLinks.forEach((link) => {
+            const operators = link.__operators;
+            const targetIndex = operators.indexOf(this.ele);
+
+            if (targetIndex > -1) {
+              if (operators.length === 1) {
+                link.remove();
+              }
+              operators.splice(targetIndex, 1);
+            }
+          });
+        }
+
+        oldDetached && oldDetached.call(this, ...args);
+      },
+    });
+  }
+
   $.register({
     ...registerOpts,
     tag: tagName,
-    temp: fixRelatePathContent(tempContent, PATH || tempUrl),
+    temp: regTemp,
   });
 
   await next();
 });
+
+const fixHostAndGlobalCSS = (temp, tagName) => {
+  const tempEl = $(`<template>${temp}</template>`);
+  const links = tempEl.all("link,style");
+
+  const hostLinks = [];
+
+  links.forEach((e) => {
+    if (typeof e.attr("host") === "string") {
+      hostLinks.push(e.ele);
+      e.remove();
+      e.attr("host", null);
+      e.attr("inject-host", "");
+
+      if (e.tag === "style") {
+        e.attr("inject-id", `${tagName}-${getRandomId()}`);
+      }
+    }
+  });
+
+  if (hostLinks.length) {
+    return {
+      hostLinks,
+      temp: tempEl.html,
+    };
+  }
+};
