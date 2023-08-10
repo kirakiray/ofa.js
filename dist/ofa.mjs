@@ -1090,7 +1090,11 @@ const defaultData = {
     value = this._convertExpr(options, value);
     value = getVal(value);
 
-    this.ele.setAttribute(name, value);
+    if (value === null) {
+      this.ele.removeAttribute(name);
+    } else {
+      this.ele.setAttribute(name, value);
+    }
   },
   class(...args) {
     let [name, value, options] = args;
@@ -3571,14 +3575,94 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     initLink(this.shadow);
   };
 
+  let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
+
+  const fixResult = fixHostAndGlobalCSS(regTemp);
+
+  if (fixResult) {
+    regTemp = fixResult.temp;
+    const { hostLinks } = fixResult;
+
+    const { attached: oldAttached, detached: oldDetached } = registerOpts;
+
+    Object.assign(registerOpts, {
+      attached(...args) {
+        // 查找是否已经存在，不存在的情况下新增，存在的话加个标记
+        const target = this.host.shadow;
+        const injectedLinks = [];
+
+        hostLinks.forEach((link) => {
+          let realLink = target.$(`link[href="${link.href}"][inject-host]`);
+
+          if (realLink) {
+            realLink = realLink.ele;
+            realLink.__operators.push(this.ele);
+          } else {
+            realLink = link.cloneNode(true);
+            realLink.__operators = [this.ele];
+            target.unshift(realLink);
+          }
+
+          injectedLinks.push(realLink);
+        });
+
+        this.__injectedLinks = injectedLinks;
+
+        oldAttached && oldAttached.call(this, ...args);
+      },
+      detached(...args) {
+        const injectedLinks = this.__injectedLinks;
+        this.__injectedLinks = null;
+        if (injectedLinks) {
+          injectedLinks.forEach((link) => {
+            const operators = link.__operators;
+            const targetIndex = operators.indexOf(this.ele);
+
+            if (targetIndex > -1) {
+              if (operators.length === 1) {
+                link.remove();
+              }
+              operators.splice(targetIndex, 1);
+            }
+          });
+        }
+
+        oldDetached && oldDetached.call(this, ...args);
+      },
+    });
+  }
+
   $$1.register({
     ...registerOpts,
     tag: tagName,
-    temp: fixRelatePathContent(tempContent, PATH || tempUrl),
+    temp: regTemp,
   });
 
   await next();
 });
+
+const fixHostAndGlobalCSS = (temp) => {
+  const tempEl = $$1(`<template>${temp}</template>`);
+  const links = tempEl.all("link");
+
+  const hostLinks = [];
+
+  links.forEach((e) => {
+    if (typeof e.attr("host") === "string") {
+      hostLinks.push(e.ele);
+      e.remove();
+      e.attr("host", null);
+      e.attr("inject-host", "");
+    }
+  });
+
+  if (hostLinks.length) {
+    return {
+      hostLinks,
+      temp: tempEl.html,
+    };
+  }
+};
 
 // import lm from "../drill.js/base.mjs";
 

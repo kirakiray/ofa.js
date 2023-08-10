@@ -297,7 +297,11 @@ const defaultData = {
     value = this._convertExpr(options, value);
     value = getVal(value);
 
-    this.ele.setAttribute(name, value);
+    if (value === null) {
+      this.ele.removeAttribute(name);
+    } else {
+      this.ele.setAttribute(name, value);
+    }
   },
   class(...args) {
     let [name, value, options] = args;

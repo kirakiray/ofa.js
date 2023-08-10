@@ -1,0 +1,54 @@
+<template component>
+  <l-m src="./test-item.html"></l-m>
+  <style>
+    :host {
+      display: block;
+      margin: 16px;
+      border: red solid 1px;
+    }
+    .container {
+      padding: 16px;
+    }
+    h4 {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <div class="container">
+    <h4>test list</h4>
+    <div>
+      <button on:click="removeLast">remove last</button>
+      <button on:click="removeAll">remove all</button>
+      <button on:click="addItem">add item</button>
+    </div>
+    <br />
+    <div class="con">
+      <test-item>A</test-item>
+      <test-item>B</test-item>
+      <test-item>
+        C
+        <test-item>
+          C-1
+          <test-item>C-1-1</test-item>
+        </test-item>
+        <test-item>C-2</test-item>
+      </test-item>
+    </div>
+    <div class="interfered-element">I am interfered element</div>
+  </div>
+  <script>
+    export const proto = {
+      removeLast() {
+        const items = this.shadow.all("test-item");
+        const target = items.slice(-1)[0];
+        target.remove();
+      },
+      removeAll() {
+        this.shadow.all("test-item").forEach((e) => e.remove());
+      },
+      addItem() {
+        this.shadow.$(".con").push(`<test-item>after push</test-item>`);
+      },
+    };
+  </script>
+</template>
