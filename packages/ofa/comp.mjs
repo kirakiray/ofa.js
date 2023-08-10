@@ -117,8 +117,8 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
     Object.assign(registerOpts, {
       attached(...args) {
-        // 查找是否已经存在，不存在的情况下新增，存在的话加个标记
-        const target = this.host.shadow;
+        const target = this.root;
+        // Finds out if the item already exists; if not, adds it; if it does, adds a tag to it.
         const injectedLinks = [];
 
         hostLinks.forEach((link) => {
