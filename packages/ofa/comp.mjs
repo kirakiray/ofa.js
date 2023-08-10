@@ -5,6 +5,7 @@ import { dispatchLoad } from "./page.mjs";
 import { drawUrl } from "./draw-template.mjs";
 import { fixRelatePathContent, resolvePath } from "./public.mjs";
 import { initLink } from "./link.mjs";
+import { getRandomId } from "../stanz/public.mjs";
 
 const COMP = Symbol("Component");
 
@@ -106,7 +107,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
-  const fixResult = fixHostAndGlobalCSS(regTemp);
+  const fixResult = fixHostAndGlobalCSS(regTemp, tagName);
 
   if (fixResult) {
     regTemp = fixResult.temp;
@@ -121,7 +122,17 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
         const injectedLinks = [];
 
         hostLinks.forEach((link) => {
-          let realLink = target.$(`link[href="${link.href}"][inject-host]`);
+          let realLink;
+
+          if (link.tagName === "LINK") {
+            realLink = target.$(`link[href="${link.href}"][inject-host]`);
+          } else {
+            realLink = target.$(
+              `style[inject-id="${link.getAttribute(
+                "inject-id"
+              )}"][inject-host]`
+            );
+          }
 
           if (realLink) {
             realLink = realLink.ele;
@@ -170,9 +181,9 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   await next();
 });
 
-const fixHostAndGlobalCSS = (temp) => {
+const fixHostAndGlobalCSS = (temp, tagName) => {
   const tempEl = $(`<template>${temp}</template>`);
-  const links = tempEl.all("link");
+  const links = tempEl.all("link,style");
 
   const hostLinks = [];
 
@@ -182,6 +193,10 @@ const fixHostAndGlobalCSS = (temp) => {
       e.remove();
       e.attr("host", null);
       e.attr("inject-host", "");
+
+      if (e.tag === "style") {
+        e.attr("inject-id", `${tagName}-${getRandomId()}`);
+      }
     }
   });
 

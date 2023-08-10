@@ -17,9 +17,13 @@
   <div class="container">
     <h4>test list</h4>
     <div>
-      <button on:click="removeLast">remove last</button>
-      <button on:click="removeAll">remove all</button>
-      <button on:click="addItem">add item</button>
+      <button on:click="removeLast" data-testid="removelast-btn">
+        remove last
+      </button>
+      <button on:click="removeAll" data-testid="removeall-btn">
+        remove all
+      </button>
+      <button on:click="addItem" data-testid="additem-btn">add item</button>
     </div>
     <br />
     <div class="con">
@@ -35,13 +39,14 @@
       </test-item>
     </div>
     <div class="interfered-element">I am interfered element</div>
+    <div class="interfered-element-2">I am interfered element 2</div>
   </div>
   <script>
     export const proto = {
       removeLast() {
         const items = this.shadow.all("test-item");
         const target = items.slice(-1)[0];
-        target.remove();
+        target && target.remove();
       },
       removeAll() {
         this.shadow.all("test-item").forEach((e) => e.remove());

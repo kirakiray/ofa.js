@@ -1,4 +1,4 @@
-//! ofa.js - v4.0.2 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3577,7 +3577,7 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
-  const fixResult = fixHostAndGlobalCSS(regTemp);
+  const fixResult = fixHostAndGlobalCSS(regTemp, tagName);
 
   if (fixResult) {
     regTemp = fixResult.temp;
@@ -3592,7 +3592,17 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
         const injectedLinks = [];
 
         hostLinks.forEach((link) => {
-          let realLink = target.$(`link[href="${link.href}"][inject-host]`);
+          let realLink;
+
+          if (link.tagName === "LINK") {
+            realLink = target.$(`link[href="${link.href}"][inject-host]`);
+          } else {
+            realLink = target.$(
+              `style[inject-id="${link.getAttribute(
+                "inject-id"
+              )}"][inject-host]`
+            );
+          }
 
           if (realLink) {
             realLink = realLink.ele;
@@ -3641,9 +3651,9 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   await next();
 });
 
-const fixHostAndGlobalCSS = (temp) => {
+const fixHostAndGlobalCSS = (temp, tagName) => {
   const tempEl = $$1(`<template>${temp}</template>`);
-  const links = tempEl.all("link");
+  const links = tempEl.all("link,style");
 
   const hostLinks = [];
 
@@ -3653,6 +3663,10 @@ const fixHostAndGlobalCSS = (temp) => {
       e.remove();
       e.attr("host", null);
       e.attr("inject-host", "");
+
+      if (e.tag === "style") {
+        e.attr("inject-id", `${tagName}-${getRandomId()}`);
+      }
     }
   });
 
