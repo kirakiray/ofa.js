@@ -140,7 +140,11 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
           } else {
             realLink = link.cloneNode(true);
             realLink.__operators = [this.ele];
-            target.unshift(realLink);
+            if (target.ele === document) {
+              target.$("head").push(realLink);
+            } else {
+              target.unshift(realLink);
+            }
           }
 
           injectedLinks.push(realLink);
