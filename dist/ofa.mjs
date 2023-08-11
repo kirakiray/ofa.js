@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3631,7 +3631,11 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
           } else {
             realLink = link.cloneNode(true);
             realLink.__operators = [this.ele];
-            target.unshift(realLink);
+            if (target.ele === document) {
+              target.$("head").push(realLink);
+            } else {
+              target.unshift(realLink);
+            }
           }
 
           injectedLinks.push(realLink);

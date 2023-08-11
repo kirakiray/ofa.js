@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3637,7 +3637,11 @@ ${scriptEl ? scriptEl.html : ""}`;
             } else {
               realLink = link.cloneNode(true);
               realLink.__operators = [this.ele];
-              target.unshift(realLink);
+              if (target.ele === document) {
+                target.$("head").push(realLink);
+              } else {
+                target.unshift(realLink);
+              }
             }
 
             injectedLinks.push(realLink);
