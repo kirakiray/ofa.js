@@ -2449,6 +2449,10 @@ class Xhear extends LikeArray {
 
     const { ele } = this;
 
+    if (!ele.parentNode) {
+      throw `The target has a sibling element, so you can't use unwrap`;
+    }
+
     ele.parentNode.insertBefore($el.ele, ele);
 
     ele.__internal = 1;
@@ -2466,7 +2470,7 @@ class Xhear extends LikeArray {
     const target = ele.parentNode;
 
     if (target.children.length > 1) {
-      throw `The target has a sibling element, so you can't use unwrap.`;
+      throw `The element itself must have a parent`;
     }
 
     ele.__internal = 1;
@@ -3357,11 +3361,24 @@ $$1.register({
       pagesData.forEach((e, i) => {
         const parentPage = createPage(e.src, e.defaults);
 
-        this.wrap(parentPage);
+        if (this.parent) {
+          this.wrap(parentPage);
+        } else {
+          const needWraps = this.__need_wraps || (this.__need_wraps = []);
+          needWraps.push(parentPage);
+        }
       });
 
       this._renderDefault(target.defaults);
     },
+  },
+  attached() {
+    const needWraps = this.__need_wraps;
+    if (needWraps) {
+      needWraps.forEach((page) => {
+        this.wrap(page);
+      });
+    }
   },
   proto: {
     async _renderDefault(defaults) {

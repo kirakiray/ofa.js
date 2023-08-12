@@ -13,6 +13,7 @@ import {
 import { initLink } from "./link.mjs";
 
 import { drawUrl } from "./draw-template.mjs";
+import { nextTick } from "../stanz/public.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -107,11 +108,24 @@ $.register({
       pagesData.forEach((e, i) => {
         const parentPage = createPage(e.src, e.defaults);
 
-        this.wrap(parentPage);
+        if (this.parent) {
+          this.wrap(parentPage);
+        } else {
+          const needWraps = this.__need_wraps || (this.__need_wraps = []);
+          needWraps.push(parentPage);
+        }
       });
 
       this._renderDefault(target.defaults);
     },
+  },
+  attached() {
+    const needWraps = this.__need_wraps;
+    if (needWraps) {
+      needWraps.forEach((page) => {
+        this.wrap(page);
+      });
+    }
   },
   proto: {
     async _renderDefault(defaults) {
