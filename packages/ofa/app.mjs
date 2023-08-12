@@ -122,7 +122,7 @@ const emitRouterChange = (_this, publics, type) => {
 
 $.register({
   tag: "o-app",
-  temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+  temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;width:100%;height:100%;}</style><slot></slot>`,
   attrs: {
     src: null,
   },
@@ -185,7 +185,7 @@ $.register({
 
       const newCurrent = this[HISTORY].splice(-delta)[0];
 
-      const {
+      let {
         current: page,
         old: needRemovePage,
         publics,
@@ -198,6 +198,8 @@ $.register({
         page,
         key: "previous",
       });
+
+      needRemovePage = wrapOldPage(needRemovePage);
 
       this.emit("router-change", {
         name: "back",
@@ -221,7 +223,7 @@ $.register({
         this._initHome = src;
       }
 
-      const {
+      let {
         current: page,
         old: needRemovePage,
         publics,
@@ -234,6 +236,8 @@ $.register({
         page,
         key: "next",
       });
+
+      needRemovePage = wrapOldPage(needRemovePage);
 
       if (type === "goto") {
         oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
@@ -349,3 +353,18 @@ const nextAnimeFrame = (func) =>
   requestAnimationFrame(() => {
     setTimeout(func, 5);
   });
+
+const wrapOldPage = (needRemovePage) => {
+  const postionWrapper = $(
+    `<div style="position:absolute;width:${needRemovePage.width}px;height:${needRemovePage.height}px;"></div>`
+  );
+  needRemovePage.wrap(postionWrapper);
+
+  postionWrapper.extend({
+    get pageAnime() {
+      return needRemovePage.pageAnime;
+    },
+  });
+
+  return postionWrapper;
+};

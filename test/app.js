@@ -6,7 +6,7 @@ export const loading = () => {
     css: {
       width: "100%",
       height: "100%",
-      position: "relative",
+      position: "absolute",
       zIndex: 1000,
     },
     html: `

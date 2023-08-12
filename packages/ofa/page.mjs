@@ -125,6 +125,7 @@ $.register({
       needWraps.forEach((page) => {
         this.wrap(page);
       });
+      delete this.__need_wraps;
     }
   },
   proto: {

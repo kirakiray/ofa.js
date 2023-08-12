@@ -3038,7 +3038,8 @@ try{
   const createPage = (src, defaults) => {
     // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
     const tempCon = document.createElement("div");
-    tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
+    // tempCon.innerHTML = `<o-page src="${src}" style="width:100%;height:100%;"></o-page>`;
+    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
 
     const targetPage = $(tempCon.children[0]);
     targetPage._pause_init = 1;
@@ -3384,6 +3385,7 @@ ${scriptEl ? scriptEl.html : ""}`;
         needWraps.forEach((page) => {
           this.wrap(page);
         });
+        delete this.__need_wraps;
       }
     },
     proto: {
@@ -3846,7 +3848,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
   $$1.register({
     tag: "o-app",
-    temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+    temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;width:100%;height:100%;}</style><slot></slot>`,
     attrs: {
       src: null,
     },
@@ -3909,7 +3911,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
         const newCurrent = this[HISTORY].splice(-delta)[0];
 
-        const {
+        let {
           current: page,
           old: needRemovePage,
           publics,
@@ -3922,6 +3924,8 @@ ${scriptEl ? scriptEl.html : ""}`;
           page,
           key: "previous",
         });
+
+        needRemovePage = wrapOldPage(needRemovePage);
 
         this.emit("router-change", {
           name: "back",
@@ -3945,7 +3949,7 @@ ${scriptEl ? scriptEl.html : ""}`;
           this._initHome = src;
         }
 
-        const {
+        let {
           current: page,
           old: needRemovePage,
           publics,
@@ -3958,6 +3962,8 @@ ${scriptEl ? scriptEl.html : ""}`;
           page,
           key: "next",
         });
+
+        needRemovePage = wrapOldPage(needRemovePage);
 
         if (type === "goto") {
           oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
@@ -4073,6 +4079,21 @@ ${scriptEl ? scriptEl.html : ""}`;
     requestAnimationFrame(() => {
       setTimeout(func, 5);
     });
+
+  const wrapOldPage = (needRemovePage) => {
+    const postionWrapper = $$1(
+      `<div style="position:absolute;width:${needRemovePage.width}px;height:${needRemovePage.height}px;"></div>`
+    );
+    needRemovePage.wrap(postionWrapper);
+
+    postionWrapper.extend({
+      get pageAnime() {
+        return needRemovePage.pageAnime;
+      },
+    });
+
+    return postionWrapper;
+  };
 
   $$1.fn.extend({
     get app() {
