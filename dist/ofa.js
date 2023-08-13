@@ -4076,7 +4076,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
   const nextAnimeFrame = (func) =>
     requestAnimationFrame(() => {
-      setTimeout(func, 50);
+      setTimeout(func, 5);
     });
 
   const resetOldPage = (needRemovePage) => {
