@@ -3032,8 +3032,8 @@ const getPagesData = async (src) => {
 const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
-  // tempCon.innerHTML = `<o-page src="${src}" style="width:100%;height:100%;"></o-page>`;
-  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+
+  tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
 
   const targetPage = $(tempCon.children[0]);
   targetPage._pause_init = 1;
@@ -3919,7 +3919,7 @@ $$1.register({
         key: "previous",
       });
 
-      needRemovePage = wrapOldPage(needRemovePage);
+      needRemovePage = resetOldPage(needRemovePage);
 
       this.emit("router-change", {
         name: "back",
@@ -3957,7 +3957,7 @@ $$1.register({
         key: "next",
       });
 
-      needRemovePage = wrapOldPage(needRemovePage);
+      needRemovePage = resetOldPage(needRemovePage);
 
       if (type === "goto") {
         oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
@@ -4036,7 +4036,6 @@ const pageInAnime = ({ page, key }) => {
   if (targetAnime) {
     page.css = {
       ...page.css,
-      transition: "all ease .3s",
       ...targetAnime,
     };
 
@@ -4071,22 +4070,17 @@ const pageOutAnime = ({ page, key }) =>
 
 const nextAnimeFrame = (func) =>
   requestAnimationFrame(() => {
-    setTimeout(func, 5);
+    setTimeout(func, 50);
   });
 
-const wrapOldPage = (needRemovePage) => {
-  const postionWrapper = $$1(
-    `<div style="position:absolute;width:${needRemovePage.width}px;height:${needRemovePage.height}px;"></div>`
-  );
-  needRemovePage.wrap(postionWrapper);
+const resetOldPage = (needRemovePage) => {
+  needRemovePage.css = {
+    position: "absolute",
+    width: `${needRemovePage.width}px`,
+    height: `${needRemovePage.height}px`,
+  };
 
-  postionWrapper.extend({
-    get pageAnime() {
-      return needRemovePage.pageAnime;
-    },
-  });
-
-  return postionWrapper;
+  return needRemovePage;
 };
 
 $$1.fn.extend({

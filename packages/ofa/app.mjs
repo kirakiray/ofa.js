@@ -199,7 +199,7 @@ $.register({
         key: "previous",
       });
 
-      needRemovePage = wrapOldPage(needRemovePage);
+      needRemovePage = resetOldPage(needRemovePage);
 
       this.emit("router-change", {
         name: "back",
@@ -237,7 +237,7 @@ $.register({
         key: "next",
       });
 
-      needRemovePage = wrapOldPage(needRemovePage);
+      needRemovePage = resetOldPage(needRemovePage);
 
       if (type === "goto") {
         oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
@@ -316,7 +316,6 @@ const pageInAnime = ({ page, key }) => {
   if (targetAnime) {
     page.css = {
       ...page.css,
-      transition: "all ease .3s",
       ...targetAnime,
     };
 
@@ -351,20 +350,15 @@ const pageOutAnime = ({ page, key }) =>
 
 const nextAnimeFrame = (func) =>
   requestAnimationFrame(() => {
-    setTimeout(func, 5);
+    setTimeout(func, 50);
   });
 
-const wrapOldPage = (needRemovePage) => {
-  const postionWrapper = $(
-    `<div style="position:absolute;width:${needRemovePage.width}px;height:${needRemovePage.height}px;"></div>`
-  );
-  needRemovePage.wrap(postionWrapper);
+const resetOldPage = (needRemovePage) => {
+  needRemovePage.css = {
+    position: "absolute",
+    width: `${needRemovePage.width}px`,
+    height: `${needRemovePage.height}px`,
+  };
 
-  postionWrapper.extend({
-    get pageAnime() {
-      return needRemovePage.pageAnime;
-    },
-  });
-
-  return postionWrapper;
+  return needRemovePage;
 };
