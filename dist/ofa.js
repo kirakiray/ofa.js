@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.2 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -2455,6 +2455,10 @@ try{
 
       const { ele } = this;
 
+      if (!ele.parentNode) {
+        throw `The target has a sibling element, so you can't use unwrap`;
+      }
+
       ele.parentNode.insertBefore($el.ele, ele);
 
       ele.__internal = 1;
@@ -2472,7 +2476,7 @@ try{
       const target = ele.parentNode;
 
       if (target.children.length > 1) {
-        throw `The target has a sibling element, so you can't use unwrap.`;
+        throw `The element itself must have a parent`;
       }
 
       ele.__internal = 1;
@@ -3034,7 +3038,8 @@ try{
   const createPage = (src, defaults) => {
     // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
     const tempCon = document.createElement("div");
-    tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
+
+    tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
 
     const targetPage = $(tempCon.children[0]);
     targetPage._pause_init = 1;
@@ -3363,11 +3368,25 @@ ${scriptEl ? scriptEl.html : ""}`;
         pagesData.forEach((e, i) => {
           const parentPage = createPage(e.src, e.defaults);
 
-          this.wrap(parentPage);
+          if (this.parent) {
+            this.wrap(parentPage);
+          } else {
+            const needWraps = this.__need_wraps || (this.__need_wraps = []);
+            needWraps.push(parentPage);
+          }
         });
 
         this._renderDefault(target.defaults);
       },
+    },
+    attached() {
+      const needWraps = this.__need_wraps;
+      if (needWraps) {
+        needWraps.forEach((page) => {
+          this.wrap(page);
+        });
+        delete this.__need_wraps;
+      }
     },
     proto: {
       async _renderDefault(defaults) {
@@ -3769,7 +3788,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     if (targetIndex >= 0) {
       container = publicPages.slice(-1)[0].page;
-      oldPage = container[0];
+      oldPage = container.slice(-1)[0];
       nextPages = oriNextPages.slice(targetIndex + 1);
     }
 
@@ -3810,6 +3829,8 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     container.push(page);
 
+    _this._current = page;
+
     return { current: page, old: oldPage, publics: publicPages };
   };
 
@@ -3829,7 +3850,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
   $$1.register({
     tag: "o-app",
-    temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+    temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;width:100%;height:100%;}</style><slot></slot>`,
     attrs: {
       src: null,
     },
@@ -3892,7 +3913,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
         const newCurrent = this[HISTORY].splice(-delta)[0];
 
-        const {
+        let {
           current: page,
           old: needRemovePage,
           publics,
@@ -3905,6 +3926,8 @@ ${scriptEl ? scriptEl.html : ""}`;
           page,
           key: "previous",
         });
+
+        needRemovePage = resetOldPage(needRemovePage);
 
         this.emit("router-change", {
           name: "back",
@@ -3928,7 +3951,7 @@ ${scriptEl ? scriptEl.html : ""}`;
           this._initHome = src;
         }
 
-        const {
+        let {
           current: page,
           old: needRemovePage,
           publics,
@@ -3941,6 +3964,8 @@ ${scriptEl ? scriptEl.html : ""}`;
           page,
           key: "next",
         });
+
+        needRemovePage = resetOldPage(needRemovePage);
 
         if (type === "goto") {
           oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
@@ -3969,7 +3994,7 @@ ${scriptEl ? scriptEl.html : ""}`;
         return this._navigate({ type: "replace", src });
       },
       get current() {
-        return this.all("o-page").slice(-1)[0];
+        return this._current || this.all("o-page").slice(-1)[0];
       },
       get routers() {
         let { current } = this;
@@ -4019,7 +4044,6 @@ ${scriptEl ? scriptEl.html : ""}`;
     if (targetAnime) {
       page.css = {
         ...page.css,
-        transition: "all ease .3s",
         ...targetAnime,
       };
 
@@ -4056,6 +4080,16 @@ ${scriptEl ? scriptEl.html : ""}`;
     requestAnimationFrame(() => {
       setTimeout(func, 5);
     });
+
+  const resetOldPage = (needRemovePage) => {
+    needRemovePage.css = {
+      position: "absolute",
+      width: `${needRemovePage.width}px`,
+      height: `${needRemovePage.height}px`,
+    };
+
+    return needRemovePage;
+  };
 
   $$1.fn.extend({
     get app() {

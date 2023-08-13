@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.2 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -2449,6 +2449,10 @@ class Xhear extends LikeArray {
 
     const { ele } = this;
 
+    if (!ele.parentNode) {
+      throw `The target has a sibling element, so you can't use unwrap`;
+    }
+
     ele.parentNode.insertBefore($el.ele, ele);
 
     ele.__internal = 1;
@@ -2466,7 +2470,7 @@ class Xhear extends LikeArray {
     const target = ele.parentNode;
 
     if (target.children.length > 1) {
-      throw `The target has a sibling element, so you can't use unwrap.`;
+      throw `The element itself must have a parent`;
     }
 
     ele.__internal = 1;
@@ -3028,7 +3032,8 @@ const getPagesData = async (src) => {
 const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
-  tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
+
+  tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
 
   const targetPage = $(tempCon.children[0]);
   targetPage._pause_init = 1;
@@ -3357,11 +3362,25 @@ $$1.register({
       pagesData.forEach((e, i) => {
         const parentPage = createPage(e.src, e.defaults);
 
-        this.wrap(parentPage);
+        if (this.parent) {
+          this.wrap(parentPage);
+        } else {
+          const needWraps = this.__need_wraps || (this.__need_wraps = []);
+          needWraps.push(parentPage);
+        }
       });
 
       this._renderDefault(target.defaults);
     },
+  },
+  attached() {
+    const needWraps = this.__need_wraps;
+    if (needWraps) {
+      needWraps.forEach((page) => {
+        this.wrap(page);
+      });
+      delete this.__need_wraps;
+    }
   },
   proto: {
     async _renderDefault(defaults) {
@@ -3763,7 +3782,7 @@ const appendPage = async ({ src, _this }) => {
 
   if (targetIndex >= 0) {
     container = publicPages.slice(-1)[0].page;
-    oldPage = container[0];
+    oldPage = container.slice(-1)[0];
     nextPages = oriNextPages.slice(targetIndex + 1);
   }
 
@@ -3804,6 +3823,8 @@ const appendPage = async ({ src, _this }) => {
 
   container.push(page);
 
+  _this._current = page;
+
   return { current: page, old: oldPage, publics: publicPages };
 };
 
@@ -3823,7 +3844,7 @@ const emitRouterChange = (_this, publics, type) => {
 
 $$1.register({
   tag: "o-app",
-  temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+  temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;width:100%;height:100%;}</style><slot></slot>`,
   attrs: {
     src: null,
   },
@@ -3886,7 +3907,7 @@ $$1.register({
 
       const newCurrent = this[HISTORY].splice(-delta)[0];
 
-      const {
+      let {
         current: page,
         old: needRemovePage,
         publics,
@@ -3899,6 +3920,8 @@ $$1.register({
         page,
         key: "previous",
       });
+
+      needRemovePage = resetOldPage(needRemovePage);
 
       this.emit("router-change", {
         name: "back",
@@ -3922,7 +3945,7 @@ $$1.register({
         this._initHome = src;
       }
 
-      const {
+      let {
         current: page,
         old: needRemovePage,
         publics,
@@ -3935,6 +3958,8 @@ $$1.register({
         page,
         key: "next",
       });
+
+      needRemovePage = resetOldPage(needRemovePage);
 
       if (type === "goto") {
         oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
@@ -3963,7 +3988,7 @@ $$1.register({
       return this._navigate({ type: "replace", src });
     },
     get current() {
-      return this.all("o-page").slice(-1)[0];
+      return this._current || this.all("o-page").slice(-1)[0];
     },
     get routers() {
       let { current } = this;
@@ -4013,7 +4038,6 @@ const pageInAnime = ({ page, key }) => {
   if (targetAnime) {
     page.css = {
       ...page.css,
-      transition: "all ease .3s",
       ...targetAnime,
     };
 
@@ -4050,6 +4074,16 @@ const nextAnimeFrame = (func) =>
   requestAnimationFrame(() => {
     setTimeout(func, 5);
   });
+
+const resetOldPage = (needRemovePage) => {
+  needRemovePage.css = {
+    position: "absolute",
+    width: `${needRemovePage.width}px`,
+    height: `${needRemovePage.height}px`,
+  };
+
+  return needRemovePage;
+};
 
 $$1.fn.extend({
   get app() {

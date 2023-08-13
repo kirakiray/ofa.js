@@ -119,7 +119,8 @@ export const getPagesData = async (src) => {
 export const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
-  tempCon.innerHTML = `<o-page src="${src}" style="position:absolute;left:0;top:0;width:100%;height:100%;"></o-page>`;
+
+  tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
 
   const targetPage = $(tempCon.children[0]);
   targetPage._pause_init = 1;

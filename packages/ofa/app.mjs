@@ -62,7 +62,7 @@ const appendPage = async ({ src, _this }) => {
 
   if (targetIndex >= 0) {
     container = publicPages.slice(-1)[0].page;
-    oldPage = container[0];
+    oldPage = container.slice(-1)[0];
     nextPages = oriNextPages.slice(targetIndex + 1);
   }
 
@@ -103,6 +103,8 @@ const appendPage = async ({ src, _this }) => {
 
   container.push(page);
 
+  _this._current = page;
+
   return { current: page, old: oldPage, publics: publicPages };
 };
 
@@ -122,7 +124,7 @@ const emitRouterChange = (_this, publics, type) => {
 
 $.register({
   tag: "o-app",
-  temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;position:absolute;left:0;top:0;width:100%;height:100%}</style><slot></slot>`,
+  temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;width:100%;height:100%;}</style><slot></slot>`,
   attrs: {
     src: null,
   },
@@ -185,7 +187,7 @@ $.register({
 
       const newCurrent = this[HISTORY].splice(-delta)[0];
 
-      const {
+      let {
         current: page,
         old: needRemovePage,
         publics,
@@ -198,6 +200,8 @@ $.register({
         page,
         key: "previous",
       });
+
+      needRemovePage = resetOldPage(needRemovePage);
 
       this.emit("router-change", {
         name: "back",
@@ -221,7 +225,7 @@ $.register({
         this._initHome = src;
       }
 
-      const {
+      let {
         current: page,
         old: needRemovePage,
         publics,
@@ -234,6 +238,8 @@ $.register({
         page,
         key: "next",
       });
+
+      needRemovePage = resetOldPage(needRemovePage);
 
       if (type === "goto") {
         oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
@@ -262,7 +268,7 @@ $.register({
       return this._navigate({ type: "replace", src });
     },
     get current() {
-      return this.all("o-page").slice(-1)[0];
+      return this._current || this.all("o-page").slice(-1)[0];
     },
     get routers() {
       let { current } = this;
@@ -312,7 +318,6 @@ const pageInAnime = ({ page, key }) => {
   if (targetAnime) {
     page.css = {
       ...page.css,
-      transition: "all ease .3s",
       ...targetAnime,
     };
 
@@ -349,3 +354,13 @@ const nextAnimeFrame = (func) =>
   requestAnimationFrame(() => {
     setTimeout(func, 5);
   });
+
+const resetOldPage = (needRemovePage) => {
+  needRemovePage.css = {
+    position: "absolute",
+    width: `${needRemovePage.width}px`,
+    height: `${needRemovePage.height}px`,
+  };
+
+  return needRemovePage;
+};
