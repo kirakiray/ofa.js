@@ -3788,7 +3788,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     if (targetIndex >= 0) {
       container = publicPages.slice(-1)[0].page;
-      oldPage = container[0];
+      oldPage = container.slice(-1)[0];
       nextPages = oriNextPages.slice(targetIndex + 1);
     }
 
@@ -3828,6 +3828,8 @@ ${scriptEl ? scriptEl.html : ""}`;
     loadingEl && loadingEl.remove();
 
     container.push(page);
+
+    _this._current = page;
 
     return { current: page, old: oldPage, publics: publicPages };
   };
@@ -3992,7 +3994,7 @@ ${scriptEl ? scriptEl.html : ""}`;
         return this._navigate({ type: "replace", src });
       },
       get current() {
-        return this.all("o-page").slice(-1)[0];
+        return this._current || this.all("o-page").slice(-1)[0];
       },
       get routers() {
         let { current } = this;
