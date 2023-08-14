@@ -156,3 +156,26 @@ test("test style url", async ({ page }) => {
 
   expect(backgroundUrl).toBe('url("http://localhost:3348/test/testimg.jpeg")');
 });
+
+test("page attached and detached", async ({ page }) => {
+  await page.goto("http://localhost:3348/test/test-app.html");
+  await new Promise((res) => setTimeout(res, 100));
+
+  const { _preview: _attached_home } = await page.waitForFunction(() => {
+    return window._attached_home;
+  });
+  const { _preview: detached_home1 } = await page.waitForFunction(() => {
+    return window._detached_home || "notok";
+  });
+
+  expect(_attached_home).toBe("ok");
+  expect(detached_home1).toBe("notok");
+
+  await page.getByRole("link", { name: "TO single-page in o-link" }).click();
+  await new Promise((res) => setTimeout(res, 400));
+
+  const { _preview: detached_home2 } = await page.waitForFunction(() => {
+    return window._detached_home || "notok";
+  });
+  expect(detached_home2).toBe("ok");
+});

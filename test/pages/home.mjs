@@ -4,12 +4,16 @@ export const type = $.PAGE;
 //   console.log("ready => ", this);
 // }
 
-// export function attached() {
-//   console.log("attached home => ", this);
-// }
-// export function detached() {
-//   console.log("detached home => ", this);
-// }
+export function attached() {
+  console.log("attached home => ", this);
+
+  window._attached_home = "ok";
+}
+export function detached() {
+  console.log("detached home => ", this);
+
+  window._detached_home = "ok";
+}
 
 export default async ({ query }) => {
   return {
