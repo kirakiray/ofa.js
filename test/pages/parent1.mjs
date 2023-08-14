@@ -35,6 +35,8 @@ export const proto = {
   async refreshActive() {
     const { current } = this.app;
 
+    console.log("current => ", current);
+
     const path = new URL(current.src).pathname;
 
     const activeName = getPathName(path);
