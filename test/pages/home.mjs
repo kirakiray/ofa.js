@@ -1,5 +1,16 @@
 export const type = $.PAGE;
 
+export function ready() {
+  console.log("ready => ", this);
+}
+
+export function attached() {
+  console.log("attached home => ", this);
+}
+export function detached() {
+  console.log("detached home => ", this);
+}
+
 export default async ({ query }) => {
   return {
     data: {

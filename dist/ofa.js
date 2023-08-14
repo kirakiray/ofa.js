@@ -3410,6 +3410,20 @@ ${scriptEl ? scriptEl.html : ""}`;
         });
         delete this.__need_wraps;
       }
+
+      if (this.__not_run_attached) {
+        if (this._defaults.attached) {
+          this._defaults.attached.call(this);
+        }
+        delete this.__not_run_attached;
+      }
+    },
+    detached() {
+      const { _defaults } = this;
+
+      if (_defaults && _defaults.detached) {
+        _defaults.detached.call(this);
+      }
     },
     proto: {
       async _renderDefault(defaults) {
@@ -3454,6 +3468,14 @@ ${scriptEl ? scriptEl.html : ""}`;
         this.emit("page-loaded");
 
         this.__resolve();
+
+        if (this.ele.isConnected) {
+          if (defaults.attached) {
+            defaults.attached.call(this);
+          }
+        } else {
+          this.__not_run_attached = 1;
+        }
       },
       back() {
         this.app.back();
