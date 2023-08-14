@@ -103,8 +103,6 @@ const appendPage = async ({ src, _this }) => {
 
   container.push(page);
 
-  _this._current = page;
-
   return { current: page, old: oldPage, publics: publicPages };
 };
 
@@ -268,7 +266,7 @@ $.register({
       return this._navigate({ type: "replace", src });
     },
     get current() {
-      return this._current || this.all("o-page").slice(-1)[0];
+      return this.all("o-page").slice(-1)[0];
     },
     get routers() {
       let { current } = this;

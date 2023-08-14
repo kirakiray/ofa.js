@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.3 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.4 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3404,6 +3404,20 @@ $$1.register({
       });
       delete this.__need_wraps;
     }
+
+    if (this.__not_run_attached) {
+      if (this._defaults.attached) {
+        this._defaults.attached.call(this);
+      }
+      delete this.__not_run_attached;
+    }
+  },
+  detached() {
+    const { _defaults } = this;
+
+    if (_defaults && _defaults.detached) {
+      _defaults.detached.call(this);
+    }
   },
   proto: {
     async _renderDefault(defaults) {
@@ -3448,6 +3462,14 @@ $$1.register({
       this.emit("page-loaded");
 
       this.__resolve();
+
+      if (this.ele.isConnected) {
+        if (defaults.attached) {
+          defaults.attached.call(this);
+        }
+      } else {
+        this.__not_run_attached = 1;
+      }
     },
     back() {
       this.app.back();
@@ -3846,8 +3868,6 @@ const appendPage = async ({ src, _this }) => {
 
   container.push(page);
 
-  _this._current = page;
-
   return { current: page, old: oldPage, publics: publicPages };
 };
 
@@ -4011,7 +4031,7 @@ $$1.register({
       return this._navigate({ type: "replace", src });
     },
     get current() {
-      return this._current || this.all("o-page").slice(-1)[0];
+      return this.all("o-page").slice(-1)[0];
     },
     get routers() {
       let { current } = this;
