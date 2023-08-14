@@ -118,7 +118,8 @@ register({
         return;
       }
 
-      const targetTemp = temps[hyphenToUpperCase(tempName)];
+      // const targetTemp = temps[hyphenToUpperCase(tempName)];
+      const targetTemp = temps[tempName];
 
       const markEnd = this.__marked_end;
       const parent = markEnd.parentNode;

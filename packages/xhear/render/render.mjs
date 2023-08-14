@@ -1,3 +1,4 @@
+import { getRandomId } from "../../stanz/public.mjs";
 import {
   isFunction,
   hyphenToUpperCase,
@@ -183,6 +184,23 @@ export function render({
   renderExtends.render({ step: "init", target });
 }
 
+const fixSingleXfill = (template) => {
+  template.content.querySelectorAll("x-fill:not([name])").forEach((fillEl) => {
+    if (fillEl.querySelector("x-fill:not([name])")) {
+      throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
+    }
+
+    const tid = `t${getRandomId()}`;
+    fillEl.setAttribute("name", tid);
+
+    const temp = document.createElement("template");
+    temp.setAttribute("name", tid);
+    temp.innerHTML = fillEl.innerHTML;
+    fillEl.innerHTML = "";
+    fillEl.appendChild(temp);
+  });
+};
+
 export function convert(el) {
   let temps = {};
 
@@ -214,10 +232,14 @@ export function convert(el) {
       }
       temps[tempName] = el;
       el.remove();
+    } else {
+      // The initialized template can be run here
+      fixSingleXfill(el);
     }
 
     temps = { ...temps, ...convert(el.content) };
   } else if (tagName) {
+    // Converting elements
     const obj = {};
 
     Array.from(el.attributes).forEach((attr) => {
@@ -248,6 +270,7 @@ export function convert(el) {
   }
 
   if (el.children) {
+    // template content
     Array.from(el.children).forEach((el) => {
       temps = { ...temps, ...convert(el) };
     });
