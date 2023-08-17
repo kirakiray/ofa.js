@@ -101,7 +101,7 @@ export async function drawUrl(content, url, isPage = true) {
   export const type = ${isPage ? "$.PAGE" : "$.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;`;
+  export const temp = \`${targetTemp.html.replace(/\s+$/, "").replace(/`/g,"\\`").replace(/\$\{/g,'\\${')}\`;`;
 
   const fileContent = `${beforeContent};
 ${scriptEl ? scriptEl.html : ""}`;

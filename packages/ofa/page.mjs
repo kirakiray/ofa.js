@@ -9,6 +9,7 @@ import {
   wrapErrorCall,
   getPagesData,
   createPage,
+  ISERROR,
 } from "./public.mjs";
 import { initLink } from "./link.mjs";
 
@@ -33,7 +34,15 @@ lm.use(["html", "htm"], async (ctx, next) => {
   ) {
     const url = await drawUrl(content, ctx.url);
 
-    ctx.result = await lm()(`${url} .mjs`);
+    try {
+      ctx.result = await lm()(`${url} .mjs`);
+    } catch (error) {
+      const err = new Error(
+        `Error loading page module: ${ctx.url}\n ${error.stack}`
+      );
+      err.error = error;
+      throw err;
+    }
     ctx.resultContent = content;
   }
 
@@ -116,7 +125,20 @@ $.register({
         }
       });
 
-      this._renderDefault(target.defaults);
+      if (target.ISERROR === ISERROR) {
+        const failContent = getFailContent(
+          src,
+          target,
+          this?.app?._module?.fail
+        );
+
+        this._renderDefault({
+          type: PAGE,
+          temp: failContent,
+        });
+      } else {
+        this._renderDefault(target.defaults);
+      }
     },
   },
   attached() {
@@ -283,4 +305,21 @@ export const getDefault = async (moduleData, oriUrl) => {
   };
 
   return defaults;
+};
+
+export const getFailContent = (src, target, fail) => {
+  let failContent;
+
+  if (fail) {
+    failContent = fail({
+      src,
+      error: target.error,
+    });
+  } else {
+    failContent = `<div style="padding:20px;color:red;">${target.error.stack
+      .replace(/\n/g, "<br>")
+      .replace(/ /g, "&nbsp;")}</div>`;
+  }
+
+  return failContent;
 };

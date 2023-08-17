@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -825,9 +825,10 @@ try{
     return ${expr};
   }
 }catch(error){
-  if(this.ele.isConnectd){
-    console.error(error);
+  if(this.ele && !this.ele.isConnectd){
+    return;
   }
+  console.error(error);
 }
 `;
     return new Function("...$args", funcStr).bind(data);
@@ -3120,15 +3121,16 @@ try{
           err.error = error;
 
           errorObj = err;
-          // throw err;
         } else {
           errorObj = error;
-          // throw error;
         }
+
+        console.error(errorObj);
       }
 
       if (errorObj) {
         pagesData.unshift({
+          src,
           ISERROR,
           error: errorObj,
         });
@@ -3342,7 +3344,7 @@ try{
   export const type = ${isPage ? "$.PAGE" : "$.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html.replace(/\s+$/, "")}\`;`;
+  export const temp = \`${targetTemp.html.replace(/\s+$/, "").replace(/`/g,"\\`").replace(/\$\{/g,'\\${')}\`;`;
 
     const fileContent = `${beforeContent};
 ${scriptEl ? scriptEl.html : ""}`;
@@ -3409,7 +3411,15 @@ ${scriptEl ? scriptEl.html : ""}`;
     ) {
       const url = await drawUrl(content, ctx.url);
 
-      ctx.result = await lm$1()(`${url} .mjs`);
+      try {
+        ctx.result = await lm$1()(`${url} .mjs`);
+      } catch (error) {
+        const err = new Error(
+          `Error loading page module: ${ctx.url}\n ${error.stack}`
+        );
+        err.error = error;
+        throw err;
+      }
       ctx.resultContent = content;
     }
 
@@ -3492,7 +3502,20 @@ ${scriptEl ? scriptEl.html : ""}`;
           }
         });
 
-        this._renderDefault(target.defaults);
+        if (target.ISERROR === ISERROR) {
+          const failContent = getFailContent(
+            src,
+            target,
+            this?.app?._module?.fail
+          );
+
+          this._renderDefault({
+            type: PAGE,
+            temp: failContent,
+          });
+        } else {
+          this._renderDefault(target.defaults);
+        }
       },
     },
     attached() {
@@ -3659,6 +3682,23 @@ ${scriptEl ? scriptEl.html : ""}`;
     };
 
     return defaults;
+  };
+
+  const getFailContent = (src, target, fail) => {
+    let failContent;
+
+    if (fail) {
+      failContent = fail({
+        src,
+        error: target.error,
+      });
+    } else {
+      failContent = `<div style="padding:20px;color:red;">${target.error.stack
+      .replace(/\n/g, "<br>")
+      .replace(/ /g, "&nbsp;")}</div>`;
+    }
+
+    return failContent;
   };
 
   const COMP = Symbol("Component");
@@ -3936,17 +3976,13 @@ ${scriptEl ? scriptEl.html : ""}`;
       const { defaults, ISERROR: isError } = e;
 
       if (isError === ISERROR) {
-        if (fail) {
-          const failContent = fail({
-            src,
-            error: e.error,
-          });
+        const failContent = getFailContent(src, e, fail);
 
-          page = createPage(e.src, {
-            type: $$1.PAGE,
-            temp: failContent,
-          });
-        }
+        page = createPage(e.src, {
+          type: $$1.PAGE,
+          temp: failContent,
+        });
+
         return false;
       }
 

@@ -85,15 +85,16 @@ export const getPagesData = async (src) => {
         err.error = error;
 
         errorObj = err;
-        // throw err;
       } else {
         errorObj = error;
-        // throw error;
       }
+
+      console.error(errorObj);
     }
 
     if (errorObj) {
       pagesData.unshift({
+        src,
         ISERROR,
         error: errorObj,
       });
