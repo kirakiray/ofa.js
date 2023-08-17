@@ -44,13 +44,15 @@
   "homepage": "https://github.com/kirakiray/ofa.js",
   "startyear": "2018",
   "keywords": [
-    "drill.js",
-    "drill",
-    "drilljs",
-    "script",
-    "modules",
-    "module loader",
-    "loader",
-    "es modules"
+    "ofa.js",
+    "ofajs",
+    "Web Components",
+    "Frontend Development",
+    "Micro Frontends",
+    "Data Sharing",
+    "Static Client Rendering",
+    "Application Development",
+    "Frontend Framework",
+    "JavaScript"
   ]
 }

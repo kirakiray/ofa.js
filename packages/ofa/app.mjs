@@ -1,7 +1,7 @@
 // import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
 import { resolvePath, getPagesData, ISERROR, createPage } from "./public.mjs";
-import { getDefault } from "./page.mjs";
+import { getDefault, getFailContent } from "./page.mjs";
 import { createXEle } from "../xhear/util.mjs";
 
 const HISTORY = "_history";
@@ -72,17 +72,13 @@ const appendPage = async ({ src, _this }) => {
     const { defaults, ISERROR: isError } = e;
 
     if (isError === ISERROR) {
-      if (fail) {
-        const failContent = fail({
-          src,
-          error: e.error,
-        });
+      const failContent = getFailContent(src, e, fail);
 
-        page = createPage(e.src, {
-          type: $.PAGE,
-          temp: failContent,
-        });
-      }
+      page = createPage(e.src, {
+        type: $.PAGE,
+        temp: failContent,
+      });
+
       return false;
     }
 

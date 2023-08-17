@@ -27,9 +27,10 @@ try{
     return ${expr};
   }
 }catch(error){
-  if(this.ele.isConnectd){
-    console.error(error);
+  if(this.ele && !this.ele.isConnectd){
+    return;
   }
+  console.error(error);
 }
 `;
   return new Function("...$args", funcStr).bind(data);
