@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3121,10 +3121,8 @@ try{
           err.error = error;
 
           errorObj = err;
-          // throw err;
         } else {
           errorObj = error;
-          // throw error;
         }
 
         console.error(errorObj);

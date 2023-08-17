@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3115,10 +3115,8 @@ const getPagesData = async (src) => {
         err.error = error;
 
         errorObj = err;
-        // throw err;
       } else {
         errorObj = error;
-        // throw error;
       }
 
       console.error(errorObj);
