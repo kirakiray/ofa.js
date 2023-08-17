@@ -121,7 +121,7 @@ export default class Xhear extends LikeArray {
   get host() {
     let root = this.ele.getRootNode();
     let { host } = root;
-    return host ? eleX(host) : null;
+    return host instanceof Node ? eleX(host) : null;
   }
 
   get parent() {

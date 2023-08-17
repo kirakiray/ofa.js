@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.4 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -809,6 +809,9 @@
 
   const renderExtends = {
     render() {},
+    renderable(el) {
+      return true;
+    },
   };
 
   const getRevokes = (target) => target.__revokes || (target.__revokes = []);
@@ -850,6 +853,10 @@ try{
     const revokes = getRevokes(target);
 
     texts.forEach((el) => {
+      if (!renderExtends.renderable(el)) {
+        return;
+      }
+
       const textEl = document.createTextNode("");
       const { parentNode } = el;
       parentNode.insertBefore(textEl, el);
@@ -878,6 +885,10 @@ try{
 
     eles.forEach((el) => {
       const bindData = JSON.parse(el.getAttribute("x-bind-data"));
+
+      if (!renderExtends.renderable(el)) {
+        return;
+      }
 
       const $el = eleX(el);
 
@@ -1903,19 +1914,76 @@ try{
 
   const RENDERED = Symbol("already-rendered");
 
-  function getConditionEles(_this, isEnd = true) {
+  const oldRenderable = renderExtends.renderable;
+  renderExtends.renderable = (el) => {
+    const bool = oldRenderable(el);
+
+    if (!bool) {
+      return false;
+    }
+
+    let t = el;
+    while (true) {
+      t = t.parentNode;
+      if (!t) {
+        break;
+      }
+
+      let tag = t.tagName;
+
+      if (tag && (tag === "X-IF" || tag === "X-ELSE-IF" || tag === "X-ELSE")) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Find other condition elements before and after
+  // isEnd: Retrieves the subsequent condition element
+  function getConditionEles(_this) {
     const $eles = [];
 
-    let target = isEnd ? _this.__marked_end : _this.__marked_start;
+    if (_this.parent) {
+      _this.remove();
+    }
+
+    let target = _this.__marked_end;
     while (true) {
-      target = isEnd ? target.nextSibling : target.previousSibling;
-      if (target instanceof Comment) {
-        if (target.__$ele) {
-          $eles.push(target.__$ele);
-          target = isEnd ? target.__end : target.__start;
-        }
-      } else if (!(target instanceof Text)) {
+      if (!target) {
         break;
+      }
+
+      target = target.nextSibling;
+      if (target instanceof Comment) {
+        const { __$ele } = target;
+        if (__$ele) {
+          const eleTag = __$ele.tag;
+
+          if (eleTag === "x-else-if" || eleTag === "x-else") {
+            $eles.push(__$ele);
+          }
+
+          target = target.__end;
+        }
+      } else {
+        if (target) {
+          const $target = $(target);
+          const targetTag = $target.tag;
+
+          if (target instanceof Text) {
+            if (target.data.replace(/\n/g, "").trim()) {
+              break;
+            }
+          } else if (targetTag === "x-else-if" || targetTag === "x-else") {
+            $target._renderMarked();
+            $target.remove();
+            target = $target.__marked_start;
+            $target._xif = _this;
+          }
+        } else {
+          break;
+        }
       }
     }
 
@@ -1939,6 +2007,10 @@ try{
       return null;
     },
     _renderMarked() {
+      if (this.__marked_start) {
+        return;
+      }
+
       const { ele } = this;
       const { parentNode } = ele;
 
@@ -2010,31 +2082,30 @@ try{
 
       this[RENDERED] = false;
     },
-    _refreshCondition() {
-      // Used to store adjacent conditional elements
-      const $eles = [this];
+  };
 
-      if (this._refreshing) {
-        return;
-      }
+  const xifComponentOpts = {
+    tag: "x-if",
+    data: {
+      value: null,
+    },
+    watch: {
+      async value() {
+        this._refreshCondition();
+      },
+    },
+    proto: {
+      async _refreshCondition() {
+        await this.__init_rendered;
 
-      // Pull in the remaining sibling conditional elements as well
-      switch (this.tag) {
-        case "x-if":
-          $eles.push(...getConditionEles(this));
-          break;
-        case "x-else-if":
-          $eles.unshift(...getConditionEles(this, false));
-          $eles.push(...getConditionEles(this));
-          break;
-      }
+        // Used to store adjacent conditional elements
+        const $eles = [this];
 
-      $eles.forEach((e) => (e._refreshing = true));
-      nextTick(() => {
+        // Pull in the remaining sibling conditional elements as well
+        $eles.push(...getConditionEles(this));
+
         let isOK = false;
         $eles.forEach(($ele) => {
-          delete $ele._refreshing;
-
           if (isOK) {
             $ele._revokeRender();
             return;
@@ -2048,44 +2119,45 @@ try{
 
           $ele._revokeRender();
         });
-      });
-    },
-  };
-
-  const xifComponentOpts = {
-    tag: "x-if",
-    data: {
-      value: null,
-    },
-    watch: {
-      value() {
-        this._refreshCondition();
       },
+      ...proto$1,
     },
-    proto: proto$1,
-    ready() {
+    created() {
       this.__originHTML = this.html;
       this.html = "";
+    },
+    ready() {
+      let resolve;
+      this.__init_rendered = new Promise((res) => (resolve = res));
+      this.__init_rendered_res = resolve;
+    },
+    attached() {
+      // Because it needs to have a parent element, the logo is added after attached.
       this._renderMarked();
-
-      nextTick(() => this.ele.remove());
+      this.__init_rendered_res();
     },
   };
 
   register(xifComponentOpts);
 
   register({
-    ...xifComponentOpts,
     tag: "x-else-if",
+    watch: {
+      value() {
+        this._xif && this._xif._refreshCondition();
+      },
+    },
+    created: xifComponentOpts.created,
+    proto: proto$1,
   });
 
   register({
     tag: "x-else",
+    created: xifComponentOpts.created,
     proto: proto$1,
-    ready: xifComponentOpts.ready,
   });
 
-  const createItem = (d, targetTemp, temps, $host) => {
+  const createItem = (d, targetTemp, temps, $host, index) => {
     const $ele = createXEle(targetTemp.innerHTML);
     const { ele } = $ele;
 
@@ -2093,6 +2165,7 @@ try{
       $data: d,
       $ele,
       $host,
+      $index: index,
     });
 
     render({
@@ -2150,7 +2223,9 @@ try{
       value: null,
     },
     watch: {
-      value(val) {
+      async value(val) {
+        await this.__init_rendered;
+
         const childs = this._getChilds();
 
         if (!val) {
@@ -2186,7 +2261,13 @@ try{
 
         const tempName = this._name;
 
-        const { data, temps } = this._getRenderData();
+        const rData = this._getRenderData();
+
+        if (!rData) {
+          return;
+        }
+
+        const { data, temps } = rData;
 
         if (!temps) {
           return;
@@ -2205,7 +2286,7 @@ try{
           const cursorEl = childs[i];
 
           if (!cursorEl) {
-            const { ele } = createItem(current, targetTemp, temps, $host);
+            const { ele } = createItem(current, targetTemp, temps, $host, i);
             parent.insertBefore(ele, markEnd);
             continue;
           }
@@ -2225,7 +2306,7 @@ try{
             moveArrayValue(childs, oldEl, i);
           } else {
             // New elements added
-            const { ele } = createItem(current, targetTemp, temps, $host);
+            const { ele } = createItem(current, targetTemp, temps, $host, i);
             parent.insertBefore(ele, cursorEl);
             childs.splice(i, 0, ele);
           }
@@ -2244,9 +2325,21 @@ try{
     },
     proto,
     ready() {
+      let resolve;
+      this.__init_rendered = new Promise((res) => (resolve = res));
+      this.__init_rendered_res = resolve;
+    },
+    attached() {
+      if (this.__runned_render) {
+        return;
+      }
+      this.__runned_render = 1;
+
       this.__originHTML = "origin";
       this._name = this.attr("name");
       this._renderMarked();
+
+      this.__init_rendered_res();
 
       nextTick(() => this.ele.remove());
     },
@@ -2361,7 +2454,7 @@ try{
     get host() {
       let root = this.ele.getRootNode();
       let { host } = root;
-      return host ? eleX(host) : null;
+      return host instanceof Node ? eleX(host) : null;
     }
 
     get parent() {
@@ -3093,7 +3186,7 @@ try{
       step === "refresh" &&
       target.attr("olink") === ""
     ) {
-      const top = target.parents.pop();
+      const top = target.parents.pop() || target;
 
       if (top.__fixLinkTimer) {
         return;

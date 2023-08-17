@@ -11,6 +11,9 @@ import { eleX } from "../util.mjs";
 
 export const renderExtends = {
   render() {},
+  renderable(el) {
+    return true;
+  },
 };
 
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
@@ -52,6 +55,10 @@ export function render({
   const revokes = getRevokes(target);
 
   texts.forEach((el) => {
+    if (!renderExtends.renderable(el)) {
+      return;
+    }
+
     const textEl = document.createTextNode("");
     const { parentNode } = el;
     parentNode.insertBefore(textEl, el);
@@ -80,6 +87,10 @@ export function render({
 
   eles.forEach((el) => {
     const bindData = JSON.parse(el.getAttribute("x-bind-data"));
+
+    if (!renderExtends.renderable(el)) {
+      return;
+    }
 
     const $el = eleX(el);
 

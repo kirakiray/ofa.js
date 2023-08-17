@@ -6,26 +6,82 @@
  * 3. Based on the marking, perform a judgment operation asynchronously, the element that satisfies the condition first will be rendered; after successful rendering, the subsequent conditional elements will clear the rendered content.
  */
 
-import { nextTick } from "../../stanz/public.mjs";
 import { register } from "../register.mjs";
-import { render } from "./render.mjs";
+import { render, renderExtends } from "./render.mjs";
 import { revokeAll } from "../util.mjs";
 
 const RENDERED = Symbol("already-rendered");
 
-function getConditionEles(_this, isEnd = true) {
+const oldRenderable = renderExtends.renderable;
+renderExtends.renderable = (el) => {
+  const bool = oldRenderable(el);
+
+  if (!bool) {
+    return false;
+  }
+
+  let t = el;
+  while (true) {
+    t = t.parentNode;
+    if (!t) {
+      break;
+    }
+
+    let tag = t.tagName;
+
+    if (tag && (tag === "X-IF" || tag === "X-ELSE-IF" || tag === "X-ELSE")) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+// Find other condition elements before and after
+// isEnd: Retrieves the subsequent condition element
+function getConditionEles(_this) {
   const $eles = [];
 
-  let target = isEnd ? _this.__marked_end : _this.__marked_start;
+  if (_this.parent) {
+    _this.remove();
+  }
+
+  let target = _this.__marked_end;
   while (true) {
-    target = isEnd ? target.nextSibling : target.previousSibling;
-    if (target instanceof Comment) {
-      if (target.__$ele) {
-        $eles.push(target.__$ele);
-        target = isEnd ? target.__end : target.__start;
-      }
-    } else if (!(target instanceof Text)) {
+    if (!target) {
       break;
+    }
+
+    target = target.nextSibling;
+    if (target instanceof Comment) {
+      const { __$ele } = target;
+      if (__$ele) {
+        const eleTag = __$ele.tag;
+
+        if (eleTag === "x-else-if" || eleTag === "x-else") {
+          $eles.push(__$ele);
+        }
+
+        target = target.__end;
+      }
+    } else {
+      if (target) {
+        const $target = $(target);
+        const targetTag = $target.tag;
+
+        if (target instanceof Text) {
+          if (target.data.replace(/\n/g, "").trim()) {
+            break;
+          }
+        } else if (targetTag === "x-else-if" || targetTag === "x-else") {
+          $target._renderMarked();
+          $target.remove();
+          target = $target.__marked_start;
+          $target._xif = _this;
+        }
+      } else {
+        break;
+      }
     }
   }
 
@@ -49,6 +105,10 @@ export const proto = {
     return null;
   },
   _renderMarked() {
+    if (this.__marked_start) {
+      return;
+    }
+
     const { ele } = this;
     const { parentNode } = ele;
 
@@ -120,31 +180,30 @@ export const proto = {
 
     this[RENDERED] = false;
   },
-  _refreshCondition() {
-    // Used to store adjacent conditional elements
-    const $eles = [this];
+};
 
-    if (this._refreshing) {
-      return;
-    }
+const xifComponentOpts = {
+  tag: "x-if",
+  data: {
+    value: null,
+  },
+  watch: {
+    async value() {
+      this._refreshCondition();
+    },
+  },
+  proto: {
+    async _refreshCondition() {
+      await this.__init_rendered;
 
-    // Pull in the remaining sibling conditional elements as well
-    switch (this.tag) {
-      case "x-if":
-        $eles.push(...getConditionEles(this));
-        break;
-      case "x-else-if":
-        $eles.unshift(...getConditionEles(this, false));
-        $eles.push(...getConditionEles(this));
-        break;
-    }
+      // Used to store adjacent conditional elements
+      const $eles = [this];
 
-    $eles.forEach((e) => (e._refreshing = true));
-    nextTick(() => {
+      // Pull in the remaining sibling conditional elements as well
+      $eles.push(...getConditionEles(this));
+
       let isOK = false;
       $eles.forEach(($ele) => {
-        delete $ele._refreshing;
-
         if (isOK) {
           $ele._revokeRender();
           return;
@@ -158,39 +217,40 @@ export const proto = {
 
         $ele._revokeRender();
       });
-    });
-  },
-};
-
-const xifComponentOpts = {
-  tag: "x-if",
-  data: {
-    value: null,
-  },
-  watch: {
-    value() {
-      this._refreshCondition();
     },
+    ...proto,
   },
-  proto,
-  ready() {
+  created() {
     this.__originHTML = this.html;
     this.html = "";
+  },
+  ready() {
+    let resolve;
+    this.__init_rendered = new Promise((res) => (resolve = res));
+    this.__init_rendered_res = resolve;
+  },
+  attached() {
+    // Because it needs to have a parent element, the logo is added after attached.
     this._renderMarked();
-
-    nextTick(() => this.ele.remove());
+    this.__init_rendered_res();
   },
 };
 
 register(xifComponentOpts);
 
 register({
-  ...xifComponentOpts,
   tag: "x-else-if",
+  watch: {
+    value() {
+      this._xif && this._xif._refreshCondition();
+    },
+  },
+  created: xifComponentOpts.created,
+  proto,
 });
 
 register({
   tag: "x-else",
+  created: xifComponentOpts.created,
   proto,
-  ready: xifComponentOpts.ready,
 });

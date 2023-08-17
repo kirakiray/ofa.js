@@ -4,14 +4,9 @@ import { proto as conditionProto } from "./condition.mjs";
 import { getType, nextTick } from "../../stanz/public.mjs";
 import Stanz from "../../stanz/main.mjs";
 import { createXEle, revokeAll } from "../util.mjs";
-import {
-  hyphenToUpperCase,
-  moveArrayValue,
-  isArrayEqual,
-  removeArrayValue,
-} from "../public.mjs";
+import { moveArrayValue, isArrayEqual, removeArrayValue } from "../public.mjs";
 
-const createItem = (d, targetTemp, temps, $host) => {
+const createItem = (d, targetTemp, temps, $host, index) => {
   const $ele = createXEle(targetTemp.innerHTML);
   const { ele } = $ele;
 
@@ -19,6 +14,7 @@ const createItem = (d, targetTemp, temps, $host) => {
     $data: d,
     $ele,
     $host,
+    $index: index,
   });
 
   render({
@@ -76,7 +72,9 @@ register({
     value: null,
   },
   watch: {
-    value(val) {
+    async value(val) {
+      await this.__init_rendered;
+
       const childs = this._getChilds();
 
       if (!val) {
@@ -112,7 +110,13 @@ register({
 
       const tempName = this._name;
 
-      const { data, temps } = this._getRenderData();
+      const rData = this._getRenderData();
+
+      if (!rData) {
+        return;
+      }
+
+      const { data, temps } = rData;
 
       if (!temps) {
         return;
@@ -131,7 +135,7 @@ register({
         const cursorEl = childs[i];
 
         if (!cursorEl) {
-          const { ele } = createItem(current, targetTemp, temps, $host);
+          const { ele } = createItem(current, targetTemp, temps, $host, i);
           parent.insertBefore(ele, markEnd);
           continue;
         }
@@ -151,7 +155,7 @@ register({
           moveArrayValue(childs, oldEl, i);
         } else {
           // New elements added
-          const { ele } = createItem(current, targetTemp, temps, $host);
+          const { ele } = createItem(current, targetTemp, temps, $host, i);
           parent.insertBefore(ele, cursorEl);
           childs.splice(i, 0, ele);
         }
@@ -170,9 +174,21 @@ register({
   },
   proto,
   ready() {
+    let resolve;
+    this.__init_rendered = new Promise((res) => (resolve = res));
+    this.__init_rendered_res = resolve;
+  },
+  attached() {
+    if (this.__runned_render) {
+      return;
+    }
+    this.__runned_render = 1;
+
     this.__originHTML = "origin";
     this._name = this.attr("name");
     this._renderMarked();
+
+    this.__init_rendered_res();
 
     nextTick(() => this.ele.remove());
   },

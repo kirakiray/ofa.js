@@ -20,7 +20,7 @@ renderExtends.render = (e) => {
     step === "refresh" &&
     target.attr("olink") === ""
   ) {
-    const top = target.parents.pop();
+    const top = target.parents.pop() || target;
 
     if (top.__fixLinkTimer) {
       return;
