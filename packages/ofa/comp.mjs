@@ -25,7 +25,13 @@ lm.use(["html", "htm"], async (ctx, next) => {
   ) {
     const url = await drawUrl(content, ctx.url, false);
 
-    ctx.result = await lm()(`${url} .mjs`);
+    try {
+      ctx.result = await lm()(`${url} .mjs`);
+    } catch (err) {
+      const error = new Error(`Error loading Component module: ${ctx.url}\n ${err.stack}`);
+
+      throw error;
+    }
     ctx.resultContent = content;
   }
 

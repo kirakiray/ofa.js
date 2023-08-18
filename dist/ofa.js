@@ -3419,7 +3419,7 @@ ${scriptEl ? scriptEl.html : ""}`;
         ctx.result = await lm$1()(`${url} .mjs`);
       } catch (error) {
         const err = new Error(
-          `Error loading page module: ${ctx.url}\n ${error.stack}`
+          `Error loading Page module: ${ctx.url}\n ${error.stack}`
         );
         err.error = error;
         throw err;
@@ -3723,7 +3723,13 @@ ${scriptEl ? scriptEl.html : ""}`;
     ) {
       const url = await drawUrl(content, ctx.url, false);
 
-      ctx.result = await lm$1()(`${url} .mjs`);
+      try {
+        ctx.result = await lm$1()(`${url} .mjs`);
+      } catch (err) {
+        const error = new Error(`Error loading Component module: ${ctx.url}\n ${err.stack}`);
+
+        throw error;
+      }
       ctx.resultContent = content;
     }
 
