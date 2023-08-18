@@ -16,8 +16,11 @@ import initRouter from "../router/init-router.mjs";
 
     app.push(`<o-page src="${location.pathname}"></o-page>`);
 
-    initRouter(app, (pathname, search) => {
-      return `${pathname}${search}`;
+    initRouter({
+      app,
+      getStateUrl(pathname, search) {
+        return `${pathname}${search}`;
+      },
     });
   }
 

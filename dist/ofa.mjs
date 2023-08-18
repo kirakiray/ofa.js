@@ -3058,6 +3058,10 @@ function fixRelate(ele, path) {
     ["href", "src"].forEach((name) => {
       const val = el.getAttribute(name);
 
+      if (/^#/.test(val)) {
+        return;
+      }
+
       if (val && !/^(https?:)?\/\/\S+/.test(val)) {
         el.setAttribute(name, resolvePath(val, path));
       }

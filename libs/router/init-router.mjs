@@ -1,4 +1,4 @@
-export default function initRouter(app, getStateUrl, fixStateUrl) {
+export default function initRouter({ app, getStateUrl, fixStateUrl }) {
   if (history.state && history.state.routerMode) {
     app.routers = history.state.routers;
   }
