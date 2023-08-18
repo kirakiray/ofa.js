@@ -33,12 +33,15 @@ $.register({
       app.goto(location.hash.replace("#", ""));
     }
 
-    this._popstateFunc = initRouter(app, null, (href) => {
-      const urlObj = new URL(href);
+    this._popstateFunc = initRouter({
+      app,
+      fixStateUrl() {
+        const urlObj = new URL(location.href);
 
-      if (urlObj.hash) {
-        return urlObj.hash.replace("#", "");
-      }
+        if (urlObj.hash) {
+          return urlObj.hash.replace("#", "");
+        }
+      },
     });
   },
   detached() {

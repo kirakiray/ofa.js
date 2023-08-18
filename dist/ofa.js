@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.7 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3063,6 +3063,10 @@ try{
     searchEle(ele, "[href],[src]").forEach((el) => {
       ["href", "src"].forEach((name) => {
         const val = el.getAttribute(name);
+
+        if (/^#/.test(val)) {
+          return;
+        }
 
         if (val && !/^(https?:)?\/\/\S+/.test(val)) {
           el.setAttribute(name, resolvePath(val, path));

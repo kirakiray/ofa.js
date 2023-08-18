@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.7 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3057,6 +3057,10 @@ function fixRelate(ele, path) {
   searchEle(ele, "[href],[src]").forEach((el) => {
     ["href", "src"].forEach((name) => {
       const val = el.getAttribute(name);
+
+      if (/^#/.test(val)) {
+        return;
+      }
 
       if (val && !/^(https?:)?\/\/\S+/.test(val)) {
         el.setAttribute(name, resolvePath(val, path));
