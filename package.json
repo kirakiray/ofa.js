@@ -16,6 +16,10 @@
     "email": "kirayao@hotmail.com",
     "url": "https://kirakiray.com/"
   },
+  "exports": {
+    "require": "./dist/ofa.min.js",
+    "import": "./dist/ofa.min.mjs"
+  },
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.34.0",

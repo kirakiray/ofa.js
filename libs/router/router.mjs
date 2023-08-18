@@ -35,8 +35,8 @@ $.register({
 
     this._popstateFunc = initRouter({
       app,
-      fixStateUrl(href) {
-        const urlObj = new URL(href);
+      fixStateUrl() {
+        const urlObj = new URL(location.href);
 
         if (urlObj.hash) {
           return urlObj.hash.replace("#", "");

@@ -41,7 +41,6 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
             routerMode: 1,
             routers: routers.map((e) => {
               return {
-                tag: e.tag,
                 src: e.src,
               };
             }),
@@ -75,16 +74,24 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
 
       if (!state) {
         if (fixStateUrl) {
-          const newPath = fixStateUrl(location.href);
+          const newPath = fixStateUrl();
           if (newPath) {
             _isFixNavigate = 1;
             app.goto(newPath);
+            return;
+          }
+
+          if (newPath === false) {
             return;
           }
         }
 
         _isBack = 1;
         app.back(app.routers.length - 1);
+        return;
+      }
+
+      if (!state.routerMode || state.ignore) {
         return;
       }
 
@@ -109,7 +116,7 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
         _isGoto = 1;
 
         app.goto(target.src);
-      } else {
+      } else if (JSON.stringify(hisRouters) !== JSON.stringify(appRouters)) {
         console.error(`o-router error occurred`);
       }
     })
