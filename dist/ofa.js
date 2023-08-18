@@ -3811,7 +3811,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
-    const fixResult = fixHostAndGlobalCSS(regTemp, tagName);
+    const fixResult = fixHostCSS(regTemp, tagName);
 
     if (fixResult) {
       regTemp = fixResult.temp;
@@ -3889,7 +3889,7 @@ ${scriptEl ? scriptEl.html : ""}`;
     await next();
   });
 
-  const fixHostAndGlobalCSS = (temp, tagName) => {
+  const fixHostCSS = (temp, tagName) => {
     const tempEl = $$1(`<template>${temp}</template>`);
     const links = tempEl.all("link,style");
 
