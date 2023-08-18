@@ -1,6 +1,6 @@
 # ofa.js - Progressive Frontend Framework
 
-[中文教程](https://github.com/kirakiray/ofa-v4-docs/blob/main/packages/docs/cn/introduce.md)
+[中文教程](https://github.com/kirakiray/ofa-v4-docs/blob/main/packages/docs/cn/docs/introduce.md)
 
 ## What is ofa.js?
 
