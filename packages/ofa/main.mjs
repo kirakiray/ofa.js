@@ -1,4 +1,5 @@
 import $ from "../xhear/base.mjs";
+import "./inject-host.mjs";
 import "./comp.mjs";
 import "./page.mjs";
 import "./app.mjs";

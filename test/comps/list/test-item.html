@@ -1,10 +1,18 @@
 <template component>
-  <link rel="stylesheet" href="./itemtohost.css" host />
-  <style host>
+  <!-- <link rel="stylesheet" href="./itemtohost.css" host /> -->
+  <!-- <style host>
     .interfered-element-2 {
       color: green;
     }
-  </style>
+  </style> -->
+  <inject-host>
+    <link rel="stylesheet" href="./itemtohost.css" />
+    <style>
+      .interfered-element-2 {
+        color: green;
+      }
+    </style>
+  </inject-host>
   <style>
     :host {
       display: block;

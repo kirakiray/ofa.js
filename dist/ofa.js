@@ -1688,34 +1688,44 @@ try{
   const COMPS = {};
 
   const renderElement = ({ defaults, ele, template, temps }) => {
-    const data = {
-      ...defaults.data,
-      ...defaults.attrs,
-    };
+    let $ele;
 
-    const $ele = eleX(ele);
+    try {
+      const data = {
+        ...deepCopyData(defaults.data),
+        ...defaults.attrs,
+      };
 
-    defaults.proto && $ele.extend(defaults.proto, { enumerable: false });
+      $ele = eleX(ele);
 
-    for (let [key, value] of Object.entries(data)) {
-      if (!$ele.hasOwnProperty(key)) {
-        $ele[key] = value;
+      defaults.proto && $ele.extend(defaults.proto, { enumerable: false });
+
+      for (let [key, value] of Object.entries(data)) {
+        if (!$ele.hasOwnProperty(key)) {
+          $ele[key] = value;
+        }
       }
+
+      if (defaults.temp) {
+        const root = ele.attachShadow({ mode: "open" });
+
+        root.innerHTML = template.innerHTML;
+
+        render({
+          target: root,
+          data: $ele,
+          temps,
+        });
+      }
+
+      defaults.ready && defaults.ready.call($ele);
+    } catch (error) {
+      const err = new Error(
+        `Render element error: ${ele.tagName} \n  ${error.stack}`
+      );
+      err.error = error;
+      throw err;
     }
-
-    if (defaults.temp) {
-      const root = ele.attachShadow({ mode: "open" });
-
-      root.innerHTML = template.innerHTML;
-
-      render({
-        target: root,
-        data: $ele,
-        temps,
-      });
-    }
-
-    defaults.ready && defaults.ready.call($ele);
 
     if (defaults.watch) {
       const wen = Object.entries(defaults.watch);
@@ -1763,17 +1773,29 @@ try{
       ...opts,
     };
 
-    validateTagName(defaults.tag);
+    let template, temps;
 
-    const name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
+    try {
+      validateTagName(defaults.tag);
 
-    if (COMPS[name]) {
-      throw `Component ${name} already exists`;
+      defaults.data = deepCopyData(defaults.data);
+
+      const name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
+
+      if (COMPS[name]) {
+        throw `Component ${name} already exists`;
+      }
+
+      template = document.createElement("template");
+      template.innerHTML = defaults.temp;
+      temps = convert(template);
+    } catch (error) {
+      const err = new Error(
+        `Register COmponent Error: ${defaults.tag} \n  ${error.stack}`
+      );
+      err.error = error;
+      throw err;
     }
-
-    const template = document.createElement("template");
-    template.innerHTML = defaults.temp;
-    const temps = convert(template);
 
     const getAttrKeys = (attrs) => {
       let attrKeys;
@@ -1786,6 +1808,7 @@ try{
 
       return attrKeys;
     };
+
     const XElement = (COMPS[name] = class extends HTMLElement {
       constructor(...args) {
         super(...args);
@@ -1902,6 +1925,30 @@ try{
     }
 
     return true;
+  }
+
+  function deepCopyData(obj) {
+    if (obj instanceof Set || obj instanceof Map) {
+      throw "The data of the registered component should contain only regular data types such as String, Number, Object and Array. for other data types, please set them after ready.";
+    }
+
+    if (obj instanceof Function) {
+      throw `Please write the function in the 'proto' property object.`;
+    }
+
+    if (typeof obj !== "object" || obj === null) {
+      return obj;
+    }
+
+    const copy = Array.isArray(obj) ? [] : {};
+
+    for (let key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        copy[key] = deepCopyData(obj[key]);
+      }
+    }
+
+    return copy;
   }
 
   /**
@@ -2721,6 +2768,253 @@ try{
     all: (expr) => searchEle(document, expr).map(eleX),
   });
 
+  function resolvePath(moduleName, baseURI) {
+    const [url, ...params] = moduleName.split(" ");
+
+    const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
+
+    if (
+      // moduleName.startsWith("/") ||
+      url.startsWith("http://") ||
+      url.startsWith("https://")
+    ) {
+      return url;
+    }
+
+    const moduleURL = new URL(url, baseURL);
+
+    if (params.length) {
+      return `${moduleURL.href} ${params.join(" ")}`;
+    }
+
+    return moduleURL.href;
+  }
+
+  function fixRelate(ele, path) {
+    searchEle(ele, "[href],[src]").forEach((el) => {
+      ["href", "src"].forEach((name) => {
+        const val = el.getAttribute(name);
+
+        if (/^#/.test(val)) {
+          return;
+        }
+
+        if (val && !/^(https?:)?\/\/\S+/.test(val)) {
+          el.setAttribute(name, resolvePath(val, path));
+        }
+      });
+    });
+  }
+
+  function fixRelatePathContent(content, path) {
+    const template = document.createElement("template");
+    template.innerHTML = content;
+
+    fixRelate(template.content, path);
+
+    // fix Resource references within style
+    searchEle(template.content, "style").forEach((styleEl) => {
+      const html = styleEl.innerHTML;
+
+      styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, adapted) => {
+        return `url(${resolvePath(adapted, path)})`;
+      });
+    });
+
+    return template.innerHTML;
+  }
+
+  const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
+    try {
+      await callback();
+    } catch (error) {
+      const err = new Error(`${desc}\n  ${error.stack}`);
+      err.error = error;
+      self.emit("error", { error: err, ...rest });
+      throw err;
+    }
+  };
+
+  const ISERROR = Symbol("loadError");
+
+  const getPagesData = async (src) => {
+    const load = lm();
+    const pagesData = [];
+    let defaults;
+    let pageSrc = src;
+    let beforeSrc;
+    let errorObj;
+
+    while (true) {
+      try {
+        defaults = await load(pageSrc);
+      } catch (error) {
+        if (beforeSrc) {
+          const err = new Error(
+            `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+          );
+          err.error = error;
+
+          errorObj = err;
+        } else {
+          errorObj = error;
+        }
+
+        console.error(errorObj);
+      }
+
+      if (errorObj) {
+        pagesData.unshift({
+          src,
+          ISERROR,
+          error: errorObj,
+        });
+        break;
+      }
+
+      pagesData.unshift({
+        src: pageSrc,
+        defaults,
+      });
+
+      if (!defaults.parent) {
+        break;
+      }
+
+      beforeSrc = pageSrc;
+      pageSrc = new URL(defaults.parent, pageSrc).href;
+    }
+
+    return pagesData;
+  };
+
+  const createPage = (src, defaults) => {
+    // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
+    const tempCon = document.createElement("div");
+
+    tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
+
+    const targetPage = $(tempCon.children[0]);
+    targetPage._pause_init = 1;
+
+    nextTick(() => {
+      targetPage._renderDefault(defaults);
+
+      delete targetPage._pause_init;
+    });
+
+    return targetPage;
+  };
+
+  async function getHash(str, algorithm = "SHA-256") {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest(algorithm, data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
+    return hashHex;
+  }
+
+  function initTargetLink(e, hostLink, targetHost) {
+    if (hostLink) {
+      hostLink.__items.add(e);
+      this._hosteds.push(e);
+      e.__targetLink = hostLink;
+      return hostLink;
+    }
+
+    hostLink = e.clone();
+    hostLink.attr("inject-host", "");
+
+    hostLink.__items = new Set([e]);
+    targetHost.shadow.push(hostLink);
+    this._hosteds.push(e);
+    e.__targetLink = hostLink;
+
+    return hostLink;
+  }
+
+  $$1.register({
+    tag: "inject-host",
+    temp: `<slot></slot>`,
+    data: {
+      // 挂载数据
+      _hosteds: [],
+    },
+    ready() {
+      this.shadow.on("slotchange", () => {
+        console.log("is change!");
+        this.refresh();
+      });
+    },
+    proto: {
+      refresh() {
+        if (!this.ele.isConnected) {
+          return;
+        }
+
+        const targetHost = this.host.host;
+
+        // 当有相同内容的 style 或 link，只添加一个标记，不添加重复的内容
+        this.forEach(async (e) => {
+          if (e.__targetLink) {
+            return;
+          }
+
+          let hostLink;
+
+          switch (e.tag) {
+            case "link":
+              // 先查找是否已存在目标
+              hostLink = targetHost.shadow.$(
+                `link[href="${e.attr("href")}"][inject-host]`
+              );
+
+              hostLink = initTargetLink.call(this, e, hostLink, targetHost);
+
+              break;
+            case "style":
+              const html = e.html;
+              const styleId = await getHash(html);
+
+              if (e.__targetLink) {
+                return;
+              }
+
+              // // 先查找是否已存在目标
+              hostLink = targetHost.shadow.$(
+                `style[inject-host][styleid='${styleId}']`
+              );
+
+              hostLink = initTargetLink.call(this, e, hostLink, targetHost);
+
+              hostLink.attr("styleid", styleId);
+
+              break;
+          }
+        });
+      },
+    },
+    attached() {
+      this.refresh();
+    },
+    detached() {
+      this._hosteds.forEach((e) => {
+        const hostLink = e.__targetLink;
+        // 删除关联
+        hostLink.__items.delete(e);
+        e.__targetLink = null;
+
+        // 当关联数为0时，删除host元素
+        if (!hostLink.__items.size) {
+          hostLink.remove();
+        }
+      });
+    },
+  });
+
   const getOid = () => Math.random().toString(32).slice(2);
 
   class Onion {
@@ -3036,144 +3330,6 @@ try{
   }
 
   window.lm = lm$1;
-
-  function resolvePath(moduleName, baseURI) {
-    const [url, ...params] = moduleName.split(" ");
-
-    const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
-
-    if (
-      // moduleName.startsWith("/") ||
-      url.startsWith("http://") ||
-      url.startsWith("https://")
-    ) {
-      return url;
-    }
-
-    const moduleURL = new URL(url, baseURL);
-
-    if (params.length) {
-      return `${moduleURL.href} ${params.join(" ")}`;
-    }
-
-    return moduleURL.href;
-  }
-
-  function fixRelate(ele, path) {
-    searchEle(ele, "[href],[src]").forEach((el) => {
-      ["href", "src"].forEach((name) => {
-        const val = el.getAttribute(name);
-
-        if (/^#/.test(val)) {
-          return;
-        }
-
-        if (val && !/^(https?:)?\/\/\S+/.test(val)) {
-          el.setAttribute(name, resolvePath(val, path));
-        }
-      });
-    });
-  }
-
-  function fixRelatePathContent(content, path) {
-    const template = document.createElement("template");
-    template.innerHTML = content;
-
-    fixRelate(template.content, path);
-
-    // fix Resource references within style
-    searchEle(template.content, "style").forEach((styleEl) => {
-      const html = styleEl.innerHTML;
-
-      styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, adapted) => {
-        return `url(${resolvePath(adapted, path)})`;
-      });
-    });
-
-    return template.innerHTML;
-  }
-
-  const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
-    try {
-      await callback();
-    } catch (error) {
-      const err = new Error(`${desc}\n  ${error.stack}`);
-      err.error = error;
-      self.emit("error", { error: err, ...rest });
-      throw err;
-    }
-  };
-
-  const ISERROR = Symbol("loadError");
-
-  const getPagesData = async (src) => {
-    const load = lm();
-    const pagesData = [];
-    let defaults;
-    let pageSrc = src;
-    let beforeSrc;
-    let errorObj;
-
-    while (true) {
-      try {
-        defaults = await load(pageSrc);
-      } catch (error) {
-        if (beforeSrc) {
-          const err = new Error(
-            `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
-          );
-          err.error = error;
-
-          errorObj = err;
-        } else {
-          errorObj = error;
-        }
-
-        console.error(errorObj);
-      }
-
-      if (errorObj) {
-        pagesData.unshift({
-          src,
-          ISERROR,
-          error: errorObj,
-        });
-        break;
-      }
-
-      pagesData.unshift({
-        src: pageSrc,
-        defaults,
-      });
-
-      if (!defaults.parent) {
-        break;
-      }
-
-      beforeSrc = pageSrc;
-      pageSrc = new URL(defaults.parent, pageSrc).href;
-    }
-
-    return pagesData;
-  };
-
-  const createPage = (src, defaults) => {
-    // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
-    const tempCon = document.createElement("div");
-
-    tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
-
-    const targetPage = $(tempCon.children[0]);
-    targetPage._pause_init = 1;
-
-    nextTick(() => {
-      targetPage._renderDefault(defaults);
-
-      delete targetPage._pause_init;
-    });
-
-    return targetPage;
-  };
 
   renderExtends.render = (e) => {
     const { step, name, target } = e;
