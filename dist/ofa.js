@@ -3882,7 +3882,9 @@ ${scriptEl ? scriptEl.html : ""}`;
       try {
         ctx.result = await lm$1()(`${url} .mjs`);
       } catch (err) {
-        const error = new Error(`Error loading Component module: ${ctx.url}\n ${err.stack}`);
+        const error = new Error(
+          `Error loading Component module: ${ctx.url}\n ${err.stack}`
+        );
 
         throw error;
       }
@@ -3965,76 +3967,7 @@ ${scriptEl ? scriptEl.html : ""}`;
       initLink(this.shadow);
     };
 
-    let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
-
-    const fixResult = fixHostCSS(regTemp, tagName);
-
-    if (fixResult) {
-      regTemp = fixResult.temp;
-      const { hostLinks } = fixResult;
-
-      const { attached: oldAttached, detached: oldDetached } = registerOpts;
-
-      Object.assign(registerOpts, {
-        attached(...args) {
-          const target = this.root;
-          // Finds out if the item already exists; if not, adds it; if it does, adds a tag to it.
-          const injectedLinks = [];
-
-          hostLinks.forEach((link) => {
-            let realLink;
-
-            if (link.tagName === "LINK") {
-              realLink = target.$(`link[href="${link.href}"][inject-host]`);
-            } else {
-              realLink = target.$(
-                `style[inject-id="${link.getAttribute(
-                "inject-id"
-              )}"][inject-host]`
-              );
-            }
-
-            if (realLink) {
-              realLink = realLink.ele;
-              realLink.__operators.push(this.ele);
-            } else {
-              realLink = link.cloneNode(true);
-              realLink.__operators = [this.ele];
-              if (target.ele === document) {
-                target.$("head").push(realLink);
-              } else {
-                target.unshift(realLink);
-              }
-            }
-
-            injectedLinks.push(realLink);
-          });
-
-          this.__injectedLinks = injectedLinks;
-
-          oldAttached && oldAttached.call(this, ...args);
-        },
-        detached(...args) {
-          const injectedLinks = this.__injectedLinks;
-          this.__injectedLinks = null;
-          if (injectedLinks) {
-            injectedLinks.forEach((link) => {
-              const operators = link.__operators;
-              const targetIndex = operators.indexOf(this.ele);
-
-              if (targetIndex > -1) {
-                if (operators.length === 1) {
-                  link.remove();
-                }
-                operators.splice(targetIndex, 1);
-              }
-            });
-          }
-
-          oldDetached && oldDetached.call(this, ...args);
-        },
-      });
-    }
+    const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
     $$1.register({
       ...registerOpts,
@@ -4044,33 +3977,6 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     await next();
   });
-
-  const fixHostCSS = (temp, tagName) => {
-    const tempEl = $$1(`<template>${temp}</template>`);
-    const links = tempEl.all("link,style");
-
-    const hostLinks = [];
-
-    links.forEach((e) => {
-      if (typeof e.attr("host") === "string") {
-        hostLinks.push(e.ele);
-        e.remove();
-        e.attr("host", null);
-        e.attr("inject-host", "");
-
-        if (e.tag === "style") {
-          e.attr("inject-id", `${tagName}-${getRandomId()}`);
-        }
-      }
-    });
-
-    if (hostLinks.length) {
-      return {
-        hostLinks,
-        temp: tempEl.html,
-      };
-    }
-  };
 
   // import lm from "../drill.js/base.mjs";
 
