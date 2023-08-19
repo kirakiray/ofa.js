@@ -38,7 +38,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm()(`${url} .mjs`);
     } catch (error) {
       const err = new Error(
-        `Error loading page module: ${ctx.url}\n ${error.stack}`
+        `Error loading Page module: ${ctx.url}\n ${error.stack}`
       );
       err.error = error;
       throw err;

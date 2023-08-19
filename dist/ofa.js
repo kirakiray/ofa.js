@@ -1,4 +1,4 @@
-//! ofa.js - v4.1.7 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.1.8 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3419,7 +3419,7 @@ ${scriptEl ? scriptEl.html : ""}`;
         ctx.result = await lm$1()(`${url} .mjs`);
       } catch (error) {
         const err = new Error(
-          `Error loading page module: ${ctx.url}\n ${error.stack}`
+          `Error loading Page module: ${ctx.url}\n ${error.stack}`
         );
         err.error = error;
         throw err;
@@ -3723,7 +3723,13 @@ ${scriptEl ? scriptEl.html : ""}`;
     ) {
       const url = await drawUrl(content, ctx.url, false);
 
-      ctx.result = await lm$1()(`${url} .mjs`);
+      try {
+        ctx.result = await lm$1()(`${url} .mjs`);
+      } catch (err) {
+        const error = new Error(`Error loading Component module: ${ctx.url}\n ${err.stack}`);
+
+        throw error;
+      }
       ctx.resultContent = content;
     }
 
@@ -3805,7 +3811,7 @@ ${scriptEl ? scriptEl.html : ""}`;
 
     let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
-    const fixResult = fixHostAndGlobalCSS(regTemp, tagName);
+    const fixResult = fixHostCSS(regTemp, tagName);
 
     if (fixResult) {
       regTemp = fixResult.temp;
@@ -3883,7 +3889,7 @@ ${scriptEl ? scriptEl.html : ""}`;
     await next();
   });
 
-  const fixHostAndGlobalCSS = (temp, tagName) => {
+  const fixHostCSS = (temp, tagName) => {
     const tempEl = $$1(`<template>${temp}</template>`);
     const links = tempEl.all("link,style");
 

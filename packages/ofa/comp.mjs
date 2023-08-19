@@ -25,7 +25,13 @@ lm.use(["html", "htm"], async (ctx, next) => {
   ) {
     const url = await drawUrl(content, ctx.url, false);
 
-    ctx.result = await lm()(`${url} .mjs`);
+    try {
+      ctx.result = await lm()(`${url} .mjs`);
+    } catch (err) {
+      const error = new Error(`Error loading Component module: ${ctx.url}\n ${err.stack}`);
+
+      throw error;
+    }
     ctx.resultContent = content;
   }
 
@@ -107,7 +113,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   let regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
-  const fixResult = fixHostAndGlobalCSS(regTemp, tagName);
+  const fixResult = fixHostCSS(regTemp, tagName);
 
   if (fixResult) {
     regTemp = fixResult.temp;
@@ -185,7 +191,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   await next();
 });
 
-const fixHostAndGlobalCSS = (temp, tagName) => {
+const fixHostCSS = (temp, tagName) => {
   const tempEl = $(`<template>${temp}</template>`);
   const links = tempEl.all("link,style");
 
