@@ -2968,10 +2968,19 @@ $$1.register({
     _initLink(e) {
       const href = e.attr("href");
 
-      // 替换掉原来的 link ，防止污染自身的
-      const replaceLink = $$1(`<link href="${href}" rel="host" />`);
+      const rel = e.attr("rel");
 
-      const ele = replaceLink.ele;
+      if (rel !== "stylesheet" && rel !== "host") {
+        throw 'The "rel" attribute of the "link" tag within "inject-host" can only use "stylesheet" as its value.';
+      }
+
+      let { ele } = e;
+
+      if (rel !== "host") {
+        e.attr("rel", "host");
+        // It needs to be reset or it will contaminate itself
+        e.attr("href", href);
+      }
 
       ele.__inited = true;
 
@@ -2980,13 +2989,19 @@ $$1.register({
         ele._revoke = null;
       };
 
-      e.before(replaceLink);
-      e.remove();
-
-      initLink$1(this, href, () => e.clone(), ele);
+      initLink$1(
+        this,
+        href,
+        () => {
+          const newEl = e.clone();
+          newEl.attr("rel", "stylesheet");
+          return newEl;
+        },
+        ele
+      );
     },
     async _initStyle(e) {
-      // 仅用 style 内文本，防止污染自身
+      // Use only the text inside the style to prevent contaminating yourself
       const com = new Comment(e.html);
       com.__inited = com;
 
@@ -3011,7 +3026,6 @@ $$1.register({
   attached() {
     // 创建 MutationObserver 实例
     const observer = (this._obs = new MutationObserver((mutationsList) => {
-      console.log("mutationsList:", mutationsList);
       for (let mutation of mutationsList) {
         if (mutation.type === "attributes") {
           if (mutation.attributeName === "x-bind-data") {
@@ -3020,7 +3034,12 @@ $$1.register({
           }
 
           // Logic for handling attribute changes
-          debugger;
+          const { target } = mutation;
+
+          if (target.__inited) {
+            target._revoke();
+            this._init(eleX(target));
+          }
         } else if (mutation.type === "childList") {
           mutation.removedNodes.forEach((e) => {
             if (e.__inited) {
@@ -3050,17 +3069,12 @@ $$1.register({
               this._init(eleX(e));
             }
           });
-          // 子节点变化
-        } else if (mutation.type === "characterData") {
-          // 应该不会跑到这里
-          debugger;
         }
       }
     }));
 
     const config = { attributes: true, childList: true, subtree: true };
 
-    // 开始观察目标元素
     observer.observe(this.ele, config);
 
     this.init();
@@ -3072,7 +3086,6 @@ $$1.register({
   },
 });
 
-// 将 link 添加到 host 上
 function initLink$1(injectEl, mark, cloneFunc, item) {
   const hostRoot = injectEl.host.root;
 
@@ -4438,14 +4451,14 @@ const oldAttr = $$1.fn.attr;
 function attr(...args) {
   let [name, value, options] = args;
 
+  const { host } = this;
+
   if (options) {
     let val = this._convertExpr(options, value);
 
     if (isFunction(val)) {
       val = val();
     }
-
-    const { host } = this;
 
     if (host && ["href", "src"].includes(name) && /^\./.test(val)) {
       const { PATH } = host;

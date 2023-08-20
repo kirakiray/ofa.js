@@ -1,7 +1,6 @@
 <template component>
   <inject-host>
-    <link rel="stylesheet" href="./itemtohost.css" />
-    <!-- <link rel="stylesheet" attr:href="linkHref" /> -->
+    <link rel="stylesheet" attr:href="linkHref" />
     <style>
       .interfered-element-2 {
         color: green;
@@ -15,7 +14,6 @@
       </style>
     </x-if>
   </inject-host>
-  <a attr:href="linkHref">hahaha</a>
   <style>
     :host {
       display: block;
@@ -43,11 +41,10 @@
     };
     export const proto = {
       switchLink() {
-        // this.linkHref =
-        //   this.linkHref === "./itemtohost.css"
-        //     ? "./itemtohost2.css"
-        //     : "./itemtohost.css";
-        this.shadow.$("inject-host link").attr("href", "./itemtohost2.css");
+        this.linkHref =
+          this.linkHref === "./itemtohost.css"
+            ? "./itemtohost2.css"
+            : "./itemtohost.css";
       },
       changeE2Style() {
         this.shadow.$(
