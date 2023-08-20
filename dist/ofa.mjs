@@ -2931,171 +2931,180 @@ $$1.register({
   temp: `<slot></slot>`,
   data: {},
   proto: {
-    refresh() {
+    init() {
       if (!this.ele.isConnected) {
         return;
       }
 
-      const targetHost = this.host.host;
-
-      // 当有相同内容的 style 或 link，只添加一个标记，不添加重复的内容
-      this.forEach(async (e) => {
-        if (e.__targetLink) {
-          // 已经初始化过的元素
-          return;
-        }
-
-        let hostLink;
-
-        switch (e.tag) {
-          case "link":
-            // 替换掉原来的 link ，防止污染自身的
-            const replaceLinkEl = $$1(
-              `<link href="${e.attr("href")}" rel="host" />`
-            );
-
-            e.before(replaceLinkEl);
-            e.remove();
-            const oldLink = e;
-            e = replaceLinkEl;
-
-            // 先查找是否已存在目标
-            hostLink = targetHost.shadow.$(
-              `link[href="${e.attr("href")}"][inject-host]`
-            );
-
-            hostLink = this._initTargetLink(e, hostLink, targetHost, () => {
-              return oldLink.clone();
-            });
-
-            break;
-          case "style":
-            const html = e.html;
-            const styleId = await getHash(html);
-
-            if (e.__targetLink) {
-              return;
-            }
-
-            // 先查找是否已存在目标
-            hostLink = targetHost.shadow.$(
-              `style[inject-host][styleid='${styleId}']`
-            );
-
-            hostLink = this._initTargetLink(e, hostLink, targetHost);
-
-            e.__originHTML = e.html;
-
-            const com = new Comment(e.__originHTML);
-            e.html = "";
-            e.push(com);
-
-            const _this = this;
-
-            // 重新修正元素上的属性
-            ["html", "text"].forEach((name) => {
-              e.extend({
-                get [name]() {
-                  return e.__originHTML;
-                },
-                set [name](val) {
-                  if (val !== e.__originHTML) {
-                    _this._fixStyle(e, val, targetHost);
-                  }
-
-                  e.__originHTML = val;
-                },
-              });
-            });
-
-            hostLink.attr("styleid", styleId);
-
-            break;
-        }
-      });
+      this.forEach((e) => this._init(e));
     },
-    _initTargetLink(e, hostLink, targetHost, cloneFunc) {
-      if (hostLink) {
-        hostLink.__items.add(e);
-        e.__targetLink = hostLink;
-        return hostLink;
+
+    _init(e) {
+      if (e.ele.__inited) {
+        return;
       }
 
-      if (cloneFunc) {
-        hostLink = cloneFunc();
-      } else {
-        hostLink = e.clone();
+      switch (e.tag) {
+        case "link":
+          this._initLink(e);
+          break;
+        case "style":
+          this._initStyle(e);
+          break;
+        case "x-if":
+        case "x-else-if":
+        case "x-else":
+        case "x-fill":
+          // Components of a rendered nature do not need to be alerted
+          break;
+        default:
+          console.log(
+            `This element will be invalidated within the inject-host`,
+            e
+          );
       }
-      hostLink.attr("inject-host", "");
-
-      hostLink.__items = new Set([e]);
-      targetHost.shadow.push(hostLink);
-      e.__targetLink = hostLink;
-
-      return hostLink;
     },
-    async _fixStyle(e, styleContent, targetHost) {
-      const styleId = await getHash(styleContent);
 
-      const currentStyleId = e.__targetLink.attr("styleid");
+    _initLink(e) {
+      const href = e.attr("href");
 
-      // 内容不一样的话，更新为新的style
-      if (styleId !== currentStyleId) {
-        // 先去除旧的绑定
-        revokeLink(e);
+      // 替换掉原来的 link ，防止污染自身的
+      const replaceLink = $$1(`<link href="${href}" rel="host" />`);
 
-        // 判断是否已经存在新的
+      const ele = replaceLink.ele;
 
-        let hostLink = targetHost.shadow.$(
-          `style[inject-host][styleid='${styleId}']`
-        );
+      ele.__inited = true;
 
-        const com = new Comment(styleContent);
-        e.ele.innerHTML = "";
-        e.push(com);
+      ele._revoke = () => {
+        revokeLink(ele);
+        ele._revoke = null;
+      };
 
-        hostLink = this._initTargetLink(e, hostLink, targetHost, () => {
-          return $$1(`<style> ${styleContent} </style>`);
-        });
+      e.before(replaceLink);
+      e.remove();
 
-        hostLink.attr("styleid", styleId);
-      }
+      initLink$1(this, href, () => e.clone(), ele);
+    },
+    async _initStyle(e) {
+      // 仅用 style 内文本，防止污染自身
+      const com = new Comment(e.html);
+      com.__inited = com;
+
+      com._revoke = () => {
+        revokeLink(e.ele);
+        delete com.__inited;
+        delete e.ele.__inited;
+        com._revoke = null;
+        e.ele._revoke = null;
+      };
+
+      e.html = "";
+      e.push(com);
+      e.ele.__inited = true;
+      e.ele._revoke = com._revoke;
+
+      const hash = await getHash(com.data);
+
+      initLink$1(this, hash, () => $$1(`<style>${com.data}</style>`), e.ele);
     },
   },
   attached() {
-    this.refresh();
-
     // 创建 MutationObserver 实例
-    const observer = new MutationObserver((mutationsList, observer) => {
+    const observer = (this._obs = new MutationObserver((mutationsList) => {
       console.log("mutationsList:", mutationsList);
       for (let mutation of mutationsList) {
-        if (mutation.type === "attributes") ; else if (mutation.type === "childList") ; else if (mutation.type === "characterData") ;
+        if (mutation.type === "attributes") {
+          if (mutation.attributeName === "x-bind-data") {
+            // x component render
+            continue;
+          }
+
+          // Logic for handling attribute changes
+          debugger;
+        } else if (mutation.type === "childList") {
+          mutation.removedNodes.forEach((e) => {
+            if (e.__inited) {
+              e._revoke();
+            }
+          });
+
+          mutation.addedNodes.forEach((e) => {
+            if (!e.__inited) {
+              if (e instanceof Text) {
+                if (e.parentElement.tagName === "STYLE") {
+                  // change style text
+                  this.init(e.parentNode);
+                }
+              }
+
+              if (e.__inited) {
+                // Don't get involved if you've been initialized.
+                return;
+              }
+
+              if (e instanceof Text || e instanceof Comment) {
+                // Invalid content
+                return;
+              }
+
+              this._init(eleX(e));
+            }
+          });
+          // 子节点变化
+        } else if (mutation.type === "characterData") {
+          // 应该不会跑到这里
+          debugger;
+        }
       }
-    });
+    }));
 
     const config = { attributes: true, childList: true, subtree: true };
 
     // 开始观察目标元素
-    this._obs = observer.observe(this.ele, config);
+    observer.observe(this.ele, config);
+
+    this.init();
   },
   detached() {
-    this.forEach((e) => revokeLink(e));
+    this.forEach((e) => revokeLink(e.ele));
 
     this._obs.disconnect();
   },
 });
 
-const revokeLink = (e) => {
-  const hostLink = e.__targetLink;
-  // 删除关联
-  hostLink.__items.delete(e);
-  e.__targetLink = null;
+// 将 link 添加到 host 上
+function initLink$1(injectEl, mark, cloneFunc, item) {
+  const hostRoot = injectEl.host.root;
 
-  // 当关联数为0时，删除host元素
-  if (!hostLink.__items.size) {
-    hostLink.remove();
+  let clink = hostRoot.$(`[inject-host="${mark}"]`);
+
+  if (clink) {
+    clink.ele.__items.add(item);
+    item.__host_link = clink;
+    return;
   }
-};
+
+  clink = cloneFunc();
+
+  clink.attr("inject-host", mark);
+
+  clink.ele.__items = new Set([item]);
+  item.__host_link = clink;
+  injectEl.host.root.push(clink);
+}
+
+function revokeLink(item) {
+  if (item.__inited) {
+    const items = item.__host_link.ele.__items;
+    items.delete(item);
+
+    if (!items.size) {
+      item.__host_link.remove();
+    }
+
+    delete item.__inited;
+  }
+}
 
 const getOid = () => Math.random().toString(32).slice(2);
 
@@ -3944,6 +3953,7 @@ const getFailContent = (src, target, fail) => {
 };
 
 const COMP = Symbol("Component");
+const COMPONENT_PATH = Symbol("PATH");
 
 Object.defineProperty($$1, "COMP", {
   value: COMP,
@@ -4047,6 +4057,12 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     oldReady && oldReady.apply(this, args);
     loaded && dispatchLoad(this, loaded);
     initLink(this.shadow);
+  };
+
+  const oldCreated = registerOpts.created;
+  registerOpts.created = function (...args) {
+    this[COMPONENT_PATH] = registerOpts.PATH;
+    oldCreated && oldCreated.call(this, ...args);
   };
 
   const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
@@ -4417,6 +4433,46 @@ const resetOldPage = (needRemovePage) => {
   return needRemovePage;
 };
 
+const oldAttr = $$1.fn.attr;
+
+function attr(...args) {
+  let [name, value, options] = args;
+
+  if (options) {
+    let val = this._convertExpr(options, value);
+
+    if (isFunction(val)) {
+      val = val();
+    }
+
+    const { host } = this;
+
+    if (host && ["href", "src"].includes(name) && /^\./.test(val)) {
+      const { PATH } = host;
+
+      if (PATH) {
+        const { href } = new URL(val, PATH);
+
+        return oldAttr.call(this, name, href);
+      }
+    }
+  }
+
+  if (value && ["href", "src"].includes(name) && /^\./.test(value)) {
+    const { PATH } = host;
+
+    if (PATH) {
+      const { href } = new URL(value, PATH);
+
+      return oldAttr.call(this, name, href);
+    }
+  }
+
+  return oldAttr.call(this, ...args);
+}
+
+attr.always = oldAttr.always;
+
 $$1.fn.extend({
   get app() {
     let target = this;
@@ -4440,6 +4496,11 @@ $$1.fn.extend({
 
     return target;
   },
+  get PATH() {
+    // component or page file path
+    return this[COMPONENT_PATH] || this.src || null;
+  },
+  attr,
 });
 
 if (document.currentScript) {

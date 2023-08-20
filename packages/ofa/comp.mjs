@@ -7,6 +7,7 @@ import { fixRelatePathContent, resolvePath } from "./public.mjs";
 import { initLink } from "./link.mjs";
 
 const COMP = Symbol("Component");
+export const COMPONENT_PATH = Symbol("PATH");
 
 Object.defineProperty($, "COMP", {
   value: COMP,
@@ -110,6 +111,12 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
     oldReady && oldReady.apply(this, args);
     loaded && dispatchLoad(this, loaded);
     initLink(this.shadow);
+  };
+
+  const oldCreated = registerOpts.created;
+  registerOpts.created = function (...args) {
+    this[COMPONENT_PATH] = registerOpts.PATH;
+    oldCreated && oldCreated.call(this, ...args);
   };
 
   const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);

@@ -1,0 +1,18 @@
+<template component>
+  <div>
+    <a attr:href="s_href">go to {{s_href}}</a>
+  </div>
+  <br />
+  <button on:click="changeHref">change href</button>
+  <script>
+    export const data = {
+      s_href: "./target.html",
+    };
+
+    export const proto = {
+      changeHref() {
+        this.s_href = "./target2.html";
+      },
+    };
+  </script>
+</template>

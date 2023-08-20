@@ -1,0 +1,7 @@
+test-item {
+  padding: 8px;
+}
+
+.interfered-element {
+  color: rgb(255, 0, 179);
+}
