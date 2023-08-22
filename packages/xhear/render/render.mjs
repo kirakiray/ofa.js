@@ -19,21 +19,27 @@ export const renderExtends = {
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
 const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
-const convertToFunc = (expr, data) => {
+const convertToFunc = (expr, data, opts) => {
   const funcStr = `
 const [$event] = $args;
+const {data, errCall} = this;
 try{
-  with(this){
+  with(data){
     return ${expr};
   }
 }catch(error){
-  if(this.ele && !this.ele.isConnected){
+  if(data.ele && !data.ele.isConnected){
     return;
   }
-  console.error(error);
+  if(errCall){
+    const result = errCall(error);
+    if(result !== false){
+      console.error(error);
+    }
+  }
 }
 `;
-  return new Function("...$args", funcStr).bind(data);
+  return new Function("...$args", funcStr).bind({ data, ...opts });
 };
 
 export function render({
@@ -105,7 +111,13 @@ export function render({
             const [key, expr] = args;
 
             const func = convertToFunc(expr, data, {
-              beforeArgs: args,
+              errCall: (error) => {
+                const stack = `Rendering of target element failed: ${$el.ele.outerHTML} \n  ${error.stack}`;
+                console.error(stack);
+                console.error({ stack, element: $el.ele, target, error });
+
+                return false;
+              },
             });
 
             afterArgs = [key, func];
