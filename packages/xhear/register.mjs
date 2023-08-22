@@ -112,7 +112,7 @@ export const register = (opts = {}) => {
     temps = convert(template);
   } catch (error) {
     const err = new Error(
-      `Register COmponent Error: ${defaults.tag} \n  ${error.stack}`
+      `Register Component Error: ${defaults.tag} \n  ${error.stack}`
     );
     err.error = error;
     throw err;
@@ -166,15 +166,19 @@ export const register = (opts = {}) => {
     }
 
     connectedCallback() {
-      defaults.attached &&
-        !isInternal(this) &&
-        defaults.attached.call(eleX(this));
+      if (isInternal(this)) {
+        return;
+      }
+
+      defaults.attached && defaults.attached.call(eleX(this));
     }
 
     disconnectedCallback() {
-      defaults.detached &&
-        !isInternal(this) &&
-        defaults.detached.call(eleX(this));
+      if (isInternal(this)) {
+        return;
+      }
+
+      defaults.detached && defaults.detached.call(eleX(this));
     }
 
     attributeChangedCallback(name, oldValue, newValue) {

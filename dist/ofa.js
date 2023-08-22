@@ -8,14 +8,14 @@
   const getRandomId = () => Math.random().toString(32).slice(2);
 
   const objectToString = Object.prototype.toString;
-  const getType = (value) =>
+  const getType$1 = (value) =>
     objectToString
       .call(value)
       .toLowerCase()
       .replace(/(\[object )|(])/g, "");
 
   const isObject = (obj) => {
-    const type = getType(obj);
+    const type = getType$1(obj);
     return type === "array" || type === "object";
   };
 
@@ -94,7 +94,7 @@
     return _this;
   };
 
-  const isFunction = (val) => getType(val).includes("function");
+  const isFunction = (val) => getType$1(val).includes("function");
 
   const hyphenToUpperCase = (str) =>
     str.replace(/-([a-z])/g, (match, p1) => {
@@ -104,18 +104,6 @@
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
-
-  const isArrayEqual = (arr1, arr2) => {
-    if (arr1.length !== arr2.length) {
-      return false;
-    }
-    for (let i = 0, len = arr1.length; i < len; i++) {
-      if (arr1[i] !== arr2[i]) {
-        return false;
-      }
-    }
-    return true;
-  };
 
   const toDashCase = (str) => {
     return str.replace(/[A-Z]/g, function (match) {
@@ -140,17 +128,6 @@
       }
     }
     return true;
-  }
-
-  function moveArrayValue(arr, oldValue, newIndex) {
-    const oldIndex = arr.indexOf(oldValue);
-
-    if (oldIndex === -1) {
-      throw new Error("Value not found in array");
-    }
-
-    arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
-    return arr;
   }
 
   const removeArrayValue = (arr, target) => {
@@ -661,8 +638,13 @@
   const { defineProperties: defineProperties$1 } = Object;
 
   const setData = ({ target, key, value, receiver, type, succeed }) => {
+    const oldValue = receiver[key];
+
     let data = value;
     if (isxdata(data)) {
+      if (oldValue === value) {
+        return true;
+      }
       data._owner.push(receiver);
     } else if (isObject(value)) {
       const desc = Object.getOwnPropertyDescriptor(target, key);
@@ -672,7 +654,6 @@
       }
     }
 
-    const oldValue = receiver[key];
     const isSame = oldValue === value;
 
     if (!isSame && isxdata(oldValue)) {
@@ -825,7 +806,7 @@ try{
     return ${expr};
   }
 }catch(error){
-  if(this.ele && !this.ele.isConnectd){
+  if(this.ele && !this.ele.isConnected){
     return;
   }
   console.error(error);
@@ -897,13 +878,23 @@ try{
         arr.forEach((args) => {
           try {
             const { always } = $el[actionName];
+            let afterArgs = [];
 
-            const func = () => {
-              const revoker = $el[actionName](...args, {
-                isExpr: true,
+            const work = () => {
+              const [key, expr] = args;
+
+              const func = convertToFunc(expr, data, {
+                beforeArgs: args,
+              });
+
+              afterArgs = [key, func];
+
+              $el[actionName](...afterArgs, {
+                actionName,
+                target: $el,
                 data,
-                temps,
-                ...otherOpts,
+                beforeArgs: args,
+                args: afterArgs,
               });
 
               renderExtends.render({
@@ -912,40 +903,39 @@ try{
                 name: actionName,
                 target: $el,
               });
-
-              return revoker;
             };
 
-            let actionRevoke;
+            let clearRevs = () => {
+              const { revoke: methodRevoke } = $el[actionName];
+
+              if (methodRevoke) {
+                // console.log("revoke => ", actionName, $el, args);
+
+                methodRevoke({
+                  actionName,
+                  target: $el,
+                  data,
+                  beforeArgs: args,
+                  args: afterArgs,
+                });
+              }
+
+              removeArrayValue(revokes, clearRevs);
+              removeArrayValue(getRevokes(el), clearRevs);
+              clearRevs = null;
+            };
 
             if (always) {
               // Run every data update
-              tasks.push(func);
-
-              actionRevoke = () => {
-                removeArrayValue(revokes, actionRevoke);
-                removeArrayValue(tasks, func);
-                removeArrayValue(getRevokes(el), actionRevoke);
-                // delete el.__revoke;
-              };
+              tasks.push(work);
             } else {
-              const revokeFunc = func();
-
-              if (isFunction(revokeFunc)) {
-                actionRevoke = () => {
-                  removeArrayValue(revokes, actionRevoke);
-                  removeArrayValue(getRevokes(el), actionRevoke);
-                  revokeFunc();
-                  // delete el.__revoke;
-                };
-              } else {
-                console.warn(`${actionName} render method need return revoke`);
-              }
-              // el.__revoke = actionRevoke;
+              work();
             }
 
-            revokes.push(actionRevoke);
-            addRevoke(el, actionRevoke);
+            revokes.push(clearRevs);
+            if (el !== target) {
+              addRevoke(el, clearRevs);
+            }
           } catch (error) {
             const err = new Error(
               `Execution of the ${actionName} method reports an error :\n ${error.stack}`
@@ -957,6 +947,9 @@ try{
       }
 
       el.removeAttribute("x-bind-data");
+
+      el._bindingRendered = true;
+      el.dispatchEvent(new Event("binding-rendered"));
     });
 
     if (!target.__render_temps && !isEmptyObject(temps)) {
@@ -980,11 +973,11 @@ try{
 
       target.__render_data = data;
 
-      tasks.forEach((func) => func());
+      tasks.forEach((f) => f());
 
       const wid = data.watchTick((e) => {
         if (tasks.length) {
-          tasks.forEach((func) => func());
+          tasks.forEach((f) => f());
         } else {
           data.unwatch(wid);
         }
@@ -1098,36 +1091,25 @@ try{
   };
 
   const defaultData = {
-    _convertExpr(options = {}, expr) {
-      const { isExpr, data } = options;
-
-      if (!isExpr) {
-        return expr;
-      }
-
-      return convertToFunc(expr, data);
-    },
     prop(...args) {
-      let [name, value, options] = args;
+      let [name, value] = args;
 
       if (args.length === 1) {
         return this[name];
       }
 
-      value = this._convertExpr(options, value);
       value = getVal(value);
       name = hyphenToUpperCase(name);
 
       this[name] = value;
     },
     attr(...args) {
-      let [name, value, options] = args;
+      let [name, value] = args;
 
       if (args.length === 1) {
         return this.ele.getAttribute(name);
       }
 
-      value = this._convertExpr(options, value);
       value = getVal(value);
 
       if (value === null) {
@@ -1137,13 +1119,12 @@ try{
       }
     },
     class(...args) {
-      let [name, value, options] = args;
+      let [name, value] = args;
 
       if (args.length === 1) {
         return this.ele.classList.contains(name);
       }
 
-      value = this._convertExpr(options, value);
       value = getVal(value);
 
       if (value) {
@@ -1158,11 +1139,18 @@ try{
   defaultData.attr.always = true;
   defaultData.class.always = true;
 
+  defaultData.prop.revoke = ({ target, args, $ele, data }) => {
+    const propName = args[0];
+    target[propName] = null;
+  };
+
   var syncFn = {
     sync(propName, targetName, options) {
       if (!options) {
         throw `Sync is only allowed within the renderer`;
       }
+
+      [propName, targetName] = options.beforeArgs;
 
       const { data } = options;
 
@@ -1187,28 +1175,23 @@ try{
     },
   };
 
-  var eventFn = {
+  const eventFn = {
     on(name, func, options) {
-      if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
-        const oriName = func;
-        func = options.data.get(func);
+      if (options) {
+        const beforeValue = options.beforeArgs[1];
 
-        if (!func) {
-          throw new Error(`${oriName} method does not exist`);
+        const oldFunc = func;
+
+        const caches = this.__on_caches || (this.__on_caches = new Map());
+
+        if (!/[^\d\w_\$\.]/.test(beforeValue)) {
+          func = options.data.get(beforeValue).bind(options.data);
+
+          caches.set(oldFunc, oldFunc);
         }
-      } else {
-        func = this._convertExpr(options, func);
-      }
-
-      if (options && options.data) {
-        func = func.bind(options.data);
       }
 
       this.ele.addEventListener(name, func);
-
-      if (options) {
-        return () => this.ele.removeEventListener(name, func);
-      }
 
       return this;
     },
@@ -1241,6 +1224,15 @@ try{
 
       return this;
     },
+  };
+
+  eventFn.on.revoke = ({ target, args }) => {
+    const caches = target.__on_caches || (target.__on_caches = new Map());
+
+    const currentFunc = caches.get(args[1]);
+    caches.delete(args[1]);
+
+    target.ele.removeEventListener(args[0], currentFunc);
   };
 
   const originSplice = (ele, start, count, ...items) => {
@@ -1664,7 +1656,7 @@ try{
       return new XhearCSS(this);
     },
     set css(d) {
-      if (getType(d) == "string") {
+      if (getType$1(d) == "string") {
         this.ele.style = d;
         return;
       }
@@ -1791,7 +1783,7 @@ try{
       temps = convert(template);
     } catch (error) {
       const err = new Error(
-        `Register COmponent Error: ${defaults.tag} \n  ${error.stack}`
+        `Register Component Error: ${defaults.tag} \n  ${error.stack}`
       );
       err.error = error;
       throw err;
@@ -1845,15 +1837,19 @@ try{
       }
 
       connectedCallback() {
-        defaults.attached &&
-          !isInternal(this) &&
-          defaults.attached.call(eleX(this));
+        if (isInternal(this)) {
+          return;
+        }
+
+        defaults.attached && defaults.attached.call(eleX(this));
       }
 
       disconnectedCallback() {
-        defaults.detached &&
-          !isInternal(this) &&
-          defaults.detached.call(eleX(this));
+        if (isInternal(this)) {
+          return;
+        }
+
+        defaults.detached && defaults.detached.call(eleX(this));
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -1951,6 +1947,167 @@ try{
     return copy;
   }
 
+  class FakeNode extends Comment {
+    constructor(markname) {
+      const tagText = `Fake Node${markname ? ": " + markname : ""}`;
+
+      super(` ${tagText} --end `);
+
+      this._mark = markname;
+      this._inited = false;
+
+      const startCom = new Comment(` ${tagText} --start `);
+      startCom.__fake_end = this;
+
+      Object.defineProperty(this, "_start", {
+        value: startCom,
+      });
+    }
+
+    init() {
+      if (this._inited) {
+        return;
+      }
+
+      this.parentNode.insertBefore(this._start, this);
+      this._inited = true;
+    }
+
+    querySelector(expr) {
+      return this.__searchEl(expr, "find");
+    }
+
+    querySelectorAll(expr) {
+      return this.__searchEl(expr);
+    }
+
+    __searchEl(expr, funcName = "filter") {
+      const startParent = this.parentNode;
+      if (!startParent) return [];
+
+      const childs = this.children;
+
+      return Array.from(startParent.querySelectorAll(expr))[funcName]((e) => {
+        let par = e;
+        while (true) {
+          if (childs.includes(par)) {
+            return true;
+          }
+
+          par = par.parentNode;
+
+          if (!par) {
+            break;
+          }
+        }
+      });
+    }
+
+    insertBefore(newEle, target) {
+      const { parentNode } = this;
+
+      if (Array.from(parentNode.children).includes(target)) {
+        parentNode.insertBefore(newEle, target);
+      } else {
+        parentNode.insertBefore(newEle, this);
+      }
+    }
+
+    appendChild(newEle) {
+      this.parentNode.insertBefore(newEle, this);
+    }
+
+    get children() {
+      const childs = [];
+
+      let prev = this;
+      while (true) {
+        prev = prev.previousSibling;
+
+        if (prev) {
+          if (prev instanceof HTMLElement) {
+            childs.unshift(prev);
+          } else if (prev === this._start) {
+            break;
+          }
+        } else {
+          throw `This is an unclosed FakeNode`;
+        }
+      }
+
+      return childs;
+    }
+
+    get childNodes() {
+      const childs = [];
+
+      let prev = this;
+      while (true) {
+        prev = prev.previousSibling;
+
+        if (prev) {
+          if (prev === this._start) {
+            break;
+          }
+          childs.unshift(prev);
+        } else {
+          throw `This is an unclosed FakeNode`;
+        }
+      }
+
+      return childs;
+    }
+
+    set innerHTML(val) {
+      this.childNodes.forEach((e) => {
+        e.remove();
+      });
+
+      const temp = document.createElement("template");
+      temp.innerHTML = val;
+
+      Array.from(temp.content.childNodes).forEach((e) => {
+        this.appendChild(e);
+      });
+    }
+
+    get innerHTML() {
+      const { children } = this;
+      let content = "";
+
+      children.forEach((e) => {
+        content += e.outerHTML + "\n";
+      });
+
+      return content;
+    }
+
+    get nextElementSibling() {
+      let next = this.nextSibling;
+
+      if (next.__fake_end) {
+        return next.__fake_end;
+      }
+
+      if (next && !(next instanceof Element)) {
+        next = next.nextElementSibling;
+      }
+
+      return next;
+    }
+
+    get previousElementSibling() {
+      const { _start } = this;
+      let prev = _start.previousSibling;
+
+      if (prev instanceof FakeNode) {
+        return prev;
+      }
+
+      return _start.previousElementSibling;
+    }
+  }
+
   /**
    * `x-if` first replaces all neighboring conditional elements with token elements and triggers the rendering process once; the rendering process is triggered again after each `value` change.
    * The rendering process is as follows:
@@ -1959,8 +2116,6 @@ try{
    * 3. Based on the marking, perform a judgment operation asynchronously, the element that satisfies the condition first will be rendered; after successful rendering, the subsequent conditional elements will clear the rendered content.
    */
 
-
-  const RENDERED = Symbol("already-rendered");
 
   const oldRenderable = renderExtends.renderable;
   renderExtends.renderable = (el) => {
@@ -1987,282 +2142,168 @@ try{
     return true;
   };
 
-  // Find other condition elements before and after
-  // isEnd: Retrieves the subsequent condition element
-  function getConditionEles(_this) {
-    const $eles = [];
-
-    if (_this.parent) {
-      _this.remove();
-    }
-
-    let target = _this.__marked_end;
-    while (true) {
-      if (!target) {
-        break;
-      }
-
-      target = target.nextSibling;
-      if (target instanceof Comment) {
-        const { __$ele } = target;
-        if (__$ele) {
-          const eleTag = __$ele.tag;
-
-          if (eleTag === "x-else-if" || eleTag === "x-else") {
-            $eles.push(__$ele);
-          }
-
-          target = target.__end;
-        }
-      } else {
-        if (target) {
-          const $target = $(target);
-          const targetTag = $target.tag;
-
-          if (target instanceof Text) {
-            if (target.data.replace(/\n/g, "").trim()) {
-              break;
-            }
-          } else if (targetTag === "x-else-if" || targetTag === "x-else") {
-            $target._renderMarked();
-            $target.remove();
-            target = $target.__marked_start;
-            $target._xif = _this;
-          }
-        } else {
-          break;
-        }
-      }
-    }
-
-    return $eles;
-  }
-  const proto$1 = {
-    _getRenderData() {
-      let target = this.__marked_end;
-      while (target && !target.__render_data) {
-        target = target.parentNode;
-      }
-
-      if (target) {
-        return {
-          target,
-          data: target.__render_data,
-          temps: target.__render_temps,
-        };
-      }
-
-      return null;
-    },
-    _renderMarked() {
-      if (this.__marked_start) {
-        return;
-      }
-
-      const { ele } = this;
-      const { parentNode } = ele;
-
-      const markedText = `${this.tag}: ${this.__originHTML
-      .trim()
-      .slice(0, 20)
-      .replace(/\n/g, "")} ...`;
-
-      const markedStart = document.createComment(markedText + " --start");
-      const markedEnd = document.createComment(markedText + " --end");
-      markedStart.__end = markedEnd;
-      markedEnd.__start = markedStart;
-      markedEnd.__$ele = markedStart.__$ele = this;
-      parentNode.insertBefore(markedStart, ele);
-      parentNode.insertBefore(markedEnd, ele);
-      this.__marked_start = markedStart;
-      this.__marked_end = markedEnd;
-
-      Object.defineProperties(ele, {
-        __revokes: {
-          set(val) {
-            markedStart.__revokes = val;
-          },
-          get() {
-            return markedStart.__revokes;
-          },
-        },
-      });
-    },
-    _renderContent() {
-      if (this[RENDERED]) {
-        return;
-      }
-
-      const e = this._getRenderData();
-
-      if (!e) {
-        return;
-      }
-
-      const { target, data, temps } = e;
-
-      const markedEnd = this.__marked_end;
-
-      const temp = document.createElement("template");
-      temp.innerHTML = this.__originHTML;
-      markedEnd.parentNode.insertBefore(temp.content, markedEnd);
-
-      render({ target, data, temps });
-
-      this[RENDERED] = true;
-    },
-    _revokeRender() {
-      const markedStart = this.__marked_start;
-      const markedEnd = this.__marked_end;
-
-      let target = markedEnd.previousSibling;
-
-      while (true) {
-        if (!target || target === markedStart) {
-          break;
-        }
-
-        revokeAll(target);
-        const oldTarget = target;
-        target = target.previousSibling;
-        oldTarget.remove();
-      }
-
-      this[RENDERED] = false;
-    },
-  };
-
-  const xifComponentOpts = {
-    tag: "x-if",
+  const regOptions = {
     data: {
       value: null,
+      __rendered: false,
     },
     watch: {
-      async value() {
-        this._refreshCondition();
+      value() {
+        if (!this._bindend) {
+          return;
+        }
+
+        this.refreshValue();
       },
     },
     proto: {
-      async _refreshCondition() {
-        await this.__init_rendered;
+      refreshValue() {
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+          const conditions = [this, ...this._others];
 
-        // Used to store adjacent conditional elements
-        const $eles = [this];
+          let isOK = false;
 
-        // Pull in the remaining sibling conditional elements as well
-        $eles.push(...getConditionEles(this));
+          conditions.forEach((conditionEl) => {
+            if (isOK) {
+              // A success condition has preceded it, and any subsequent conditional elements should be clear
+              conditionEl._clearContent();
+              return;
+            }
 
-        let isOK = false;
-        $eles.forEach(($ele) => {
-          if (isOK) {
-            $ele._revokeRender();
-            return;
-          }
-
-          if ($ele.value || $ele.tag === "x-else") {
-            $ele._renderContent();
-            isOK = true;
-            return;
-          }
-
-          $ele._revokeRender();
-        });
+            if (conditionEl.value || conditionEl.tag === "x-else") {
+              isOK = true;
+              conditionEl._renderContent();
+            } else {
+              conditionEl._clearContent();
+            }
+          });
+        }, 0);
       },
-      ...proto$1,
+      _renderContent() {
+        if (this.__rendered) {
+          return;
+        }
+        this.__rendered = true;
+
+        const { target, data, temps } = getRenderData(this._fake);
+
+        this._fake.innerHTML = this.__originHTML;
+
+        render({ target, data, temps });
+      },
+      _clearContent() {
+        this.__rendered = false;
+
+        revokeAll(this._fake);
+        this._fake.innerHTML = "";
+      },
+      init() {
+        if (this._bindend) {
+          return;
+        }
+
+        this._bindend = true;
+        const fake = (this._fake = new FakeNode(this.tag));
+        this.before(fake);
+        fake.init();
+        this.remove();
+
+        // 给 else-if 添加 _xif，给 else 初始化
+        if (this.tag === "x-if") {
+          const others = (this._others = []);
+
+          let next = fake;
+          while (true) {
+            next = next.nextElementSibling;
+
+            if (!next) {
+              break;
+            }
+
+            switch (next.tagName) {
+              case "X-ELSE": {
+                const $el = eleX(next);
+                if ($el.init) {
+                  $el.init();
+                } else {
+                  $el._if_ready = 1;
+                }
+
+                others.push($el);
+                return;
+              }
+              case "X-ELSE-IF": {
+                const $el = eleX(next);
+
+                $el._xif = this;
+
+                others.push($el);
+                break;
+              }
+            }
+          }
+        }
+      },
     },
     created() {
       this.__originHTML = this.html;
-      this.html = "";
     },
     ready() {
-      let resolve;
-      this.__init_rendered = new Promise((res) => (resolve = res));
-      this.__init_rendered_res = resolve;
-    },
-    attached() {
-      // Because it needs to have a parent element, the logo is added after attached.
-      this._renderMarked();
-      this.__init_rendered_res();
+      if (this.ele._bindingRendered) {
+        this.init();
+      } else {
+        this.one("binding-rendered", () => this.init());
+      }
     },
   };
 
-  register(xifComponentOpts);
+  register({
+    tag: "x-if",
+    ...regOptions,
+  });
 
   register({
     tag: "x-else-if",
+    ...regOptions,
     watch: {
       value() {
-        this._xif && this._xif._refreshCondition();
+        if (!this._bindend) {
+          return;
+        }
+
+        if (this._xif) {
+          this._xif.refreshValue();
+        }
       },
     },
-    created: xifComponentOpts.created,
-    proto: proto$1,
   });
 
   register({
     tag: "x-else",
-    created: xifComponentOpts.created,
-    proto: proto$1,
+    ...regOptions,
+    watch: {},
+    ready() {
+      if (this._if_ready) {
+        this.init();
+      }
+    },
   });
 
-  const createItem = (d, targetTemp, temps, $host, index) => {
-    const $ele = createXEle(targetTemp.innerHTML);
-    const { ele } = $ele;
+  const getRenderData = (target) => {
+    while (target && !target.__render_data) {
+      target = target.parentNode;
+    }
 
-    const itemData = new Stanz({
-      $data: d,
-      $ele,
-      $host,
-      $index: index,
-    });
+    if (target) {
+      return {
+        target,
+        data: target.__render_data,
+        temps: target.__render_temps,
+      };
+    }
 
-    render({
-      target: ele,
-      data: itemData,
-      temps,
-      $host,
-      isRenderSelf: true,
-    });
-
-    const revokes = ele.__revokes;
-
-    const revoke = () => {
-      removeArrayValue(revokes, revoke);
-      itemData.revoke();
-    };
-
-    revokes.push(revoke);
-
-    return { ele, itemData };
-  };
-
-  const proto = {
-    _getRenderData: proto$1._getRenderData,
-    _renderMarked: proto$1._renderMarked,
-    _getChilds() {
-      const childs = [];
-
-      const { __marked_end, __marked_start } = this;
-
-      if (!__marked_start) {
-        return [];
-      }
-
-      let target = __marked_start;
-
-      while (true) {
-        target = target.nextSibling;
-
-        if (!target || target === __marked_end) {
-          break;
-        }
-        if (target instanceof Element) {
-          childs.push(target);
-        }
-      }
-
-      return childs;
-    },
+    return null;
   };
 
   register({
@@ -2271,17 +2312,23 @@ try{
       value: null,
     },
     watch: {
-      async value(val) {
-        await this.__init_rendered;
+      value() {
+        this.refreshValue();
+      },
+    },
+    proto: {
+      refreshValue() {
+        const val = this.value;
 
-        const childs = this._getChilds();
+        if (!this._bindend) {
+          return;
+        }
+
+        const childs = this._fake.children;
 
         if (!val) {
-          childs &&
-            childs.forEach((el) => {
-              revokeAll(el);
-              el.remove();
-            });
+          childs.forEach((e) => revokeAll(e));
+          this._fake.innerHTML = "";
           return;
         }
 
@@ -2300,98 +2347,124 @@ try{
           return;
         }
 
-        const newVal = Array.from(val);
-        const oldVal = childs.map((e) => e.__render_data.$data);
+        const regData = getRenderData(this._fake);
 
-        if (isArrayEqual(oldVal, newVal)) {
-          return;
-        }
+        const xids = childs.map((e) => e._data_xid);
 
-        const tempName = this._name;
+        const { data, temps } = regData;
 
-        const rData = this._getRenderData();
+        const targetTemp = temps[this._name];
 
-        if (!rData) {
-          return;
-        }
+        // Adjustment of elements in order
+        const len = val.length;
+        let currentEl;
+        for (let i = 0; i < len; i++) {
+          const e = val[i];
 
-        const { data, temps } = rData;
+          const oldIndex = xids.indexOf(e.xid);
 
-        if (!temps) {
-          return;
-        }
+          if (oldIndex > -1) {
+            if (oldIndex === i) {
+              // No data changes
+              currentEl = childs[i];
+              continue;
+            }
 
-        // const targetTemp = temps[hyphenToUpperCase(tempName)];
-        const targetTemp = temps[tempName];
-
-        const markEnd = this.__marked_end;
-        const parent = markEnd.parentNode;
-        const backupChilds = childs.slice();
-        const $host = data.$host || data;
-
-        for (let i = 0, len = val.length; i < len; i++) {
-          const current = val[i];
-          const cursorEl = childs[i];
-
-          if (!cursorEl) {
-            const { ele } = createItem(current, targetTemp, temps, $host, i);
-            parent.insertBefore(ele, markEnd);
+            // position change
+            const target = childs[oldIndex];
+            const $target = eleX(target);
+            // fix data index
+            $target.__item.$index = i;
+            target.__internal = 1;
+            if (i === 0) {
+              this._fake.insertBefore(target, childs[0]);
+            } else {
+              this._fake.insertBefore(target, currentEl.nextElementSibling);
+            }
+            currentEl = target;
+            delete target.__internal;
             continue;
           }
 
-          const cursorData = cursorEl.__render_data.$data;
-
-          if (current === cursorData) {
-            continue;
-          }
-
-          if (oldVal.includes(current)) {
-            // Data displacement occurs
-            const oldEl = childs.find((e) => e.__render_data.$data === current);
-            oldEl.__internal = 1;
-            parent.insertBefore(oldEl, cursorEl);
-            delete oldEl.__internal;
-            moveArrayValue(childs, oldEl, i);
+          // new data
+          const $ele = createItem(e, temps, targetTemp, data.$host || data, i);
+          if (!currentEl) {
+            if (childs.length) {
+              this._fake.insertBefore($ele.ele, childs[0]);
+            } else {
+              this._fake.appendChild($ele.ele);
+            }
           } else {
-            // New elements added
-            const { ele } = createItem(current, targetTemp, temps, $host, i);
-            parent.insertBefore(ele, cursorEl);
-            childs.splice(i, 0, ele);
+            this._fake.insertBefore($ele.ele, currentEl.nextElementSibling);
           }
+          currentEl = $ele.ele;
         }
 
-        backupChilds.forEach((current, i) => {
-          const data = oldVal[i];
+        const newChilds = this._fake.children;
 
-          // need to be deleted
-          if (!newVal.includes(data)) {
-            revokeAll(current);
-            current.remove();
-          }
-        });
+        if (len < newChilds.length) {
+          newChilds.slice(len).forEach((e) => {
+            e.remove();
+            revokeAll(e);
+          });
+        }
+      },
+      init() {
+        if (this._bindend) {
+          return;
+        }
+        this._bindend = true;
+        const fake = (this._fake = new FakeNode("x-fill"));
+        this.before(fake);
+        fake.init();
+        this.remove();
+
+        this.refreshValue();
       },
     },
-    proto,
     ready() {
-      let resolve;
-      this.__init_rendered = new Promise((res) => (resolve = res));
-      this.__init_rendered_res = resolve;
-    },
-    attached() {
-      if (this.__runned_render) {
-        return;
-      }
-      this.__runned_render = 1;
-
-      this.__originHTML = "origin";
       this._name = this.attr("name");
-      this._renderMarked();
 
-      this.__init_rendered_res();
-
-      nextTick(() => this.ele.remove());
+      if (this.ele._bindingRendered) {
+        this.init();
+      } else {
+        this.one("binding-rendered", () => this.init());
+      }
     },
   });
+
+  const createItem = (data, temps, targetTemp, $host, $index) => {
+    const $ele = createXEle(targetTemp.innerHTML);
+
+    const itemData = new Stanz({
+      $data: data,
+      $ele,
+      $host,
+      $index,
+    });
+
+    render({
+      target: $ele.ele,
+      data: itemData,
+      temps,
+      $host,
+      isRenderSelf: true,
+    });
+
+    const revokes = $ele.ele.__revokes;
+
+    const revoke = () => {
+      removeArrayValue(revokes, revoke);
+      itemData.revoke();
+    };
+
+    revokes.push(revoke);
+
+    $ele.__item = itemData;
+    $ele.ele._data_xid = data.xid;
+
+    return $ele;
+  };
 
   const { defineProperties } = Object;
 
@@ -2529,7 +2602,7 @@ try{
       const { next: nextEl } = this;
 
       if (nextEl) {
-        nextEl.prev = val;
+        nextEl.before(val);
       } else {
         this.parent.push(val);
       }
@@ -2737,7 +2810,7 @@ try{
       return eleX(expr);
     }
 
-    const type = getType(expr);
+    const type = getType$1(expr);
 
     switch (type) {
       case "object":
@@ -2755,10 +2828,16 @@ try{
       Array.from(target.childNodes).forEach((el) => {
         revokeAll(el);
       });
+
+    const revokes = target?.shadowRoot?.__revokes;
+
+    if (revokes) {
+      [...revokes].forEach((f) => f());
+    }
   };
 
   function $$1(expr) {
-    if (getType(expr) === "string" && !/<.+>/.test(expr)) {
+    if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
       const ele = document.querySelector(expr);
 
       return eleX(ele);
@@ -4457,27 +4536,13 @@ ${scriptEl ? scriptEl.html : ""}`;
   function attr(...args) {
     let [name, value, options] = args;
 
-    const { host } = this;
-
-    if (options) {
-      let val = this._convertExpr(options, value);
-
-      if (isFunction(val)) {
-        val = val();
-      }
-
-      if (host && ["href", "src"].includes(name) && /^\./.test(val)) {
-        const { PATH } = host;
-
-        if (PATH) {
-          const { href } = new URL(val, PATH);
-
-          return oldAttr.call(this, name, href);
-        }
-      }
+    if (isFunction(value)) {
+      value = value();
     }
 
-    if (value && ["href", "src"].includes(name) && /^\./.test(value)) {
+    const { host } = this;
+
+    if (host && ["href", "src"].includes(name) && /^\./.test(value)) {
       const { PATH } = host;
 
       if (PATH) {

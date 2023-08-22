@@ -1,70 +1,10 @@
 import { register } from "../register.mjs";
 import { render } from "./render.mjs";
-import { proto as conditionProto } from "./condition.mjs";
-import { getType, nextTick } from "../../stanz/public.mjs";
+import { FakeNode } from "./fake-node.mjs";
 import Stanz from "../../stanz/main.mjs";
-import { createXEle, revokeAll } from "../util.mjs";
-import { moveArrayValue, isArrayEqual, removeArrayValue } from "../public.mjs";
-
-const createItem = (d, targetTemp, temps, $host, index) => {
-  const $ele = createXEle(targetTemp.innerHTML);
-  const { ele } = $ele;
-
-  const itemData = new Stanz({
-    $data: d,
-    $ele,
-    $host,
-    $index: index,
-  });
-
-  render({
-    target: ele,
-    data: itemData,
-    temps,
-    $host,
-    isRenderSelf: true,
-  });
-
-  const revokes = ele.__revokes;
-
-  const revoke = () => {
-    removeArrayValue(revokes, revoke);
-    itemData.revoke();
-  };
-
-  revokes.push(revoke);
-
-  return { ele, itemData };
-};
-
-const proto = {
-  _getRenderData: conditionProto._getRenderData,
-  _renderMarked: conditionProto._renderMarked,
-  _getChilds() {
-    const childs = [];
-
-    const { __marked_end, __marked_start } = this;
-
-    if (!__marked_start) {
-      return [];
-    }
-
-    let target = __marked_start;
-
-    while (true) {
-      target = target.nextSibling;
-
-      if (!target || target === __marked_end) {
-        break;
-      }
-      if (target instanceof Element) {
-        childs.push(target);
-      }
-    }
-
-    return childs;
-  },
-};
+import { createXEle, eleX, revokeAll } from "../util.mjs";
+import { removeArrayValue } from "../public.mjs";
+import { getRenderData } from "./condition.mjs";
 
 register({
   tag: "x-fill",
@@ -72,17 +12,23 @@ register({
     value: null,
   },
   watch: {
-    async value(val) {
-      await this.__init_rendered;
+    value() {
+      this.refreshValue();
+    },
+  },
+  proto: {
+    refreshValue() {
+      const val = this.value;
 
-      const childs = this._getChilds();
+      if (!this._bindend) {
+        return;
+      }
+
+      const childs = this._fake.children;
 
       if (!val) {
-        childs &&
-          childs.forEach((el) => {
-            revokeAll(el);
-            el.remove();
-          });
+        childs.forEach((e) => revokeAll(e));
+        this._fake.innerHTML = "";
         return;
       }
 
@@ -101,95 +47,121 @@ register({
         return;
       }
 
-      const newVal = Array.from(val);
-      const oldVal = childs.map((e) => e.__render_data.$data);
+      const regData = getRenderData(this._fake);
 
-      if (isArrayEqual(oldVal, newVal)) {
-        return;
-      }
+      const xids = childs.map((e) => e._data_xid);
 
-      const tempName = this._name;
+      const { data, temps } = regData;
 
-      const rData = this._getRenderData();
+      const targetTemp = temps[this._name];
 
-      if (!rData) {
-        return;
-      }
+      // Adjustment of elements in order
+      const len = val.length;
+      let currentEl;
+      for (let i = 0; i < len; i++) {
+        const e = val[i];
 
-      const { data, temps } = rData;
+        const oldIndex = xids.indexOf(e.xid);
 
-      if (!temps) {
-        return;
-      }
+        if (oldIndex > -1) {
+          if (oldIndex === i) {
+            // No data changes
+            currentEl = childs[i];
+            continue;
+          }
 
-      // const targetTemp = temps[hyphenToUpperCase(tempName)];
-      const targetTemp = temps[tempName];
-
-      const markEnd = this.__marked_end;
-      const parent = markEnd.parentNode;
-      const backupChilds = childs.slice();
-      const $host = data.$host || data;
-
-      for (let i = 0, len = val.length; i < len; i++) {
-        const current = val[i];
-        const cursorEl = childs[i];
-
-        if (!cursorEl) {
-          const { ele } = createItem(current, targetTemp, temps, $host, i);
-          parent.insertBefore(ele, markEnd);
+          // position change
+          const target = childs[oldIndex];
+          const $target = eleX(target);
+          // fix data index
+          $target.__item.$index = i;
+          target.__internal = 1;
+          if (i === 0) {
+            this._fake.insertBefore(target, childs[0]);
+          } else {
+            this._fake.insertBefore(target, currentEl.nextElementSibling);
+          }
+          currentEl = target;
+          delete target.__internal;
           continue;
         }
 
-        const cursorData = cursorEl.__render_data.$data;
-
-        if (current === cursorData) {
-          continue;
-        }
-
-        if (oldVal.includes(current)) {
-          // Data displacement occurs
-          const oldEl = childs.find((e) => e.__render_data.$data === current);
-          oldEl.__internal = 1;
-          parent.insertBefore(oldEl, cursorEl);
-          delete oldEl.__internal;
-          moveArrayValue(childs, oldEl, i);
+        // new data
+        const $ele = createItem(e, temps, targetTemp, data.$host || data, i);
+        if (!currentEl) {
+          if (childs.length) {
+            this._fake.insertBefore($ele.ele, childs[0]);
+          } else {
+            this._fake.appendChild($ele.ele);
+          }
         } else {
-          // New elements added
-          const { ele } = createItem(current, targetTemp, temps, $host, i);
-          parent.insertBefore(ele, cursorEl);
-          childs.splice(i, 0, ele);
+          this._fake.insertBefore($ele.ele, currentEl.nextElementSibling);
         }
+        currentEl = $ele.ele;
       }
 
-      backupChilds.forEach((current, i) => {
-        const data = oldVal[i];
+      const newChilds = this._fake.children;
 
-        // need to be deleted
-        if (!newVal.includes(data)) {
-          revokeAll(current);
-          current.remove();
-        }
-      });
+      if (len < newChilds.length) {
+        newChilds.slice(len).forEach((e) => {
+          e.remove();
+          revokeAll(e);
+        });
+      }
+    },
+    init() {
+      if (this._bindend) {
+        return;
+      }
+      this._bindend = true;
+      const fake = (this._fake = new FakeNode("x-fill"));
+      this.before(fake);
+      fake.init();
+      this.remove();
+
+      this.refreshValue();
     },
   },
-  proto,
   ready() {
-    let resolve;
-    this.__init_rendered = new Promise((res) => (resolve = res));
-    this.__init_rendered_res = resolve;
-  },
-  attached() {
-    if (this.__runned_render) {
-      return;
-    }
-    this.__runned_render = 1;
-
-    this.__originHTML = "origin";
     this._name = this.attr("name");
-    this._renderMarked();
 
-    this.__init_rendered_res();
-
-    nextTick(() => this.ele.remove());
+    if (this.ele._bindingRendered) {
+      this.init();
+    } else {
+      this.one("binding-rendered", () => this.init());
+    }
   },
 });
+
+const createItem = (data, temps, targetTemp, $host, $index) => {
+  const $ele = createXEle(targetTemp.innerHTML);
+
+  const itemData = new Stanz({
+    $data: data,
+    $ele,
+    $host,
+    $index,
+  });
+
+  render({
+    target: $ele.ele,
+    data: itemData,
+    temps,
+    $host,
+    isRenderSelf: true,
+  });
+
+  const revokes = $ele.ele.__revokes;
+
+  const revoke = () => {
+    removeArrayValue(revokes, revoke);
+    itemData.revoke();
+  };
+
+  revokes.push(revoke);
+
+  $ele.__item = itemData;
+  $ele.ele._data_xid = data.xid;
+
+  return $ele;
+};

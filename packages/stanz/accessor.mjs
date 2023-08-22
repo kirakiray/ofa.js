@@ -5,8 +5,13 @@ import { emitUpdate } from "./watch.mjs";
 const { defineProperties } = Object;
 
 export const setData = ({ target, key, value, receiver, type, succeed }) => {
+  const oldValue = receiver[key];
+
   let data = value;
   if (isxdata(data)) {
+    if (oldValue === value) {
+      return true;
+    }
     data._owner.push(receiver);
   } else if (isObject(value)) {
     const desc = Object.getOwnPropertyDescriptor(target, key);
@@ -16,7 +21,6 @@ export const setData = ({ target, key, value, receiver, type, succeed }) => {
     }
   }
 
-  const oldValue = receiver[key];
   const isSame = oldValue === value;
 
   if (!isSame && isxdata(oldValue)) {

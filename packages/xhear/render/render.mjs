@@ -27,7 +27,7 @@ try{
     return ${expr};
   }
 }catch(error){
-  if(this.ele && !this.ele.isConnectd){
+  if(this.ele && !this.ele.isConnected){
     return;
   }
   console.error(error);
@@ -99,13 +99,23 @@ export function render({
       arr.forEach((args) => {
         try {
           const { always } = $el[actionName];
+          let afterArgs = [];
 
-          const func = () => {
-            const revoker = $el[actionName](...args, {
-              isExpr: true,
+          const work = () => {
+            const [key, expr] = args;
+
+            const func = convertToFunc(expr, data, {
+              beforeArgs: args,
+            });
+
+            afterArgs = [key, func];
+
+            $el[actionName](...afterArgs, {
+              actionName,
+              target: $el,
               data,
-              temps,
-              ...otherOpts,
+              beforeArgs: args,
+              args: afterArgs,
             });
 
             renderExtends.render({
@@ -114,40 +124,39 @@ export function render({
               name: actionName,
               target: $el,
             });
-
-            return revoker;
           };
 
-          let actionRevoke;
+          let clearRevs = () => {
+            const { revoke: methodRevoke } = $el[actionName];
+
+            if (methodRevoke) {
+              // console.log("revoke => ", actionName, $el, args);
+
+              methodRevoke({
+                actionName,
+                target: $el,
+                data,
+                beforeArgs: args,
+                args: afterArgs,
+              });
+            }
+
+            remove(revokes, clearRevs);
+            remove(getRevokes(el), clearRevs);
+            clearRevs = null;
+          };
 
           if (always) {
             // Run every data update
-            tasks.push(func);
-
-            actionRevoke = () => {
-              remove(revokes, actionRevoke);
-              remove(tasks, func);
-              remove(getRevokes(el), actionRevoke);
-              // delete el.__revoke;
-            };
+            tasks.push(work);
           } else {
-            const revokeFunc = func();
-
-            if (isFunction(revokeFunc)) {
-              actionRevoke = () => {
-                remove(revokes, actionRevoke);
-                remove(getRevokes(el), actionRevoke);
-                revokeFunc();
-                // delete el.__revoke;
-              };
-            } else {
-              console.warn(`${actionName} render method need return revoke`);
-            }
-            // el.__revoke = actionRevoke;
+            work();
           }
 
-          revokes.push(actionRevoke);
-          addRevoke(el, actionRevoke);
+          revokes.push(clearRevs);
+          if (el !== target) {
+            addRevoke(el, clearRevs);
+          }
         } catch (error) {
           const err = new Error(
             `Execution of the ${actionName} method reports an error :\n ${error.stack}`
@@ -159,6 +168,9 @@ export function render({
     }
 
     el.removeAttribute("x-bind-data");
+
+    el._bindingRendered = true;
+    el.dispatchEvent(new Event("binding-rendered"));
   });
 
   if (!target.__render_temps && !isEmptyObject(temps)) {
@@ -182,11 +194,11 @@ export function render({
 
     target.__render_data = data;
 
-    tasks.forEach((func) => func());
+    tasks.forEach((f) => f());
 
     const wid = data.watchTick((e) => {
       if (tasks.length) {
-        tasks.forEach((func) => func());
+        tasks.forEach((f) => f());
       } else {
         data.unwatch(wid);
       }
@@ -300,36 +312,25 @@ const getVal = (val) => {
 };
 
 const defaultData = {
-  _convertExpr(options = {}, expr) {
-    const { isExpr, data } = options;
-
-    if (!isExpr) {
-      return expr;
-    }
-
-    return convertToFunc(expr, data);
-  },
   prop(...args) {
-    let [name, value, options] = args;
+    let [name, value] = args;
 
     if (args.length === 1) {
       return this[name];
     }
 
-    value = this._convertExpr(options, value);
     value = getVal(value);
     name = hyphenToUpperCase(name);
 
     this[name] = value;
   },
   attr(...args) {
-    let [name, value, options] = args;
+    let [name, value] = args;
 
     if (args.length === 1) {
       return this.ele.getAttribute(name);
     }
 
-    value = this._convertExpr(options, value);
     value = getVal(value);
 
     if (value === null) {
@@ -339,13 +340,12 @@ const defaultData = {
     }
   },
   class(...args) {
-    let [name, value, options] = args;
+    let [name, value] = args;
 
     if (args.length === 1) {
       return this.ele.classList.contains(name);
     }
 
-    value = this._convertExpr(options, value);
     value = getVal(value);
 
     if (value) {
@@ -359,5 +359,10 @@ const defaultData = {
 defaultData.prop.always = true;
 defaultData.attr.always = true;
 defaultData.class.always = true;
+
+defaultData.prop.revoke = ({ target, args, $ele, data }) => {
+  const propName = args[0];
+  target[propName] = null;
+};
 
 export default defaultData;

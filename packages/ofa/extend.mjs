@@ -7,27 +7,13 @@ const oldAttr = $.fn.attr;
 function attr(...args) {
   let [name, value, options] = args;
 
-  const { host } = this;
-
-  if (options) {
-    let val = this._convertExpr(options, value);
-
-    if (isFunction(val)) {
-      val = val();
-    }
-
-    if (host && ["href", "src"].includes(name) && /^\./.test(val)) {
-      const { PATH } = host;
-
-      if (PATH) {
-        const { href } = new URL(val, PATH);
-
-        return oldAttr.call(this, name, href);
-      }
-    }
+  if (isFunction(value)) {
+    value = value();
   }
 
-  if (value && ["href", "src"].includes(name) && /^\./.test(value)) {
+  const { host } = this;
+
+  if (host && ["href", "src"].includes(name) && /^\./.test(value)) {
     const { PATH } = host;
 
     if (PATH) {

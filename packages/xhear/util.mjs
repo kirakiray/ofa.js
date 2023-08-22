@@ -64,4 +64,10 @@ export const revokeAll = (target) => {
     Array.from(target.childNodes).forEach((el) => {
       revokeAll(el);
     });
+
+  const revokes = target?.shadowRoot?.__revokes;
+
+  if (revokes) {
+    [...revokes].forEach((f) => f());
+  }
 };
