@@ -1,25 +1,20 @@
-export default {
+const eventFn = {
   on(name, func, options) {
-    if (options && options.isExpr && !/[^\d\w_\$\.]/.test(func)) {
-      const oriName = func;
-      func = options.data.get(func);
+    if (options) {
+      const beforeValue = options.beforeArgs[1];
 
-      if (!func) {
-        throw new Error(`${oriName} method does not exist`);
+      const oldFunc = func;
+
+      const caches = this.__on_caches || (this.__on_caches = new Map());
+
+      if (!/[^\d\w_\$\.]/.test(beforeValue)) {
+        func = options.data.get(beforeValue).bind(options.data);
+
+        caches.set(oldFunc, oldFunc);
       }
-    } else {
-      func = this._convertExpr(options, func);
-    }
-
-    if (options && options.data) {
-      func = func.bind(options.data);
     }
 
     this.ele.addEventListener(name, func);
-
-    if (options) {
-      return () => this.ele.removeEventListener(name, func);
-    }
 
     return this;
   },
@@ -53,3 +48,14 @@ export default {
     return this;
   },
 };
+
+eventFn.on.revoke = ({ target, args }) => {
+  const caches = target.__on_caches || (target.__on_caches = new Map());
+
+  const currentFunc = caches.get(args[1]);
+  caches.delete(args[1]);
+
+  target.ele.removeEventListener(args[0], currentFunc);
+};
+
+export default eventFn;

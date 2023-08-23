@@ -1,0 +1,62 @@
+<template component>
+  <inject-host>
+    <link rel="stylesheet" attr:href="linkHref" />
+    <style>
+      .interfered-element-2 {
+        color: green;
+      }
+    </style>
+    <x-if :value="openStyle">
+      <style>
+        .interfered-element-3 {
+          color: rgb(138, 151, 52);
+        }
+      </style>
+    </x-if>
+  </inject-host>
+  <style>
+    :host {
+      display: block;
+      padding: 8px 0;
+      margin: 8px 0;
+      border: rgb(0, 128, 0) solid 1px;
+    }
+  </style>
+  <div class="interfered-element">interfered-element in item</div>
+  <div class="interfered-element-2">interfered-element-2 in item</div>
+  <div>
+    <button on:click="changeE2Style">change e2 host style</button>
+    <button on:click="removeStyle">remove style</button>
+    <button on:click="removeLink">remove link</button>
+    <button on:click="openStyle = !openStyle">Switch style</button>
+    <button on:click="switchLink">Switch link</button>
+  </div>
+  <div class="con">
+    <slot></slot>
+  </div>
+  <script>
+    export const data = {
+      openStyle: false,
+      linkHref: "./itemtohost.css",
+    };
+    export const proto = {
+      switchLink() {
+        this.linkHref =
+          this.linkHref === "./itemtohost.css"
+            ? "./itemtohost2.css"
+            : "./itemtohost.css";
+      },
+      changeE2Style() {
+        this.shadow.$(
+          "inject-host style"
+        ).html = `.interfered-element-2 {color: blue;}`;
+      },
+      removeStyle() {
+        this.shadow.$(`inject-host style`).remove();
+      },
+      removeLink() {
+        this.shadow.$(`inject-host link`).remove();
+      },
+    };
+  </script>
+</template>

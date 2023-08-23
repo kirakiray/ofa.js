@@ -61,7 +61,9 @@ lm.use(["js", "mjs"], async (ctx, next) => {
   let tempSrc = defaultsData.temp;
 
   if (!/<.+>/.test(tempSrc)) {
-    if (!tempSrc) {
+    if (tempSrc) {
+      tempSrc = resolvePath(tempSrc, url);
+    } else {
       tempSrc = url.replace(/\.m?js.*/, ".html");
     }
 
@@ -191,12 +193,17 @@ $.register({
       template.innerHTML = fixRelatePathContent(defaults.temp, src);
       const temps = convert(template);
 
-      renderElement({
-        defaults,
-        ele: this.ele,
-        template,
-        temps,
-      });
+      try {
+        renderElement({
+          defaults,
+          ele: this.ele,
+          template,
+          temps,
+        });
+      } catch (error) {
+        const err = new Error(`Failed to render page:${src} \n ${error.stack}`);
+        err.error = error;
+      }
 
       await dispatchLoad(this, defaults.loaded);
 

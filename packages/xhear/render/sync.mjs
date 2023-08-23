@@ -4,6 +4,8 @@ export default {
       throw `Sync is only allowed within the renderer`;
     }
 
+    [propName, targetName] = options.beforeArgs;
+
     const { data } = options;
 
     this[propName] = data.get(targetName);

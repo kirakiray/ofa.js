@@ -71,7 +71,9 @@ export const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
 export const ISERROR = Symbol("loadError");
 
 export const getPagesData = async (src) => {
-  const load = lm();
+  const load = lm({
+    url: src,
+  });
   const pagesData = [];
   let defaults;
   let pageSrc = src;
@@ -138,3 +140,14 @@ export const createPage = (src, defaults) => {
 
   return targetPage;
 };
+
+export async function getHash(str, algorithm = "SHA-256") {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest(algorithm, data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
