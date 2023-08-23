@@ -11,9 +11,6 @@ import { eleX } from "../util.mjs";
 
 export const renderExtends = {
   render() {},
-  renderable(el) {
-    return true;
-  },
 };
 
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
@@ -62,10 +59,6 @@ export function render({
   const revokes = getRevokes(target);
 
   texts.forEach((el) => {
-    if (!renderExtends.renderable(el)) {
-      return;
-    }
-
     const textEl = document.createTextNode("");
     const { parentNode } = el;
     parentNode.insertBefore(textEl, el);
@@ -95,10 +88,6 @@ export function render({
   eles.forEach((el) => {
     const bindData = JSON.parse(el.getAttribute("x-bind-data"));
 
-    if (!renderExtends.renderable(el)) {
-      return;
-    }
-
     const $el = eleX(el);
 
     for (let [actionName, arr] of Object.entries(bindData)) {
@@ -106,6 +95,8 @@ export function render({
         try {
           const { always } = $el[actionName];
           let afterArgs = [];
+
+          let workResult;
 
           const work = () => {
             const [key, expr] = args;
@@ -122,7 +113,7 @@ export function render({
 
             afterArgs = [key, func];
 
-            $el[actionName](...afterArgs, {
+            const reval = $el[actionName](...afterArgs, {
               actionName,
               target: $el,
               data,
@@ -136,25 +127,27 @@ export function render({
               name: actionName,
               target: $el,
             });
+
+            return reval;
           };
 
           let clearRevs = () => {
             const { revoke: methodRevoke } = $el[actionName];
 
             if (methodRevoke) {
-              // console.log("revoke => ", actionName, $el, args);
-
               methodRevoke({
                 actionName,
                 target: $el,
                 data,
                 beforeArgs: args,
                 args: afterArgs,
+                result: workResult,
               });
             }
 
             remove(revokes, clearRevs);
             remove(getRevokes(el), clearRevs);
+            remove(tasks, work);
             clearRevs = null;
           };
 
@@ -162,7 +155,7 @@ export function render({
             // Run every data update
             tasks.push(work);
           } else {
-            work();
+            workResult = work();
           }
 
           revokes.push(clearRevs);
@@ -171,7 +164,7 @@ export function render({
           }
         } catch (error) {
           const err = new Error(
-            `Execution of the ${actionName} method reports an error :\n ${error.stack}`
+            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`
           );
           err.error = error;
           throw err;
@@ -220,7 +213,7 @@ export function render({
   renderExtends.render({ step: "init", target });
 }
 
-const fixSingleXfill = (template) => {
+const fixFillAndIf = (template) => {
   template.content.querySelectorAll("x-fill:not([name])").forEach((fillEl) => {
     if (fillEl.querySelector("x-fill:not([name])")) {
       throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
@@ -234,6 +227,21 @@ const fixSingleXfill = (template) => {
     temp.innerHTML = fillEl.innerHTML;
     fillEl.innerHTML = "";
     fillEl.appendChild(temp);
+  });
+
+  const conditions = Array.from(
+    template.content.querySelectorAll("x-if,x-else-if,x-else")
+  );
+
+  conditions.forEach((condiEl) => {
+    const firstChild = condiEl.children[0];
+    if (!firstChild || firstChild.tagName !== "TEMPLATE") {
+      condiEl.innerHTML = `<template condition>${condiEl.innerHTML}</template>`;
+    }
+  });
+
+  template.content.querySelectorAll("template").forEach((e) => {
+    fixFillAndIf(e);
   });
 };
 
@@ -270,7 +278,7 @@ export function convert(el) {
       el.remove();
     } else {
       // The initialized template can be run here
-      fixSingleXfill(el);
+      fixFillAndIf(el);
     }
 
     temps = { ...temps, ...convert(el.content) };
@@ -334,7 +342,7 @@ const defaultData = {
     value = getVal(value);
     name = hyphenToUpperCase(name);
 
-    this[name] = value;
+    this.set(name, value);
   },
   attr(...args) {
     let [name, value] = args;
@@ -374,7 +382,8 @@ defaultData.class.always = true;
 
 defaultData.prop.revoke = ({ target, args, $ele, data }) => {
   const propName = args[0];
-  target[propName] = null;
+  // target[propName] = null;
+  target.set(propName, null);
 };
 
 export default defaultData;
