@@ -60,10 +60,10 @@ lm.use(["js", "mjs"], async (ctx, next) => {
 
   let tempSrc = defaultsData.temp;
 
-  tempSrc = resolvePath(tempSrc, url);
-
   if (!/<.+>/.test(tempSrc)) {
-    if (!tempSrc) {
+    if (tempSrc) {
+      tempSrc = resolvePath(tempSrc, url);
+    } else {
       tempSrc = url.replace(/\.m?js.*/, ".html");
     }
 
