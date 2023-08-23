@@ -1,20 +1,21 @@
 const eventFn = {
   on(name, func, options) {
+    let revoker;
     if (options) {
       const beforeValue = options.beforeArgs[1];
 
-      const oldFunc = func;
-
-      const caches = this.__on_caches || (this.__on_caches = new Map());
-
       if (!/[^\d\w_\$\.]/.test(beforeValue)) {
         func = options.data.get(beforeValue).bind(options.data);
-
-        caches.set(oldFunc, oldFunc);
       }
+
+      revoker = () => this.ele.removeEventListener(name, func);
     }
 
     this.ele.addEventListener(name, func);
+
+    if (revoker) {
+      return revoker;
+    }
 
     return this;
   },
@@ -49,13 +50,8 @@ const eventFn = {
   },
 };
 
-eventFn.on.revoke = ({ target, args }) => {
-  const caches = target.__on_caches || (target.__on_caches = new Map());
-
-  const currentFunc = caches.get(args[1]);
-  caches.delete(args[1]);
-
-  target.ele.removeEventListener(args[0], currentFunc);
+eventFn.on.revoke = (e) => {
+  e.result();
 };
 
 export default eventFn;

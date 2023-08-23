@@ -9,32 +9,7 @@
 import { register } from "../register.mjs";
 import { eleX, revokeAll } from "../util.mjs";
 import { FakeNode } from "./fake-node.mjs";
-import { render, renderExtends } from "./render.mjs";
-
-const oldRenderable = renderExtends.renderable;
-renderExtends.renderable = (el) => {
-  const bool = oldRenderable(el);
-
-  if (!bool) {
-    return false;
-  }
-
-  let t = el;
-  while (true) {
-    t = t.parentNode;
-    if (!t) {
-      break;
-    }
-
-    let tag = t.tagName;
-
-    if (tag && (tag === "X-IF" || tag === "X-ELSE-IF" || tag === "X-ELSE")) {
-      return false;
-    }
-  }
-
-  return true;
-};
+import { render } from "./render.mjs";
 
 const regOptions = {
   data: {
@@ -143,7 +118,8 @@ const regOptions = {
     },
   },
   created() {
-    this.__originHTML = this.html;
+    this.__originHTML = this.$("template[condition]").html;
+    this.html = "";
   },
   ready() {
     if (this.ele._bindingRendered) {

@@ -1,4 +1,4 @@
-//! ofa.js - v4.2.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.2.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -784,9 +784,6 @@ const handler = {
 
 const renderExtends = {
   render() {},
-  renderable(el) {
-    return true;
-  },
 };
 
 const getRevokes = (target) => target.__revokes || (target.__revokes = []);
@@ -835,10 +832,6 @@ function render({
   const revokes = getRevokes(target);
 
   texts.forEach((el) => {
-    if (!renderExtends.renderable(el)) {
-      return;
-    }
-
     const textEl = document.createTextNode("");
     const { parentNode } = el;
     parentNode.insertBefore(textEl, el);
@@ -868,10 +861,6 @@ function render({
   eles.forEach((el) => {
     const bindData = JSON.parse(el.getAttribute("x-bind-data"));
 
-    if (!renderExtends.renderable(el)) {
-      return;
-    }
-
     const $el = eleX(el);
 
     for (let [actionName, arr] of Object.entries(bindData)) {
@@ -879,6 +868,8 @@ function render({
         try {
           const { always } = $el[actionName];
           let afterArgs = [];
+
+          let workResult;
 
           const work = () => {
             const [key, expr] = args;
@@ -895,7 +886,7 @@ function render({
 
             afterArgs = [key, func];
 
-            $el[actionName](...afterArgs, {
+            const reval = $el[actionName](...afterArgs, {
               actionName,
               target: $el,
               data,
@@ -909,25 +900,27 @@ function render({
               name: actionName,
               target: $el,
             });
+
+            return reval;
           };
 
           let clearRevs = () => {
             const { revoke: methodRevoke } = $el[actionName];
 
             if (methodRevoke) {
-              // console.log("revoke => ", actionName, $el, args);
-
               methodRevoke({
                 actionName,
                 target: $el,
                 data,
                 beforeArgs: args,
                 args: afterArgs,
+                result: workResult,
               });
             }
 
             removeArrayValue(revokes, clearRevs);
             removeArrayValue(getRevokes(el), clearRevs);
+            removeArrayValue(tasks, work);
             clearRevs = null;
           };
 
@@ -935,7 +928,7 @@ function render({
             // Run every data update
             tasks.push(work);
           } else {
-            work();
+            workResult = work();
           }
 
           revokes.push(clearRevs);
@@ -944,7 +937,7 @@ function render({
           }
         } catch (error) {
           const err = new Error(
-            `Execution of the ${actionName} method reports an error :\n ${error.stack}`
+            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`
           );
           err.error = error;
           throw err;
@@ -993,7 +986,7 @@ function render({
   renderExtends.render({ step: "init", target });
 }
 
-const fixSingleXfill = (template) => {
+const fixFillAndIf = (template) => {
   template.content.querySelectorAll("x-fill:not([name])").forEach((fillEl) => {
     if (fillEl.querySelector("x-fill:not([name])")) {
       throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
@@ -1007,6 +1000,21 @@ const fixSingleXfill = (template) => {
     temp.innerHTML = fillEl.innerHTML;
     fillEl.innerHTML = "";
     fillEl.appendChild(temp);
+  });
+
+  const conditions = Array.from(
+    template.content.querySelectorAll("x-if,x-else-if,x-else")
+  );
+
+  conditions.forEach((condiEl) => {
+    const firstChild = condiEl.children[0];
+    if (!firstChild || firstChild.tagName !== "TEMPLATE") {
+      condiEl.innerHTML = `<template condition>${condiEl.innerHTML}</template>`;
+    }
+  });
+
+  template.content.querySelectorAll("template").forEach((e) => {
+    fixFillAndIf(e);
   });
 };
 
@@ -1043,7 +1051,7 @@ function convert(el) {
       el.remove();
     } else {
       // The initialized template can be run here
-      fixSingleXfill(el);
+      fixFillAndIf(el);
     }
 
     temps = { ...temps, ...convert(el.content) };
@@ -1107,7 +1115,7 @@ const defaultData = {
     value = getVal(value);
     name = hyphenToUpperCase(name);
 
-    this[name] = value;
+    this.set(name, value);
   },
   attr(...args) {
     let [name, value] = args;
@@ -1147,10 +1155,11 @@ defaultData.class.always = true;
 
 defaultData.prop.revoke = ({ target, args, $ele, data }) => {
   const propName = args[0];
-  target[propName] = null;
+  // target[propName] = null;
+  target.set(propName, null);
 };
 
-var syncFn = {
+const syncFn = {
   sync(propName, targetName, options) {
     if (!options) {
       throw `Sync is only allowed within the renderer`;
@@ -1160,17 +1169,35 @@ var syncFn = {
 
     const { data } = options;
 
+    const val = data.get(targetName);
+
+    if (val instanceof Object) {
+      const err = `Object values cannot be synchronized using the sync function : ${targetName}`;
+      console.log(err, data);
+      throw new Error(err);
+    }
+
     this[propName] = data.get(targetName);
 
     const wid1 = this.watch((e) => {
       if (e.hasModified(propName)) {
-        data.set(targetName, this.get(propName));
+        try {
+          const value = this.get(propName);
+          data.set(targetName, value);
+        } catch (err) {
+          // console.warn(err);
+        }
       }
     });
 
     const wid2 = data.watch((e) => {
       if (e.hasModified(targetName)) {
-        this.set(propName, data.get(targetName));
+        try {
+          const value = data.get(targetName);
+          this.set(propName, value);
+        } catch (err) {
+          // console.warn(err);
+        }
       }
     });
 
@@ -1181,23 +1208,28 @@ var syncFn = {
   },
 };
 
+syncFn.sync.revoke = (e) => {
+  e.result();
+};
+
 const eventFn = {
   on(name, func, options) {
+    let revoker;
     if (options) {
       const beforeValue = options.beforeArgs[1];
 
-      const oldFunc = func;
-
-      const caches = this.__on_caches || (this.__on_caches = new Map());
-
       if (!/[^\d\w_\$\.]/.test(beforeValue)) {
         func = options.data.get(beforeValue).bind(options.data);
-
-        caches.set(oldFunc, oldFunc);
       }
+
+      revoker = () => this.ele.removeEventListener(name, func);
     }
 
     this.ele.addEventListener(name, func);
+
+    if (revoker) {
+      return revoker;
+    }
 
     return this;
   },
@@ -1232,13 +1264,8 @@ const eventFn = {
   },
 };
 
-eventFn.on.revoke = ({ target, args }) => {
-  const caches = target.__on_caches || (target.__on_caches = new Map());
-
-  const currentFunc = caches.get(args[1]);
-  caches.delete(args[1]);
-
-  target.ele.removeEventListener(args[0], currentFunc);
+eventFn.on.revoke = (e) => {
+  e.result();
 };
 
 const originSplice = (ele, start, count, ...items) => {
@@ -2123,31 +2150,6 @@ class FakeNode extends Comment {
  */
 
 
-const oldRenderable = renderExtends.renderable;
-renderExtends.renderable = (el) => {
-  const bool = oldRenderable(el);
-
-  if (!bool) {
-    return false;
-  }
-
-  let t = el;
-  while (true) {
-    t = t.parentNode;
-    if (!t) {
-      break;
-    }
-
-    let tag = t.tagName;
-
-    if (tag && (tag === "X-IF" || tag === "X-ELSE-IF" || tag === "X-ELSE")) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
 const regOptions = {
   data: {
     value: null,
@@ -2253,7 +2255,8 @@ const regOptions = {
     },
   },
   created() {
-    this.__originHTML = this.html;
+    this.__originHTML = this.$("template[condition]").html;
+    this.html = "";
   },
   ready() {
     if (this.ele._bindingRendered) {
