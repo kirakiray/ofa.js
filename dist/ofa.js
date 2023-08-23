@@ -2944,7 +2944,9 @@ try{
   const ISERROR = Symbol("loadError");
 
   const getPagesData = async (src) => {
-    const load = lm();
+    const load = lm({
+      url: src,
+    });
     const pagesData = [];
     let defaults;
     let pageSrc = src;
@@ -3797,6 +3799,8 @@ ${scriptEl ? scriptEl.html : ""}`;
     const defaultsData = await getDefault(moduleData, url);
 
     let tempSrc = defaultsData.temp;
+
+    tempSrc = resolvePath(tempSrc, url);
 
     if (!/<.+>/.test(tempSrc)) {
       if (!tempSrc) {

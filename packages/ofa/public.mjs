@@ -71,7 +71,9 @@ export const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
 export const ISERROR = Symbol("loadError");
 
 export const getPagesData = async (src) => {
-  const load = lm();
+  const load = lm({
+    url: src,
+  });
   const pagesData = [];
   let defaults;
   let pageSrc = src;

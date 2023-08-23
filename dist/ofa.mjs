@@ -2938,7 +2938,9 @@ const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
 const ISERROR = Symbol("loadError");
 
 const getPagesData = async (src) => {
-  const load = lm();
+  const load = lm({
+    url: src,
+  });
   const pagesData = [];
   let defaults;
   let pageSrc = src;
@@ -3791,6 +3793,8 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
   const defaultsData = await getDefault(moduleData, url);
 
   let tempSrc = defaultsData.temp;
+
+  tempSrc = resolvePath(tempSrc, url);
 
   if (!/<.+>/.test(tempSrc)) {
     if (!tempSrc) {
