@@ -1,4 +1,4 @@
-//! ofa.js - v4.2.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.2.2 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -93,6 +93,25 @@
 
     return _this;
   };
+
+  function dataRevoked(data) {
+    try {
+      data.xid;
+    } catch (err) {
+      return isRevokedErr(err);
+    }
+
+    return false;
+  }
+
+  function isRevokedErr(error) {
+    const firstLine = error.stack.split(/\\n/)[0].toLowerCase();
+    if (firstLine.includes("proxy") && firstLine.includes("revoked")) {
+      return true;
+    }
+
+    return false;
+  }
 
   const isFunction = (val) => getType$1(val).includes("function");
 
@@ -303,9 +322,7 @@
     watchTick(callback, wait) {
       return this.watch(
         debounce((arr) => {
-          try {
-            this.xid;
-          } catch (err) {
+          if (dataRevoked(this)) {
             // console.warn(`The revoked object cannot use watchTick : `, this);
             return;
           }
@@ -797,6 +814,7 @@
 
   const convertToFunc = (expr, data, opts) => {
     const funcStr = `
+${isRevokedErr.toString()}
 const [$event] = $args;
 const {data, errCall} = this;
 try{
@@ -804,6 +822,9 @@ try{
     return ${expr};
   }
 }catch(error){
+  if(isRevokedErr(error)){
+    return;
+  }
   if(data.ele && !data.ele.isConnected){
     return;
   }
@@ -1024,6 +1045,8 @@ try{
     });
   };
 
+  let isWarned;
+
   function convert(el) {
     let temps = {};
 
@@ -1047,11 +1070,18 @@ try{
 
       if (tempName) {
         if (el.content.children.length > 1) {
-          console.warn({
-            target: el,
-            content: el.innerHTML,
-            desc: `Only the first child element inside the template will be used`,
-          });
+          if (!isWarned) {
+            console.warn(
+              `Only one child element can be contained within a template element. If multiple child elements appear, the child elements will be rewrapped within a <div> element`
+            );
+            isWarned = 1;
+          }
+
+          const wrapName = `wrapper-${tempName}`;
+          el.innerHTML = `<div ${wrapName} style="display:contents">${el.innerHTML}</div>`;
+          console.warn(
+            `The template "${tempName}" contains ${el.content.children.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
+          );
         }
         temps[tempName] = el;
         el.remove();
@@ -2201,6 +2231,10 @@ try{
         this.__rendered = true;
 
         const { target, data, temps } = getRenderData(this._fake);
+
+        if (dataRevoked(data)) {
+          return;
+        }
 
         this._fake.innerHTML = this.__originHTML;
 
