@@ -88,6 +88,25 @@ const extend = (_this, proto, descriptor = {}) => {
   return _this;
 };
 
+function dataRevoked(data) {
+  try {
+    data.xid;
+  } catch (err) {
+    return isRevokedErr(err);
+  }
+
+  return false;
+}
+
+function isRevokedErr(error) {
+  const firstLine = error.stack.split(/\\n/)[0].toLowerCase();
+  if (firstLine.includes("proxy") && firstLine.includes("revoked")) {
+    return true;
+  }
+
+  return false;
+}
+
 const isFunction = (val) => getType$1(val).includes("function");
 
 const hyphenToUpperCase = (str) =>
@@ -297,9 +316,7 @@ var watchFn = {
   watchTick(callback, wait) {
     return this.watch(
       debounce((arr) => {
-        try {
-          this.xid;
-        } catch (err) {
+        if (dataRevoked(this)) {
           // console.warn(`The revoked object cannot use watchTick : `, this);
           return;
         }
@@ -791,6 +808,7 @@ const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
 const convertToFunc = (expr, data, opts) => {
   const funcStr = `
+${isRevokedErr.toString()}
 const [$event] = $args;
 const {data, errCall} = this;
 try{
@@ -798,6 +816,9 @@ try{
     return ${expr};
   }
 }catch(error){
+  if(isRevokedErr(error)){
+    return;
+  }
   if(data.ele && !data.ele.isConnected){
     return;
   }
@@ -2195,6 +2216,10 @@ const regOptions = {
       this.__rendered = true;
 
       const { target, data, temps } = getRenderData(this._fake);
+
+      if (dataRevoked(data)) {
+        return;
+      }
 
       this._fake.innerHTML = this.__originHTML;
 

@@ -1,4 +1,4 @@
-import { getRandomId } from "../../stanz/public.mjs";
+import { getRandomId, isRevokedErr } from "../../stanz/public.mjs";
 import {
   isFunction,
   hyphenToUpperCase,
@@ -18,6 +18,7 @@ const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
 const convertToFunc = (expr, data, opts) => {
   const funcStr = `
+${isRevokedErr.toString()}
 const [$event] = $args;
 const {data, errCall} = this;
 try{
@@ -25,6 +26,9 @@ try{
     return ${expr};
   }
 }catch(error){
+  if(isRevokedErr(error)){
+    return;
+  }
   if(data.ele && !data.ele.isConnected){
     return;
   }

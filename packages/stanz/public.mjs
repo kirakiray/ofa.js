@@ -87,3 +87,22 @@ export const extend = (_this, proto, descriptor = {}) => {
 
   return _this;
 };
+
+export function dataRevoked(data) {
+  try {
+    data.xid;
+  } catch (err) {
+    return isRevokedErr(err);
+  }
+
+  return false;
+}
+
+export function isRevokedErr(error) {
+  const firstLine = error.stack.split(/\\n/)[0].toLowerCase();
+  if (firstLine.includes("proxy") && firstLine.includes("revoked")) {
+    return true;
+  }
+
+  return false;
+}

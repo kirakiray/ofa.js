@@ -6,6 +6,7 @@
  * 3. Based on the marking, perform a judgment operation asynchronously, the element that satisfies the condition first will be rendered; after successful rendering, the subsequent conditional elements will clear the rendered content.
  */
 
+import { dataRevoked } from "../../stanz/public.mjs";
 import { register } from "../register.mjs";
 import { eleX, revokeAll } from "../util.mjs";
 import { FakeNode } from "./fake-node.mjs";
@@ -56,6 +57,10 @@ const regOptions = {
       this.__rendered = true;
 
       const { target, data, temps } = getRenderData(this._fake);
+
+      if (dataRevoked(data)) {
+        return;
+      }
 
       this._fake.innerHTML = this.__originHTML;
 

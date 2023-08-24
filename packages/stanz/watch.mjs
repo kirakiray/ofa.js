@@ -1,4 +1,4 @@
-import { getRandomId, debounce } from "./public.mjs";
+import { getRandomId, debounce, dataRevoked } from "./public.mjs";
 import { WATCHS } from "./main.mjs";
 const { assign, freeze } = Object;
 
@@ -159,9 +159,7 @@ export default {
   watchTick(callback, wait) {
     return this.watch(
       debounce((arr) => {
-        try {
-          this.xid;
-        } catch (err) {
+        if (dataRevoked(this)) {
           // console.warn(`The revoked object cannot use watchTick : `, this);
           return;
         }
