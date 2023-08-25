@@ -1013,85 +1013,14 @@ try{
     renderExtends.render({ step: "init", target });
   }
 
-  const fixFillAndIf = (template) => {
-    template.content.querySelectorAll("x-fill:not([name])").forEach((fillEl) => {
-      if (fillEl.querySelector("x-fill:not([name])")) {
-        throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
-      }
-
-      const tid = `t${getRandomId()}`;
-      fillEl.setAttribute("name", tid);
-
-      const temp = document.createElement("template");
-      temp.setAttribute("name", tid);
-      temp.innerHTML = fillEl.innerHTML;
-      fillEl.innerHTML = "";
-      fillEl.appendChild(temp);
-    });
-
-    const conditions = Array.from(
-      template.content.querySelectorAll("x-if,x-else-if,x-else")
-    );
-
-    conditions.forEach((condiEl) => {
-      const firstChild = condiEl.children[0];
-      if (!firstChild || firstChild.tagName !== "TEMPLATE") {
-        condiEl.innerHTML = `<template condition>${condiEl.innerHTML}</template>`;
-      }
-    });
-
-    template.content.querySelectorAll("template").forEach((e) => {
-      fixFillAndIf(e);
-    });
-  };
-
-  let isWarned;
-
-  function convert(el) {
-    let temps = {};
-
+  const convertEl = (el) => {
     const { tagName } = el;
+
     if (tagName === "TEMPLATE") {
-      let content = el.innerHTML;
-      const matchs = content.match(/{{.+?}}/g);
+      return;
+    }
 
-      if (matchs) {
-        matchs.forEach((str) => {
-          content = content.replace(
-            str,
-            `<xtext expr="${str.replace(/{{(.+?)}}/, "$1")}"></xtext>`
-          );
-        });
-
-        el.innerHTML = content;
-      }
-
-      const tempName = el.getAttribute("name");
-
-      if (tempName) {
-        if (el.content.children.length > 1) {
-          if (!isWarned) {
-            console.warn(
-              `Only one child element can be contained within a template element. If multiple child elements appear, the child elements will be rewrapped within a <div> element`
-            );
-            isWarned = 1;
-          }
-
-          const wrapName = `wrapper-${tempName}`;
-          el.innerHTML = `<div ${wrapName} style="display:contents">${el.innerHTML}</div>`;
-          console.warn(
-            `The template "${tempName}" contains ${el.content.children.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
-          );
-        }
-        temps[tempName] = el;
-        el.remove();
-      } else {
-        // The initialized template can be run here
-        fixFillAndIf(el);
-      }
-
-      temps = { ...temps, ...convert(el.content) };
-    } else if (tagName) {
+    if (tagName) {
       // Converting elements
       const obj = {};
 
@@ -1122,15 +1051,100 @@ try{
       }
     }
 
-    if (el.children) {
-      // template content
-      Array.from(el.children).forEach((el) => {
-        temps = { ...temps, ...convert(el) };
+    Array.from(el.children).forEach(convertEl);
+  };
+
+  const searchTemp = (template, expr, func) => {
+    const rearr = Array.from(template.content.querySelectorAll(expr));
+
+    if (func) {
+      rearr.forEach(func);
+    }
+
+    return rearr;
+  };
+
+  let isWarned;
+
+  const convert = (template) => {
+    let temps = {};
+    const codeEls = {};
+
+    searchTemp(template, "code", (code) => {
+      const cid = getRandomId();
+      code.setAttribute("code-id", cid);
+
+      codeEls[cid] = code.innerHTML;
+      code.innerHTML = "";
+    });
+
+    template.innerHTML = template.innerHTML.replace(
+      /{{(.+?)}}/g,
+      (str, match) => {
+        return `<xtext expr="${match}"></xtext>`;
+      }
+    );
+
+    const tempName = template.getAttribute("name");
+
+    if (tempName) {
+      if (template.content.children.length > 1) {
+        if (!isWarned) {
+          console.warn(
+            `Only one child element can be contained within a template element. If multiple child elements appear, the child elements will be rewrapped within a <div> element`
+          );
+          isWarned = 1;
+        }
+
+        const wrapName = `wrapper-${tempName}`;
+        template.innerHTML = `<div ${wrapName} style="display:contents">${template.innerHTML}</div>`;
+        console.warn(
+          `The template "${tempName}" contains ${template.content.children.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
+        );
+      }
+      temps[tempName] = template;
+      template.remove();
+    }
+
+    searchTemp(template, "x-fill:not([name])", (fillEl) => {
+      if (fillEl.querySelector("x-fill:not([name])")) {
+        throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
+      }
+
+      const tid = `t${getRandomId()}`;
+      fillEl.setAttribute("name", tid);
+
+      const temp = document.createElement("template");
+      temp.setAttribute("name", tid);
+      temp.innerHTML = fillEl.innerHTML;
+      fillEl.innerHTML = "";
+      fillEl.appendChild(temp);
+    });
+
+    searchTemp(template, "x-if,x-else-if,x-else", (condiEl) => {
+      const firstChild = condiEl.children[0];
+      if (!firstChild || firstChild.tagName !== "TEMPLATE") {
+        condiEl.innerHTML = `<template condition>${condiEl.innerHTML}</template>`;
+      }
+    });
+
+    searchTemp(template, "template", (e) => {
+      temps = { ...temps, ...convert(e) };
+    });
+
+    Array.from(template.content.children).forEach((el) => convertEl(el));
+
+    // Restore the contents of the code
+    for (let [key, value] of Object.entries(codeEls)) {
+      searchTemp(template, `[code-id="${key}"]`, (el) => {
+        el.removeAttribute("code-id");
+        // el.innerHTML = htmlEncode(value);
+        el.innerHTML = value;
       });
     }
 
     return temps;
-  }
+  };
 
   const getVal = (val) => {
     if (isFunction(val)) {
