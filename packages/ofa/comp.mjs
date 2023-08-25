@@ -23,9 +23,8 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +component *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = await drawUrl(content, ctx.url, false);
-
     try {
+      const url = await drawUrl(content, ctx.url, false);
       ctx.result = await lm()(`${url} .mjs`);
     } catch (err) {
       const error = new Error(

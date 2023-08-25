@@ -14,7 +14,6 @@ import {
 import { initLink } from "./link.mjs";
 
 import { drawUrl } from "./draw-template.mjs";
-import { nextTick } from "../stanz/public.mjs";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -32,9 +31,9 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +page *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-    const url = await drawUrl(content, ctx.url);
 
     try {
+      const url = await drawUrl(content, ctx.url);
       ctx.result = await lm()(`${url} .mjs`);
     } catch (error) {
       const err = new Error(

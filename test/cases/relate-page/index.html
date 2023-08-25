@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>reload page</title>
-    <script src="../../../dist/ofa.js"></script>
+    <!-- <script src="../../../dist/ofa.js"></script> -->
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
     <style>
       html,
       body {
@@ -20,8 +21,10 @@
   </head>
 
   <body>
+    <l-m src="./components/comp-two.html"></l-m>
     <o-app>
       <o-page src="./components/my-page.mjs"></o-page>
     </o-app>
+    <comp-two></comp-two>
   </body>
 </html>
