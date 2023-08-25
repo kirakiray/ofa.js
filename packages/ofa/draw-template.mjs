@@ -1,3 +1,5 @@
+import { resolvePath } from "./public.mjs";
+
 const strToBase64DataURI = async (str, type, isb64 = true) => {
   const mime = type === "js" ? "text/javascript" : "application/json";
 
@@ -101,10 +103,41 @@ export async function drawUrl(content, url, isPage = true) {
   export const type = ${isPage ? "$.PAGE" : "$.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html.replace(/\s+$/, "").replace(/`/g,"\\`").replace(/\$\{/g,'\\${')}\`;`;
+  export const temp = \`${targetTemp.html
+    .replace(/\s+$/, "")
+    .replace(/`/g, "\\`")
+    .replace(/\$\{/g, "\\${")}\`;`;
+
+  let scriptContent = "";
+  if (scriptEl) {
+    scriptEl.html
+      .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
+      .replace(/(import [\s\S]+?from .+);?/g, (str) => {
+        return str.replace(/([\s\S]+?from )([\s\S]+);?/, (a, b, afterStr) => {
+          if (/`/.test(afterStr) && !/\$\{.*\}/.test(afterStr)) {
+            return;
+          }
+
+          if (/['"]/.test(afterStr)) {
+            return;
+          }
+
+          throw new Error(
+            `Unable to parse addresses of strings with variables: ${str}`
+          );
+        });
+      });
+
+    scriptContent = scriptEl.html.replace(
+      /([\s\S]+?from )['"](.+?)['"]/g,
+      (str, beforeStr, pathStr) => {
+        return `${beforeStr}"${resolvePath(pathStr, url)}";`;
+      }
+    );
+  }
 
   const fileContent = `${beforeContent};
-${scriptEl ? scriptEl.html : ""}`;
+${scriptContent}`;
 
   let sourcemapStr = "";
 

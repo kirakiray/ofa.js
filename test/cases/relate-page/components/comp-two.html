@@ -1,0 +1,24 @@
+<template component>
+  <div id="d1">d1:{{d1}}</div>
+  <div id="d2">d2:{{d2}}</div>
+  <script>
+    import { data1 } from "./data1.mjs";
+    import { data2 } from "./data2.mjs";
+
+    const haha = "data1";
+    const haha2 = "./data2.mjs";
+
+    // import { data1 as d11 } from `./${haha}.mjs`;
+    // import { data2 as d22 } from haha2;
+
+    export default {
+      data: {
+        d1: data1.val,
+        d2: data2.val,
+      },
+      ready() {
+        console.log(this);
+      },
+    };
+  </script>
+</template>
