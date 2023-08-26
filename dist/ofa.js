@@ -2412,6 +2412,10 @@ try{
 
         const regData = getRenderData(this._fake);
 
+        if (!regData) {
+          return;
+        }
+
         const xids = childs.map((e) => e._data_xid);
 
         const { data, temps } = regData;
