@@ -31,7 +31,6 @@ lm.use(["html", "htm"], async (ctx, next) => {
     /<template +page *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-
     try {
       const url = await drawUrl(content, ctx.url);
       ctx.result = await lm()(`${url} .mjs`);
@@ -301,7 +300,7 @@ export const getDefault = async (moduleData, oriUrl) => {
       },
     });
   } else if (defaultData instanceof Object) {
-    finnalDefault = defaultData;
+    finnalDefault = { ...defaultData };
   }
 
   const defaults = {

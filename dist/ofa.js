@@ -1,4 +1,4 @@
-//! ofa.js - v4.2.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.2.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1848,14 +1848,14 @@ try{
       ...opts,
     };
 
-    let template, temps;
+    let template, temps, name;
 
     try {
       validateTagName(defaults.tag);
 
       defaults.data = deepCopyData(defaults.data);
 
-      const name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
+      name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
       if (COMPS[name]) {
         throw `Component ${name} already exists`;
@@ -3858,7 +3858,6 @@ ${scriptContent}`;
       /<template +page *>/.test(content) &&
       !params.includes("-ignore-temp")
     ) {
-
       try {
         const url = await drawUrl(content, ctx.url);
         ctx.result = await lm$1()(`${url} .mjs`);
@@ -4128,7 +4127,7 @@ ${scriptContent}`;
         },
       });
     } else if (defaultData instanceof Object) {
-      finnalDefault = defaultData;
+      finnalDefault = { ...defaultData };
     }
 
     const defaults = {
@@ -4209,7 +4208,7 @@ ${scriptContent}`;
         }),
       });
     } else if (defaultData instanceof Object) {
-      finnalDefault = defaultData;
+      finnalDefault = { ...defaultData };
     }
 
     const { tag, temp } = { ...moduleData, ...finnalDefault };

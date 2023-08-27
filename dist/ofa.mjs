@@ -1,4 +1,4 @@
-//! ofa.js - v4.2.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.2.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -1842,14 +1842,14 @@ const register = (opts = {}) => {
     ...opts,
   };
 
-  let template, temps;
+  let template, temps, name;
 
   try {
     validateTagName(defaults.tag);
 
     defaults.data = deepCopyData(defaults.data);
 
-    const name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
+    name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
     if (COMPS[name]) {
       throw `Component ${name} already exists`;
@@ -3852,7 +3852,6 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
     /<template +page *>/.test(content) &&
     !params.includes("-ignore-temp")
   ) {
-
     try {
       const url = await drawUrl(content, ctx.url);
       ctx.result = await lm$1()(`${url} .mjs`);
@@ -4122,7 +4121,7 @@ const getDefault = async (moduleData, oriUrl) => {
       },
     });
   } else if (defaultData instanceof Object) {
-    finnalDefault = defaultData;
+    finnalDefault = { ...defaultData };
   }
 
   const defaults = {
@@ -4203,7 +4202,7 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
       }),
     });
   } else if (defaultData instanceof Object) {
-    finnalDefault = defaultData;
+    finnalDefault = { ...defaultData };
   }
 
   const { tag, temp } = { ...moduleData, ...finnalDefault };
