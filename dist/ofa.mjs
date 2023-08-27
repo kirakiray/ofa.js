@@ -1,4 +1,4 @@
-//! ofa.js - v4.2.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.2.7 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -2161,6 +2161,10 @@ class FakeNode extends Comment {
 
   get nextElementSibling() {
     let next = this.nextSibling;
+
+    if (!next) {
+      return null;
+    }
 
     if (next.__fake_end) {
       return next.__fake_end;
