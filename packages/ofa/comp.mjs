@@ -58,7 +58,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
       }),
     });
   } else if (defaultData instanceof Object) {
-    finnalDefault = defaultData;
+    finnalDefault = { ...defaultData };
   }
 
   const { tag, temp } = { ...moduleData, ...finnalDefault };

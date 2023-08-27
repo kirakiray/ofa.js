@@ -94,14 +94,14 @@ export const register = (opts = {}) => {
     ...opts,
   };
 
-  let template, temps;
+  let template, temps, name;
 
   try {
     validateTagName(defaults.tag);
 
     defaults.data = deepCopyData(defaults.data);
 
-    const name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
+    name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
     if (COMPS[name]) {
       throw `Component ${name} already exists`;
