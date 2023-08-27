@@ -1,4 +1,4 @@
-//! ofa.js - v4.2.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.2.7 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -2167,6 +2167,10 @@ try{
 
     get nextElementSibling() {
       let next = this.nextSibling;
+
+      if (!next) {
+        return null;
+      }
 
       if (next.__fake_end) {
         return next.__fake_end;
