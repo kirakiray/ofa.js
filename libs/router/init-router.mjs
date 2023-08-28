@@ -43,7 +43,7 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
             routerMode: 1,
             routers: routers.map((e) => {
               return {
-                src,
+                src: e.src,
               };
             }),
           },
