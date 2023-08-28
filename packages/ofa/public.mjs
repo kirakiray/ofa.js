@@ -63,7 +63,7 @@ export const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
   } catch (error) {
     const err = new Error(`${desc}\n  ${error.stack}`);
     err.error = error;
-    self.emit("error", { error: err, ...rest });
+    self.emit("error", { data: { error: err, ...rest } });
     throw err;
   }
 };

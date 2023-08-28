@@ -198,8 +198,7 @@ $.register({
       needRemovePage = resetOldPage(needRemovePage);
 
       this.emit("router-change", {
-        name: "back",
-        delta,
+        data: { name: "back", delta },
       });
 
       emitRouterChange(this, publics, "back");
@@ -240,8 +239,7 @@ $.register({
       }
 
       this.emit("router-change", {
-        name: type,
-        src,
+        data: { name: type, src },
       });
 
       emitRouterChange(this, publics, type);

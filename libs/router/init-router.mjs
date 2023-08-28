@@ -14,13 +14,15 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
 
   app.on("router-change", (e) => {
     let methodName = "pushState";
-    switch (e.name) {
+    const { name, delta, src } = e.data || {};
+
+    switch (name) {
       case "replace":
         methodName = "replaceState";
       case "goto":
         const { routers } = app;
 
-        const { pathname, search } = new URL(e.src, location.href);
+        const { pathname, search } = new URL(src, location.href);
 
         if (_isGoto) {
           _isGoto = null;
@@ -56,7 +58,7 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
         }
 
         _isFixState = 1;
-        history.go(-e.delta);
+        history.go(-delta);
         break;
     }
   });
