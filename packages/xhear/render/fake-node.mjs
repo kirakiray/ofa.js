@@ -136,6 +136,10 @@ export class FakeNode extends Comment {
   get nextElementSibling() {
     let next = this.nextSibling;
 
+    if (!next) {
+      return null;
+    }
+
     if (next.__fake_end) {
       return next.__fake_end;
     }
