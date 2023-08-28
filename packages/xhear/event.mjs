@@ -33,16 +33,24 @@ const eventFn = {
     this.ele.removeEventListener(name, func);
     return this;
   },
-  emit(name, data, opts) {
+  emit(name, opts) {
+    const options = { ...opts };
+
+    let data;
+    if (options.hasOwnProperty("data")) {
+      data = options.data;
+      delete options.data;
+    }
+
     let event;
 
     if (name instanceof Event) {
       event = name;
     } else if (name) {
-      event = new Event(name, { bubbles: true, ...opts });
+      event = new Event(name, { bubbles: true, ...options });
     }
 
-    data && Object.assign(event, data);
+    data && (event.data = data);
 
     this.ele.dispatchEvent(event);
 

@@ -1291,16 +1291,24 @@ const eventFn = {
     this.ele.removeEventListener(name, func);
     return this;
   },
-  emit(name, data, opts) {
+  emit(name, opts) {
+    const options = { ...opts };
+
+    let data;
+    if (options.hasOwnProperty("data")) {
+      data = options.data;
+      delete options.data;
+    }
+
     let event;
 
     if (name instanceof Event) {
       event = name;
     } else if (name) {
-      event = new Event(name, { bubbles: true, ...opts });
+      event = new Event(name, { bubbles: true, ...options });
     }
 
-    data && Object.assign(event, data);
+    data && (event.data = data);
 
     this.ele.dispatchEvent(event);
 
@@ -2162,10 +2170,6 @@ class FakeNode extends Comment {
   get nextElementSibling() {
     let next = this.nextSibling;
 
-    if (!next) {
-      return null;
-    }
-
     if (next.__fake_end) {
       return next.__fake_end;
     }
@@ -2989,7 +2993,7 @@ const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
   } catch (error) {
     const err = new Error(`${desc}\n  ${error.stack}`);
     err.error = error;
-    self.emit("error", { error: err, ...rest });
+    self.emit("error", { data: { error: err, ...rest } });
     throw err;
   }
 };
@@ -4007,7 +4011,7 @@ $$1.register({
         const err = new Error(
           `The currently loaded module is not a page \nLoaded string => '${src}'`
         );
-        this.emit("error", { error: err });
+        this.emit("error", { data: { error: err } });
         this.__reject(err);
         throw err;
       }
@@ -4473,8 +4477,7 @@ $$1.register({
       needRemovePage = resetOldPage(needRemovePage);
 
       this.emit("router-change", {
-        name: "back",
-        delta,
+        data: { name: "back", delta },
       });
 
       emitRouterChange(this, publics, "back");
@@ -4515,8 +4518,7 @@ $$1.register({
       }
 
       this.emit("router-change", {
-        name: type,
-        src,
+        data: { name: type, src },
       });
 
       emitRouterChange(this, publics, type);

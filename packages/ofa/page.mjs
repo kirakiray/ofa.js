@@ -182,7 +182,7 @@ $.register({
         const err = new Error(
           `The currently loaded module is not a page \nLoaded string => '${src}'`
         );
-        this.emit("error", { error: err });
+        this.emit("error", { data: { error: err } });
         this.__reject(err);
         throw err;
       }
