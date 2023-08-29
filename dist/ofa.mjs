@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.0 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.1 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -156,6 +156,18 @@ const searchEle = (el, expr) => {
   }
   return Array.from(el.querySelectorAll(expr));
 };
+
+function mergeObjects(obj1, obj2) {
+  for (let key of Object.keys(obj1)) {
+    if (!obj2.hasOwnProperty(key)) {
+      delete obj1[key];
+    }
+  }
+
+  for (let [key, value] of Object.entries(obj2)) {
+    obj1[key] = value;
+  }
+}
 
 const { assign: assign$1, freeze } = Object;
 
@@ -333,6 +345,16 @@ var watchFn = {
         callback(new Watchers(arr));
       }, wait || 0)
     );
+  },
+  // For manual use of emitUpdate
+  refresh(opts) {
+    const options = {
+      ...opts,
+      type: "refresh",
+      target: this,
+      currentTarget: this,
+    };
+    emitUpdate(options);
   },
 };
 
@@ -540,7 +562,7 @@ class Stanz extends Array {
     let obj = {};
 
     let isPureArray = true;
-    let maxId = 0;
+    let maxId = -1;
 
     Object.keys(this).forEach((k) => {
       let val = this[k];
@@ -674,6 +696,7 @@ const setData = ({ target, key, value, receiver, type, succeed }) => {
   const reval = succeed(data);
 
   !isSame &&
+    // __unupdate: Let the system not trigger an upgrade, system self-use attribute
     !target.__unupdate &&
     emitUpdate({
       type: type || "set",
@@ -808,7 +831,7 @@ const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
 const convertToFunc = (expr, data, opts) => {
   const funcStr = `
-${isRevokedErr.toString()}
+const isRevokedErr = ${isRevokedErr.toString()}
 const [$event] = $args;
 const {data, errCall} = this;
 try{
@@ -1322,13 +1345,21 @@ eventFn.on.revoke = (e) => {
 
 const originSplice = (ele, start, count, ...items) => {
   const { children } = ele;
+  if (start < 0) {
+    start += ele.children.length;
+  }
+
+  if (count === undefined) {
+    count = ele.children.length - start;
+  }
+
   const removes = [];
   for (let i = start, len = start + count; i < len; i++) {
     const target = children[i];
     removes.push(target);
   }
 
-  removes.forEach((el) => el.remove());
+  removes.forEach((el) => el && el.remove());
 
   if (items.length) {
     const frag = document.createDocumentFragment();
@@ -1539,10 +1570,15 @@ const setKeys = (keys, $ele) => {
       defineProperty($ele, k, {
         enumerable: true,
         get: () => {
+          let val = ele[k];
           if (isNum) {
-            return Number(ele[k]);
+            if (/\D/.test(val)) {
+              isNum = false;
+            } else {
+              val = Number(val);
+            }
           }
-          return ele[k];
+          return val;
         },
         set: (val) => {
           isNum = typeof val === "number";
@@ -1619,11 +1655,11 @@ const initInput = ($ele) => {
       bindProp($ele, { name: "files", type: "change" });
       break;
     case "checkbox":
-      setKeys(["checked", "multiple"], $ele);
+      setKeys(["checked", "multiple", "value"], $ele);
       bindProp($ele, { name: "checked", type: "change" });
       break;
     case "radio":
-      setKeys(["checked"], $ele);
+      setKeys(["checked", "value"], $ele);
       bindProp($ele, { name: "checked", type: "change" });
       break;
     case "text":
@@ -1689,13 +1725,66 @@ var formFn = {
 
     assign(data, getFormData(this, expr || "input,select,textarea"));
 
-    this.watchTick((e) => {
-      assign(data, getFormData(this, expr || "input,select,textarea"));
+    const wid1 = this.watchTick((e) => {
+      const newData = getFormData(this, expr || "input,select,textarea");
+      mergeObjects(data, newData);
     }, opts.wait);
+
+    const wid2 = data.watchTick((e) => {
+      resetValue(this, expr || "input,select,textarea", data);
+    });
+
+    const _this = this;
+
+    const oldRevoke = data.revoke;
+    data.extend({
+      revoke() {
+        _this.unwatch(wid1);
+        data.unwatch(wid2);
+        oldRevoke.call(this);
+      },
+    });
 
     return data;
   },
 };
+
+function resetValue(el, expr, data) {
+  const eles = el.all(expr);
+
+  Object.keys(data).forEach((name) => {
+    const targets = eles.filter((e) => e.attr("name") === name);
+
+    if (targets.length === 0) {
+      return;
+    }
+
+    const val = data[name];
+
+    if (targets.length === 1) {
+      const target = targets[0];
+      if (target.value !== val) {
+        target.value = val;
+      }
+    } else {
+      // checkbox or radio
+      targets.forEach((e) => {
+        switch (e.attr("type")) {
+          case "radio":
+            if (e.value === val) {
+              e.checked = true;
+            } else {
+              e.checked = false;
+            }
+            break;
+          case "checkbox":
+            e.checked = val.includes(e.value);
+            break;
+        }
+      });
+    }
+  });
+}
 
 const cssHandler = {
   set(target, key, value, receiver) {
@@ -2170,10 +2259,6 @@ class FakeNode extends Comment {
   get nextElementSibling() {
     let next = this.nextSibling;
 
-    if (!next) {
-      return null;
-    }
-
     if (next.__fake_end) {
       return next.__fake_end;
     }
@@ -2242,6 +2327,8 @@ const regOptions = {
             conditionEl._clearContent();
           }
         });
+
+        eleX(this._fake.parentNode).refresh();
       }, 0);
     },
     _renderContent() {
@@ -2468,7 +2555,7 @@ register({
             this._fake.appendChild($ele.ele);
           }
         } else {
-          this._fake.insertBefore($ele.ele, currentEl.nextElementSibling);
+          this._fake.insertBefore($ele.ele, currentEl.nextSibling);
         }
         currentEl = $ele.ele;
       }
@@ -2481,6 +2568,8 @@ register({
           revokeAll(e);
         });
       }
+
+      eleX(this._fake.parentNode).refresh();
     },
     init() {
       if (this._bindend) {
@@ -2768,7 +2857,9 @@ class Xhear extends LikeArray {
   }
 
   remove() {
-    this.ele.remove();
+    const { parent } = this;
+    parent.splice(parent.indexOf(this), 1);
+    // this.ele.remove();
   }
 
   clone(bool = true) {
@@ -4034,6 +4125,7 @@ $$1.register({
       } catch (error) {
         const err = new Error(`Failed to render page:${src} \n ${error.stack}`);
         err.error = error;
+        console.error(err);
       }
 
       await dispatchLoad(this, defaults.loaded);

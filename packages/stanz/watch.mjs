@@ -177,4 +177,14 @@ export default {
       }, wait || 0)
     );
   },
+  // For manual use of emitUpdate
+  refresh(opts) {
+    const options = {
+      ...opts,
+      type: "refresh",
+      target: this,
+      currentTarget: this,
+    };
+    emitUpdate(options);
+  },
 };

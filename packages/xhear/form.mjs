@@ -1,6 +1,6 @@
 import stanz from "../stanz/base.mjs";
 import { emitUpdate } from "../stanz/watch.mjs";
-import { searchEle } from "./public.mjs";
+import { mergeObjects, searchEle } from "./public.mjs";
 
 const { defineProperty, assign } = Object;
 
@@ -15,10 +15,15 @@ const setKeys = (keys, $ele) => {
       defineProperty($ele, k, {
         enumerable: true,
         get: () => {
+          let val = ele[k];
           if (isNum) {
-            return Number(ele[k]);
+            if (/\D/.test(val)) {
+              isNum = false;
+            } else {
+              val = Number(val);
+            }
           }
-          return ele[k];
+          return val;
         },
         set: (val) => {
           isNum = typeof val === "number";
@@ -95,11 +100,11 @@ const initInput = ($ele) => {
       bindProp($ele, { name: "files", type: "change" });
       break;
     case "checkbox":
-      setKeys(["checked", "multiple"], $ele);
+      setKeys(["checked", "multiple", "value"], $ele);
       bindProp($ele, { name: "checked", type: "change" });
       break;
     case "radio":
-      setKeys(["checked"], $ele);
+      setKeys(["checked", "value"], $ele);
       bindProp($ele, { name: "checked", type: "change" });
       break;
     case "text":
@@ -165,10 +170,63 @@ export default {
 
     assign(data, getFormData(this, expr || "input,select,textarea"));
 
-    this.watchTick((e) => {
-      assign(data, getFormData(this, expr || "input,select,textarea"));
+    const wid1 = this.watchTick((e) => {
+      const newData = getFormData(this, expr || "input,select,textarea");
+      mergeObjects(data, newData);
     }, opts.wait);
+
+    const wid2 = data.watchTick((e) => {
+      resetValue(this, expr || "input,select,textarea", data);
+    });
+
+    const _this = this;
+
+    const oldRevoke = data.revoke;
+    data.extend({
+      revoke() {
+        _this.unwatch(wid1);
+        data.unwatch(wid2);
+        oldRevoke.call(this);
+      },
+    });
 
     return data;
   },
 };
+
+function resetValue(el, expr, data) {
+  const eles = el.all(expr);
+
+  Object.keys(data).forEach((name) => {
+    const targets = eles.filter((e) => e.attr("name") === name);
+
+    if (targets.length === 0) {
+      return;
+    }
+
+    const val = data[name];
+
+    if (targets.length === 1) {
+      const target = targets[0];
+      if (target.value !== val) {
+        target.value = val;
+      }
+    } else {
+      // checkbox or radio
+      targets.forEach((e) => {
+        switch (e.attr("type")) {
+          case "radio":
+            if (e.value === val) {
+              e.checked = true;
+            } else {
+              e.checked = false;
+            }
+            break;
+          case "checkbox":
+            e.checked = val.includes(e.value);
+            break;
+        }
+      });
+    }
+  });
+}
