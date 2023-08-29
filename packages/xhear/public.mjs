@@ -72,3 +72,15 @@ export const searchEle = (el, expr) => {
   }
   return Array.from(el.querySelectorAll(expr));
 };
+
+export function mergeObjects(obj1, obj2) {
+  for (let key of Object.keys(obj1)) {
+    if (!obj2.hasOwnProperty(key)) {
+      delete obj1[key];
+    }
+  }
+
+  for (let [key, value] of Object.entries(obj2)) {
+    obj1[key] = value;
+  }
+}

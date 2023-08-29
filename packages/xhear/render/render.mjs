@@ -18,7 +18,7 @@ const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
 const convertToFunc = (expr, data, opts) => {
   const funcStr = `
-${isRevokedErr.toString()}
+const isRevokedErr = ${isRevokedErr.toString()}
 const [$event] = $args;
 const {data, errCall} = this;
 try{

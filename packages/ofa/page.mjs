@@ -201,6 +201,7 @@ $.register({
       } catch (error) {
         const err = new Error(`Failed to render page:${src} \n ${error.stack}`);
         err.error = error;
+        console.error(err);
       }
 
       await dispatchLoad(this, defaults.loaded);

@@ -30,6 +30,7 @@ export const setData = ({ target, key, value, receiver, type, succeed }) => {
   const reval = succeed(data);
 
   !isSame &&
+    // __unupdate: Let the system not trigger an upgrade, system self-use attribute
     !target.__unupdate &&
     emitUpdate({
       type: type || "set",

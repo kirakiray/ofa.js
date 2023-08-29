@@ -48,6 +48,8 @@ const regOptions = {
             conditionEl._clearContent();
           }
         });
+
+        eleX(this._fake.parentNode).refresh();
       }, 0);
     },
     _renderContent() {
