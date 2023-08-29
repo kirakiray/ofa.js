@@ -205,28 +205,37 @@ function resetValue(el, expr, data) {
     }
 
     const val = data[name];
-
+    const target = targets[0];
+    const type = target.attr("type");
     if (targets.length === 1) {
-      const target = targets[0];
-      if (target.value !== val) {
-        target.value = val;
+      let isUseValue = true;
+
+      if (target.tag === "input" && (type === "radio" || type === "checkbox")) {
+        isUseValue = false;
       }
-    } else {
-      // checkbox or radio
-      targets.forEach((e) => {
-        switch (e.attr("type")) {
-          case "radio":
-            if (e.value === val) {
-              e.checked = true;
-            } else {
-              e.checked = false;
-            }
-            break;
-          case "checkbox":
-            e.checked = val.includes(e.value);
-            break;
+
+      if (isUseValue) {
+        if (target.value !== val) {
+          target.value = val;
         }
-      });
+        return;
+      }
     }
+
+    // checkbox or radio
+    targets.forEach((e) => {
+      switch (e.attr("type")) {
+        case "radio":
+          if (e.value === val) {
+            e.checked = true;
+          } else {
+            e.checked = false;
+          }
+          break;
+        case "checkbox":
+          e.checked = val.includes(e.value);
+          break;
+      }
+    });
   });
 }
