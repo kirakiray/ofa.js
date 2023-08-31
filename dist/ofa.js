@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.3 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.4 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3462,7 +3462,13 @@ try{
   use(["txt", "html", "htm"], async (ctx, next) => {
     if (!ctx.result) {
       const { url } = ctx;
-      ctx.result = await fetch(url).then((e) => e.text());
+      ctx.result = await fetch(url).then((e) => {
+        if (/^2.{2}$/.test(e.status)) {
+          return e.text();
+        }
+
+        throw new Error(`Load ${url} failed: status code ${e.status}`);
+      });
     }
 
     await next();
