@@ -127,7 +127,7 @@ export const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
 
-  tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
+  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
 
   const targetPage = $(tempCon.children[0]);
   targetPage._pause_init = 1;

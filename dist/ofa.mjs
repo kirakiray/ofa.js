@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.2 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.3 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -2820,11 +2820,11 @@ class Xhear extends LikeArray {
   }
 
   get width() {
-    return parseInt(getComputedStyle(this.ele).width);
+    return parseInt(getComputedStyle(this.ele).width) || 0;
   }
 
   get height() {
-    return parseInt(getComputedStyle(this.ele).height);
+    return parseInt(getComputedStyle(this.ele).height) || 0;
   }
 
   get clientWidth() {
@@ -3161,7 +3161,7 @@ const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
 
-  tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
+  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
 
   const targetPage = $(tempCon.children[0]);
   targetPage._pause_init = 1;
@@ -3742,6 +3742,10 @@ const initLink = (_this) => {
 
   // olink click to amend
   $ele.on("click", (e) => {
+    if (e.__processed) {
+      return;
+    }
+
     const { target } = e;
 
     if (target.attributes.hasOwnProperty("olink")) {
@@ -3751,12 +3755,20 @@ const initLink = (_this) => {
         }
         e.preventDefault();
 
+        // Whether to abort the goto event
+        let prevented = false;
+        e.preventDefault = () => {
+          prevented = true;
+        };
+
+        e.__processed = true;
+
         if (target.tagName === "A") {
           const originHref = target.getAttribute("origin-href");
           // Prioritize the use of origin links
-          $ele.app.goto(originHref || target.href);
-
-          e.stopPropagation();
+          setTimeout(() => {
+            !prevented && $ele.app.goto(originHref || target.href);
+          });
         }
       } else {
         console.warn("olink is only allowed within o-apps");
@@ -4075,6 +4087,8 @@ $$1.register({
     },
   },
   attached() {
+    this.css.display = "block";
+
     const needWraps = this.__need_wraps;
     if (needWraps) {
       needWraps.forEach((page) => {

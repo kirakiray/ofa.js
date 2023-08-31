@@ -142,6 +142,8 @@ $.register({
     },
   },
   attached() {
+    this.css.display = "block";
+
     const needWraps = this.__need_wraps;
     if (needWraps) {
       needWraps.forEach((page) => {
