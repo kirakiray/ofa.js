@@ -3744,6 +3744,10 @@ const initLink = (_this) => {
   $ele.on("click", (e) => {
     const { target } = e;
 
+    if (e.__processed) {
+      return;
+    }
+
     if (target.attributes.hasOwnProperty("olink")) {
       if ($ele.app) {
         if (e.metaKey || e.shiftKey) {
@@ -3751,12 +3755,20 @@ const initLink = (_this) => {
         }
         e.preventDefault();
 
+        // Whether to abort the goto event
+        let prevented = false;
+        e.preventDefault = () => {
+          prevented = true;
+        };
+
+        e.__processed = true;
+
         if (target.tagName === "A") {
           const originHref = target.getAttribute("origin-href");
           // Prioritize the use of origin links
-          $ele.app.goto(originHref || target.href);
-
-          e.stopPropagation();
+          setTimeout(() => {
+            !prevented && $ele.app.goto(originHref || target.href);
+          });
         }
       } else {
         console.warn("olink is only allowed within o-apps");
