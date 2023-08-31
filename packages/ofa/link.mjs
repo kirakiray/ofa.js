@@ -50,11 +50,11 @@ export const initLink = (_this) => {
 
   // olink click to amend
   $ele.on("click", (e) => {
-    const { target } = e;
-
     if (e.__processed) {
       return;
     }
+
+    const { target } = e;
 
     if (target.attributes.hasOwnProperty("olink")) {
       if ($ele.app) {

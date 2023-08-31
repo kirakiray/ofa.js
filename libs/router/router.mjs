@@ -5,7 +5,7 @@ const FIXBODY = `f-${getRandomId()}`;
 
 $.register({
   tag: "o-router",
-  temp: `<style>:host{display:block;width:100%;height:100%;overflow:hidden}::slotted(o-app){display:block;width:100%;height:100%}</style><slot></slot>`,
+  temp: `<style>:host{display:block;width:100%;height:100%;overflow:hidden}::slotted(o-app){width:100%;height:100%}</style><slot></slot>`,
   attrs: {
     fixBody: null,
   },

@@ -2826,11 +2826,11 @@ try{
     }
 
     get width() {
-      return parseInt(getComputedStyle(this.ele).width);
+      return parseInt(getComputedStyle(this.ele).width) || 0;
     }
 
     get height() {
-      return parseInt(getComputedStyle(this.ele).height);
+      return parseInt(getComputedStyle(this.ele).height) || 0;
     }
 
     get clientWidth() {
@@ -3167,7 +3167,7 @@ try{
     // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
     const tempCon = document.createElement("div");
 
-    tempCon.innerHTML = `<o-page src="${src}" style="display:block;"></o-page>`;
+    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
 
     const targetPage = $(tempCon.children[0]);
     targetPage._pause_init = 1;
@@ -3748,11 +3748,11 @@ try{
 
     // olink click to amend
     $ele.on("click", (e) => {
-      const { target } = e;
-
       if (e.__processed) {
         return;
       }
+
+      const { target } = e;
 
       if (target.attributes.hasOwnProperty("olink")) {
         if ($ele.app) {
@@ -4093,6 +4093,8 @@ ${scriptContent}`;
       },
     },
     attached() {
+      this.css.display = "block";
+
       const needWraps = this.__need_wraps;
       if (needWraps) {
         needWraps.forEach((page) => {
