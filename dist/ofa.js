@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3484,7 +3484,7 @@ try{
       }
 
       if (!/^2.{2}$/.test(resp.status)) {
-        throw new Error(`Load ${url} failed: status code ${e.status}`);
+        throw new Error(`Load ${url} failed: status code ${error.status}`);
       }
 
       ctx.result = await resp.text();

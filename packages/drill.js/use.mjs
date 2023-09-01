@@ -64,7 +64,7 @@ use(["txt", "html", "htm"], async (ctx, next) => {
     }
 
     if (!/^2.{2}$/.test(resp.status)) {
-      throw new Error(`Load ${url} failed: status code ${e.status}`);
+      throw new Error(`Load ${url} failed: status code ${error.status}`);
     }
 
     ctx.result = await resp.text();

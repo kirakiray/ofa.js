@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.5 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3478,7 +3478,7 @@ use(["txt", "html", "htm"], async (ctx, next) => {
     }
 
     if (!/^2.{2}$/.test(resp.status)) {
-      throw new Error(`Load ${url} failed: status code ${e.status}`);
+      throw new Error(`Load ${url} failed: status code ${error.status}`);
     }
 
     ctx.result = await resp.text();
