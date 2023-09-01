@@ -3118,16 +3118,18 @@ const getPagesData = async (src) => {
     try {
       defaults = await load(pageSrc);
     } catch (error) {
+      let err;
       if (beforeSrc) {
-        const err = new Error(
+        err = new Error(
           `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
         );
-        err.error = error;
-
-        errorObj = err;
       } else {
-        errorObj = error;
+        err = new Error(
+          `Request for ${pageSrc} page failed; \n  ${error.stack}`
+        );
       }
+      err.error = error;
+      errorObj = err;
 
       console.error(errorObj);
     }
@@ -3439,14 +3441,23 @@ use(["mjs", "js"], async (ctx, next) => {
   if (!ctx.result) {
     const { url, params } = ctx;
     const d = new URL(url);
-    if (
-      /^blob:/.test(url) ||
-      /^data:/.test(url) ||
-      params.includes("-direct")
-    ) {
-      ctx.result = await import(url);
-    } else {
-      ctx.result = await import(`${d.origin}${d.pathname}`);
+
+    const notHttp = /^blob:/.test(url) || /^data:/.test(url);
+    try {
+      if (notHttp || params.includes("-direct")) {
+        ctx.result = await import(url);
+      } else {
+        ctx.result = await import(`${d.origin}${d.pathname}`);
+      }
+    } catch (error) {
+      const err = new Error(
+        `Failed to load module ${notHttp ? "" : ":" + url} \n  ${error.stack}`
+      );
+      err.error = error;
+      if (notHttp) {
+        console.log("Failed to load module:", ctx);
+      }
+      throw err;
     }
   }
 
@@ -3456,13 +3467,21 @@ use(["mjs", "js"], async (ctx, next) => {
 use(["txt", "html", "htm"], async (ctx, next) => {
   if (!ctx.result) {
     const { url } = ctx;
-    ctx.result = await fetch(url).then((e) => {
-      if (/^2.{2}$/.test(e.status)) {
-        return e.text();
-      }
 
+    let resp;
+    try {
+      resp = await fetch(url);
+    } catch (error) {
+      const err = new Error(`Load ${url} failed \n  ${error.stack}`);
+      err.error = error;
+      throw err;
+    }
+
+    if (!/^2.{2}$/.test(resp.status)) {
       throw new Error(`Load ${url} failed: status code ${e.status}`);
-    });
+    }
+
+    ctx.result = await resp.text();
   }
 
   await next();

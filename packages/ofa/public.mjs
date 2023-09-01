@@ -84,16 +84,18 @@ export const getPagesData = async (src) => {
     try {
       defaults = await load(pageSrc);
     } catch (error) {
+      let err;
       if (beforeSrc) {
-        const err = new Error(
+        err = new Error(
           `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
         );
-        err.error = error;
-
-        errorObj = err;
       } else {
-        errorObj = error;
+        err = new Error(
+          `Request for ${pageSrc} page failed; \n  ${error.stack}`
+        );
       }
+      err.error = error;
+      errorObj = err;
 
       console.error(errorObj);
     }
