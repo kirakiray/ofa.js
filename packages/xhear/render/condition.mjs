@@ -58,7 +58,13 @@ const regOptions = {
       }
       this.__rendered = true;
 
-      const { target, data, temps } = getRenderData(this._fake);
+      const result = getRenderData(this._fake);
+
+      if (!result) {
+        return;
+      }
+
+      const { target, data, temps } = result;
 
       if (dataRevoked(data)) {
         return;

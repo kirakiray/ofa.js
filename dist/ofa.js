@@ -2274,6 +2274,10 @@ try{
     get nextElementSibling() {
       let next = this.nextSibling;
 
+      if (!next) {
+        return null;
+      }
+
       if (next.__fake_end) {
         return next.__fake_end;
       }
@@ -2288,6 +2292,10 @@ try{
     get previousElementSibling() {
       const { _start } = this;
       let prev = _start.previousSibling;
+
+      if (!prev) {
+        return null;
+      }
 
       if (prev instanceof FakeNode) {
         return prev;
@@ -2352,7 +2360,13 @@ try{
         }
         this.__rendered = true;
 
-        const { target, data, temps } = getRenderData(this._fake);
+        const result = getRenderData(this._fake);
+
+        if (!result) {
+          return;
+        }
+
+        const { target, data, temps } = result;
 
         if (dataRevoked(data)) {
           return;
