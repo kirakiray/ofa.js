@@ -136,6 +136,10 @@ export class FakeNode extends Comment {
   get nextElementSibling() {
     let next = this.nextSibling;
 
+    if (!next) {
+      return null;
+    }
+
     if (next.__fake_end) {
       return next.__fake_end;
     }
@@ -150,6 +154,10 @@ export class FakeNode extends Comment {
   get previousElementSibling() {
     const { _start } = this;
     let prev = _start.previousSibling;
+
+    if (!prev) {
+      return null;
+    }
 
     if (prev instanceof FakeNode) {
       return prev;

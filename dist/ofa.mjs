@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.6 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.7 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -2268,6 +2268,10 @@ class FakeNode extends Comment {
   get nextElementSibling() {
     let next = this.nextSibling;
 
+    if (!next) {
+      return null;
+    }
+
     if (next.__fake_end) {
       return next.__fake_end;
     }
@@ -2282,6 +2286,10 @@ class FakeNode extends Comment {
   get previousElementSibling() {
     const { _start } = this;
     let prev = _start.previousSibling;
+
+    if (!prev) {
+      return null;
+    }
 
     if (prev instanceof FakeNode) {
       return prev;
@@ -2346,7 +2354,13 @@ const regOptions = {
       }
       this.__rendered = true;
 
-      const { target, data, temps } = getRenderData(this._fake);
+      const result = getRenderData(this._fake);
+
+      if (!result) {
+        return;
+      }
+
+      const { target, data, temps } = result;
 
       if (dataRevoked(data)) {
         return;
