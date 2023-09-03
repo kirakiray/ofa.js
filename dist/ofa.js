@@ -1121,8 +1121,7 @@ try{
         }
 
         const wrapName = `wrapper-${tempName}`;
-        const ihtml = template.innerHTML;
-        template.innerHTML = `<div ${wrapName} style="display:contents">${ihtml}</div>`;
+        template.innerHTML = `<div ${wrapName} style="display:contents">${template.innerHTML}</div>`;
         console.warn(
           `The template "${tempName}" contains ${tempChilds.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
         );

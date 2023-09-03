@@ -25,8 +25,11 @@
         <button on:click="back()">Back</button>
         <br />
         <br />
-        <button on:click="goto('./subs/scsr0301.html')">Goto sub Page0301</button>
+        <button on:click="goto('./subs/scsr0301.html')">
+          Goto sub Page0301
+        </button>
         <script>
+          export const parent = "./parent.html";
           export default function () {
             return {
               data: {
@@ -36,6 +39,9 @@
                 addOne() {
                   this.num++;
                 },
+              },
+              ready() {
+                console.log(this);
               },
             };
           }
