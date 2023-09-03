@@ -37,6 +37,8 @@ try{
     if(result !== false){
       console.error(error);
     }
+  }else{
+    console.error(error);
   }
 }
 `;
