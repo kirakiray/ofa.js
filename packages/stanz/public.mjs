@@ -12,11 +12,28 @@ export const isObject = (obj) => {
   return type === "array" || type === "object";
 };
 
+let asyncsCounter = 0;
+let afterTimer;
 const tickSets = new Set();
 export function nextTick(callback) {
   const tickId = `t-${getRandomId()}`;
+  clearTimeout(afterTimer);
+  afterTimer = setTimeout(() => {
+    asyncsCounter = 0;
+  });
   tickSets.add(tickId);
   Promise.resolve().then(() => {
+    asyncsCounter++;
+    // console.log("asyncsCounter => ", asyncsCounter);
+    if (asyncsCounter > 50000) {
+      tickSets.clear();
+      const desc = `nextTick exceeds thread limit`;
+      console.error({
+        desc,
+        lastCall: callback,
+      });
+      throw new Error(desc);
+    }
     if (tickSets.has(tickId)) {
       callback();
       tickSets.delete(tickId);

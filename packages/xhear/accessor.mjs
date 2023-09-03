@@ -1,9 +1,20 @@
 import { eleX } from "./util.mjs";
 import { handler as stanzHandler } from "../stanz/accessor.mjs";
 
+const tempEl = document.createElement("template");
+
 export const handler = {
   set(target, key, value, receiver) {
     if (!/\D/.test(String(key))) {
+      return Reflect.set(target, key, value, receiver);
+    }
+
+    if (key === "html") {
+      // When setting HTML values that contain single quotes, they become double quotes when set, leading to an infinite loop of updates.
+      // tempEl.innerHTML = value;
+      // value = tempEl.innerHTML;
+
+      // If custom elements are stuffed, the html values may remain inconsistent
       return Reflect.set(target, key, value, receiver);
     }
 
