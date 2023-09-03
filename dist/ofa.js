@@ -19,11 +19,28 @@
     return type === "array" || type === "object";
   };
 
+  let asyncsCounter = 0;
+  let afterTimer;
   const tickSets = new Set();
   function nextTick(callback) {
     const tickId = `t-${getRandomId()}`;
+    clearTimeout(afterTimer);
+    afterTimer = setTimeout(() => {
+      asyncsCounter = 0;
+    });
     tickSets.add(tickId);
     Promise.resolve().then(() => {
+      asyncsCounter++;
+      // console.log("asyncsCounter => ", asyncsCounter);
+      if (asyncsCounter > 50000) {
+        tickSets.clear();
+        const desc = `nextTick exceeds thread limit`;
+        console.error({
+          desc,
+          lastCall: callback,
+        });
+        throw new Error(desc);
+      }
       if (tickSets.has(tickId)) {
         callback();
         tickSets.delete(tickId);
@@ -794,9 +811,20 @@
     },
   };
 
+  document.createElement("template");
+
   const handler = {
     set(target, key, value, receiver) {
       if (!/\D/.test(String(key))) {
+        return Reflect.set(target, key, value, receiver);
+      }
+
+      if (key === "html") {
+        // When setting HTML values that contain single quotes, they become double quotes when set, leading to an infinite loop of updates.
+        // tempEl.innerHTML = value;
+        // value = tempEl.innerHTML;
+
+        // If custom elements are stuffed, the html values may remain inconsistent
         return Reflect.set(target, key, value, receiver);
       }
 
@@ -2766,10 +2794,6 @@ try{
       return this.ele.dataset;
     }
 
-    // get css() {
-    //   return getComputedStyle(this.ele);
-    // }
-
     get shadow() {
       return eleX(this.ele.shadowRoot);
     }
@@ -3513,7 +3537,7 @@ try{
       }
 
       if (!/^2.{2}$/.test(resp.status)) {
-        throw new Error(`Load ${url} failed: status code ${error.status}`);
+        throw new Error(`Load ${url} failed: status code ${resp.status}`);
       }
 
       ctx.result = await resp.text();

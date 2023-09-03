@@ -106,10 +106,6 @@ export default class Xhear extends LikeArray {
     return this.ele.dataset;
   }
 
-  // get css() {
-  //   return getComputedStyle(this.ele);
-  // }
-
   get shadow() {
     return eleX(this.ele.shadowRoot);
   }
