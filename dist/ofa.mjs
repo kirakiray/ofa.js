@@ -1105,7 +1105,8 @@ const convert = (template) => {
   const tempName = template.getAttribute("name");
 
   if (tempName) {
-    if (template.content.children.length > 1) {
+    const tempChilds = template.content.children;
+    if (tempChilds.length > 1) {
       if (!isWarned) {
         console.warn(
           `Only one child element can be contained within a template element. If multiple child elements appear, the child elements will be rewrapped within a <div> element`
@@ -1114,9 +1115,14 @@ const convert = (template) => {
       }
 
       const wrapName = `wrapper-${tempName}`;
-      template.innerHTML = `<div ${wrapName} style="display:contents">${template.innerHTML}</div>`;
+      const ihtml = template.innerHTML;
+      template.innerHTML = `<div ${wrapName} style="display:contents">${ihtml}</div>`;
       console.warn(
-        `The template "${tempName}" contains ${template.content.children.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
+        `The template "${tempName}" contains ${tempChilds.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
+      );
+    } else if (tempChilds.length === 0) {
+      throw new Error(
+        `The template "${tempName}" needs to have at least one child element`
       );
     }
     temps[tempName] = template;
@@ -1146,7 +1152,15 @@ const convert = (template) => {
   });
 
   searchTemp(template, "template", (e) => {
-    temps = { ...temps, ...convert(e) };
+    const newTemps = convert(e);
+
+    Object.keys(newTemps).forEach((tempName) => {
+      if (temps[tempName]) {
+        throw new Error(`Template "${tempName}" already exists`);
+      }
+    });
+
+    temps = { ...temps, ...newTemps };
   });
 
   Array.from(template.content.children).forEach((el) => convertEl(el));
