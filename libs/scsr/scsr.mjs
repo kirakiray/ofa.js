@@ -3,7 +3,7 @@ import initRouter from "../router/init-router.mjs";
 (() => {
   async function ready() {
     const app = $("o-app");
-    $("o-app template[page]").remove();
+    $("o-app template[page]")?.remove();
 
     let maybeHash = false;
     window.addEventListener("hashchange", (e) => {
@@ -37,7 +37,9 @@ import initRouter from "../router/init-router.mjs";
       }
     });
 
-    app.push(`<o-page src="${location.pathname}"></o-page>`);
+    if (!history?.state?.routerMode) {
+      app.push(`<o-page src="${location.pathname}"></o-page>`);
+    }
 
     initRouter({
       app,
