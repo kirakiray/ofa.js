@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.8 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.9 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -850,6 +850,8 @@ try{
     if(result !== false){
       console.error(error);
     }
+  }else{
+    console.error(error);
   }
 }
 `;
