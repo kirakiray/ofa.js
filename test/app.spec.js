@@ -172,7 +172,7 @@ test("page attached and detached", async ({ page }) => {
   expect(detached_home1).toBe("notok");
 
   await page.getByRole("link", { name: "TO single-page in o-link" }).click();
-  await new Promise((res) => setTimeout(res, 400));
+  await new Promise((res) => setTimeout(res, 500));
 
   const { _preview: detached_home2 } = await page.waitForFunction(() => {
     return window._detached_home || "notok";

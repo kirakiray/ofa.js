@@ -3,7 +3,10 @@ import $ from "../xhear/base.mjs";
 import { fixRelate } from "./public.mjs";
 import { renderExtends } from "../xhear/render/render.mjs";
 
+const oldRender = renderExtends.render;
 renderExtends.render = (e) => {
+  oldRender && oldRender(e);
+
   const { step, name, target } = e;
 
   const { link } = $.extensions;
@@ -40,8 +43,6 @@ renderExtends.render = (e) => {
       }
       delete top.__fixLinkTimer;
     });
-
-    // console.log("refresh => ", e);
   }
 };
 
