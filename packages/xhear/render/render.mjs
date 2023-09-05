@@ -10,6 +10,7 @@ import {
 import { eleX } from "../util.mjs";
 
 export const renderExtends = {
+  beforeRender() {},
   render() {},
 };
 
@@ -58,6 +59,10 @@ export function render({
   if (content) {
     target.innerHTML = content;
   }
+
+  renderExtends.beforeRender({
+    target,
+  });
 
   const texts = searchEle(target, "xtext");
 

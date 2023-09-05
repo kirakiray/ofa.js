@@ -192,6 +192,9 @@
     }
   }
 
+  const isSafariBrowser = () =>
+    /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
   const { assign: assign$1, freeze } = Object;
 
   class Watcher {
@@ -857,6 +860,7 @@
   };
 
   const renderExtends = {
+    beforeRender() {},
     render() {},
   };
 
@@ -905,6 +909,10 @@ try{
     if (content) {
       target.innerHTML = content;
     }
+
+    renderExtends.beforeRender({
+      target,
+    });
 
     const texts = searchEle(target, "xtext");
 
@@ -1689,8 +1697,15 @@ try{
         setKeys(["selected", "value"], $ele);
         break;
       case "select":
-        setKeys(["value"], $ele);
-        bindProp($ele, { name: "value", type: "change" });
+        {
+          const { ele } = $ele;
+          $ele.watch(() => {
+            ele.value = $ele.value;
+          });
+          $ele.on("change", () => {
+            $ele.value = ele.value;
+          });
+        }
         break;
     }
   };
@@ -2346,6 +2361,56 @@ try{
 
       return _start.previousElementSibling;
     }
+  }
+
+  const replaceTempInit = (_this) => {
+    const parent = _this.parentNode;
+    if (parent) {
+      const parent = _this.parentNode;
+      Array.from(_this.content.children).forEach((e) => {
+        parent.insertBefore(e, _this);
+      });
+
+      _this.remove();
+    }
+  };
+
+  if (isSafariBrowser()) {
+    renderExtends.beforeRender = ({ target }) => {
+      let replaces = [];
+      while (true) {
+        replaces = Array.from(
+          target.querySelectorAll('template[is="replace-temp"]')
+        );
+
+        if (!replaces.length) {
+          break;
+        }
+
+        replaces.forEach((temp) => {
+          replaceTempInit(temp);
+        });
+      }
+    };
+  } else {
+    class ReplaceTemp extends HTMLTemplateElement {
+      constructor() {
+        super();
+        this.init();
+      }
+
+      init() {
+        replaceTempInit(this);
+      }
+
+      connectedCallback() {
+        this.init();
+      }
+    }
+
+    customElements.define("replace-temp", ReplaceTemp, {
+      extends: "template",
+    });
   }
 
   /**
@@ -3779,7 +3844,10 @@ try{
 
   window.lm = lm$1;
 
+  const oldRender = renderExtends.render;
   renderExtends.render = (e) => {
+    oldRender && oldRender(e);
+
     const { step, name, target } = e;
 
     const { link } = $$1.extensions;
@@ -3816,8 +3884,6 @@ try{
         }
         delete top.__fixLinkTimer;
       });
-
-      // console.log("refresh => ", e);
     }
   };
 

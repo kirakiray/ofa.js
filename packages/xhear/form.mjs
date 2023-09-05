@@ -85,8 +85,15 @@ export const initFormEle = ($ele) => {
       setKeys(["selected", "value"], $ele);
       break;
     case "select":
-      setKeys(["value"], $ele);
-      bindProp($ele, { name: "value", type: "change" });
+      {
+        const { ele } = $ele;
+        $ele.watch(() => {
+          ele.value = $ele.value;
+        });
+        $ele.on("change", () => {
+          $ele.value = ele.value;
+        });
+      }
       break;
   }
 };
