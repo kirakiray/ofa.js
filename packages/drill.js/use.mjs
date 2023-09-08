@@ -36,13 +36,15 @@ use(["mjs", "js"], async (ctx, next) => {
         ctx.result = await import(`${d.origin}${d.pathname}`);
       }
     } catch (error) {
-      const err = new Error(
-        `Failed to load module ${notHttp ? "" : ":" + url} \n  ${error.stack}`
+      const err = wrapError(
+        `Failed to load module ${ctx.realUrl || url}`,
+        error
       );
-      err.error = error;
+
       if (notHttp) {
         console.log("Failed to load module:", ctx);
       }
+
       throw err;
     }
   }
@@ -58,9 +60,7 @@ use(["txt", "html", "htm"], async (ctx, next) => {
     try {
       resp = await fetch(url);
     } catch (error) {
-      const err = new Error(`Load ${url} failed \n  ${error.stack}`);
-      err.error = error;
-      throw err;
+      throw wrapError(`Load ${url} failed`, error);
     }
 
     if (!/^2.{2}$/.test(resp.status)) {
@@ -130,3 +130,9 @@ use("css", async (ctx, next) => {
 
   await next();
 });
+
+const wrapError = (desc, error) => {
+  const err = new Error(`${desc} \n  ${error.toString()}`);
+  err.error = error;
+  return err;
+};

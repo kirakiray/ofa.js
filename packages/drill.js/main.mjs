@@ -29,11 +29,14 @@ export const agent = async (url, opts) => {
   const { pathname } = urldata;
 
   let type;
+  let realUrl = null;
 
   opts.params &&
     opts.params.forEach((e) => {
       if (/^\..+/.test(e)) {
         type = e.replace(/^\.(.+)/, "$1");
+      } else if (/^\-\-real/.test(e)) {
+        realUrl = e.replace(/^\-\-real\:/, "");
       }
     });
 
@@ -44,6 +47,7 @@ export const agent = async (url, opts) => {
   const ctx = {
     url,
     result: null,
+    realUrl,
     ...opts,
   };
 
