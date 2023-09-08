@@ -1,8 +1,6 @@
 # ofa.js - Progressive Frontend Framework
 
-[中文教程](https://ofajs.com)
-
-[旧版 v3 的中文教程](https://ofajs.com/v3)
+[Official Documentation / 官方文档](https://ofajs.com)
 
 ## What is ofa.js?
 
