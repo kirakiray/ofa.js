@@ -4132,7 +4132,7 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
   ) {
     try {
       const url = await drawUrl(content, ctx.url);
-      ctx.result = await lm$1()(`${url} .mjs`);
+      ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
       const err = new Error(
         `Error loading Page module: ${ctx.url}\n ${error.stack}`
