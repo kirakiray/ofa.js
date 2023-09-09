@@ -3489,7 +3489,13 @@ try{
 
     clink.ele.__items = new Set([item]);
     item.__host_link = clink;
-    injectEl.host.root.push(clink);
+
+    const { root } = injectEl.host;
+    if (root.ele === document) {
+      document.head.appendChild(clink.ele);
+    } else {
+      root.root.push(clink);
+    }
   }
 
   function revokeLink(item) {
