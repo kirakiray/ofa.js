@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.12 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.13 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3489,7 +3489,13 @@ try{
 
     clink.ele.__items = new Set([item]);
     item.__host_link = clink;
-    injectEl.host.root.push(clink);
+
+    const { root } = injectEl.host;
+    if (root.ele === document) {
+      document.head.appendChild(clink.ele);
+    } else {
+      root.root.push(clink);
+    }
   }
 
   function revokeLink(item) {
@@ -4036,14 +4042,22 @@ try{
 
     scriptEl && scriptEl.remove();
 
+    // If there is no content other than the <script>, then the shadow root is not set.
+    const hasTemp = !!targetTemp.html.replace(/\<\!\-\-.*?\-\-\>/g, "").trim();
+    let temp = "";
+
+    if (hasTemp) {
+      temp = targetTemp.html
+        .replace(/\s+$/, "")
+        .replace(/`/g, "\\`")
+        .replace(/\$\{/g, "\\${");
+    }
+
     const beforeContent = `
   export const type = ${isPage ? "$.PAGE" : "$.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html
-    .replace(/\s+$/, "")
-    .replace(/`/g, "\\`")
-    .replace(/\$\{/g, "\\${")}\`;`;
+  export const temp = \`${temp}\`;`;
 
     let scriptContent = "";
     if (scriptEl) {
@@ -4515,12 +4529,14 @@ ${scriptContent}`;
 
     cacheComps[tagName] = path;
 
-    let tempUrl, tempContent;
+    let tempUrl,
+      tempContent = "";
 
     if (/<.+>/.test(temp)) {
       tempUrl = path;
       tempContent = temp;
-    } else {
+    } else if (temp !== "") {
+      // An empty string means the shadow root is not needed.
       if (!temp) {
         tempUrl = resolvePath(`${matchName[1]}.html`, path);
       } else {
@@ -4540,7 +4556,7 @@ ${scriptContent}`;
     registerOpts.ready = async function (...args) {
       oldReady && oldReady.apply(this, args);
       loaded && dispatchLoad(this, loaded);
-      initLink(this.shadow);
+      this.shadow && initLink(this.shadow);
     };
 
     const oldCreated = registerOpts.created;
