@@ -84,12 +84,14 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   cacheComps[tagName] = path;
 
-  let tempUrl, tempContent;
+  let tempUrl,
+    tempContent = "";
 
   if (/<.+>/.test(temp)) {
     tempUrl = path;
     tempContent = temp;
-  } else {
+  } else if (temp !== "") {
+    // An empty string means the shadow root is not needed.
     if (!temp) {
       tempUrl = resolvePath(`${matchName[1]}.html`, path);
     } else {
@@ -109,7 +111,7 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
   registerOpts.ready = async function (...args) {
     oldReady && oldReady.apply(this, args);
     loaded && dispatchLoad(this, loaded);
-    initLink(this.shadow);
+    this.shadow && initLink(this.shadow);
   };
 
   const oldCreated = registerOpts.created;

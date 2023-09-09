@@ -4042,14 +4042,22 @@ try{
 
     scriptEl && scriptEl.remove();
 
+    // If there is no content other than the <script>, then the shadow root is not set.
+    const hasTemp = !!targetTemp.html.replace(/\<\!\-\-.*?\-\-\>/g, "").trim();
+    let temp = "";
+
+    if (hasTemp) {
+      temp = targetTemp.html
+        .replace(/\s+$/, "")
+        .replace(/`/g, "\\`")
+        .replace(/\$\{/g, "\\${");
+    }
+
     const beforeContent = `
   export const type = ${isPage ? "$.PAGE" : "$.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
-  export const temp = \`${targetTemp.html
-    .replace(/\s+$/, "")
-    .replace(/`/g, "\\`")
-    .replace(/\$\{/g, "\\${")}\`;`;
+  export const temp = \`${temp}\`;`;
 
     let scriptContent = "";
     if (scriptEl) {
@@ -4521,12 +4529,14 @@ ${scriptContent}`;
 
     cacheComps[tagName] = path;
 
-    let tempUrl, tempContent;
+    let tempUrl,
+      tempContent = "";
 
     if (/<.+>/.test(temp)) {
       tempUrl = path;
       tempContent = temp;
-    } else {
+    } else if (temp !== "") {
+      // An empty string means the shadow root is not needed.
       if (!temp) {
         tempUrl = resolvePath(`${matchName[1]}.html`, path);
       } else {
@@ -4546,7 +4556,7 @@ ${scriptContent}`;
     registerOpts.ready = async function (...args) {
       oldReady && oldReady.apply(this, args);
       loaded && dispatchLoad(this, loaded);
-      initLink(this.shadow);
+      this.shadow && initLink(this.shadow);
     };
 
     const oldCreated = registerOpts.created;
