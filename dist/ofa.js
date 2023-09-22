@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.14 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.15 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3912,9 +3912,15 @@ try{
         return;
       }
 
-      const { target } = e;
+      const $tar = $$1(e.target);
+      const all = [$tar, ...$tar.parents];
 
-      if (target.attributes.hasOwnProperty("olink")) {
+      let target = all.find((e) => e.tag === "a");
+      if (target) {
+        target = target.ele;
+      }
+
+      if (target && target.attributes.hasOwnProperty("olink")) {
         if ($ele.app) {
           if (e.metaKey || e.shiftKey) {
             return;
