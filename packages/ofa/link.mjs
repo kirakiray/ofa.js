@@ -54,7 +54,6 @@ export const initLink = (_this) => {
     if (e.__processed) {
       return;
     }
-    e.preventDefault();
 
     const $tar = $(e.target);
     const all = [$tar, ...$tar.parents];

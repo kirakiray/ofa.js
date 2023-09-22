@@ -3911,7 +3911,6 @@ try{
       if (e.__processed) {
         return;
       }
-      e.preventDefault();
 
       const $tar = $$1(e.target);
       const all = [$tar, ...$tar.parents];
