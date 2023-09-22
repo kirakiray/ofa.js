@@ -54,10 +54,17 @@ export const initLink = (_this) => {
     if (e.__processed) {
       return;
     }
+    e.preventDefault();
 
-    const { target } = e;
+    const $tar = $(e.target);
+    const all = [$tar, ...$tar.parents];
 
-    if (target.attributes.hasOwnProperty("olink")) {
+    let target = all.find((e) => e.tag === "a");
+    if (target) {
+      target = target.ele;
+    }
+
+    if (target && target.attributes.hasOwnProperty("olink")) {
       if ($ele.app) {
         if (e.metaKey || e.shiftKey) {
           return;
