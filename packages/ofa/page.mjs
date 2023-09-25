@@ -90,7 +90,6 @@ $.register({
     async src(src) {
       if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
         src = resolvePath(src);
-        this.ele.setAttribute("src", src);
       }
 
       if (this.__init_src) {
@@ -102,6 +101,10 @@ $.register({
 
       if (!src) {
         return;
+      }
+
+      if (this.attr("src") !== src) {
+        this.attr("src", src);
       }
 
       this.__init_src = src;

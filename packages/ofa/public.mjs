@@ -82,7 +82,23 @@ export const getPagesData = async (src) => {
 
   while (true) {
     try {
-      defaults = await load(pageSrc);
+      let lastSrc = pageSrc;
+      const [realPageSrc, ...srcParams] = pageSrc.split(" ");
+      const pageSrcObj = new URL(realPageSrc);
+      if (/\/$/.test(pageSrcObj.pathname)) {
+        lastSrc =
+          pageSrcObj.origin +
+          pageSrcObj.pathname +
+          "index.html" +
+          pageSrcObj.search +
+          pageSrcObj.hash;
+
+        if (srcParams.length) {
+          lastSrc += " " + srcParams.join(" ");
+        }
+      }
+
+      defaults = await load(lastSrc);
     } catch (error) {
       let err;
       if (beforeSrc) {

@@ -3234,7 +3234,23 @@ const getPagesData = async (src) => {
 
   while (true) {
     try {
-      defaults = await load(pageSrc);
+      let lastSrc = pageSrc;
+      const [realPageSrc, ...srcParams] = pageSrc.split(" ");
+      const pageSrcObj = new URL(realPageSrc);
+      if (/\/$/.test(pageSrcObj.pathname)) {
+        lastSrc =
+          pageSrcObj.origin +
+          pageSrcObj.pathname +
+          "index.html" +
+          pageSrcObj.search +
+          pageSrcObj.hash;
+
+        if (srcParams.length) {
+          lastSrc += " " + srcParams.join(" ");
+        }
+      }
+
+      defaults = await load(lastSrc);
     } catch (error) {
       let err;
       if (beforeSrc) {
@@ -4209,7 +4225,6 @@ $$1.register({
     async src(src) {
       if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
         src = resolvePath(src);
-        this.ele.setAttribute("src", src);
       }
 
       if (this.__init_src) {
@@ -4221,6 +4236,10 @@ $$1.register({
 
       if (!src) {
         return;
+      }
+
+      if (this.attr("src") !== src) {
+        this.attr("src", src);
       }
 
       this.__init_src = src;
