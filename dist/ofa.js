@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.15 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.16 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3240,7 +3240,14 @@ try{
 
     while (true) {
       try {
-        defaults = await load(pageSrc);
+        let lastSrc = pageSrc;
+        const [realPageSrc] = pageSrc.split(" ");
+        const pageSrcObj = new URL(realPageSrc);
+        if (/\/$/.test(pageSrcObj.pathname)) {
+          lastSrc += " .html";
+        }
+
+        defaults = await load(lastSrc);
       } catch (error) {
         let err;
         if (beforeSrc) {
@@ -4215,7 +4222,6 @@ ${scriptContent}`;
       async src(src) {
         if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
           src = resolvePath(src);
-          this.ele.setAttribute("src", src);
         }
 
         if (this.__init_src) {
@@ -4227,6 +4233,10 @@ ${scriptContent}`;
 
         if (!src) {
           return;
+        }
+
+        if (this.attr("src") !== src) {
+          this.attr("src", src);
         }
 
         this.__init_src = src;
