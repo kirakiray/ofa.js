@@ -82,7 +82,8 @@ export const initLink = (_this) => {
           const originHref = target.getAttribute("origin-href");
           // Prioritize the use of origin links
           setTimeout(() => {
-            !prevented && $ele.app.goto(originHref || target.href);
+            const finalHref = originHref || target.href;
+            finalHref && !prevented && $ele.app.goto(finalHref);
           });
         }
       } else {
