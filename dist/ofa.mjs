@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.16 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.17 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3940,7 +3940,8 @@ const initLink = (_this) => {
           const originHref = target.getAttribute("origin-href");
           // Prioritize the use of origin links
           setTimeout(() => {
-            !prevented && $ele.app.goto(originHref || target.href);
+            const finalHref = originHref || target.href;
+            finalHref && !prevented && $ele.app.goto(finalHref);
           });
         }
       } else {
