@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.17 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.18 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3926,6 +3926,11 @@ const initLink = (_this) => {
         if (e.metaKey || e.shiftKey) {
           return;
         }
+
+        if (e.defaultPrevented) {
+          return;
+        }
+
         e.preventDefault();
 
         // Whether to abort the goto event

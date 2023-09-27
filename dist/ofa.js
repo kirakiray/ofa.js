@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.17 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.18 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3932,6 +3932,11 @@ try{
           if (e.metaKey || e.shiftKey) {
             return;
           }
+
+          if (e.defaultPrevented) {
+            return;
+          }
+
           e.preventDefault();
 
           // Whether to abort the goto event

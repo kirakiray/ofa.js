@@ -68,6 +68,11 @@ export const initLink = (_this) => {
         if (e.metaKey || e.shiftKey) {
           return;
         }
+
+        if (e.defaultPrevented) {
+          return;
+        }
+
         e.preventDefault();
 
         // Whether to abort the goto event
