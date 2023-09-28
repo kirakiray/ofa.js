@@ -53,7 +53,7 @@ register({
         return;
       }
 
-      const xids = childs.map((e) => e._data_xid);
+      const xids = childs.map((e) => e._data_xid || e);
 
       const { data, temps } = regData;
 
@@ -65,7 +65,7 @@ register({
       for (let i = 0; i < len; i++) {
         const e = val[i];
 
-        const oldIndex = xids.indexOf(e.xid);
+        const oldIndex = xids.indexOf(e.xid || e);
 
         if (oldIndex > -1) {
           if (oldIndex === i) {
@@ -167,7 +167,7 @@ const createItem = (data, temps, targetTemp, $host, $index) => {
   revokes.push(revoke);
 
   $ele.__item = itemData;
-  $ele.ele._data_xid = data.xid;
+  $ele.ele._data_xid = data.xid || data;
 
   return $ele;
 };
