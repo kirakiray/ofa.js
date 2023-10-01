@@ -1,6 +1,5 @@
 import $ from "../xhear/base.mjs";
 import { eleX } from "../xhear/util.mjs";
-import { getHash } from "./public.mjs";
 
 $.register({
   tag: "inject-host",
@@ -65,7 +64,7 @@ $.register({
         ele._revoke = null;
       };
 
-      initLink(
+      initInjectEle(
         this,
         href,
         () => {
@@ -79,7 +78,7 @@ $.register({
     async _initStyle(e) {
       // Use only the text inside the style to prevent contaminating yourself
       const com = new Comment(e.html);
-      com.__inited = com;
+      com.__inited = true;
 
       com._revoke = () => {
         revokeLink(e.ele);
@@ -94,13 +93,13 @@ $.register({
       e.ele.__inited = true;
       e.ele._revoke = com._revoke;
 
-      const hash = await getHash(com.data);
+      // const hash = await getHash(com.data);
+      const hash = getStringHash(com.data);
 
-      initLink(this, hash, () => $(`<style>${com.data}</style>`), e.ele);
+      initInjectEle(this, hash, () => $(`<style>${com.data}</style>`), e.ele);
     },
   },
   attached() {
-    // 创建 MutationObserver 实例
     const observer = (this._obs = new MutationObserver((mutationsList) => {
       for (let mutation of mutationsList) {
         if (mutation.type === "attributes") {
@@ -162,7 +161,19 @@ $.register({
   },
 });
 
-function initLink(injectEl, mark, cloneFunc, item) {
+function getStringHash(str) {
+  let hash = 0;
+  let len = str.length;
+  for (let i = 0; i < len; i++) {
+    const charCode = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) ^ charCode;
+    hash = (hash << 13) | (hash >>> 19);
+    hash = hash * 7 - hash * 3;
+  }
+  return hash.toString(36) + "--" + len;
+}
+
+function initInjectEle(injectEl, mark, cloneFunc, item) {
   const hostRoot = injectEl.host.root;
 
   let clink = hostRoot.$(`[inject-host="${mark}"]`);
@@ -189,7 +200,7 @@ function initLink(injectEl, mark, cloneFunc, item) {
 }
 
 function revokeLink(item) {
-  if (item.__inited) {
+  if (item.__inited && item.__host_link) {
     const items = item.__host_link.ele.__items;
     items.delete(item);
 

@@ -1,0 +1,22 @@
+<template component>
+  <inject-host>
+    <style :html="istyle">
+      h3 {
+        color: yellow;
+      }
+    </style>
+  </inject-host>
+  <div>c-t</div>
+  <script>
+    export default {
+      data: {
+        istyle: "h3{color:red;}",
+      },
+      ready() {
+        setTimeout(() => {
+          this.istyle = "h3{color:blue;}";
+        }, 400);
+      },
+    };
+  </script>
+</template>
