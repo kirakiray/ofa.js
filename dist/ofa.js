@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.19 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.20 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3159,166 +3159,6 @@ try{
     all: (expr) => searchEle(document, expr).map(eleX),
   });
 
-  function resolvePath(moduleName, baseURI) {
-    const [url, ...params] = moduleName.split(" ");
-
-    const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
-
-    if (
-      // moduleName.startsWith("/") ||
-      url.startsWith("http://") ||
-      url.startsWith("https://")
-    ) {
-      return url;
-    }
-
-    const moduleURL = new URL(url, baseURL);
-
-    if (params.length) {
-      return `${moduleURL.href} ${params.join(" ")}`;
-    }
-
-    return moduleURL.href;
-  }
-
-  function fixRelate(ele, path) {
-    searchEle(ele, "[href],[src]").forEach((el) => {
-      ["href", "src"].forEach((name) => {
-        const val = el.getAttribute(name);
-
-        if (/^#/.test(val)) {
-          return;
-        }
-
-        if (val && !/^(https?:)?\/\/\S+/.test(val)) {
-          el.setAttribute(name, resolvePath(val, path));
-        }
-      });
-    });
-  }
-
-  function fixRelatePathContent(content, path) {
-    const template = document.createElement("template");
-    template.innerHTML = content;
-
-    fixRelate(template.content, path);
-
-    // fix Resource references within style
-    searchEle(template.content, "style").forEach((styleEl) => {
-      const html = styleEl.innerHTML;
-
-      styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, adapted) => {
-        return `url(${resolvePath(adapted, path)})`;
-      });
-    });
-
-    return template.innerHTML;
-  }
-
-  const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
-    try {
-      await callback();
-    } catch (error) {
-      const err = new Error(`${desc}\n  ${error.stack}`);
-      err.error = error;
-      self.emit("error", { data: { error: err, ...rest } });
-      throw err;
-    }
-  };
-
-  const ISERROR = Symbol("loadError");
-
-  const getPagesData = async (src) => {
-    const load = lm({
-      url: src,
-    });
-    const pagesData = [];
-    let defaults;
-    let pageSrc = src;
-    let beforeSrc;
-    let errorObj;
-
-    while (true) {
-      try {
-        let lastSrc = pageSrc;
-        const [realPageSrc] = pageSrc.split(" ");
-        const pageSrcObj = new URL(realPageSrc);
-        if (/\/$/.test(pageSrcObj.pathname)) {
-          lastSrc += " .html";
-        }
-
-        defaults = await load(lastSrc);
-      } catch (error) {
-        let err;
-        if (beforeSrc) {
-          err = new Error(
-            `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
-          );
-        } else {
-          err = new Error(
-            `Request for ${pageSrc} page failed; \n  ${error.stack}`
-          );
-        }
-        err.error = error;
-        errorObj = err;
-
-        console.error(errorObj);
-      }
-
-      if (errorObj) {
-        pagesData.unshift({
-          src,
-          ISERROR,
-          error: errorObj,
-        });
-        break;
-      }
-
-      pagesData.unshift({
-        src: pageSrc,
-        defaults,
-      });
-
-      if (!defaults.parent) {
-        break;
-      }
-
-      beforeSrc = pageSrc;
-      pageSrc = new URL(defaults.parent, pageSrc).href;
-    }
-
-    return pagesData;
-  };
-
-  const createPage = (src, defaults) => {
-    // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
-    const tempCon = document.createElement("div");
-
-    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
-
-    const targetPage = $(tempCon.children[0]);
-    targetPage._pause_init = 1;
-
-    nextTick(() => {
-      targetPage._renderDefault(defaults);
-
-      delete targetPage._pause_init;
-    });
-
-    return targetPage;
-  };
-
-  async function getHash(str, algorithm = "SHA-256") {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest(algorithm, data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((byte) => byte.toString(16).padStart(2, "0"))
-      .join("");
-    return hashHex;
-  }
-
   $$1.register({
     tag: "inject-host",
     temp: `<slot></slot>`,
@@ -3382,7 +3222,7 @@ try{
           ele._revoke = null;
         };
 
-        initLink$1(
+        initInjectEle(
           this,
           href,
           () => {
@@ -3396,7 +3236,7 @@ try{
       async _initStyle(e) {
         // Use only the text inside the style to prevent contaminating yourself
         const com = new Comment(e.html);
-        com.__inited = com;
+        com.__inited = true;
 
         com._revoke = () => {
           revokeLink(e.ele);
@@ -3411,13 +3251,13 @@ try{
         e.ele.__inited = true;
         e.ele._revoke = com._revoke;
 
-        const hash = await getHash(com.data);
+        // const hash = await getHash(com.data);
+        const hash = getStringHash(com.data);
 
-        initLink$1(this, hash, () => $$1(`<style>${com.data}</style>`), e.ele);
+        initInjectEle(this, hash, () => $$1(`<style>${com.data}</style>`), e.ele);
       },
     },
     attached() {
-      // 创建 MutationObserver 实例
       const observer = (this._obs = new MutationObserver((mutationsList) => {
         for (let mutation of mutationsList) {
           if (mutation.type === "attributes") {
@@ -3479,7 +3319,19 @@ try{
     },
   });
 
-  function initLink$1(injectEl, mark, cloneFunc, item) {
+  function getStringHash(str) {
+    let hash = 0;
+    let len = str.length;
+    for (let i = 0; i < len; i++) {
+      const charCode = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) ^ charCode;
+      hash = (hash << 13) | (hash >>> 19);
+      hash = hash * 7 - hash * 3;
+    }
+    return hash.toString(36) + "--" + len;
+  }
+
+  function initInjectEle(injectEl, mark, cloneFunc, item) {
     const hostRoot = injectEl.host.root;
 
     let clink = hostRoot.$(`[inject-host="${mark}"]`);
@@ -3506,7 +3358,7 @@ try{
   }
 
   function revokeLink(item) {
-    if (item.__inited) {
+    if (item.__inited && item.__host_link) {
       const items = item.__host_link.ele.__items;
       items.delete(item);
 
@@ -3866,6 +3718,166 @@ try{
   }
 
   window.lm = lm$1;
+
+  function resolvePath(moduleName, baseURI) {
+    const [url, ...params] = moduleName.split(" ");
+
+    const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
+
+    if (
+      // moduleName.startsWith("/") ||
+      url.startsWith("http://") ||
+      url.startsWith("https://")
+    ) {
+      return url;
+    }
+
+    const moduleURL = new URL(url, baseURL);
+
+    if (params.length) {
+      return `${moduleURL.href} ${params.join(" ")}`;
+    }
+
+    return moduleURL.href;
+  }
+
+  function fixRelate(ele, path) {
+    searchEle(ele, "[href],[src]").forEach((el) => {
+      ["href", "src"].forEach((name) => {
+        const val = el.getAttribute(name);
+
+        if (/^#/.test(val)) {
+          return;
+        }
+
+        if (val && !/^(https?:)?\/\/\S+/.test(val)) {
+          el.setAttribute(name, resolvePath(val, path));
+        }
+      });
+    });
+  }
+
+  function fixRelatePathContent(content, path) {
+    const template = document.createElement("template");
+    template.innerHTML = content;
+
+    fixRelate(template.content, path);
+
+    // fix Resource references within style
+    searchEle(template.content, "style").forEach((styleEl) => {
+      const html = styleEl.innerHTML;
+
+      styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, adapted) => {
+        return `url(${resolvePath(adapted, path)})`;
+      });
+    });
+
+    return template.innerHTML;
+  }
+
+  const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
+    try {
+      await callback();
+    } catch (error) {
+      const err = new Error(`${desc}\n  ${error.stack}`);
+      err.error = error;
+      self.emit("error", { data: { error: err, ...rest } });
+      throw err;
+    }
+  };
+
+  const ISERROR = Symbol("loadError");
+
+  const getPagesData = async (src) => {
+    const load = lm({
+      url: src,
+    });
+    const pagesData = [];
+    let defaults;
+    let pageSrc = src;
+    let beforeSrc;
+    let errorObj;
+
+    while (true) {
+      try {
+        let lastSrc = pageSrc;
+        const [realPageSrc] = pageSrc.split(" ");
+        const pageSrcObj = new URL(realPageSrc);
+        if (/\/$/.test(pageSrcObj.pathname)) {
+          lastSrc += " .html";
+        }
+
+        defaults = await load(lastSrc);
+      } catch (error) {
+        let err;
+        if (beforeSrc) {
+          err = new Error(
+            `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+          );
+        } else {
+          err = new Error(
+            `Request for ${pageSrc} page failed; \n  ${error.stack}`
+          );
+        }
+        err.error = error;
+        errorObj = err;
+
+        console.error(errorObj);
+      }
+
+      if (errorObj) {
+        pagesData.unshift({
+          src,
+          ISERROR,
+          error: errorObj,
+        });
+        break;
+      }
+
+      pagesData.unshift({
+        src: pageSrc,
+        defaults,
+      });
+
+      if (!defaults.parent) {
+        break;
+      }
+
+      beforeSrc = pageSrc;
+      pageSrc = new URL(defaults.parent, pageSrc).href;
+    }
+
+    return pagesData;
+  };
+
+  const createPage = (src, defaults) => {
+    // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
+    const tempCon = document.createElement("div");
+
+    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+
+    const targetPage = $(tempCon.children[0]);
+    targetPage._pause_init = 1;
+
+    nextTick(() => {
+      targetPage._renderDefault(defaults);
+
+      delete targetPage._pause_init;
+    });
+
+    return targetPage;
+  };
+
+  // export async function getHash(str, algorithm = "SHA-256") {
+  //   const encoder = new TextEncoder();
+  //   const data = encoder.encode(str);
+  //   const hashBuffer = await crypto.subtle.digest(algorithm, data);
+  //   const hashArray = Array.from(new Uint8Array(hashBuffer));
+  //   const hashHex = hashArray
+  //     .map((byte) => byte.toString(16).padStart(2, "0"))
+  //     .join("");
+  //   return hashHex;
+  // }
 
   const oldRender = renderExtends.render;
   renderExtends.render = (e) => {
