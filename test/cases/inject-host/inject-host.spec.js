@@ -206,3 +206,30 @@ test("inject multi style and link", async ({ page }) => {
   expect(await getColor(page, "interfered-element-2")).toBe("rgb(0, 0, 0)");
   expect(await getColor(page, "interfered-element-3")).toBe("rgb(0, 0, 0)");
 });
+
+test("change inject style html", async ({ page }) => {
+  await page.goto(
+    "http://localhost:3348/test/cases/inject-host/change-style.html"
+  );
+
+  await new Promise((res) => setTimeout(res, 50));
+
+  expect(
+    await page.$$eval("style[inject-host]", (nodes) => Array.from(nodes).length)
+  ).toBe(1);
+
+  expect(
+    await page.$eval("style[inject-host]", (node) =>
+      node.getAttribute("inject-host")
+    )
+  ).toBe('-10uu9bg--14');
+
+
+  await new Promise((res) => setTimeout(res, 500));
+
+  expect(
+    await page.$eval("style[inject-host]", (node) =>
+      node.getAttribute("inject-host")
+    )
+  ).toBe('3drr4gs--15');
+});
