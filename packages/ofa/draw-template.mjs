@@ -100,14 +100,18 @@ export async function drawUrl(content, url, isPage = true) {
   scriptEl && scriptEl.remove();
 
   // If there is no content other than the <script>, then the shadow root is not set.
-  const hasTemp = !!targetTemp.html.replace(/\<\!\-\-[\s\S]*?\-\-\>/g, "").trim();
+  const hasTemp = !!targetTemp.html
+    .replace(/\<\!\-\-[\s\S]*?\-\-\>/g, "")
+    .trim();
   let temp = "";
 
   if (hasTemp) {
-    temp = targetTemp.html
-      .replace(/\s+$/, "")
-      .replace(/`/g, "\\`")
-      .replace(/\$\{/g, "\\${");
+    temp =
+      "<style>*:not(:defined){display:none;}</style>" +
+      targetTemp.html
+        .replace(/\s+$/, "")
+        .replace(/`/g, "\\`")
+        .replace(/\$\{/g, "\\${");
   }
 
   const beforeContent = `
