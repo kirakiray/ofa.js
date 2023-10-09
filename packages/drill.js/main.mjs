@@ -1,7 +1,8 @@
 import { processor, use } from "./use.mjs";
+import { aliasMap } from "./config.mjs";
 export const LOADED = Symbol("loaded");
 
-const createLoad = (meta) => {
+const createLoad = (meta, opts) => {
   if (!meta) {
     meta = {
       url: document.location.href,
@@ -9,7 +10,18 @@ const createLoad = (meta) => {
   }
   const load = (ourl) => {
     let reurl = "";
-    const [url, ...params] = ourl.split(" ");
+    let [url, ...params] = ourl.split(" ");
+
+    // Determine and splice the address of the alias
+    const urlMathcs = url.split("/");
+    if (/^@.+/.test(urlMathcs[0])) {
+      if (aliasMap[urlMathcs[0]]) {
+        urlMathcs[0] = aliasMap[urlMathcs[0]];
+        url = urlMathcs.join("/");
+      } else {
+        throw `Can't find an alias address: '${urlMathcs[0]}'`;
+      }
+    }
 
     if (meta.resolve) {
       reurl = meta.resolve(url);
@@ -19,7 +31,7 @@ const createLoad = (meta) => {
       reurl = resolvedUrl.href;
     }
 
-    return agent(reurl, { params });
+    return agent(reurl, { params, ...opts });
   };
   return load;
 };
@@ -73,8 +85,8 @@ export const agent = async (url, opts) => {
   return ctx.result;
 };
 
-export default function lm(meta) {
-  return createLoad(meta);
+export default function lm(meta, opts) {
+  return createLoad(meta, opts);
 }
 
 Object.assign(lm, {

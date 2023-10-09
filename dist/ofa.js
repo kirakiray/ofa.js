@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.21 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.22 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3540,9 +3540,33 @@ try{
     return err;
   };
 
+  const aliasMap = {};
+
+  async function config(opts) {
+    const { alias } = opts;
+
+    if (alias) {
+      Object.entries(alias).forEach(([name, path]) => {
+        if (/^@.+/.test(name)) {
+          if (!aliasMap[name]) {
+            if (/^\//.test(path)) {
+              aliasMap[name] = path;
+            } else {
+              throw `The address does not match the specification, please use '/' or or the beginning of the protocol: '${path}'`;
+            }
+          } else {
+            throw `Alias already exists: '${name}'`;
+          }
+        }
+      });
+    }
+
+    return true;
+  }
+
   const LOADED = Symbol("loaded");
 
-  const createLoad = (meta) => {
+  const createLoad = (meta, opts) => {
     if (!meta) {
       meta = {
         url: document.location.href,
@@ -3550,7 +3574,18 @@ try{
     }
     const load = (ourl) => {
       let reurl = "";
-      const [url, ...params] = ourl.split(" ");
+      let [url, ...params] = ourl.split(" ");
+
+      // Determine and splice the address of the alias
+      const urlMathcs = url.split("/");
+      if (/^@.+/.test(urlMathcs[0])) {
+        if (aliasMap[urlMathcs[0]]) {
+          urlMathcs[0] = aliasMap[urlMathcs[0]];
+          url = urlMathcs.join("/");
+        } else {
+          throw `Can't find an alias address: '${urlMathcs[0]}'`;
+        }
+      }
 
       if (meta.resolve) {
         reurl = meta.resolve(url);
@@ -3560,7 +3595,7 @@ try{
         reurl = resolvedUrl.href;
       }
 
-      return agent(reurl, { params });
+      return agent(reurl, { params, ...opts });
     };
     return load;
   };
@@ -3614,8 +3649,8 @@ try{
     return ctx.result;
   };
 
-  function lm$1(meta) {
-    return createLoad(meta);
+  function lm$1(meta, opts) {
+    return createLoad(meta, opts);
   }
 
   Object.assign(lm$1, {
@@ -3650,19 +3685,17 @@ try{
       }
       this.__initSrc = src;
 
-      src = new URL(src, location.href).href;
+      const load = lm(undefined, {
+        element: this,
+      });
+
+      load(src);
+
       Object.defineProperties(this, {
         src: {
           configurable: true,
           value: src,
         },
-      });
-
-      const [url, ...params] = src.split(" ");
-
-      agent(url, {
-        element: this,
-        params,
       });
     }
 
@@ -3716,6 +3749,9 @@ try{
   } else {
     window.addEventListener("load", ready);
   }
+
+  lm$1.config = config;
+  Object.freeze(lm$1);
 
   window.lm = lm$1;
 

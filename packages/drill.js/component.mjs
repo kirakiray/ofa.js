@@ -28,19 +28,17 @@ class LoadModule extends HTMLElement {
     }
     this.__initSrc = src;
 
-    src = new URL(src, location.href).href;
+    const load = lm(undefined, {
+      element: this,
+    });
+
+    load(src);
+
     Object.defineProperties(this, {
       src: {
         configurable: true,
         value: src,
       },
-    });
-
-    const [url, ...params] = src.split(" ");
-
-    agent(url, {
-      element: this,
-      params,
     });
   }
 
