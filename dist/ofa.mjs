@@ -3534,6 +3534,30 @@ const wrapError = (desc, error) => {
   return err;
 };
 
+const aliasMap = {};
+
+async function config(opts) {
+  const { alias } = opts;
+
+  if (alias) {
+    Object.entries(alias).forEach(([name, path]) => {
+      if (/^@.+/.test(name)) {
+        if (!aliasMap[name]) {
+          if (/^\//.test(path)) {
+            aliasMap[name] = path;
+          } else {
+            throw `The address does not match the specification, please use '/' or or the beginning of the protocol: '${path}'`;
+          }
+        } else {
+          throw `Alias already exists: '${name}'`;
+        }
+      }
+    });
+  }
+
+  return true;
+}
+
 const LOADED = Symbol("loaded");
 
 const createLoad = (meta) => {
@@ -3544,7 +3568,18 @@ const createLoad = (meta) => {
   }
   const load = (ourl) => {
     let reurl = "";
-    const [url, ...params] = ourl.split(" ");
+    let [url, ...params] = ourl.split(" ");
+
+    // Determine and splice the address of the alias
+    const urlMathcs = url.split("/");
+    if (/^@.+/.test(urlMathcs[0])) {
+      if (aliasMap[urlMathcs[0]]) {
+        urlMathcs[0] = aliasMap[urlMathcs[0]];
+        url = urlMathcs.join("/");
+      } else {
+        throw `Can't find an alias address: '${urlMathcs[0]}'`;
+      }
+    }
 
     if (meta.resolve) {
       reurl = meta.resolve(url);
@@ -3710,6 +3745,9 @@ if (document.readyState === "complete") {
 } else {
   window.addEventListener("load", ready);
 }
+
+lm$1.config = config;
+Object.freeze(lm$1);
 
 window.lm = lm$1;
 
