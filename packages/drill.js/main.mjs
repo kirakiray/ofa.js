@@ -2,7 +2,7 @@ import { processor, use } from "./use.mjs";
 import { aliasMap } from "./config.mjs";
 export const LOADED = Symbol("loaded");
 
-const createLoad = (meta) => {
+const createLoad = (meta, opts) => {
   if (!meta) {
     meta = {
       url: document.location.href,
@@ -31,7 +31,7 @@ const createLoad = (meta) => {
       reurl = resolvedUrl.href;
     }
 
-    return agent(reurl, { params });
+    return agent(reurl, { params, ...opts });
   };
   return load;
 };
@@ -85,8 +85,8 @@ export const agent = async (url, opts) => {
   return ctx.result;
 };
 
-export default function lm(meta) {
-  return createLoad(meta);
+export default function lm(meta, opts) {
+  return createLoad(meta, opts);
 }
 
 Object.assign(lm, {

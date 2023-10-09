@@ -3566,7 +3566,7 @@ try{
 
   const LOADED = Symbol("loaded");
 
-  const createLoad = (meta) => {
+  const createLoad = (meta, opts) => {
     if (!meta) {
       meta = {
         url: document.location.href,
@@ -3595,7 +3595,7 @@ try{
         reurl = resolvedUrl.href;
       }
 
-      return agent(reurl, { params });
+      return agent(reurl, { params, ...opts });
     };
     return load;
   };
@@ -3649,8 +3649,8 @@ try{
     return ctx.result;
   };
 
-  function lm$1(meta) {
-    return createLoad(meta);
+  function lm$1(meta, opts) {
+    return createLoad(meta, opts);
   }
 
   Object.assign(lm$1, {
@@ -3685,19 +3685,17 @@ try{
       }
       this.__initSrc = src;
 
-      src = new URL(src, location.href).href;
+      const load = lm(undefined, {
+        element: this,
+      });
+
+      load(src);
+
       Object.defineProperties(this, {
         src: {
           configurable: true,
           value: src,
         },
-      });
-
-      const [url, ...params] = src.split(" ");
-
-      agent(url, {
-        element: this,
-        params,
       });
     }
 
