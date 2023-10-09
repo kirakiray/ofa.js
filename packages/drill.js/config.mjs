@@ -7,7 +7,7 @@ export default async function config(opts) {
     Object.entries(alias).forEach(([name, path]) => {
       if (/^@.+/.test(name)) {
         if (!aliasMap[name]) {
-          if (/^\//.test(path)) {
+          if (!/^\./.test(path)) {
             aliasMap[name] = path;
           } else {
             throw `The address does not match the specification, please use '/' or or the beginning of the protocol: '${path}'`;

@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.22 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.23 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3549,7 +3549,7 @@ try{
       Object.entries(alias).forEach(([name, path]) => {
         if (/^@.+/.test(name)) {
           if (!aliasMap[name]) {
-            if (/^\//.test(path)) {
+            if (!/^\./.test(path)) {
               aliasMap[name] = path;
             } else {
               throw `The address does not match the specification, please use '/' or or the beginning of the protocol: '${path}'`;
