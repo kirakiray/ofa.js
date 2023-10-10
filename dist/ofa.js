@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.23 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.24 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3970,12 +3970,21 @@ try{
       const $tar = $$1(e.target);
       const all = [$tar, ...$tar.parents];
 
-      let target = all.find((e) => e.tag === "a");
-      if (target) {
-        target = target.ele;
+      let currentTarget = all.find((e) => e.tag === "a");
+      if (currentTarget) {
+        currentTarget = currentTarget.ele;
       }
 
-      if (target && target.attributes.hasOwnProperty("olink")) {
+      if (!currentTarget) {
+        return;
+      }
+
+      const targetVal = currentTarget.getAttribute("target");
+      if (targetVal || currentTarget.getAttribute("download")) {
+        return;
+      }
+
+      if (currentTarget.attributes.hasOwnProperty("olink")) {
         if ($ele.app) {
           if (e.metaKey || e.shiftKey) {
             return;
@@ -3995,11 +4004,11 @@ try{
 
           e.__processed = true;
 
-          if (target.tagName === "A") {
-            const originHref = target.getAttribute("origin-href");
+          if (currentTarget.tagName === "A") {
+            const originHref = currentTarget.getAttribute("origin-href");
             // Prioritize the use of origin links
             setTimeout(() => {
-              const finalHref = originHref || target.href;
+              const finalHref = originHref || currentTarget.href;
               finalHref && !prevented && $ele.app.goto(finalHref);
             });
           }
@@ -4456,18 +4465,36 @@ ${scriptContent}`;
 
   const dispatchLoad = async (_this, loaded) => {
     const shadow = _this.ele.shadowRoot;
+
     if (shadow) {
       const srcEles = searchEle(shadow, `l-m,load-module`);
-      await Promise.all(
-        srcEles.map(
-          (el) =>
-            new Promise((res) => {
-              el.addEventListener("load", (e) => {
-                res();
-              });
-            })
-        )
+      const pms = srcEles.map(
+        (el) =>
+          new Promise((res) => {
+            el.addEventListener("load", (e) => {
+              res();
+            });
+          })
       );
+
+      const links = searchEle(shadow, `link`);
+
+      links.forEach((link) => {
+        if (link.rel === "stylesheet") {
+          pms.push(
+            new Promise((res) => {
+              if (link.sheet) {
+                res();
+              } else {
+                link.addEventListener("load", res);
+                link.addEventListener("error", res);
+              }
+            })
+          );
+        }
+      });
+
+      await Promise.all(pms);
     }
 
     if (loaded) {
