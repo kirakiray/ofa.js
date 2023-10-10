@@ -266,18 +266,36 @@ $.register({
 
 export const dispatchLoad = async (_this, loaded) => {
   const shadow = _this.ele.shadowRoot;
+
   if (shadow) {
     const srcEles = searchEle(shadow, `l-m,load-module`);
-    await Promise.all(
-      srcEles.map(
-        (el) =>
-          new Promise((res) => {
-            el.addEventListener("load", (e) => {
-              res();
-            });
-          })
-      )
+    const pms = srcEles.map(
+      (el) =>
+        new Promise((res) => {
+          el.addEventListener("load", (e) => {
+            res();
+          });
+        })
     );
+
+    const links = searchEle(shadow, `link`);
+
+    links.forEach((link) => {
+      if (link.rel === "stylesheet") {
+        pms.push(
+          new Promise((res) => {
+            if (link.sheet) {
+              res();
+            } else {
+              link.addEventListener("load", res);
+              link.addEventListener("error", res);
+            }
+          })
+        );
+      }
+    });
+
+    await Promise.all(pms);
   }
 
   if (loaded) {
