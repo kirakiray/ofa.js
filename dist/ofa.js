@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.24 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.25 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4483,11 +4483,23 @@ ${scriptContent}`;
         if (link.rel === "stylesheet") {
           pms.push(
             new Promise((res) => {
-              if (link.sheet) {
+              let resolve = () => {
+                clearInterval(timer);
+                link.removeEventListener("load", resolve);
+                link.removeEventListener("error", resolve);
                 res();
+              };
+              const timer = setInterval(() => {
+                if (!link.parentNode) {
+                  resolve();
+                }
+              }, 100);
+
+              if (link.sheet) {
+                resolve();
               } else {
-                link.addEventListener("load", res);
-                link.addEventListener("error", res);
+                link.addEventListener("load", resolve);
+                link.addEventListener("error", resolve);
               }
             })
           );
