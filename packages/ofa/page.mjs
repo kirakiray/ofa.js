@@ -284,11 +284,23 @@ export const dispatchLoad = async (_this, loaded) => {
       if (link.rel === "stylesheet") {
         pms.push(
           new Promise((res) => {
-            if (link.sheet) {
+            let resolve = () => {
+              clearInterval(timer);
+              link.removeEventListener("load", resolve);
+              link.removeEventListener("error", resolve);
               res();
+            };
+            const timer = setInterval(() => {
+              if (!link.parentNode) {
+                resolve();
+              }
+            }, 100);
+
+            if (link.sheet) {
+              resolve();
             } else {
-              link.addEventListener("load", res);
-              link.addEventListener("error", res);
+              link.addEventListener("load", resolve);
+              link.addEventListener("error", resolve);
             }
           })
         );
