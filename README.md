@@ -6,7 +6,7 @@
 
 ofa.js is a library for building web interfaces and applications. You can start developing with it by including a `script` tag in your HTML, making it one of the best alternatives to jQuery.
 
-ofa.js can be used as a library like jQuery and can also be employed for developing large web applications similar to React, Vue, and Angular. Its introduction eliminates the need for tools like npm, Node.js, and webpack that are unrelated to interface development, making interface development simpler and more efficient.
+ofa.js can be used as a library like jQuery and can also be employed for developing large web applications similar to React, Vue, and Angular. Its introduction eliminates the need for tools like npm, Node.js, and webpack that are unrelated to interface development, making interface development easier and more efficient.
 
 ## How to Use
 
