@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.25 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.26 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4143,9 +4143,10 @@ try{
     if (scriptEl) {
       scriptEl.html
         .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
-        .replace(/(import [\s\S]+?from .+);?/g, (str) => {
+        .replace(/(import .+?from .+);?/g, (str) => {
           return str.replace(/([\s\S]+?from )([\s\S]+);?/, (a, b, afterStr) => {
             if (/`/.test(afterStr) && !/\$\{.*\}/.test(afterStr)) {
+              // Cannot be a dynamic path
               return;
             }
 
@@ -4159,12 +4160,13 @@ try{
           });
         });
 
-      scriptContent = scriptEl.html.replace(
-        /([\s\S]+?from )['"](.+?)['"]/g,
-        (str, beforeStr, pathStr) => {
+      scriptContent = scriptEl.html
+        .replace(/([\s\S]+?from )['"](.+?)['"]/g, (str, beforeStr, pathStr) => {
           return `${beforeStr}"${resolvePath(pathStr, url)}";`;
-        }
-      );
+        })
+        .replace(/import ['"](.+?)['"];?/g, (str, pathStr) => {
+          return `import '${resolvePath(pathStr, url)}'`;
+        });
     }
 
     const fileContent = `${beforeContent};
