@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.26 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.27 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -1330,18 +1330,24 @@ syncFn.sync.revoke = (e) => {
   e.result();
 };
 
-const eventFn = {
-  on(name, func, options) {
-    let revoker;
-    if (options) {
-      const beforeValue = options.beforeArgs[1];
+function getBindOptions(name, func, options) {
+  let revoker;
+  if (options) {
+    const beforeValue = options.beforeArgs[1];
 
-      if (!/[^\d\w_\$\.]/.test(beforeValue)) {
-        func = options.data.get(beforeValue).bind(options.data);
-      }
-
-      revoker = () => this.ele.removeEventListener(name, func);
+    if (!/[^\d\w_\$\.]/.test(beforeValue)) {
+      func = options.data.get(beforeValue).bind(options.data);
     }
+
+    revoker = () => this.ele.removeEventListener(name, func);
+  }
+
+  return { revoker, name, func };
+}
+
+const eventFn = {
+  on(...args) {
+    const { revoker, name, func } = getBindOptions.call(this, ...args);
 
     this.ele.addEventListener(name, func);
 
@@ -1351,13 +1357,19 @@ const eventFn = {
 
     return this;
   },
-  one(name, func, options) {
-    const callback = (e) => {
+  one(...args) {
+    const { revoker, name, func } = getBindOptions.call(this, ...args);
+
+    let callback = (e) => {
       this.off(name, callback);
       func(e);
     };
 
-    this.on(name, callback, options);
+    this.ele.addEventListener(name, callback);
+
+    if (revoker) {
+      return revoker;
+    }
 
     return this;
   },
@@ -1391,6 +1403,10 @@ const eventFn = {
 };
 
 eventFn.on.revoke = (e) => {
+  e.result();
+};
+
+eventFn.one.revoke = (e) => {
   e.result();
 };
 

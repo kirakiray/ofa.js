@@ -1,6 +1,6 @@
 {
   "name": "ofa.js",
-  "version": "4.3.26",
+  "version": "4.3.27",
   "description": "pure web front-end componentized framework that does not require the use of nodejs",
   "scripts": {
     "bump": "node scripts/bump-version.js && npm i && npm run build",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "drill.js": "^5.3.2",
-    "xhear": "^7.3.14"
+    "xhear": "^7.3.15"
   },
   "repository": {
     "type": "git",
