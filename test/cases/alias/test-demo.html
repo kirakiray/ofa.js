@@ -1,0 +1,10 @@
+<template component>
+  <div><slot></slot></div>
+  <script>
+    export default {
+      attached() {
+        this.push("<h1>OK</h1>");
+      },
+    };
+  </script>
+</template>

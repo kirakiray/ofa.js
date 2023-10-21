@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>alias demo</title>
+    <script src="../../../packages/ofa/main.mjs" type="module"></script>
+    <script type="module">
+      debugger
+      lm.config({
+        alias: {
+          "@test": "http://localhost:3348/test/cases/alias",
+        },
+      });
+    </script>
+  </head>
+  <body>
+    <l-m src="@test/test-demo.html"></l-m>
+    <test-demo></test-demo>
+  </body>
+</html>
