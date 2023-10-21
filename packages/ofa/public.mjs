@@ -28,7 +28,7 @@ export function fixRelate(ele, path) {
     ["href", "src"].forEach((name) => {
       const val = el.getAttribute(name);
 
-      if (/^#/.test(val)) {
+      if (/^#/.test(val) || /^@/.test(val)) {
         return;
       }
 
