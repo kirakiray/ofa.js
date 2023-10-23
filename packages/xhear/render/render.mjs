@@ -313,10 +313,6 @@ export const convert = (template) => {
       console.warn(
         `The template "${tempName}" contains ${tempChilds.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
       );
-    } else if (tempChilds.length === 0) {
-      throw new Error(
-        `The template "${tempName}" needs to have at least one child element`
-      );
     }
     temps[tempName] = template;
     template.remove();
@@ -327,14 +323,16 @@ export const convert = (template) => {
       throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
     }
 
-    const tid = `t${getRandomId()}`;
-    fillEl.setAttribute("name", tid);
+    if (fillEl.innerHTML.trim()) {
+      const tid = `t${getRandomId()}`;
+      fillEl.setAttribute("name", tid);
 
-    const temp = document.createElement("template");
-    temp.setAttribute("name", tid);
-    temp.innerHTML = fillEl.innerHTML;
-    fillEl.innerHTML = "";
-    fillEl.appendChild(temp);
+      const temp = document.createElement("template");
+      temp.setAttribute("name", tid);
+      temp.innerHTML = fillEl.innerHTML;
+      fillEl.innerHTML = "";
+      fillEl.appendChild(temp);
+    }
   });
 
   searchTemp(template, "x-if,x-else-if,x-else", (condiEl) => {

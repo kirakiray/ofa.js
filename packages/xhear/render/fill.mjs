@@ -131,6 +131,12 @@ register({
   ready() {
     this._name = this.attr("name");
 
+    if (!this._name) {
+      const desc = "The target element does not have a template name to populate";
+      console.log(desc, this.ele);
+      throw new Error(desc);
+    }
+
     if (this.ele._bindingRendered) {
       this.init();
     } else {
