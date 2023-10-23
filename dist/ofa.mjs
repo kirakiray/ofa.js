@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.28 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.29 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -1157,10 +1157,6 @@ const convert = (template) => {
       console.warn(
         `The template "${tempName}" contains ${tempChilds.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
       );
-    } else if (tempChilds.length === 0) {
-      throw new Error(
-        `The template "${tempName}" needs to have at least one child element`
-      );
     }
     temps[tempName] = template;
     template.remove();
@@ -1171,14 +1167,16 @@ const convert = (template) => {
       throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
     }
 
-    const tid = `t${getRandomId()}`;
-    fillEl.setAttribute("name", tid);
+    if (fillEl.innerHTML.trim()) {
+      const tid = `t${getRandomId()}`;
+      fillEl.setAttribute("name", tid);
 
-    const temp = document.createElement("template");
-    temp.setAttribute("name", tid);
-    temp.innerHTML = fillEl.innerHTML;
-    fillEl.innerHTML = "";
-    fillEl.appendChild(temp);
+      const temp = document.createElement("template");
+      temp.setAttribute("name", tid);
+      temp.innerHTML = fillEl.innerHTML;
+      fillEl.innerHTML = "";
+      fillEl.appendChild(temp);
+    }
   });
 
   searchTemp(template, "x-if,x-else-if,x-else", (condiEl) => {
@@ -2733,6 +2731,12 @@ register({
   },
   ready() {
     this._name = this.attr("name");
+
+    if (!this._name) {
+      const desc = "The target element does not have a template name to populate";
+      console.log(desc, this.ele);
+      throw new Error(desc);
+    }
 
     if (this.ele._bindingRendered) {
       this.init();
@@ -4875,6 +4879,8 @@ $$1.register({
         return;
       }
 
+      const { _noanime } = this;
+
       // Delete historical data for response numbers
       delta = delta < this[HISTORY].length ? delta : this[HISTORY].length;
 
@@ -4889,10 +4895,12 @@ $$1.register({
         _this: this,
       });
 
-      pageInAnime({
-        page,
-        key: "previous",
-      });
+      if (!_noanime) {
+        pageInAnime({
+          page,
+          key: "previous",
+        });
+      }
 
       needRemovePage = resetOldPage(needRemovePage);
 
@@ -4902,14 +4910,17 @@ $$1.register({
 
       emitRouterChange(this, publics, "back");
 
-      await pageOutAnime({
-        page: needRemovePage,
-        key: "next",
-      });
+      if (!_noanime) {
+        await pageOutAnime({
+          page: needRemovePage,
+          key: "next",
+        });
+      }
 
       needRemovePage.remove();
     },
     async _navigate({ type, src }) {
+      const { _noanime } = this;
       const { current: oldCurrent } = this;
       src = new URL(src, location.href).href;
 
@@ -4926,10 +4937,12 @@ $$1.register({
         _this: this,
       });
 
-      pageInAnime({
-        page,
-        key: "next",
-      });
+      if (!_noanime) {
+        pageInAnime({
+          page,
+          key: "next",
+        });
+      }
 
       needRemovePage = resetOldPage(needRemovePage);
 
@@ -4944,11 +4957,12 @@ $$1.register({
       emitRouterChange(this, publics, type);
 
       if (oldCurrent) {
-        await pageOutAnime({
-          page: needRemovePage,
-          key: "previous",
-        });
-
+        if (!_noanime) {
+          await pageOutAnime({
+            page: needRemovePage,
+            key: "previous",
+          });
+        }
         needRemovePage.remove();
       }
     },
