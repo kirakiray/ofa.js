@@ -1,3 +1,5 @@
+import { isSafariBrowser } from "../../packages/xhear/public.mjs";
+
 export default function initRouter({ app, getStateUrl, fixStateUrl }) {
   if (history.state && history.state.routerMode) {
     app.routers = history.state.routers;
@@ -79,7 +81,7 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
           const newPath = fixStateUrl();
           if (newPath) {
             _isFixNavigate = 1;
-            app.goto(newPath);
+            cancelAnime(app, () => app.goto(newPath));
             return;
           }
 
@@ -89,7 +91,7 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
         }
 
         _isBack = 1;
-        app.back(app.routers.length - 1);
+        cancelAnime(app, () => app.back(app.routers.length - 1));
         return;
       }
 
@@ -103,7 +105,7 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
       if (hisRouters.length < appRouters.length) {
         // history back
         _isBack = 1;
-        app.back(appRouters.length - hisRouters.length);
+        cancelAnime(app, () => app.back(appRouters.length - hisRouters.length));
       } else if (hisRouters.length > appRouters.length) {
         // history forward
         const moreRouters = hisRouters.slice();
@@ -117,12 +119,20 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
 
         _isGoto = 1;
 
-        app.goto(target.src);
+        cancelAnime(app, () => app.goto(target.src));
       } else if (JSON.stringify(hisRouters) !== JSON.stringify(appRouters)) {
         console.error(`o-router error occurred`);
       }
     })
   );
+
+  const isSa = isSafariBrowser();
+
+  const cancelAnime = (app, func) => {
+    isSa && (app._noanime = true);
+    func();
+    isSa && (app._noanime = false);
+  };
 
   return popstateFunc;
 }

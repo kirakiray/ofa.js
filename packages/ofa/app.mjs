@@ -176,6 +176,8 @@ $.register({
         return;
       }
 
+      const { _noanime } = this;
+
       // Delete historical data for response numbers
       delta = delta < this[HISTORY].length ? delta : this[HISTORY].length;
 
@@ -190,10 +192,12 @@ $.register({
         _this: this,
       });
 
-      pageInAnime({
-        page,
-        key: "previous",
-      });
+      if (!_noanime) {
+        pageInAnime({
+          page,
+          key: "previous",
+        });
+      }
 
       needRemovePage = resetOldPage(needRemovePage);
 
@@ -203,14 +207,17 @@ $.register({
 
       emitRouterChange(this, publics, "back");
 
-      await pageOutAnime({
-        page: needRemovePage,
-        key: "next",
-      });
+      if (!_noanime) {
+        await pageOutAnime({
+          page: needRemovePage,
+          key: "next",
+        });
+      }
 
       needRemovePage.remove();
     },
     async _navigate({ type, src }) {
+      const { _noanime } = this;
       const { current: oldCurrent } = this;
       src = new URL(src, location.href).href;
 
@@ -227,10 +234,12 @@ $.register({
         _this: this,
       });
 
-      pageInAnime({
-        page,
-        key: "next",
-      });
+      if (!_noanime) {
+        pageInAnime({
+          page,
+          key: "next",
+        });
+      }
 
       needRemovePage = resetOldPage(needRemovePage);
 
@@ -245,11 +254,12 @@ $.register({
       emitRouterChange(this, publics, type);
 
       if (oldCurrent) {
-        await pageOutAnime({
-          page: needRemovePage,
-          key: "previous",
-        });
-
+        if (!_noanime) {
+          await pageOutAnime({
+            page: needRemovePage,
+            key: "previous",
+          });
+        }
         needRemovePage.remove();
       }
     },
