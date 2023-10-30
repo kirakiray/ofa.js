@@ -1,19 +1,19 @@
-# ofa.js
+# ofa.js [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakiray/ofa.js/blob/main/LICENSE)
 
-[Official Documentation](https://ofajs.com)
+[Official Documentation](https://ofajs.com/en/index.html) / [官方文档](https://ofajs.com/cn/index.html) / [官方文檔](https://ofajs.com/t-cn/index.html) / [Sitio oficial de documentación](https://ofajs.com/es/index.html) / [公式ドキュメントサイト](https://ofajs.com/ja/index.html) / [공식 문서 사이트](https://ofajs.com/ko/index.html)
 
 ## What is ofa.js?
 
 ofa.js is a library for building web interfaces and applications. You can start developing with it by including a `script` tag in your HTML, making it one of the best alternatives to jQuery.
 
-ofa.js can be used as a library like jQuery and can also be employed for developing large web applications similar to React, Vue, and Angular. Its introduction eliminates the need for tools like npm, Node.js, and webpack that are unrelated to interface development, making interface development easier and more efficient.
+ofa.js can be used as a library like jQuery and can also be employed for developing large web applications similar to React, Vue, and Angular. Its introduction eliminates the need for tools like npm, Node.js, and webpack that are unrelated to interface development, making web interface development easier and more efficient.
 
 ## How to Use
 
 To start using ofa.js, simply add a reference to ofa.js in your HTML file.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.26/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.29/dist/ofa.min.js"></script>
 ```
 
 ## User Experience
@@ -34,7 +34,7 @@ With ofa.js, however, you can quickly create a component by just creating an HTM
 
 ```html
 <!-- Using the encapsulated component -->
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.26/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.29/dist/ofa.min.js"></script>
 <l-m src="./my-component.html"></l-m>
 <my-component>
     ...
@@ -49,7 +49,7 @@ The development of ofa.js aims to eliminate unnecessary interference in frontend
 
 > The author has worked with Vue and React for many years and initially thought that they were not convenient due to a lack of familiarity. However, with years of experience, the author gradually realized that they were genuinely inconvenient.
 
-For instance, for backend developers who only want to create a clean and attractive form page, they may feel frustrated if they have to learn some frontend basics (such as npm, Node.js, webpack, or create-app-cli) before they can start using frameworks like React, Angular, or Vue to build components. They might wonder, "I just want a beautiful page, why do I have to learn so many new things?" or encounter errors while exploring npm, Node.js, and webpack and have to revert to using jQuery forms they used before. Now, with ofa.js available, it can effectively replace jQuery to meet such simple page requirements.
+For example, for back-end developers who just want to create a clean and beautiful form page, they have to master some front-end basics (e.g., npm/nodejs/webpack/create-app-cli) before they can start building components using frameworks like React, Angular, or Vue. At this point, they may get frustrated and ask, "I just want a pretty page, why do I have to learn all this new stuff?" Or run into errors while fiddling with npm/nodejs/webpack and fall back to the jQuery forms they've used before. And now, there's ofa.js available, which is a great alternative to jQuery for such simple page needs.
 
 The author believes that the original intention of Angular.js (v1) and jQuery was correct because they lowered the entry barrier. However, with the rise of Node.js and the introduction of pre-compilation, frontend development deviated. The author believes that frontend development should maintain JavaScript's instant execution feature instead of over-relying on pre-compilation. The author also appreciates Node.js's contributions to the community, as it has propelled the rapid development of JavaScript.
 
