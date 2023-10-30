@@ -13,7 +13,7 @@ ofa.js 可以像 jQuery 一样作为库使用，也能像 React、Vue 和 Angula
 要开始使用 ofa.js，只需将 ofa.js 的引用添加到 HTML 文件中即可。
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.26/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.29/dist/ofa.min.js"></script>
 ```
 
 ## 使用体验
@@ -34,7 +34,7 @@ ofa.js 的核心理念在于简化 Web Components 的封装过程。传统的 We
 
 ```html
 <!-- 使用封装好的组件 -->
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.26/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.3.29/dist/ofa.min.js"></script>
 <l-m src="./my-component.html"></l-m>
 <my-component>
     ...
@@ -49,7 +49,7 @@ ofa.js 的开发初衷在于消除 npm、Node.js 和 webpack 对于前端开发�
 
 > 作者已用 Vue 和 React 工作多年，最初认为自己对这些框架不够熟悉，才会觉得它们不够方便。然而，随着多年的工作经验，作者渐渐认识到，它们是真的不好用。
 
-例如，对于后端开发人员来说，如果他们只想创建一个简洁美观的表单页面，却不得不先掌握一些前端基础知识（如npm/nodejs/webpack/create-app-cli），才能开始使用React、Angular或Vue等框架来构建组件。这时，他们可能会感到沮丧，问道："我只是想要一个漂亮的页面，为什么要学这么多新东西？" 或者在摸索npm/nodejs/webpack的过程中遇到错误而不得不回到之前使用过的jQuery表单。而现在，有ofa.js可供使用，它能很好地替代jQuery，满足这种简单的页面需求。
+例如，对于后端开发人员来说，如果他们只想创建一个简洁美观的表单页面，却不得不先掌握一些前端基础知识（如npm/nodejs/webpack/create-app-cli），才能开始使用React、Angular或Vue等框架来构建组件。这时，他们可能会感到沮丧，问道："我只是想要一个漂亮的页面，为什么要学这么多新东西？" 或者在摸索npm/nodejs/webpack的过程中遇到错误，然后回到之前使用过的jQuery表单。而现在，有ofa.js可供使用，它能很好地替代jQuery，满足这种简单的页面需求。
 
 作者认为 Angular.js（v1）和 jQuery 的初衷才是正确的，因为它们降低了使用门槛。但随着 Node.js 的崛起，预编译模式的引入让前端走偏了。作者认为前端开发应该保持 JavaScript 的即时运行特性，而不是过度依赖预编译。他也感谢 Node.js 对社区的贡献，它推动了 JavaScript 的快速发展。
 
