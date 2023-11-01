@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.29 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.30 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -61,9 +61,10 @@ function debounce(func, wait = 0) {
       if (timeout === null) {
         timeout = 1;
         nextTick(() => {
-          func.call(this, hisArgs);
-          hisArgs = [];
           timeout = null;
+          const args = hisArgs.slice();
+          hisArgs = [];
+          func.call(this, args);
         });
       }
     }
@@ -3169,6 +3170,7 @@ Object.assign($$1, {
   render,
   convert,
   register,
+  nextTick,
   fn: Xhear.prototype,
   all: (expr) => searchEle(document, expr).map(eleX),
 });
