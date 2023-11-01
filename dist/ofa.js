@@ -67,9 +67,10 @@
         if (timeout === null) {
           timeout = 1;
           nextTick(() => {
-            func.call(this, hisArgs);
-            hisArgs = [];
             timeout = null;
+            const args = hisArgs.slice();
+            hisArgs = [];
+            func.call(this, args);
           });
         }
       }
@@ -3175,6 +3176,7 @@ try{
     render,
     convert,
     register,
+    nextTick,
     fn: Xhear.prototype,
     all: (expr) => searchEle(document, expr).map(eleX),
   });

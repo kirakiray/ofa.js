@@ -61,9 +61,10 @@ export function debounce(func, wait = 0) {
       if (timeout === null) {
         timeout = 1;
         nextTick(() => {
-          func.call(this, hisArgs);
-          hisArgs = [];
           timeout = null;
+          const args = hisArgs.slice();
+          hisArgs = [];
+          func.call(this, args);
         });
       }
     }
