@@ -87,6 +87,10 @@ export const initFormEle = ($ele) => {
     case "select":
       {
         const { ele } = $ele;
+        $ele.__unupdate = 1;
+        $ele.value = ele.value;
+        delete $ele.__unupdate;
+
         $ele.watch(() => {
           ele.value = $ele.value;
         });

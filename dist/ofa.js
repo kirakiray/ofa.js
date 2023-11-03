@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.30 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.31 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1714,6 +1714,10 @@ try{
       case "select":
         {
           const { ele } = $ele;
+          $ele.__unupdate = 1;
+          $ele.value = ele.value;
+          delete $ele.__unupdate;
+
           $ele.watch(() => {
             ele.value = $ele.value;
           });
