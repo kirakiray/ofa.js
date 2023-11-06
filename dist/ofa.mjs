@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.31 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.32 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3423,6 +3423,20 @@ class Onion {
   }
 }
 
+const caches = new Map();
+const wrapFetch = async (url) => {
+  let fetchObj = caches.get(url);
+
+  if (!fetchObj) {
+    fetchObj = fetch(url);
+    caches.set(url, fetchObj);
+  }
+
+  const resp = await fetchObj;
+
+  return resp.clone();
+};
+
 const processor = {};
 
 const addHandler = (name, handler) => {
@@ -3481,7 +3495,7 @@ use(["txt", "html", "htm"], async (ctx, next) => {
 
     let resp;
     try {
-      resp = await fetch(url);
+      resp = await wrapFetch(url);
     } catch (error) {
       throw wrapError(`Load ${url} failed`, error);
     }
@@ -3500,7 +3514,7 @@ use("json", async (ctx, next) => {
   if (!ctx.result) {
     const { url } = ctx;
 
-    ctx.result = await fetch(url).then((e) => e.json());
+    ctx.result = await wrapFetch(url).then((e) => e.json());
   }
 
   await next();
@@ -3510,7 +3524,7 @@ use("wasm", async (ctx, next) => {
   if (!ctx.result) {
     const { url } = ctx;
 
-    const data = await fetch(url).then((e) => e.arrayBuffer());
+    const data = await wrapFetch(url).then((e) => e.arrayBuffer());
 
     const module = await WebAssembly.compile(data);
     const instance = new WebAssembly.Instance(module);
@@ -3547,7 +3561,7 @@ use("css", async (ctx, next) => {
         })
       );
     } else {
-      ctx.result = await fetch(url).then((e) => e.text());
+      ctx.result = await wrapFetch(url).then((e) => e.text());
     }
   }
 
