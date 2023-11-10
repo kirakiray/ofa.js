@@ -24,6 +24,7 @@ const syncFn = {
           const value = this.get(propName);
           data.set(targetName, value);
         } catch (err) {
+          // Errors are reported when a proxy is revoked.
           // console.warn(err);
         }
       }
@@ -35,6 +36,7 @@ const syncFn = {
           const value = data.get(targetName);
           this.set(propName, value);
         } catch (err) {
+          // Errors are reported when a proxy is revoked.
           // console.warn(err);
         }
       }
