@@ -1,12 +1,18 @@
 import { eleX } from "./util.mjs";
 import { handler as stanzHandler } from "../stanz/accessor.mjs";
 
-const tempEl = document.createElement("template");
+// const tempEl = document.createElement("template");
 
 export const handler = {
   set(target, key, value, receiver) {
     if (!/\D/.test(String(key))) {
       return Reflect.set(target, key, value, receiver);
+    }
+
+    if (target[key] === value) {
+      // Optimise performance;
+      // fix focus remapping caused by 'text' being reset
+      return true;
     }
 
     if (key === "html") {
