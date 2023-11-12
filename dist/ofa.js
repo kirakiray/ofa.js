@@ -2485,8 +2485,13 @@ try{
               conditionEl._clearContent();
             }
           });
+          if (this._fake.parentNode) {
+            eleX(this._fake.parentNode).refresh();
+          }
 
-          eleX(this._fake.parentNode).refresh();
+          // const fakeParent = eleX(this._fake.parentNode);
+          // fakeParent.refresh();
+          // fakeParent.host && fakeParent.host.refresh({ unupdate: 1 });
         }, 0);
       },
       _renderContent() {
@@ -2510,12 +2515,24 @@ try{
         this._fake.innerHTML = this.__originHTML;
 
         render({ target, data, temps });
+
+        this.emit("rendered", {
+          bubbles: false,
+        });
       },
       _clearContent() {
+        if (!this.__rendered) {
+          return;
+        }
+
         this.__rendered = false;
 
         revokeAll(this._fake);
         this._fake.innerHTML = "";
+
+        this.emit("clear", {
+          bubbles: false,
+        });
       },
       init() {
         if (this._bindend) {
@@ -2733,7 +2750,12 @@ try{
           });
         }
 
-        eleX(this._fake.parentNode).refresh();
+        if (this._fake.parentNode) {
+          eleX(this._fake.parentNode).refresh();
+        }
+        this.emit("rendered", {
+          bubbles: false,
+        });
       },
       init() {
         if (this._bindend) {
@@ -2752,7 +2774,8 @@ try{
       this._name = this.attr("name");
 
       if (!this._name) {
-        const desc = "The target element does not have a template name to populate";
+        const desc =
+          "The target element does not have a template name to populate";
         console.log(desc, this.ele);
         throw new Error(desc);
       }
