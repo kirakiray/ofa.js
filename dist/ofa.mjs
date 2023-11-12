@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.33 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.34 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -2479,8 +2479,13 @@ const regOptions = {
             conditionEl._clearContent();
           }
         });
+        if (this._fake.parentNode) {
+          eleX(this._fake.parentNode).refresh();
+        }
 
-        eleX(this._fake.parentNode).refresh();
+        // const fakeParent = eleX(this._fake.parentNode);
+        // fakeParent.refresh();
+        // fakeParent.host && fakeParent.host.refresh({ unupdate: 1 });
       }, 0);
     },
     _renderContent() {
@@ -2504,12 +2509,24 @@ const regOptions = {
       this._fake.innerHTML = this.__originHTML;
 
       render({ target, data, temps });
+
+      this.emit("rendered", {
+        bubbles: false,
+      });
     },
     _clearContent() {
+      if (!this.__rendered) {
+        return;
+      }
+
       this.__rendered = false;
 
       revokeAll(this._fake);
       this._fake.innerHTML = "";
+
+      this.emit("clear", {
+        bubbles: false,
+      });
     },
     init() {
       if (this._bindend) {
@@ -2727,7 +2744,12 @@ register({
         });
       }
 
-      eleX(this._fake.parentNode).refresh();
+      if (this._fake.parentNode) {
+        eleX(this._fake.parentNode).refresh();
+      }
+      this.emit("rendered", {
+        bubbles: false,
+      });
     },
     init() {
       if (this._bindend) {
@@ -2746,7 +2768,8 @@ register({
     this._name = this.attr("name");
 
     if (!this._name) {
-      const desc = "The target element does not have a template name to populate";
+      const desc =
+        "The target element does not have a template name to populate";
       console.log(desc, this.ele);
       throw new Error(desc);
     }

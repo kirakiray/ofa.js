@@ -48,8 +48,13 @@ const regOptions = {
             conditionEl._clearContent();
           }
         });
+        if (this._fake.parentNode) {
+          eleX(this._fake.parentNode).refresh();
+        }
 
-        eleX(this._fake.parentNode).refresh();
+        // const fakeParent = eleX(this._fake.parentNode);
+        // fakeParent.refresh();
+        // fakeParent.host && fakeParent.host.refresh({ unupdate: 1 });
       }, 0);
     },
     _renderContent() {
@@ -73,12 +78,24 @@ const regOptions = {
       this._fake.innerHTML = this.__originHTML;
 
       render({ target, data, temps });
+
+      this.emit("rendered", {
+        bubbles: false,
+      });
     },
     _clearContent() {
+      if (!this.__rendered) {
+        return;
+      }
+
       this.__rendered = false;
 
       revokeAll(this._fake);
       this._fake.innerHTML = "";
+
+      this.emit("clear", {
+        bubbles: false,
+      });
     },
     init() {
       if (this._bindend) {
