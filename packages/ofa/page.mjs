@@ -115,6 +115,11 @@ $.register({
 
       const pagesData = await getPagesData(src);
 
+      if (this._defaults) {
+        // debugger;
+        return;
+      }
+
       const target = pagesData.pop();
 
       pagesData.forEach((e, i) => {
@@ -174,7 +179,7 @@ $.register({
       const { src } = this;
 
       if (this._defaults) {
-        throw "The current page has already been rendered";
+        throw new Error("The current page has already been rendered");
       }
 
       this._defaults = defaults;

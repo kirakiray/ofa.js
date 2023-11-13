@@ -1956,6 +1956,14 @@ const renderElement = ({ defaults, ele, template, temps }) => {
       ...defaults.attrs,
     };
 
+    defaults.attrs &&
+      Object.keys(defaults.attrs).forEach((name) => {
+        const value = ele.getAttribute(name);
+        if (value !== null && value !== undefined) {
+          data[name] = value;
+        }
+      });
+
     $ele = eleX(ele);
 
     defaults.proto && $ele.extend(defaults.proto, { enumerable: false });
@@ -4381,6 +4389,11 @@ $$1.register({
 
       const pagesData = await getPagesData(src);
 
+      if (this._defaults) {
+        // debugger;
+        return;
+      }
+
       const target = pagesData.pop();
 
       pagesData.forEach((e, i) => {
@@ -4440,7 +4453,7 @@ $$1.register({
       const { src } = this;
 
       if (this._defaults) {
-        throw "The current page has already been rendered";
+        throw new Error("The current page has already been rendered");
       }
 
       this._defaults = defaults;
