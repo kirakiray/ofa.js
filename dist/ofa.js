@@ -4394,7 +4394,6 @@ ${scriptContent}`;
         const pagesData = await getPagesData(src);
 
         if (this._defaults) {
-          // debugger;
           return;
         }
 
