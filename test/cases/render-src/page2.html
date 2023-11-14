@@ -1,0 +1,13 @@
+<template page>
+  <div>Page 2</div>
+  <button on:click="goback">Back</button>
+  <script>
+    export default {
+      proto: {
+        goback() {
+          this.app.back();
+        },
+      },
+    };
+  </script>
+</template>

@@ -88,8 +88,14 @@ $.register({
   },
   watch: {
     async src(src) {
-      if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
+      if (!src) {
+        return;
+      }
+
+      if (!src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
         src = resolvePath(src);
+        this.src = src;
+        return;
       }
 
       if (this.__init_src) {
@@ -99,14 +105,6 @@ $.register({
         return;
       }
 
-      if (!src) {
-        return;
-      }
-
-      if (this.attr("src") !== src) {
-        this.attr("src", src);
-      }
-
       this.__init_src = src;
 
       if (this._defaults || this._pause_init) {
@@ -114,6 +112,10 @@ $.register({
       }
 
       const pagesData = await getPagesData(src);
+
+      if (this._defaults) {
+        return;
+      }
 
       const target = pagesData.pop();
 
@@ -174,7 +176,7 @@ $.register({
       const { src } = this;
 
       if (this._defaults) {
-        throw "The current page has already been rendered";
+        throw new Error("The current page has already been rendered");
       }
 
       this._defaults = defaults;

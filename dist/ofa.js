@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.34 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.35 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1961,6 +1961,14 @@ try{
         ...deepCopyData(defaults.data),
         ...defaults.attrs,
       };
+
+      defaults.attrs &&
+        Object.keys(defaults.attrs).forEach((name) => {
+          const value = ele.getAttribute(name);
+          if (value !== null && value !== undefined) {
+            data[name] = value;
+          }
+        });
 
       $ele = eleX(ele);
 
@@ -4360,8 +4368,14 @@ ${scriptContent}`;
     },
     watch: {
       async src(src) {
-        if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
+        if (!src) {
+          return;
+        }
+
+        if (!src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
           src = resolvePath(src);
+          this.src = src;
+          return;
         }
 
         if (this.__init_src) {
@@ -4371,14 +4385,6 @@ ${scriptContent}`;
           return;
         }
 
-        if (!src) {
-          return;
-        }
-
-        if (this.attr("src") !== src) {
-          this.attr("src", src);
-        }
-
         this.__init_src = src;
 
         if (this._defaults || this._pause_init) {
@@ -4386,6 +4392,10 @@ ${scriptContent}`;
         }
 
         const pagesData = await getPagesData(src);
+
+        if (this._defaults) {
+          return;
+        }
 
         const target = pagesData.pop();
 
@@ -4446,7 +4456,7 @@ ${scriptContent}`;
         const { src } = this;
 
         if (this._defaults) {
-          throw "The current page has already been rendered";
+          throw new Error("The current page has already been rendered");
         }
 
         this._defaults = defaults;
