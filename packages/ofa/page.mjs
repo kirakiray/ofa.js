@@ -88,8 +88,14 @@ $.register({
   },
   watch: {
     async src(src) {
-      if (src && !src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
+      if (!src) {
+        return;
+      }
+
+      if (!src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
         src = resolvePath(src);
+        this.src = src;
+        return;
       }
 
       if (this.__init_src) {
@@ -97,14 +103,6 @@ $.register({
           throw "A page that has already been initialized cannot be set with the src attribute";
         }
         return;
-      }
-
-      if (!src) {
-        return;
-      }
-
-      if (this.attr("src") !== src) {
-        this.attr("src", src);
       }
 
       this.__init_src = src;
