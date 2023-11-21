@@ -5001,7 +5001,9 @@ ${scriptContent}`;
           });
         }
 
-        needRemovePage = resetOldPage(needRemovePage);
+        if (needRemovePage) {
+          needRemovePage = resetOldPage(needRemovePage);
+        }
 
         if (type === "goto") {
           oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
