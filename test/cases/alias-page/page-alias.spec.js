@@ -9,21 +9,21 @@ test("page use alias", async ({ page }) => {
   await page.getByText("I am page2").click();
   await page
     .getByText(
-      "test parent,current: http://127.0.0.1:5513/test/cases/alias-page/page2.html"
+      "test parent,current: http://localhost:3348/test/cases/alias-page/page2.html"
     )
     .click();
   await page.getByRole("link", { name: "to page 3" }).click();
   await page.getByText("I am page3").click();
   await page
     .getByText(
-      "test parent,current: http://127.0.0.1:5513/test/cases/alias-page/page3.html"
+      "test parent,current: http://localhost:3348/test/cases/alias-page/page3.html"
     )
     .click();
   await page.getByRole("button", { name: "Back" }).click();
   await page.getByText("I am page2").click();
   await page
     .getByText(
-      "test parent,current: http://127.0.0.1:5513/test/cases/alias-page/page2.html"
+      "test parent,current: http://localhost:3348/test/cases/alias-page/page2.html"
     )
     .click();
   await page.getByRole("button", { name: "Back" }).click();
@@ -39,7 +39,7 @@ test("hash router page use alias", async ({ page, browserName }) => {
   await page.getByText("I am page2").click();
   await page
     .getByText(
-      "test parent,current: http://127.0.0.1:5513/test/cases/alias-page/page2.html"
+      "test parent,current: http://localhost:3348/test/cases/alias-page/page2.html"
     )
     .click();
   await page.getByRole("link", { name: "to page 3" }).click();
@@ -47,7 +47,7 @@ test("hash router page use alias", async ({ page, browserName }) => {
   await page.getByText("I am page3").click();
   await page
     .getByText(
-      "test parent,current: http://127.0.0.1:5513/test/cases/alias-page/page3.html"
+      "test parent,current: http://localhost:3348/test/cases/alias-page/page3.html"
     )
     .click();
 
@@ -70,7 +70,7 @@ test("hash router page use alias", async ({ page, browserName }) => {
   await page.getByText("I am page2").click();
   await page
     .getByText(
-      "test parent,current: http://127.0.0.1:5513/test/cases/alias-page/page2.html"
+      "test parent,current: http://localhost:3348/test/cases/alias-page/page2.html"
     )
     .click();
   await page.getByRole("button", { name: "Back" }).click();
