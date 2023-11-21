@@ -81,189 +81,194 @@ lm.use(["js", "mjs"], async (ctx, next) => {
   await next();
 });
 
-$.register({
-  tag: "o-page",
-  attrs: {
-    src: null,
-  },
-  watch: {
-    async src(src) {
-      if (!src) {
-        return;
-      }
-
-      if (!src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
-        src = resolvePath(src);
-        this.src = src;
-        return;
-      }
-
-      if (this.__init_src) {
-        if (this.__init_src !== src) {
-          throw "A page that has already been initialized cannot be set with the src attribute";
+setTimeout(() => {
+  // Let the pod's running time be slower than the `type="module"` time
+  $.register({
+    tag: "o-page",
+    attrs: {
+      src: null,
+    },
+    watch: {
+      async src(src) {
+        if (!src) {
+          return;
         }
-        return;
-      }
 
-      this.__init_src = src;
+        if (!src.startsWith("//") && !/[a-z]+:\/\//.test(src)) {
+          src = resolvePath(src);
+          this.src = src;
+          return;
+        }
 
-      if (this._defaults || this._pause_init) {
-        return;
-      }
+        if (this.__init_src) {
+          if (this.__init_src !== src) {
+            throw "A page that has already been initialized cannot be set with the src attribute";
+          }
+          return;
+        }
 
-      const pagesData = await getPagesData(src);
+        this.__init_src = src;
 
-      if (this._defaults) {
-        return;
-      }
+        if (this._defaults || this._pause_init) {
+          return;
+        }
 
-      const target = pagesData.pop();
+        const pagesData = await getPagesData(src);
 
-      pagesData.forEach((e, i) => {
-        const parentPage = createPage(e.src, e.defaults);
+        if (this._defaults) {
+          return;
+        }
 
-        if (this.parent) {
-          this.wrap(parentPage);
+        const target = pagesData.pop();
+
+        pagesData.forEach((e, i) => {
+          const parentPage = createPage(e.src, e.defaults);
+
+          if (this.parent) {
+            this.wrap(parentPage);
+          } else {
+            const needWraps = this.__need_wraps || (this.__need_wraps = []);
+            needWraps.push(parentPage);
+          }
+        });
+
+        if (target.ISERROR === ISERROR) {
+          const failContent = getFailContent(
+            src,
+            target,
+            this?.app?._module?.fail
+          );
+
+          this._renderDefault({
+            type: PAGE,
+            temp: failContent,
+          });
         } else {
-          const needWraps = this.__need_wraps || (this.__need_wraps = []);
-          needWraps.push(parentPage);
+          this._renderDefault(target.defaults);
         }
-      });
-
-      if (target.ISERROR === ISERROR) {
-        const failContent = getFailContent(
-          src,
-          target,
-          this?.app?._module?.fail
-        );
-
-        this._renderDefault({
-          type: PAGE,
-          temp: failContent,
-        });
-      } else {
-        this._renderDefault(target.defaults);
-      }
+      },
     },
-  },
-  attached() {
-    this.css.display = "block";
+    attached() {
+      this.css.display = "block";
 
-    const needWraps = this.__need_wraps;
-    if (needWraps) {
-      needWraps.forEach((page) => {
-        this.wrap(page);
-      });
-      delete this.__need_wraps;
-    }
-
-    if (this.__not_run_attached) {
-      if (this._defaults.attached) {
-        this._defaults.attached.call(this);
-      }
-      delete this.__not_run_attached;
-    }
-  },
-  detached() {
-    const { _defaults } = this;
-
-    if (_defaults && _defaults.detached) {
-      _defaults.detached.call(this);
-    }
-  },
-  proto: {
-    async _renderDefault(defaults) {
-      const { src } = this;
-
-      if (this._defaults) {
-        throw new Error("The current page has already been rendered");
-      }
-
-      this._defaults = defaults;
-
-      if (defaults.pageAnime) {
-        this._pageAnime = defaults.pageAnime;
-      }
-
-      if (!defaults || defaults.type !== PAGE) {
-        const err = new Error(
-          `The currently loaded module is not a page \nLoaded string => '${src}'`
-        );
-        this.emit("error", { data: { error: err } });
-        this.__reject(err);
-        throw err;
-      }
-
-      const template = document.createElement("template");
-      template.innerHTML = fixRelatePathContent(defaults.temp, src);
-      const temps = convert(template);
-
-      try {
-        renderElement({
-          defaults,
-          ele: this.ele,
-          template,
-          temps,
+      const needWraps = this.__need_wraps;
+      if (needWraps) {
+        needWraps.forEach((page) => {
+          this.wrap(page);
         });
-      } catch (error) {
-        const err = new Error(`Failed to render page:${src} \n ${error.stack}`);
-        err.error = error;
-        console.error(err);
+        delete this.__need_wraps;
       }
 
-      await dispatchLoad(this, defaults.loaded);
-
-      initLink(this.shadow);
-
-      this._loaded = true;
-
-      this.emit("page-loaded");
-
-      this.__resolve();
-
-      if (this.ele.isConnected) {
-        if (defaults.attached) {
-          defaults.attached.call(this);
+      if (this.__not_run_attached) {
+        if (this._defaults.attached) {
+          this._defaults.attached.call(this);
         }
-      } else {
-        this.__not_run_attached = 1;
+        delete this.__not_run_attached;
       }
     },
-    back() {
-      this.app.back();
-    },
-    goto(src) {
-      this.app.goto(resolvePath(src, this.src));
-    },
-    replace(src) {
-      this.app.replace(resolvePath(src, this.src));
-    },
-    get pageAnime() {
-      const { app, _pageAnime } = this;
+    detached() {
+      const { _defaults } = this;
 
-      const { pageAnime } = app?._module || {};
-
-      return clone({ ...pageAnime, ...(_pageAnime || {}) });
+      if (_defaults && _defaults.detached) {
+        _defaults.detached.call(this);
+      }
     },
-    set pageAnime(val) {
-      this._pageAnime = val;
-    },
-  },
+    proto: {
+      async _renderDefault(defaults) {
+        const { src } = this;
 
-  ready() {
-    this._rendered = new Promise((resolve, reject) => {
-      this.__resolve = () => {
-        delete this.__resolve;
-        delete this.__reject;
-        resolve();
-      };
-      this.__reject = () => {
-        delete this.__resolve;
-        delete this.__reject;
-        reject();
-      };
-    });
-  },
+        if (this._defaults) {
+          throw new Error("The current page has already been rendered");
+        }
+
+        this._defaults = defaults;
+
+        if (defaults.pageAnime) {
+          this._pageAnime = defaults.pageAnime;
+        }
+
+        if (!defaults || defaults.type !== PAGE) {
+          const err = new Error(
+            `The currently loaded module is not a page \nLoaded string => '${src}'`
+          );
+          this.emit("error", { data: { error: err } });
+          this.__reject(err);
+          throw err;
+        }
+
+        const template = document.createElement("template");
+        template.innerHTML = fixRelatePathContent(defaults.temp, src);
+        const temps = convert(template);
+
+        try {
+          renderElement({
+            defaults,
+            ele: this.ele,
+            template,
+            temps,
+          });
+        } catch (error) {
+          const err = new Error(
+            `Failed to render page:${src} \n ${error.stack}`
+          );
+          err.error = error;
+          console.error(err);
+        }
+
+        await dispatchLoad(this, defaults.loaded);
+
+        initLink(this.shadow);
+
+        this._loaded = true;
+
+        this.emit("page-loaded");
+
+        this.__resolve();
+
+        if (this.ele.isConnected) {
+          if (defaults.attached) {
+            defaults.attached.call(this);
+          }
+        } else {
+          this.__not_run_attached = 1;
+        }
+      },
+      back() {
+        this.app.back();
+      },
+      goto(src) {
+        this.app.goto(resolvePath(src, this.src));
+      },
+      replace(src) {
+        this.app.replace(resolvePath(src, this.src));
+      },
+      get pageAnime() {
+        const { app, _pageAnime } = this;
+
+        const { pageAnime } = app?._module || {};
+
+        return clone({ ...pageAnime, ...(_pageAnime || {}) });
+      },
+      set pageAnime(val) {
+        this._pageAnime = val;
+      },
+    },
+
+    ready() {
+      this._rendered = new Promise((resolve, reject) => {
+        this.__resolve = () => {
+          delete this.__resolve;
+          delete this.__reject;
+          resolve();
+        };
+        this.__reject = () => {
+          delete this.__resolve;
+          delete this.__reject;
+          reject();
+        };
+      });
+    },
+  });
 });
 
 export const dispatchLoad = async (_this, loaded) => {

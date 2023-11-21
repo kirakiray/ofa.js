@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test copy</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+    <script type="module">
+      lm.config({
+        alias: {
+          "@t": "http://127.0.0.1:5513/test/cases/alias-page/",
+        },
+      });
+    </script>
+  </head>
+  <body>
+    <o-app>
+      <o-page src="@t/page1.html"></o-page>
+    </o-app>
+  </body>
+</html>
