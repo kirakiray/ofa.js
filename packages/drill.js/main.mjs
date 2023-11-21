@@ -1,5 +1,5 @@
 import { processor, use } from "./use.mjs";
-import { aliasMap } from "./config.mjs";
+import { aliasMap, path } from "./config.mjs";
 export const LOADED = Symbol("loaded");
 
 const createLoad = (meta, opts) => {
@@ -9,27 +9,9 @@ const createLoad = (meta, opts) => {
     };
   }
   const load = (ourl) => {
-    let reurl = "";
     let [url, ...params] = ourl.split(" ");
 
-    // Determine and splice the address of the alias
-    const urlMathcs = url.split("/");
-    if (/^@.+/.test(urlMathcs[0])) {
-      if (aliasMap[urlMathcs[0]]) {
-        urlMathcs[0] = aliasMap[urlMathcs[0]];
-        url = urlMathcs.join("/");
-      } else {
-        throw `Can't find an alias address: '${urlMathcs[0]}'`;
-      }
-    }
-
-    if (meta.resolve) {
-      reurl = meta.resolve(url);
-    } else {
-      const currentUrl = new URL(meta.url);
-      const resolvedUrl = new URL(url, currentUrl);
-      reurl = resolvedUrl.href;
-    }
+    const reurl = path(url, meta.url);
 
     return agent(reurl, { params, ...opts });
   };

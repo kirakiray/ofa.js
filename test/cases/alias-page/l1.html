@@ -1,0 +1,35 @@
+<template page>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+    .top {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+      background-color: red;
+      color: #fff;
+    }
+  </style>
+  <div class="container">
+    <div class="top">test parent,current: {{path}}</div>
+    <div class="main">
+      <slot></slot>
+    </div>
+  </div>
+  <script>
+    export default {
+      data: {
+        path: "",
+      },
+      ready() {
+        this.path = this.app.current.src;
+      },
+      routerChange() {
+        this.path = this.app.current.src;
+      },
+    };
+  </script>
+</template>

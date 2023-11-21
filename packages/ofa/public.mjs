@@ -1,34 +1,15 @@
 import { nextTick } from "../stanz/public.mjs";
 import { searchEle } from "../xhear/public.mjs";
+import { path } from "../drill.js/config.mjs";
 
-export function resolvePath(moduleName, baseURI) {
-  const [url, ...params] = moduleName.split(" ");
-
-  const baseURL = baseURI ? new URL(baseURI, location.href) : location.href;
-
-  if (
-    // moduleName.startsWith("/") ||
-    url.startsWith("http://") ||
-    url.startsWith("https://")
-  ) {
-    return url;
-  }
-
-  const moduleURL = new URL(url, baseURL);
-
-  if (params.length) {
-    return `${moduleURL.href} ${params.join(" ")}`;
-  }
-
-  return moduleURL.href;
-}
+export const resolvePath = path;
 
 export function fixRelate(ele, path) {
   searchEle(ele, "[href],[src]").forEach((el) => {
     ["href", "src"].forEach((name) => {
       const val = el.getAttribute(name);
 
-      if (/^#/.test(val) || /^@/.test(val)) {
+      if (/^#/.test(val)) {
         return;
       }
 
@@ -126,7 +107,7 @@ export const getPagesData = async (src) => {
     }
 
     beforeSrc = pageSrc;
-    pageSrc = new URL(defaults.parent, pageSrc).href;
+    pageSrc = resolvePath(defaults.parent, pageSrc);
   }
 
   return pagesData;
@@ -149,14 +130,3 @@ export const createPage = (src, defaults) => {
 
   return targetPage;
 };
-
-// export async function getHash(str, algorithm = "SHA-256") {
-//   const encoder = new TextEncoder();
-//   const data = encoder.encode(str);
-//   const hashBuffer = await crypto.subtle.digest(algorithm, data);
-//   const hashArray = Array.from(new Uint8Array(hashBuffer));
-//   const hashHex = hashArray
-//     .map((byte) => byte.toString(16).padStart(2, "0"))
-//     .join("");
-//   return hashHex;
-// }
