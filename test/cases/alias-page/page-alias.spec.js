@@ -2,6 +2,7 @@ import { test, expect, firefox } from "@playwright/test";
 
 test("page use alias", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/alias-page/test.html");
+  await new Promise((res) => setTimeout(res, 200));
 
   await page.getByText("I am page1").click();
   await page.getByRole("link", { name: "To page2" }).click();
@@ -31,6 +32,7 @@ test("page use alias", async ({ page }) => {
 
 test("hash router page use alias", async ({ page, browserName }) => {
   await page.goto("http://localhost:3348/test/cases/alias-page/hr-test.html");
+  await new Promise((res) => setTimeout(res, 200));
 
   await page.getByText("I am page1").click();
   await page.getByRole("link", { name: "To page2" }).click();
