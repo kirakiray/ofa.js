@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.36 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.37 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -2698,64 +2698,75 @@ try{
           return;
         }
 
-        const xids = childs.map((e) => e._data_xid || e);
-
         const { data, temps } = regData;
 
         const targetTemp = temps[this._name];
 
-        // Adjustment of elements in order
-        const len = val.length;
-        let currentEl;
-        for (let i = 0; i < len; i++) {
-          const e = val[i];
+        if (!childs.length) {
+          const frag = document.createDocumentFragment();
 
-          const oldIndex = xids.indexOf(e.xid || e);
+          val.forEach((e, i) => {
+            const $ele = createItem(e, temps, targetTemp, data.$host || data, i);
+            frag.appendChild($ele.ele);
+          });
 
-          if (oldIndex > -1) {
-            if (oldIndex === i) {
-              // No data changes
-              currentEl = childs[i];
+          this._fake.appendChild(frag);
+        } else {
+          const xids = childs.map((e) => e._data_xid || e);
+
+          // Adjustment of elements in order
+          const len = val.length;
+          let currentEl;
+          for (let i = 0; i < len; i++) {
+            const e = val[i];
+
+            const oldIndex = xids.indexOf(e.xid || e);
+
+            if (oldIndex > -1) {
+              if (oldIndex === i) {
+                // No data changes
+                currentEl = childs[i];
+                continue;
+              }
+
+              // position change
+              const target = childs[oldIndex];
+              const $target = eleX(target);
+              // fix data index
+              $target.__item.$index = i;
+              target.__internal = 1;
+              if (i === 0) {
+                this._fake.insertBefore(target, childs[0]);
+              } else {
+                this._fake.insertBefore(target, currentEl.nextElementSibling);
+              }
+              currentEl = target;
+              delete target.__internal;
               continue;
             }
 
-            // position change
-            const target = childs[oldIndex];
-            const $target = eleX(target);
-            // fix data index
-            $target.__item.$index = i;
-            target.__internal = 1;
-            if (i === 0) {
-              this._fake.insertBefore(target, childs[0]);
+            // new data
+            const $ele = createItem(e, temps, targetTemp, data.$host || data, i);
+            if (!currentEl) {
+              if (childs.length) {
+                this._fake.insertBefore($ele.ele, childs[0]);
+              } else {
+                this._fake.appendChild($ele.ele);
+              }
             } else {
-              this._fake.insertBefore(target, currentEl.nextElementSibling);
+              this._fake.insertBefore($ele.ele, currentEl.nextSibling);
             }
-            currentEl = target;
-            delete target.__internal;
-            continue;
+            currentEl = $ele.ele;
           }
 
-          // new data
-          const $ele = createItem(e, temps, targetTemp, data.$host || data, i);
-          if (!currentEl) {
-            if (childs.length) {
-              this._fake.insertBefore($ele.ele, childs[0]);
-            } else {
-              this._fake.appendChild($ele.ele);
-            }
-          } else {
-            this._fake.insertBefore($ele.ele, currentEl.nextSibling);
+          const newChilds = this._fake.children;
+
+          if (len < newChilds.length) {
+            newChilds.slice(len).forEach((e) => {
+              e.remove();
+              revokeAll(e);
+            });
           }
-          currentEl = $ele.ele;
-        }
-
-        const newChilds = this._fake.children;
-
-        if (len < newChilds.length) {
-          newChilds.slice(len).forEach((e) => {
-            e.remove();
-            revokeAll(e);
-          });
         }
 
         if (this._fake.parentNode) {
