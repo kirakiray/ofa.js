@@ -19,7 +19,7 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
 
     defaults.attrs &&
       Object.keys(defaults.attrs).forEach((name) => {
-        const value = ele.getAttribute(name);
+        const value = ele.getAttribute(toDashCase(name));
         if (value !== null && value !== undefined) {
           data[name] = value;
         }
