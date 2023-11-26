@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.37 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.38 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -1958,7 +1958,7 @@ const renderElement = ({ defaults, ele, template, temps }) => {
 
     defaults.attrs &&
       Object.keys(defaults.attrs).forEach((name) => {
-        const value = ele.getAttribute(name);
+        const value = ele.getAttribute(toDashCase(name));
         if (value !== null && value !== undefined) {
           data[name] = value;
         }
