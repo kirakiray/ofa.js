@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.39 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.40 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3219,6 +3219,8 @@ Object.defineProperties($, {
   },
 });
 
+const version = "ofa.js@4.3.40";
+
 Object.assign($, {
   stanz,
   render,
@@ -3227,6 +3229,7 @@ Object.assign($, {
   nextTick,
   fn: Xhear.prototype,
   all: (expr) => searchEle(document, expr).map(eleX),
+  version: version.replace("ofa.js@", ""),
 });
 
 $.register({
@@ -4203,7 +4206,7 @@ async function drawUrl(content, url, isPage = true) {
   }
 
   const beforeContent = `
-  export const type = ${isPage ? "$.PAGE" : "$.COMP"};
+  export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${temp}\`;`;
@@ -5201,5 +5204,9 @@ if (document.currentScript) {
 if (typeof window !== "undefined") {
   window.$ = $;
 }
+
+Object.defineProperty(globalThis, "ofa", {
+  value: $,
+});
 
 export { $ as default };

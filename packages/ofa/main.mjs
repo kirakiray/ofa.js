@@ -18,4 +18,8 @@ if (typeof window !== "undefined") {
   window.$ = $;
 }
 
+Object.defineProperty(globalThis, "ofa", {
+  value: $,
+});
+
 export default $;

@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.39 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.40 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3225,6 +3225,8 @@ try{
     },
   });
 
+  const version = "ofa.js@4.3.40";
+
   Object.assign($, {
     stanz,
     render,
@@ -3233,6 +3235,7 @@ try{
     nextTick,
     fn: Xhear.prototype,
     all: (expr) => searchEle(document, expr).map(eleX),
+    version: version.replace("ofa.js@", ""),
   });
 
   $.register({
@@ -4209,7 +4212,7 @@ try{
     }
 
     const beforeContent = `
-  export const type = ${isPage ? "$.PAGE" : "$.COMP"};
+  export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${temp}\`;`;
@@ -5207,6 +5210,10 @@ ${scriptContent}`;
   if (typeof window !== "undefined") {
     window.$ = $;
   }
+
+  Object.defineProperty(globalThis, "ofa", {
+    value: $,
+  });
 
   return $;
 
