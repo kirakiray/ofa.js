@@ -1,4 +1,5 @@
 import { resolvePath } from "./public.mjs";
+import $ from "../xhear/dollar.mjs";
 
 const strToBase64DataURI = async (str, type, isb64 = true) => {
   const mime = type === "js" ? "text/javascript" : "application/json";

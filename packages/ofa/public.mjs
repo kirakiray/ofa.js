@@ -1,6 +1,7 @@
 import { nextTick } from "../stanz/public.mjs";
 import { searchEle } from "../xhear/public.mjs";
 import { path } from "../drill.js/config.mjs";
+import { eleX } from "../xhear/util.mjs";
 
 export const resolvePath = path;
 
@@ -119,7 +120,7 @@ export const createPage = (src, defaults) => {
 
   tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
 
-  const targetPage = $(tempCon.children[0]);
+  const targetPage = eleX(tempCon.children[0]);
   targetPage._pause_init = 1;
 
   nextTick(() => {
