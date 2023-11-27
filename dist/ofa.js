@@ -3225,6 +3225,8 @@ try{
     },
   });
 
+  const version = "ofa.js@1.1.1";
+
   Object.assign($, {
     stanz,
     render,
@@ -3233,6 +3235,7 @@ try{
     nextTick,
     fn: Xhear.prototype,
     all: (expr) => searchEle(document, expr).map(eleX),
+    version: version.replace("ofa.js@", ""),
   });
 
   $.register({

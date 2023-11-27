@@ -7,6 +7,8 @@ import { searchEle } from "./public.mjs";
 import $ from "./dollar.mjs";
 import { nextTick } from "../stanz/public.mjs";
 
+const version = "ofa.js@1.1.1";
+
 Object.assign($, {
   stanz,
   render,
@@ -15,6 +17,7 @@ Object.assign($, {
   nextTick,
   fn: Xhear.prototype,
   all: (expr) => searchEle(document, expr).map(eleX),
+  version: version.replace("ofa.js@", ""),
 });
 
 export default $;
