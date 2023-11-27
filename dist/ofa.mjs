@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.39 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.40 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3219,7 +3219,7 @@ Object.defineProperties($, {
   },
 });
 
-const version = "ofa.js@1.1.1";
+const version = "ofa.js@4.3.40";
 
 Object.assign($, {
   stanz,
