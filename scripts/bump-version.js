@@ -1,5 +1,6 @@
 const fs = require("fs");
 const args = process.argv.slice(2);
+const path = require("path");
 
 // 递归遍历目录
 async function traverseDirectory(directoryPath, newVer) {
@@ -24,7 +25,7 @@ async function processFile(filePath, newVer) {
   const fileContent = await fs.promises.readFile(filePath, "utf-8");
   const reg = new RegExp(`ofa.js@\\d+\.\\d+\.\\d+`, "g");
   if (reg.test(fileContent)) {
-    const updatedContent = fileContent.replace(reg, `ofa@${newVer}`);
+    const updatedContent = fileContent.replace(reg, `ofa.js@${newVer}`);
 
     await fs.promises.writeFile(filePath, updatedContent, "utf-8");
 
