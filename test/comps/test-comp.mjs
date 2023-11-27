@@ -1,4 +1,4 @@
-export const type = $.COMP;
+export const type = ofa.COMP;
 
 // export const tag = "test-comp"; // If no set, the file name will be used
 // export const temp = "./test-comp.html"; // If this value is not set, the html file with the same name as the tag in the same directory will be used

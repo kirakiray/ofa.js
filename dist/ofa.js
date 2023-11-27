@@ -4209,7 +4209,7 @@ try{
     }
 
     const beforeContent = `
-  export const type = ${isPage ? "$.PAGE" : "$.COMP"};
+  export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
   export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${temp}\`;`;
@@ -5207,6 +5207,10 @@ ${scriptContent}`;
   if (typeof window !== "undefined") {
     window.$ = $;
   }
+
+  Object.defineProperty(globalThis, "ofa", {
+    value: $,
+  });
 
   return $;
 
