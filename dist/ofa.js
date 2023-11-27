@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.38 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.39 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3208,7 +3208,7 @@ try{
     }
   };
 
-  function $$1(expr) {
+  function $(expr) {
     if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
       const ele = document.querySelector(expr);
 
@@ -3218,14 +3218,14 @@ try{
     return createXEle(expr);
   }
 
-  Object.defineProperties($$1, {
+  Object.defineProperties($, {
     // Convenient objects for use as extensions
     extensions: {
       value: {},
     },
   });
 
-  Object.assign($$1, {
+  Object.assign($, {
     stanz,
     render,
     convert,
@@ -3235,7 +3235,7 @@ try{
     all: (expr) => searchEle(document, expr).map(eleX),
   });
 
-  $$1.register({
+  $.register({
     tag: "inject-host",
     temp: `<slot></slot>`,
     data: {},
@@ -3330,7 +3330,7 @@ try{
         // const hash = await getHash(com.data);
         const hash = getStringHash(com.data);
 
-        initInjectEle(this, hash, () => $$1(`<style>${com.data}</style>`), e.ele);
+        initInjectEle(this, hash, () => $(`<style>${com.data}</style>`), e.ele);
       },
     },
     attached() {
@@ -3978,7 +3978,7 @@ try{
 
     tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
 
-    const targetPage = $(tempCon.children[0]);
+    const targetPage = eleX(tempCon.children[0]);
     targetPage._pause_init = 1;
 
     nextTick(() => {
@@ -3996,12 +3996,12 @@ try{
 
     const { step, name, target } = e;
 
-    const { link } = $$1.extensions;
+    const { link } = $.extensions;
 
     if (step === "init") {
       // Renders the component or page only once
       if (target.host && link) {
-        $$1(target)
+        $(target)
           .all("a")
           .forEach((e) => link(e));
       }
@@ -4024,7 +4024,7 @@ try{
         }
 
         if (link) {
-          $$1(top)
+          $(top)
             .all("a")
             .forEach((e) => link(e));
         }
@@ -4034,7 +4034,7 @@ try{
   };
 
   const initLink = (_this) => {
-    const $ele = $$1(_this);
+    const $ele = $(_this);
 
     // olink click to amend
     $ele.on("click", (e) => {
@@ -4042,7 +4042,7 @@ try{
         return;
       }
 
-      const $tar = $$1(e.target);
+      const $tar = $(e.target);
       const all = [$tar, ...$tar.parents];
 
       let currentTarget = all.find((e) => e.tag === "a");
@@ -4295,7 +4295,7 @@ ${scriptContent}`;
 
   const PAGE = Symbol("Page");
 
-  Object.defineProperty($$1, "PAGE", {
+  Object.defineProperty($, "PAGE", {
     value: PAGE,
   });
 
@@ -4359,7 +4359,7 @@ ${scriptContent}`;
 
   setTimeout(() => {
     // Let the pod's running time be slower than the `type="module"` time
-    $$1.register({
+    $.register({
       tag: "o-page",
       attrs: {
         src: null,
@@ -4651,7 +4651,7 @@ ${scriptContent}`;
   const COMP = Symbol("Component");
   const COMPONENT_PATH = Symbol("PATH");
 
-  Object.defineProperty($$1, "COMP", {
+  Object.defineProperty($, "COMP", {
     value: COMP,
   });
 
@@ -4764,7 +4764,7 @@ ${scriptContent}`;
 
     const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
-    $$1.register({
+    $.register({
       ...registerOpts,
       tag: tagName,
       temp: regTemp,
@@ -4846,7 +4846,7 @@ ${scriptContent}`;
         const failContent = getFailContent(src, e, fail);
 
         page = createPage(e.src, {
-          type: $$1.PAGE,
+          type: $.PAGE,
           temp: failContent,
         });
 
@@ -4887,7 +4887,7 @@ ${scriptContent}`;
     }
   };
 
-  $$1.register({
+  $.register({
     tag: "o-app",
     temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;width:100%;height:100%;}</style><slot></slot>`,
     attrs: {
@@ -5140,7 +5140,7 @@ ${scriptContent}`;
     return needRemovePage;
   };
 
-  const oldAttr = $$1.fn.attr;
+  const oldAttr = $.fn.attr;
 
   function attr(...args) {
     let [name, value, options] = args;
@@ -5166,7 +5166,7 @@ ${scriptContent}`;
 
   attr.always = oldAttr.always;
 
-  $$1.fn.extend({
+  $.fn.extend({
     get app() {
       let target = this;
 
@@ -5199,15 +5199,15 @@ ${scriptContent}`;
   if (document.currentScript) {
     const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
 
-    Object.defineProperty($$1, "debugMode", {
+    Object.defineProperty($, "debugMode", {
       value: isDebug,
     });
   }
 
   if (typeof window !== "undefined") {
-    window.$ = $$1;
+    window.$ = $;
   }
 
-  return $$1;
+  return $;
 
 }));

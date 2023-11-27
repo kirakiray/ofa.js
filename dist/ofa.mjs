@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.38 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.39 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3202,7 +3202,7 @@ const revokeAll = (target) => {
   }
 };
 
-function $$1(expr) {
+function $(expr) {
   if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
     const ele = document.querySelector(expr);
 
@@ -3212,14 +3212,14 @@ function $$1(expr) {
   return createXEle(expr);
 }
 
-Object.defineProperties($$1, {
+Object.defineProperties($, {
   // Convenient objects for use as extensions
   extensions: {
     value: {},
   },
 });
 
-Object.assign($$1, {
+Object.assign($, {
   stanz,
   render,
   convert,
@@ -3229,7 +3229,7 @@ Object.assign($$1, {
   all: (expr) => searchEle(document, expr).map(eleX),
 });
 
-$$1.register({
+$.register({
   tag: "inject-host",
   temp: `<slot></slot>`,
   data: {},
@@ -3324,7 +3324,7 @@ $$1.register({
       // const hash = await getHash(com.data);
       const hash = getStringHash(com.data);
 
-      initInjectEle(this, hash, () => $$1(`<style>${com.data}</style>`), e.ele);
+      initInjectEle(this, hash, () => $(`<style>${com.data}</style>`), e.ele);
     },
   },
   attached() {
@@ -3972,7 +3972,7 @@ const createPage = (src, defaults) => {
 
   tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
 
-  const targetPage = $(tempCon.children[0]);
+  const targetPage = eleX(tempCon.children[0]);
   targetPage._pause_init = 1;
 
   nextTick(() => {
@@ -3990,12 +3990,12 @@ renderExtends.render = (e) => {
 
   const { step, name, target } = e;
 
-  const { link } = $$1.extensions;
+  const { link } = $.extensions;
 
   if (step === "init") {
     // Renders the component or page only once
     if (target.host && link) {
-      $$1(target)
+      $(target)
         .all("a")
         .forEach((e) => link(e));
     }
@@ -4018,7 +4018,7 @@ renderExtends.render = (e) => {
       }
 
       if (link) {
-        $$1(top)
+        $(top)
           .all("a")
           .forEach((e) => link(e));
       }
@@ -4028,7 +4028,7 @@ renderExtends.render = (e) => {
 };
 
 const initLink = (_this) => {
-  const $ele = $$1(_this);
+  const $ele = $(_this);
 
   // olink click to amend
   $ele.on("click", (e) => {
@@ -4036,7 +4036,7 @@ const initLink = (_this) => {
       return;
     }
 
-    const $tar = $$1(e.target);
+    const $tar = $(e.target);
     const all = [$tar, ...$tar.parents];
 
     let currentTarget = all.find((e) => e.tag === "a");
@@ -4289,7 +4289,7 @@ const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
 const PAGE = Symbol("Page");
 
-Object.defineProperty($$1, "PAGE", {
+Object.defineProperty($, "PAGE", {
   value: PAGE,
 });
 
@@ -4353,7 +4353,7 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
 
 setTimeout(() => {
   // Let the pod's running time be slower than the `type="module"` time
-  $$1.register({
+  $.register({
     tag: "o-page",
     attrs: {
       src: null,
@@ -4645,7 +4645,7 @@ const getFailContent = (src, target, fail) => {
 const COMP = Symbol("Component");
 const COMPONENT_PATH = Symbol("PATH");
 
-Object.defineProperty($$1, "COMP", {
+Object.defineProperty($, "COMP", {
   value: COMP,
 });
 
@@ -4758,7 +4758,7 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
 
-  $$1.register({
+  $.register({
     ...registerOpts,
     tag: tagName,
     temp: regTemp,
@@ -4840,7 +4840,7 @@ const appendPage = async ({ src, _this }) => {
       const failContent = getFailContent(src, e, fail);
 
       page = createPage(e.src, {
-        type: $$1.PAGE,
+        type: $.PAGE,
         temp: failContent,
       });
 
@@ -4881,7 +4881,7 @@ const emitRouterChange = (_this, publics, type) => {
   }
 };
 
-$$1.register({
+$.register({
   tag: "o-app",
   temp: `<style>:host{position:relative;display:block}::slotted(*){display:block;width:100%;height:100%;}</style><slot></slot>`,
   attrs: {
@@ -5134,7 +5134,7 @@ const resetOldPage = (needRemovePage) => {
   return needRemovePage;
 };
 
-const oldAttr = $$1.fn.attr;
+const oldAttr = $.fn.attr;
 
 function attr(...args) {
   let [name, value, options] = args;
@@ -5160,7 +5160,7 @@ function attr(...args) {
 
 attr.always = oldAttr.always;
 
-$$1.fn.extend({
+$.fn.extend({
   get app() {
     let target = this;
 
@@ -5193,13 +5193,13 @@ $$1.fn.extend({
 if (document.currentScript) {
   const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
 
-  Object.defineProperty($$1, "debugMode", {
+  Object.defineProperty($, "debugMode", {
     value: isDebug,
   });
 }
 
 if (typeof window !== "undefined") {
-  window.$ = $$1;
+  window.$ = $;
 }
 
-export { $$1 as default };
+export { $ as default };
