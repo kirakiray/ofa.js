@@ -6,6 +6,9 @@ import "./app.mjs";
 import "./extend.mjs";
 import "./link.mjs";
 
+const version = "ofa.js@4.3.40";
+$.version = version.replace("ofa.js@", "");
+
 if (document.currentScript) {
   const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
 

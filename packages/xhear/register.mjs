@@ -163,6 +163,17 @@ export const register = (opts = {}) => {
             }
           });
         });
+
+        // The data set before initialization needs to be reflected in attrs
+        attrKeys.forEach((key) => {
+          if (
+            $ele[key] !== null &&
+            $ele[key] !== undefined &&
+            $ele[key] !== defaults.attrs[key]
+          ) {
+            this.setAttribute(key, $ele[key]);
+          }
+        });
       }
 
       renderElement({

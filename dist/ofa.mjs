@@ -2102,6 +2102,17 @@ const register = (opts = {}) => {
             }
           });
         });
+
+        // The data set before initialization needs to be reflected in attrs
+        attrKeys.forEach((key) => {
+          if (
+            $ele[key] !== null &&
+            $ele[key] !== undefined &&
+            $ele[key] !== defaults.attrs[key]
+          ) {
+            this.setAttribute(key, $ele[key]);
+          }
+        });
       }
 
       renderElement({
@@ -3219,8 +3230,6 @@ Object.defineProperties($, {
   },
 });
 
-const version = "ofa.js@4.3.40";
-
 Object.assign($, {
   stanz,
   render,
@@ -3229,7 +3238,6 @@ Object.assign($, {
   nextTick,
   fn: Xhear.prototype,
   all: (expr) => searchEle(document, expr).map(eleX),
-  version: version.replace("ofa.js@", ""),
 });
 
 $.register({
@@ -5192,6 +5200,9 @@ $.fn.extend({
   },
   attr,
 });
+
+const version = "ofa.js@4.3.40";
+$.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
   const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
