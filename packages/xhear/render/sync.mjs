@@ -1,3 +1,4 @@
+import { hyphenToUpperCase } from "../public.mjs";
 const syncFn = {
   sync(propName, targetName, options) {
     if (!options) {
@@ -5,6 +6,9 @@ const syncFn = {
     }
 
     [propName, targetName] = options.beforeArgs;
+
+    propName = hyphenToUpperCase(propName);
+    targetName = hyphenToUpperCase(targetName);
 
     const { data } = options;
 
