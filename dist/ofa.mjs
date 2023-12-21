@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.42 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.43 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -2113,7 +2113,7 @@ const register = (opts = {}) => {
             $ele[key] !== undefined &&
             $ele[key] !== defaults.attrs[key]
           ) {
-            this.setAttribute(key, $ele[key]);
+            this.setAttribute(toDashCase(key), $ele[key]);
           }
         });
       }
@@ -5204,7 +5204,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.3.42";
+const version = "ofa.js@4.3.43";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

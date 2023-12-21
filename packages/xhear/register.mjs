@@ -171,7 +171,7 @@ export const register = (opts = {}) => {
             $ele[key] !== undefined &&
             $ele[key] !== defaults.attrs[key]
           ) {
-            this.setAttribute(key, $ele[key]);
+            this.setAttribute(toDashCase(key), $ele[key]);
           }
         });
       }
