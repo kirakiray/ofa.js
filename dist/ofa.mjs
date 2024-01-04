@@ -3488,12 +3488,16 @@ class Onion {
 }
 
 const caches = new Map();
-const wrapFetch = async (url) => {
-  let fetchObj = caches.get(url);
+const wrapFetch = async (url, params) => {
+  const d = new URL(url);
+
+  const reUrl = params.includes("-direct") ? url : `${d.origin}${d.pathname}`;
+
+  let fetchObj = caches.get(reUrl);
 
   if (!fetchObj) {
-    fetchObj = fetch(url);
-    caches.set(url, fetchObj);
+    fetchObj = fetch(reUrl);
+    caches.set(reUrl, fetchObj);
   }
 
   const resp = await fetchObj;
@@ -3555,11 +3559,11 @@ use(["mjs", "js"], async (ctx, next) => {
 
 use(["txt", "html", "htm"], async (ctx, next) => {
   if (!ctx.result) {
-    const { url } = ctx;
+    const { url, params } = ctx;
 
     let resp;
     try {
-      resp = await wrapFetch(url);
+      resp = await wrapFetch(url, params);
     } catch (error) {
       throw wrapError(`Load ${url} failed`, error);
     }
@@ -3576,9 +3580,9 @@ use(["txt", "html", "htm"], async (ctx, next) => {
 
 use("json", async (ctx, next) => {
   if (!ctx.result) {
-    const { url } = ctx;
+    const { url, params } = ctx;
 
-    ctx.result = await wrapFetch(url).then((e) => e.json());
+    ctx.result = await wrapFetch(url, params).then((e) => e.json());
   }
 
   await next();
@@ -3586,9 +3590,9 @@ use("json", async (ctx, next) => {
 
 use("wasm", async (ctx, next) => {
   if (!ctx.result) {
-    const { url } = ctx;
+    const { url, params } = ctx;
 
-    const data = await wrapFetch(url).then((e) => e.arrayBuffer());
+    const data = await wrapFetch(url, params).then((e) => e.arrayBuffer());
 
     const module = await WebAssembly.compile(data);
     const instance = new WebAssembly.Instance(module);
@@ -3601,7 +3605,7 @@ use("wasm", async (ctx, next) => {
 
 use("css", async (ctx, next) => {
   if (!ctx.result) {
-    const { url, element } = ctx;
+    const { url, element, params } = ctx;
 
     if (element) {
       const link = document.createElement("link");
@@ -3625,7 +3629,7 @@ use("css", async (ctx, next) => {
         })
       );
     } else {
-      ctx.result = await wrapFetch(url).then((e) => e.text());
+      ctx.result = await wrapFetch(url, params).then((e) => e.text());
     }
   }
 
@@ -4308,6 +4312,8 @@ Object.defineProperty($, "PAGE", {
 lm$1.use(["html", "htm"], async (ctx, next) => {
   const { result: content, params } = ctx;
 
+  console.log("ctx.url: ", ctx.url);
+
   if (
     content &&
     /<template +page *>/.test(content) &&
@@ -4608,6 +4614,8 @@ const getDefault = async (moduleData, oriUrl) => {
   let finnalDefault = {};
 
   const { default: defaultData, PATH } = moduleData;
+
+  debugger
 
   const url = PATH || oriUrl;
 
