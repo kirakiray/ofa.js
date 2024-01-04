@@ -109,7 +109,7 @@ setTimeout(() => {
 
         this.__init_src = src;
 
-        if (this._defaults || this._pause_init) {
+        if (this._defaults || this.attr("data-pause-init")) {
           return;
         }
 

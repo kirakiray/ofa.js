@@ -219,7 +219,8 @@ $.register({
     async _navigate({ type, src }) {
       const { _noanime } = this;
       const { current: oldCurrent } = this;
-      src = new URL(src, location.href).href;
+      // src = new URL(src, location.href).href;
+      src = resolvePath(src);
 
       if (!oldCurrent) {
         this._initHome = src;
