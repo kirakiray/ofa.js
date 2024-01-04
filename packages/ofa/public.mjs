@@ -118,15 +118,13 @@ export const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
 
-  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+  tempCon.innerHTML = `<o-page src="${src}" data-pause-init="1"></o-page>`;
 
   const targetPage = eleX(tempCon.children[0]);
-  targetPage._pause_init = 1;
 
   nextTick(() => {
     targetPage._renderDefault(defaults);
-
-    delete targetPage._pause_init;
+    targetPage.attr("data-pause-init", null);
   });
 
   return targetPage;
