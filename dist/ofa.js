@@ -4226,7 +4226,6 @@ try{
 
     const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
-  export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${temp}\`;`;
 
@@ -4342,13 +4341,13 @@ ${scriptContent}`;
   });
 
   lm$1.use(["js", "mjs"], async (ctx, next) => {
-    const { result: moduleData, url } = ctx;
+    const { result: moduleData, url, realUrl } = ctx;
     if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
       await next();
       return;
     }
 
-    const defaultsData = await getDefault(moduleData, url);
+    const defaultsData = await getDefault(moduleData, realUrl || url);
 
     let tempSrc = defaultsData.temp;
 
@@ -4616,14 +4615,10 @@ ${scriptContent}`;
     }
   };
 
-  const getDefault = async (moduleData, oriUrl) => {
+  const getDefault = async (moduleData, url) => {
     let finnalDefault = {};
 
-    const { default: defaultData, PATH } = moduleData;
-
-    debugger
-
-    const url = PATH || oriUrl;
+    const { default: defaultData } = moduleData;
 
     const relateLoad = lm$1({
       url,
@@ -4701,7 +4696,8 @@ ${scriptContent}`;
     await next();
   });
 
-  lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
+  lm$1.use(["js", "mjs"], async (ctx, next) => {
+    const { result: moduleData, url, realUrl } = ctx;
     if (typeof moduleData !== "object" || moduleData.type !== COMP) {
       next();
       return;
@@ -4709,9 +4705,9 @@ ${scriptContent}`;
 
     let finnalDefault = {};
 
-    const { default: defaultData, PATH } = moduleData;
+    const { default: defaultData } = moduleData;
 
-    const path = PATH || url;
+    const path = realUrl || url;
 
     if (isFunction(defaultData)) {
       finnalDefault = await defaultData({
@@ -4778,11 +4774,11 @@ ${scriptContent}`;
 
     const oldCreated = registerOpts.created;
     registerOpts.created = function (...args) {
-      this[COMPONENT_PATH] = registerOpts.PATH;
+      this[COMPONENT_PATH] = path;
       oldCreated && oldCreated.call(this, ...args);
     };
 
-    const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
+    const regTemp = fixRelatePathContent(tempContent, path || tempUrl);
 
     $.register({
       ...registerOpts,
