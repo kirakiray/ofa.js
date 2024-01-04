@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.43 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.3.43 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3990,15 +3990,13 @@ try{
     // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
     const tempCon = document.createElement("div");
 
-    tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+    tempCon.innerHTML = `<o-page src="${src}" data-pause-init="1"></o-page>`;
 
     const targetPage = eleX(tempCon.children[0]);
-    targetPage._pause_init = 1;
 
     nextTick(() => {
       targetPage._renderDefault(defaults);
-
-      delete targetPage._pause_init;
+      targetPage.attr("data-pause-init", null);
     });
 
     return targetPage;
@@ -4399,7 +4397,7 @@ ${scriptContent}`;
 
           this.__init_src = src;
 
-          if (this._defaults || this._pause_init) {
+          if (this._defaults || this.attr("data-pause-init")) {
             return;
           }
 
@@ -5004,7 +5002,8 @@ ${scriptContent}`;
       async _navigate({ type, src }) {
         const { _noanime } = this;
         const { current: oldCurrent } = this;
-        src = new URL(src, location.href).href;
+        // src = new URL(src, location.href).href;
+        src = resolvePath(src);
 
         if (!oldCurrent) {
           this._initHome = src;
