@@ -117,7 +117,6 @@ export async function drawUrl(content, url, isPage = true) {
 
   const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
-  export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${temp}\`;`;
 

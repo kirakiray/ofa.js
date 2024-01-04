@@ -39,7 +39,8 @@ lm.use(["html", "htm"], async (ctx, next) => {
   await next();
 });
 
-lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
+lm.use(["js", "mjs"], async (ctx, next) => {
+  const { result: moduleData, url, realUrl } = ctx;
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {
     next();
     return;
@@ -47,9 +48,9 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   let finnalDefault = {};
 
-  const { default: defaultData, PATH } = moduleData;
+  const { default: defaultData } = moduleData;
 
-  const path = PATH || url;
+  const path = realUrl || url;
 
   if (isFunction(defaultData)) {
     finnalDefault = await defaultData({
@@ -116,11 +117,11 @@ lm.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   const oldCreated = registerOpts.created;
   registerOpts.created = function (...args) {
-    this[COMPONENT_PATH] = registerOpts.PATH;
+    this[COMPONENT_PATH] = path;
     oldCreated && oldCreated.call(this, ...args);
   };
 
-  const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
+  const regTemp = fixRelatePathContent(tempContent, path || tempUrl);
 
   $.register({
     ...registerOpts,
