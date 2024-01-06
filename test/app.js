@@ -54,3 +54,13 @@ export const pageAnime = {
     transform: "translate(-30px, 0)",
   },
 };
+
+// export const access = (url) => {
+//   // const obj = new URL(url);
+//   // if (location.origin === obj.origin) {
+//   //   return true;
+//   // }
+//   // return false;
+
+//   return true;
+// };
