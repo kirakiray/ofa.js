@@ -55,12 +55,10 @@ export const pageAnime = {
   },
 };
 
-// export const access = (url) => {
-//   // const obj = new URL(url);
-//   // if (location.origin === obj.origin) {
-//   //   return true;
-//   // }
-//   // return false;
-
-//   return true;
-// };
+export const access = (url) => {
+  const obj = new URL(url);
+  if (obj.host === "127.0.0.1:3348" || obj.host === "127.0.0.1:33482") {
+    return true;
+  }
+  return false;
+};
