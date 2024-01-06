@@ -37,8 +37,8 @@
     "test": "test"
   },
   "dependencies": {
-    "drill.js": "^5.3.4",
-    "xhear": "^7.3.26"
+    "drill.js": "^5.3.5",
+    "xhear": "^7.3.27"
   },
   "repository": {
     "type": "git",

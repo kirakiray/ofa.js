@@ -55,9 +55,15 @@ export const pageAnime = {
   },
 };
 
+const appSelfOrigin = new URL(import.meta.url).origin;
+
 export const access = (url) => {
   const obj = new URL(url);
-  if (obj.host === "127.0.0.1:3348" || obj.host === "127.0.0.1:33482") {
+  if (
+    obj.host === location.host ||
+    obj.host === appSelfOrigin ||
+    obj.host === "127.0.0.1:33482"
+  ) {
     return true;
   }
   return false;
