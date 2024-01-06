@@ -48,13 +48,13 @@ lm.use(["html", "htm"], async (ctx, next) => {
 });
 
 lm.use(["js", "mjs"], async (ctx, next) => {
-  const { result: moduleData, url } = ctx;
+  const { result: moduleData, url, realUrl } = ctx;
   if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
     await next();
     return;
   }
 
-  const defaultsData = await getDefault(moduleData, url);
+  const defaultsData = await getDefault(moduleData, realUrl || url);
 
   let tempSrc = defaultsData.temp;
 
@@ -322,12 +322,10 @@ export const dispatchLoad = async (_this, loaded) => {
   }
 };
 
-export const getDefault = async (moduleData, oriUrl) => {
+export const getDefault = async (moduleData, url) => {
   let finnalDefault = {};
 
-  const { default: defaultData, PATH } = moduleData;
-
-  const url = PATH || oriUrl;
+  const { default: defaultData } = moduleData;
 
   const relateLoad = lm({
     url,
