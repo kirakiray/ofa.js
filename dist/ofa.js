@@ -2009,16 +2009,39 @@ try{
 
       $ele.watchTick((e) => {
         for (let [name, func] of wen) {
-          if (e.hasModified(name)) {
-            func.call($ele, $ele[name], {
-              watchers: e,
-            });
+          const names = name.split(",");
+
+          if (names.length >= 2) {
+            if (names.some((name) => e.hasModified(name))) {
+              func.call(
+                $ele,
+                names.map((name) => $ele[name]),
+                {
+                  watchers: e,
+                }
+              );
+            }
+          } else {
+            if (e.hasModified(name)) {
+              func.call($ele, $ele[name], {
+                watchers: e,
+              });
+            }
           }
         }
       });
 
       for (let [name, func] of wen) {
-        func.call($ele, $ele[name], {});
+        const names = name.split(",");
+        if (names.length >= 2) {
+          func.call(
+            $ele,
+            names.map((name) => $ele[name]),
+            {}
+          );
+        } else {
+          func.call($ele, $ele[name], {});
+        }
       }
     }
   };
@@ -3247,6 +3270,7 @@ try{
     nextTick,
     fn: Xhear.prototype,
     all: (expr) => searchEle(document, expr).map(eleX),
+    frag: () => $(document.createDocumentFragment()),
   });
 
   $.register({

@@ -15,6 +15,7 @@ Object.assign($, {
   nextTick,
   fn: Xhear.prototype,
   all: (expr) => searchEle(document, expr).map(eleX),
+  frag: () => $(document.createDocumentFragment()),
 });
 
 export default $;
