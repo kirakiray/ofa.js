@@ -30,19 +30,19 @@ test("o-router hash router", async ({ page }) => {
 
   await page.getByTestId("gotohome").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=2");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
 
   await page.getByTestId("gotohome").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=3");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
 
   await page.getByTestId("back").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=2");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
 
   await page.getByTestId("replacetohome").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=250");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=250");
 
   await page.getByTestId("back").click();
   await new Promise((res) => setTimeout(res, 500));
@@ -54,14 +54,14 @@ test("o-router hash router", async ({ page }) => {
   await new Promise((res) => setTimeout(res, 500));
 
   await page.goBack();
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=2");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
   await new Promise((res) => setTimeout(res, 500));
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"2"}')
   );
 
   await page.goForward();
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=3");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
   await new Promise((res) => setTimeout(res, 500));
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
@@ -83,7 +83,7 @@ test("o-router hash router", async ({ page }) => {
 
     return true;
   });
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=3");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
   await new Promise((res) => setTimeout(res, 500));
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
@@ -92,7 +92,7 @@ test("o-router hash router", async ({ page }) => {
 
 test("Direct access", async ({ page }) => {
   await page.goto(
-    "http://localhost:3348/libs/router/test/router-test.html#/test/pages/home.mjs?count=501"
+    "http://localhost:3348/libs/router/test/router-test.html#/test/pages/home.html?count=501"
   );
 
   await new Promise((res) => setTimeout(res, 500));

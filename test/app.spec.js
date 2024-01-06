@@ -64,7 +64,7 @@ test("app routers", async ({ page }) => {
 
   await expect(await getRouters(page)).toEqual([
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=1",
+      src: "http://localhost:3348/test/pages/home.html?count=1",
     },
   ]);
 
@@ -73,10 +73,10 @@ test("app routers", async ({ page }) => {
 
   await expect(await getRouters(page)).toEqual([
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=1",
+      src: "http://localhost:3348/test/pages/home.html?count=1",
     },
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=2",
+      src: "http://localhost:3348/test/pages/home.html?count=2",
     },
   ]);
 
@@ -85,13 +85,13 @@ test("app routers", async ({ page }) => {
 
   await expect(await getRouters(page)).toEqual([
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=1",
+      src: "http://localhost:3348/test/pages/home.html?count=1",
     },
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=2",
+      src: "http://localhost:3348/test/pages/home.html?count=2",
     },
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=3",
+      src: "http://localhost:3348/test/pages/home.html?count=3",
     },
   ]);
 
@@ -100,10 +100,10 @@ test("app routers", async ({ page }) => {
 
   await expect(await getRouters(page)).toEqual([
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=1",
+      src: "http://localhost:3348/test/pages/home.html?count=1",
     },
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=2",
+      src: "http://localhost:3348/test/pages/home.html?count=2",
     },
   ]);
 
@@ -112,10 +112,10 @@ test("app routers", async ({ page }) => {
 
   await expect(await getRouters(page)).toEqual([
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=1",
+      src: "http://localhost:3348/test/pages/home.html?count=1",
     },
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=250",
+      src: "http://localhost:3348/test/pages/home.html?count=250",
     },
   ]);
 
@@ -124,7 +124,7 @@ test("app routers", async ({ page }) => {
 
   await expect(await getRouters(page)).toEqual([
     {
-      src: "http://localhost:3348/test/pages/home.mjs?count=1",
+      src: "http://localhost:3348/test/pages/home.html?count=1",
     },
   ]);
 });

@@ -7,6 +7,7 @@
     "update": "node scripts/update",
     "build": "rollup -c",
     "static-server": "node scripts/static-server",
+    "start": "node scripts/start.mjs",
     "test": "node scripts/ci-test",
     "playwright": "npx playwright test",
     "ncu": "ncu -u xhear drill.js && npm i"
@@ -28,7 +29,8 @@
     "koa": "^2.14.2",
     "koa-static": "^5.0.0",
     "rollup": "^3.22.0",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "open": "^10.0.2"
   },
   "main": "dist/ofa.js",
   "directories": {
