@@ -1,4 +1,4 @@
-const { server, home } = require("./static-server");
+const { server, _server2, home } = require("./static-server");
 const shell = require("shelljs");
 
 shell.exec(`npm run playwright`, function (code, stdout, stderr) {
@@ -6,6 +6,7 @@ shell.exec(`npm run playwright`, function (code, stdout, stderr) {
   console.log("Program output:", stdout);
   console.log("Program stderr:", stderr);
   server.close();
+  _server2.close();
   if (code !== 0) {
     throw "run error";
   }
