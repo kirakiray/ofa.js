@@ -43,6 +43,8 @@
   <button>
     <a href="./errorpage.html" olink>goto error page</a>
   </button>
+  <br />
+  <button on:click="toCorsSub">ToSubpage 33482(Cross domain)</button>
   <!-- <img src="../testimg.jpeg" alt=""> -->
 
   <script>
@@ -56,6 +58,11 @@
           toHome() {
             this.goto(
               `./home.html?count=${(Number(this.query.count) || 0) + 1}`
+            );
+          },
+          toCorsSub() {
+            this.goto(
+              `http://127.0.0.1:33482/pages/subs/sub-page01.html`
             );
           },
         },
