@@ -179,3 +179,42 @@ test("page attached and detached", async ({ page }) => {
   });
   expect(detached_home2).toBe("ok");
 });
+
+test("cross domain page", async ({ page }) => {
+  await page.goto("http://127.0.0.1:3348/test/test-app.html");
+  await new Promise((res) => setTimeout(res, 100));
+
+  await page.getByRole("button", { name: "Go to sub page" }).click();
+
+  await expect(page.getByTestId("src1")).toHaveText(
+    "self src:http://127.0.0.1:3348/test/pages/subs/sub-page01.html"
+  );
+
+  await page.getByRole("link", { name: "Page04" }).click();
+  await new Promise((res) => setTimeout(res, 400));
+
+  await expect(page.getByTestId("src4")).toHaveText(
+    "self src:http://127.0.0.1:3348/test/pages/subs/sub-page04.html"
+  );
+
+  await page.getByTestId("back").click();
+  await new Promise((res) => setTimeout(res, 400));
+  await page.getByTestId("back").click();
+  await new Promise((res) => setTimeout(res, 400));
+  await page
+    .getByRole("button", { name: "ToSubpage 33482(Cross domain)" })
+    .click();
+  await new Promise((res) => setTimeout(res, 400));
+
+  await expect(page.getByTestId("src1")).toHaveText(
+    "self src:http://127.0.0.1:33482/pages/subs/sub-page01.html"
+  );
+
+  await page.getByRole("link", { name: "Page04" }).click();
+
+  await new Promise((res) => setTimeout(res, 400));
+
+  await expect(page.getByTestId("src4")).toHaveText(
+    "self src:http://127.0.0.1:33482/pages/subs/sub-page04.html"
+  );
+});
