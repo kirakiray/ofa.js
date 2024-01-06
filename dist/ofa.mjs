@@ -5028,6 +5028,8 @@ $.register({
       // src = new URL(src, location.href).href;
       src = resolvePath(src);
 
+      runAccess(this, src);
+
       if (!oldCurrent) {
         this._initHome = src;
       }
@@ -5099,6 +5101,8 @@ $.register({
     },
     set routers(_routers) {
       _routers = _routers.map((e) => {
+        runAccess(this, e.src);
+
         return { src: e.src };
       });
 
@@ -5120,6 +5124,31 @@ $.register({
     },
   },
 });
+
+const runAccess = (app, src) => {
+  const access = app?._module?.access;
+
+  const srcObj = new URL(src);
+
+  if (srcObj.origin !== location.origin && !access) {
+    const NoAccessErrDesc =
+      "To jump across domains, the access function must be set";
+    console.log(NoAccessErrDesc, app.ele, app?._module);
+    throw new Error(NoAccessErrDesc);
+  }
+
+  if (access) {
+    const result = access(src);
+
+    if (result !== true) {
+      if (result instanceof Error) {
+        throw result;
+      }
+
+      throw new Error(`Access to current address is not allowed: ${src}`);
+    }
+  }
+};
 
 const pageInAnime = ({ page, key }) => {
   const { pageAnime } = page;
