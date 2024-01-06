@@ -24,16 +24,22 @@ export default function initRouter({ app, getStateUrl, fixStateUrl }) {
       case "goto":
         const { routers } = app;
 
-        const { pathname, search } = new URL(src, location.href);
+        const { pathname, search, origin } = new URL(src, location.href);
 
         if (_isGoto) {
           _isGoto = null;
           return;
         }
 
-        const hUrl = getStateUrl
-          ? getStateUrl(pathname, search, methodName)
-          : `#${pathname}${search}`;
+        let hUrl = "";
+
+        if (getStateUrl) {
+          hUrl = getStateUrl(pathname, search, methodName);
+        } else if (location.origin === origin) {
+          hUrl = `#${pathname}${search}`;
+        } else {
+          hUrl = `#${origin}${pathname}${search}`;
+        }
 
         if (_isFixNavigate) {
           methodName = "replaceState";
