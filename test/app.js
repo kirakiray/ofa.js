@@ -1,4 +1,4 @@
-export const home = "./pages/home.mjs?count=1";
+export const home = "./pages/home.html?count=1";
 
 export const loading = () => {
   const loadingEl = $({
