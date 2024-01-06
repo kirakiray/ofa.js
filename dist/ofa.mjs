@@ -4173,8 +4173,11 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   }
 
   const str = `{"version": 3,
-    "file": "${filePath.replace(/.+\/(.+?)/, "$1").replace(".html", ".js")}",
-    "sources": ["${filePath}"],
+    "file": "${filePath
+      .replace(/\?.+/, "")
+      .replace(/.+\/(.+?)/, "$1")
+      .replace(".html", ".js")}",
+    "sources": ["${filePath.replace(/\?.+/, "")}"],
     "mappings": "${mappings}"}`;
 
   return await strToBase64DataURI(str, null);
@@ -4310,8 +4313,6 @@ Object.defineProperty($, "PAGE", {
 
 lm$1.use(["html", "htm"], async (ctx, next) => {
   const { result: content, params } = ctx;
-
-  console.log("ctx.url: ", ctx.url);
 
   if (
     content &&
