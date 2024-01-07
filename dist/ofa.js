@@ -4839,26 +4839,13 @@ ${scriptContent}`;
 
     const oriNextPages = await getPagesData(src);
 
-    // if (oriNextPages.length === 1) {
-    //   // In most cases there will only be one page, so optimize for this case
-    //   const target = oriNextPages[0];
-
-    //   const newPage = createPage(target.src, target.defaults);
-
-    //   app.push(newPage);
-
-    //   loadingEl && loadingEl.remove();
-
-    //   return { current: newPage, old: currentPages[0], publics: [] };
-    // }
-
-    // Nested routing code
     let container = app;
 
-    const publicParents = []; // 未被清除的公用父页面
+    const publicParents = []; // Public parent pages that have not been cleared
     const finalPages = [];
     let old;
 
+    // Nested routing code
     // Keep the parent page with the same src
     let isSame = true;
     oriNextPages.forEach((e, index) => {
@@ -4896,7 +4883,19 @@ ${scriptContent}`;
     let topPage, innerPage;
 
     finalPages.forEach((pageData) => {
-      const page = createPage(pageData.src, pageData.defaults);
+      const { ISERROR: isError } = pageData;
+
+      let page;
+      if (isError) {
+        const failContent = getFailContent(pageData.src, pageData, fail);
+
+        page = createPage(pageData.src, {
+          type: $.PAGE,
+          temp: failContent,
+        });
+      } else {
+        page = createPage(pageData.src, pageData.defaults);
+      }
 
       if (!topPage) {
         topPage = page;
@@ -4920,98 +4919,6 @@ ${scriptContent}`;
     loadingEl && loadingEl.remove();
 
     return { current: topPage, old, publics: publicParents };
-
-    // const currentPages = [];
-
-    // // Pages to be deleted
-    // let oldPage = _this.current;
-
-    // // The next page to appear
-    // let page;
-
-    // if (oldPage) {
-    //   let target = oldPage;
-
-    //   do {
-    //     currentPages.unshift({
-    //       page: target,
-    //       src: target.src,
-    //     });
-    //     oldPage = target;
-    //     target = target.parent;
-    //   } while (target.tag === "o-page");
-    // }
-
-    // let loadingEl;
-    // if (loading) {
-    //   loadingEl = createXEle(loading());
-
-    //   _this.push(loadingEl);
-    // }
-
-    // // Container for stuffing new pages; o-app by default, or o-page in subrouting mode.
-    // let container = _this;
-
-    // const oriNextPages = await getPagesData(src);
-
-    // // Finding shared parent pages in the case of subroutes
-    // const publicPages = [];
-    // let targetIndex = -1;
-    // const lastIndex = currentPages.length - 1;
-    // currentPages.some((e, i) => {
-    //   const next = oriNextPages[i];
-
-    //   if (next.src === e.src && i !== lastIndex) {
-    //     publicPages.push(e);
-    //     targetIndex = i;
-    //     return false;
-    //   }
-
-    //   return true;
-    // });
-
-    // let nextPages = oriNextPages;
-
-    // if (targetIndex >= 0) {
-    //   container = publicPages.slice(-1)[0].page;
-    //   oldPage = container.slice(-1)[0];
-    //   nextPages = oriNextPages.slice(targetIndex + 1);
-    // }
-
-    // let targetPage;
-
-    // nextPages.some((e) => {
-    //   const { defaults, ISERROR: isError } = e;
-
-    //   if (isError === ISERROR) {
-    //     const failContent = getFailContent(src, e, fail);
-
-    //     page = createPage(e.src, {
-    //       type: $.PAGE,
-    //       temp: failContent,
-    //     });
-
-    //     return false;
-    //   }
-
-    //   const subPage = createPage(e.src, defaults);
-
-    //   if (!targetPage) {
-    //     page = subPage;
-    //   }
-
-    //   if (targetPage) {
-    //     targetPage.push(subPage);
-    //   }
-
-    //   targetPage = subPage;
-    // });
-
-    // loadingEl && loadingEl.remove();
-
-    // container.push(page);
-
-    // return { current: page, old: oldPage, publics: publicPages };
   };
 
   const emitRouterChange = (_this, publics, type) => {
