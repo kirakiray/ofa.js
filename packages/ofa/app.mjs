@@ -16,13 +16,19 @@ const appendPage = async ({ src, app }) => {
     app.push(loadingEl);
   }
 
-  const currentPages = [app.current];
-  for (let page of app.current.parents) {
-    if (page.tag !== "o-page") {
-      break;
-    }
+  const currentPages = [];
+  {
+    const { current } = app;
+    if (current) {
+      currentPages.push(current);
+      for (let page of current.parents) {
+        if (page.tag !== "o-page") {
+          break;
+        }
 
-    currentPages.unshift(page);
+        currentPages.unshift(page);
+      }
+    }
   }
 
   const oriNextPages = await getPagesData(src);
