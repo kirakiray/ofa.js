@@ -4812,107 +4812,207 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
 
 const HISTORY = "_history";
 
-const appendPage = async ({ src, _this }) => {
-  const { loading, fail } = _this._module || {};
-
-  const currentPages = [];
-
-  // Pages to be deleted
-  let oldPage = _this.current;
-
-  // The next page to appear
-  let page;
-
-  if (oldPage) {
-    let target = oldPage;
-
-    do {
-      currentPages.unshift({
-        page: target,
-        src: target.src,
-      });
-      oldPage = target;
-      target = target.parent;
-    } while (target.tag === "o-page");
-  }
+const appendPage = async ({ src, app }) => {
+  const { loading, fail } = app._module || {};
 
   let loadingEl;
   if (loading) {
     loadingEl = createXEle(loading());
 
-    _this.push(loadingEl);
+    app.push(loadingEl);
   }
 
-  // Container for stuffing new pages; o-app by default, or o-page in subrouting mode.
-  let container = _this;
+  const currentPages = [app.current];
+  for (let page of app.current.parents) {
+    if (page.tag !== "o-page") {
+      break;
+    }
+
+    currentPages.unshift(page);
+  }
 
   const oriNextPages = await getPagesData(src);
 
-  // Finding shared parent pages in the case of subroutes
-  const publicPages = [];
-  let targetIndex = -1;
-  const lastIndex = currentPages.length - 1;
-  currentPages.some((e, i) => {
-    const next = oriNextPages[i];
+  // if (oriNextPages.length === 1) {
+  //   // In most cases there will only be one page, so optimize for this case
+  //   const target = oriNextPages[0];
 
-    if (next.src === e.src && i !== lastIndex) {
-      publicPages.push(e);
-      targetIndex = i;
-      return false;
+  //   const newPage = createPage(target.src, target.defaults);
+
+  //   app.push(newPage);
+
+  //   loadingEl && loadingEl.remove();
+
+  //   return { current: newPage, old: currentPages[0], publics: [] };
+  // }
+
+  // Nested routing code
+  let container = app;
+
+  const publicParents = []; // 未被清除的公用父页面
+  const finalPages = [];
+  let old;
+
+  // Keep the parent page with the same src
+  let isSame = true;
+  oriNextPages.forEach((e, index) => {
+    const current = currentPages[index];
+
+    if (!isSame) {
+      finalPages.push(e);
+      return;
     }
 
-    return true;
+    if (!current || current.src !== e.src) {
+      isSame = false;
+      finalPages.push(e);
+      old = current;
+      return;
+    }
+
+    publicParents.push(current);
+
+    container = current;
   });
 
-  let nextPages = oriNextPages;
+  // In the case of only the parent page, the old variable needs to be corrected
+  if (currentPages.length > oriNextPages.length && !old) {
+    currentPages.some((e, index) => {
+      const current = oriNextPages[index];
 
-  if (targetIndex >= 0) {
-    container = publicPages.slice(-1)[0].page;
-    oldPage = container.slice(-1)[0];
-    nextPages = oriNextPages.slice(targetIndex + 1);
+      if (!current || current.src !== e.src) {
+        old = e;
+        return true;
+      }
+    });
   }
 
-  let targetPage;
+  let topPage, innerPage;
 
-  nextPages.some((e) => {
-    const { defaults, ISERROR: isError } = e;
+  finalPages.forEach((pageData) => {
+    const page = createPage(pageData.src, pageData.defaults);
 
-    if (isError === ISERROR) {
-      const failContent = getFailContent(src, e, fail);
-
-      page = createPage(e.src, {
-        type: $.PAGE,
-        temp: failContent,
-      });
-
-      return false;
+    if (!topPage) {
+      topPage = page;
+      return;
     }
 
-    const subPage = createPage(e.src, defaults);
-
-    if (!targetPage) {
-      page = subPage;
+    if (!innerPage) {
+      topPage.push(page);
+      innerPage = page;
+      return;
     }
 
-    if (targetPage) {
-      targetPage.push(subPage);
-    }
-
-    targetPage = subPage;
+    innerPage.push(page);
+    innerPage = page;
   });
+
+  if (topPage) {
+    container.push(topPage);
+  }
 
   loadingEl && loadingEl.remove();
 
-  container.push(page);
+  return { current: topPage, old, publics: publicParents };
 
-  return { current: page, old: oldPage, publics: publicPages };
+  // const currentPages = [];
+
+  // // Pages to be deleted
+  // let oldPage = _this.current;
+
+  // // The next page to appear
+  // let page;
+
+  // if (oldPage) {
+  //   let target = oldPage;
+
+  //   do {
+  //     currentPages.unshift({
+  //       page: target,
+  //       src: target.src,
+  //     });
+  //     oldPage = target;
+  //     target = target.parent;
+  //   } while (target.tag === "o-page");
+  // }
+
+  // let loadingEl;
+  // if (loading) {
+  //   loadingEl = createXEle(loading());
+
+  //   _this.push(loadingEl);
+  // }
+
+  // // Container for stuffing new pages; o-app by default, or o-page in subrouting mode.
+  // let container = _this;
+
+  // const oriNextPages = await getPagesData(src);
+
+  // // Finding shared parent pages in the case of subroutes
+  // const publicPages = [];
+  // let targetIndex = -1;
+  // const lastIndex = currentPages.length - 1;
+  // currentPages.some((e, i) => {
+  //   const next = oriNextPages[i];
+
+  //   if (next.src === e.src && i !== lastIndex) {
+  //     publicPages.push(e);
+  //     targetIndex = i;
+  //     return false;
+  //   }
+
+  //   return true;
+  // });
+
+  // let nextPages = oriNextPages;
+
+  // if (targetIndex >= 0) {
+  //   container = publicPages.slice(-1)[0].page;
+  //   oldPage = container.slice(-1)[0];
+  //   nextPages = oriNextPages.slice(targetIndex + 1);
+  // }
+
+  // let targetPage;
+
+  // nextPages.some((e) => {
+  //   const { defaults, ISERROR: isError } = e;
+
+  //   if (isError === ISERROR) {
+  //     const failContent = getFailContent(src, e, fail);
+
+  //     page = createPage(e.src, {
+  //       type: $.PAGE,
+  //       temp: failContent,
+  //     });
+
+  //     return false;
+  //   }
+
+  //   const subPage = createPage(e.src, defaults);
+
+  //   if (!targetPage) {
+  //     page = subPage;
+  //   }
+
+  //   if (targetPage) {
+  //     targetPage.push(subPage);
+  //   }
+
+  //   targetPage = subPage;
+  // });
+
+  // loadingEl && loadingEl.remove();
+
+  // container.push(page);
+
+  // return { current: page, old: oldPage, publics: publicPages };
 };
 
 const emitRouterChange = (_this, publics, type) => {
   if (publics && publics.length) {
     const { current } = _this;
-    publics.forEach((e) => {
-      const { page } = e;
+    publics.forEach((page) => {
+      // const { page } = e;
       const { routerChange } = page._defaults;
 
       if (routerChange) {
@@ -4995,17 +5095,19 @@ $.register({
         publics,
       } = await appendPage({
         src: newCurrent.src,
-        _this: this,
+        app: this,
       });
 
-      if (!_noanime) {
+      if (!_noanime && page) {
         pageInAnime({
           page,
           key: "previous",
         });
       }
 
-      needRemovePage = resetOldPage(needRemovePage);
+      if (needRemovePage) {
+        needRemovePage = resetOldPage(needRemovePage);
+      }
 
       this.emit("router-change", {
         data: { name: "back", delta },
@@ -5020,7 +5122,9 @@ $.register({
         });
       }
 
-      needRemovePage.remove();
+      if (needRemovePage) {
+        needRemovePage.remove();
+      }
     },
     async _navigate({ type, src }) {
       const { _noanime } = this;
@@ -5040,7 +5144,7 @@ $.register({
         publics,
       } = await appendPage({
         src,
-        _this: this,
+        app: this,
       });
 
       if (!_noanime) {
@@ -5064,7 +5168,7 @@ $.register({
 
       emitRouterChange(this, publics, type);
 
-      if (oldCurrent) {
+      if (oldCurrent && needRemovePage) {
         if (!_noanime) {
           await pageOutAnime({
             page: needRemovePage,
@@ -5081,7 +5185,19 @@ $.register({
       return this._navigate({ type: "replace", src });
     },
     get current() {
-      return this.all("o-page").slice(-1)[0];
+      return this.all("o-page")
+        .reverse()
+        .find((page) => {
+          let target = page;
+          while (target.tag === "o-page") {
+            if (target.data.willRemoved) {
+              return false;
+            }
+            target = target.parent;
+          }
+
+          return true;
+        });
     },
     get routers() {
       let { current } = this;
@@ -5125,6 +5241,7 @@ $.register({
   },
 });
 
+// Ensure that the page is available, handle cross-domain pages and other operations
 const runAccess = (app, src) => {
   const access = app?._module?.access;
 
@@ -5201,6 +5318,7 @@ const resetOldPage = (needRemovePage) => {
     width: `${needRemovePage.width}px`,
     height: `${needRemovePage.height}px`,
   };
+  needRemovePage.data.willRemoved = 1;
 
   return needRemovePage;
 };
