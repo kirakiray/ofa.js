@@ -13,6 +13,12 @@ const appendPage = async ({ src, app }) => {
   if (loading) {
     loadingEl = createXEle(loading());
 
+    if (!loadingEl) {
+      const errDesc = `loading function returns no content`;
+      console.log(errDesc, ":", loading);
+      throw new Error(errDesc);
+    }
+
     app.push(loadingEl);
   }
 
