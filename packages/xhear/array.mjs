@@ -132,6 +132,7 @@ const likeArrayFn = {
     const frag = document.createDocumentFragment();
 
     childs.forEach((ele) => {
+      // Identify internal operations to prevent detached corrections
       ele.__internal = 1;
       frag.append(ele);
     });
