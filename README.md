@@ -13,7 +13,7 @@ ofa.js can be used as a library like jQuery and can also be employed for develop
 To start using ofa.js, simply add a reference to ofa.js in your HTML file.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.4.0/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.4.0.2/dist/ofa.min.js"></script>
 ```
 
 ## User Experience
@@ -34,7 +34,7 @@ With ofa.js, however, you can quickly create a component by just creating an HTM
 
 ```html
 <!-- Using the encapsulated component -->
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.4.0/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.4.0.2/dist/ofa.min.js"></script>
 <l-m src="./my-component.html"></l-m>
 <my-component>
     ...
