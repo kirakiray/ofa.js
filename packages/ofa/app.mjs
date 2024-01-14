@@ -260,6 +260,10 @@ $.register({
         app: this,
       });
 
+      if (!page) {
+        return;
+      }
+
       if (!_noanime) {
         pageInAnime({
           page,
