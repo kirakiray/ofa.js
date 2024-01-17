@@ -4033,6 +4033,10 @@ try{
         }
       });
     });
+
+    searchEle(ele, "template").forEach((el) => {
+      fixRelate(el.content, path);
+    });
   }
 
   function fixRelatePathContent(content, path) {
