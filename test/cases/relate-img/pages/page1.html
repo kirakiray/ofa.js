@@ -1,0 +1,41 @@
+<template page>
+  <div>page1</div>
+  <img src="../../../testimg.jpeg" height="100" alt="img1" data-testid="img1" />
+  <x-if :value="val">
+    <img
+      src="../../../testimg.jpeg"
+      height="100"
+      alt="img2"
+      data-testid="img2"
+    />
+  </x-if>
+  <div>
+    <x-fill :value="arr" name="item"></x-fill>
+  </div>
+
+  <template name="item">
+    <div>
+      <x-if :value="$host.val">
+        <img
+          src="../../../testimg.jpeg"
+          height="100"
+          alt="img3"
+          data-testid="img3"
+        />
+      </x-if>
+    </div>
+  </template>
+  <script>
+    export default {
+      data: {
+        val: false,
+        arr: [1],
+      },
+      ready() {
+        setTimeout(() => {
+          this.val = true;
+        }, 100);
+      },
+    };
+  </script>
+</template>
