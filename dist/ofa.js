@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.0.4 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.0.6 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4376,32 +4376,20 @@ try{
 
     let scriptContent = "";
     if (scriptEl) {
-      scriptEl.html
-        .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
-        .replace(/(import .+?from .+);?/g, (str) => {
-          return str.replace(/([\s\S]+?from )([\s\S]+);?/, (a, b, afterStr) => {
-            if (/`/.test(afterStr) && !/\$\{.*\}/.test(afterStr)) {
-              // Cannot be a dynamic path
-              return;
-            }
-
-            if (/['"]/.test(afterStr)) {
-              return;
-            }
-
-            throw new Error(
-              `Unable to parse addresses of strings with variables: ${str}`
-            );
-          });
-        });
-
       scriptContent = scriptEl.html
-        .replace(/([\s\S]+?from )['"](.+?)['"]/g, (str, beforeStr, pathStr) => {
-          return `${beforeStr}"${resolvePath(pathStr, url)}";`;
+        .split(/;/g)
+        .map((content) => {
+          const t_content = content.trim();
+          // Confirm it is an import reference and correct the address
+          if (/^import[ \{'"]/.test(t_content)) {
+            // Update address string directly
+            return t_content.replace(/['"]([\s\S]+)['"]/, (arg0, pathStr) => {
+              return `"${resolvePath(pathStr, url)}"`;
+            });
+          }
+          return content;
         })
-        .replace(/import ['"](.+?)['"];?/g, (str, pathStr) => {
-          return `import '${resolvePath(pathStr, url)}'`;
-        });
+        .join(";");
     }
 
     const fileContent = `${beforeContent};
@@ -5426,7 +5414,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.0.4";
+  const version = "ofa.js@4.4.0.6";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
