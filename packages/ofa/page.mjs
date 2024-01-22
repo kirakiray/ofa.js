@@ -36,9 +36,11 @@ lm.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
       const err = new Error(
-        `Error loading Page module: ${ctx.url}\n ${error.stack}`
+        `Error loading Page module: ${ctx.url}\n ${error.stack}`,
+        {
+          cause: error,
+        }
       );
-      err.error = error;
       throw err;
     }
     ctx.resultContent = content;
@@ -209,9 +211,11 @@ setTimeout(() => {
           });
         } catch (error) {
           const err = new Error(
-            `Failed to render page:${src} \n ${error.stack}`
+            `Failed to render page:${src} \n ${error.stack}`,
+            {
+              cause: error,
+            }
           );
-          err.error = error;
           console.error(err);
         }
 

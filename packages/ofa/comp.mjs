@@ -28,7 +28,10 @@ lm.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm()(`${url} .mjs --real:${ctx.url}`);
     } catch (err) {
       const error = new Error(
-        `Error loading Component module: ${ctx.url}\n ${err.toString()}`
+        `Error loading Component module: ${ctx.url}\n ${err.toString()}`,
+        {
+          cause: err,
+        }
       );
 
       throw error;

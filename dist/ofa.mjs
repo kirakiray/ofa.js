@@ -4055,8 +4055,7 @@ const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
   try {
     await callback();
   } catch (error) {
-    const err = new Error(`${desc}\n  ${error.stack}`);
-    err.error = error;
+    const err = new Error(`${desc}\n  ${error.stack}`, { cause: error });
     self.emit("error", { data: { error: err, ...rest } });
     throw err;
   }
@@ -4088,14 +4087,19 @@ const getPagesData = async (src) => {
       let err;
       if (beforeSrc) {
         err = new Error(
-          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`,
+          {
+            cause: error,
+          }
         );
       } else {
         err = new Error(
-          `Request for ${pageSrc} page failed; \n  ${error.stack}`
+          `Request for ${pageSrc} page failed; \n  ${error.stack}`,
+          {
+            cause: error,
+          }
         );
       }
-      err.error = error;
       errorObj = err;
 
       console.error(errorObj);
@@ -4454,9 +4458,11 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
       const err = new Error(
-        `Error loading Page module: ${ctx.url}\n ${error.stack}`
+        `Error loading Page module: ${ctx.url}\n ${error.stack}`,
+        {
+          cause: error,
+        }
       );
-      err.error = error;
       throw err;
     }
     ctx.resultContent = content;
@@ -4627,9 +4633,11 @@ setTimeout(() => {
           });
         } catch (error) {
           const err = new Error(
-            `Failed to render page:${src} \n ${error.stack}`
+            `Failed to render page:${src} \n ${error.stack}`,
+            {
+              cause: error,
+            }
           );
-          err.error = error;
           console.error(err);
         }
 
@@ -4810,7 +4818,10 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (err) {
       const error = new Error(
-        `Error loading Component module: ${ctx.url}\n ${err.toString()}`
+        `Error loading Component module: ${ctx.url}\n ${err.toString()}`,
+        {
+          cause: err,
+        }
       );
 
       throw error;
