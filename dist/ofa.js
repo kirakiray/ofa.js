@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.0.6 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.0.7 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4387,7 +4387,7 @@ try{
           // Confirm it is an import reference and correct the address
           if (/^import[ \{'"]/.test(t_content)) {
             // Update address string directly
-            return t_content.replace(/['"]([\s\S]+)['"]/, (arg0, pathStr) => {
+            return content.replace(/['"]([\s\S]+)['"]/, (arg0, pathStr) => {
               return `"${resolvePath(pathStr, url)}"`;
             });
           }
@@ -5425,7 +5425,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.0.6";
+  const version = "ofa.js@4.4.0.7";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

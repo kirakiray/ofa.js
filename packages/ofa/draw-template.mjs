@@ -132,7 +132,7 @@ export async function drawUrl(content, url, isPage = true) {
         // Confirm it is an import reference and correct the address
         if (/^import[ \{'"]/.test(t_content)) {
           // Update address string directly
-          return t_content.replace(/['"]([\s\S]+)['"]/, (arg0, pathStr) => {
+          return content.replace(/['"]([\s\S]+)['"]/, (arg0, pathStr) => {
             return `"${resolvePath(pathStr, url)}"`;
           });
         }
