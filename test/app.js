@@ -1,4 +1,4 @@
-export const home = "./pages/home.mjs?count=1";
+export const home = "./pages/home.html?count=1";
 
 export const loading = () => {
   const loadingEl = $({
@@ -53,4 +53,18 @@ export const pageAnime = {
     opacity: 0,
     transform: "translate(-30px, 0)",
   },
+};
+
+const appSelfHost = new URL(import.meta.url).host;
+
+export const access = (url) => {
+  const obj = new URL(url);
+  if (
+    obj.host === location.host ||
+    obj.host === appSelfHost ||
+    obj.host === "127.0.0.1:33482"
+  ) {
+    return true;
+  }
+  return false;
 };

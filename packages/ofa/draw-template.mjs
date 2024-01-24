@@ -70,8 +70,11 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   }
 
   const str = `{"version": 3,
-    "file": "${filePath.replace(/.+\/(.+?)/, "$1").replace(".html", ".js")}",
-    "sources": ["${filePath}"],
+    "file": "${filePath
+      .replace(/\?.+/, "")
+      .replace(/.+\/(.+?)/, "$1")
+      .replace(".html", ".js")}",
+    "sources": ["${filePath.replace(/\?.+/, "")}"],
     "mappings": "${mappings}"}`;
 
   return await strToBase64DataURI(str, null);
@@ -117,38 +120,25 @@ export async function drawUrl(content, url, isPage = true) {
 
   const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
-  export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${temp}\`;`;
 
   let scriptContent = "";
   if (scriptEl) {
-    scriptEl.html
-      .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
-      .replace(/(import .+?from .+);?/g, (str) => {
-        return str.replace(/([\s\S]+?from )([\s\S]+);?/, (a, b, afterStr) => {
-          if (/`/.test(afterStr) && !/\$\{.*\}/.test(afterStr)) {
-            // Cannot be a dynamic path
-            return;
-          }
-
-          if (/['"]/.test(afterStr)) {
-            return;
-          }
-
-          throw new Error(
-            `Unable to parse addresses of strings with variables: ${str}`
-          );
-        });
-      });
-
     scriptContent = scriptEl.html
-      .replace(/([\s\S]+?from )['"](.+?)['"]/g, (str, beforeStr, pathStr) => {
-        return `${beforeStr}"${resolvePath(pathStr, url)}";`;
+      .split(/;/g)
+      .map((content) => {
+        const t_content = content.trim();
+        // Confirm it is an import reference and correct the address
+        if (/^import[ \{'"]/.test(t_content)) {
+          // Update address string directly
+          return content.replace(/['"]([\s\S]+)['"]/, (arg0, pathStr) => {
+            return `"${resolvePath(pathStr, url)}"`;
+          });
+        }
+        return content;
       })
-      .replace(/import ['"](.+?)['"];?/g, (str, pathStr) => {
-        return `import '${resolvePath(pathStr, url)}'`;
-      });
+      .join(";");
   }
 
   const fileContent = `${beforeContent};

@@ -121,7 +121,7 @@ test("inject multi style and link", async ({ page }) => {
   await page.goto(
     "http://localhost:3348/test/cases/inject-host/test-host-link.html"
   );
-  await new Promise((res) => setTimeout(res, 50));
+  await new Promise((res) => setTimeout(res, 100));
 
   expect(await getColor(page, "interfered-element")).toBe("rgb(255, 0, 0)");
   expect(await getColor(page, "interfered-element-2")).toBe("rgb(0, 128, 0)");

@@ -1,42 +1,87 @@
-<!-- <l-m src="../comps/btn/a-btn.mjs"></l-m> -->
-<l-m src="../comps/btn/a-btn.html"></l-m>
-<style>
-  .test-bg {
-    width: 30px;
-    height: 30px;
-    background-image: url(../testimg.jpeg);
-  }
-</style>
+<template page>
+  <!-- <l-m src="../comps/btn/a-btn.mjs"></l-m> -->
+  <l-m src="../comps/btn/a-btn.html"></l-m>
+  <style>
+    .test-bg {
+      width: 30px;
+      height: 30px;
+      background-image: url(../testimg.jpeg);
+    }
+  </style>
 
-<div data-testid="first-div">I am home {{query}}</div>
-<button on:click="toHome" data-testid="gotohome">go to home</button>
-<br />
-<button on:click="replace('./home.mjs?count=250')" data-testid="replacetohome">
-  replace to home
-</button>
-<br />
-<button on:click="goto('./hahaha.mjs')" data-testid="gotofail">
-  go to failure page
-</button>
-<br />
-<button on:click="back()" data-testid="back">Back</button>
-<br />
-<br />
-<button on:click="goto('./single-page.html')" data-testid="gotosingle">
-  TO single-page
-</button>
-<br />
-<a href="./single-page.html" olink>TO single-page in o-link</a>
-<br />
-<br />
-<button on:click="goto('./subs/sub-page01.html')">Go to sub page 01</button>
-<br />
-<br />
-<a-btn data-testid="olink"></a-btn>
-<br />
-<div class="test-bg" data-testid="testbg"></div>
-<br />
-<button>
-  <a href="./errorpage.html" olink>goto error page</a>
-</button>
-<!-- <img src="../testimg.jpeg" alt=""> -->
+  <div data-testid="first-div">I am home {{query}}</div>
+  <button on:click="toHome" data-testid="gotohome">go to home</button>
+  <br />
+  <button
+    on:click="replace('./home.html?count=250')"
+    data-testid="replacetohome"
+  >
+    replace to home
+  </button>
+  <br />
+  <button on:click="goto('./hahaha.mjs')" data-testid="gotofail">
+    go to failure page
+  </button>
+  <br />
+  <button on:click="back()" data-testid="back">Back</button>
+  <br />
+  <br />
+  <button on:click="goto('./single-page.html')" data-testid="gotosingle">
+    TO single-page
+  </button>
+  <br />
+  <a href="./single-page.html" olink>TO single-page in o-link</a>
+  <br />
+  <br />
+  <button on:click="goto('./subs/sub-page01.html')">Go to sub page 01</button>
+  <br />
+  <br />
+  <a-btn data-testid="olink"></a-btn>
+  <br />
+  <div class="test-bg" data-testid="testbg"></div>
+  <br />
+  <button>
+    <a href="./errorpage.html" olink>goto error page</a>
+  </button>
+  <br />
+  <button on:click="toCorsSub">ToSubpage 33482(Cross domain)</button>
+  <!-- <img src="../testimg.jpeg" alt=""> -->
+  <br />
+  <a href="./parent1.mjs" olink olink id="test-target">To Parent1</a>
+  <br />
+  <a href="./subs/sub-page03.html">To subs3</a>
+  <script>
+    export default async ({ query }) => {
+      return {
+        data: {
+          val: "1111",
+          query: query || {},
+        },
+        proto: {
+          toHome() {
+            this.goto(
+              `./home.html?count=${(Number(this.query.count) || 0) + 1}`
+            );
+          },
+          toCorsSub() {
+            this.goto(`http://127.0.0.1:33482/pages/subs/sub-page01.html`);
+          },
+        },
+        attached() {
+          console.log("attached home => ", this);
+
+          window._attached_home = "ok";
+
+          // setTimeout(() => {
+          //   this.shadow.$("#test-target").ele.click();
+          // }, 100);
+        },
+        detached() {
+          console.log("detached home => ", this);
+
+          window._detached_home = "ok";
+        },
+      };
+    };
+  </script>
+</template>

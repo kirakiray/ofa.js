@@ -30,19 +30,19 @@ test("o-router hash router", async ({ page }) => {
 
   await page.getByTestId("gotohome").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=2");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
 
   await page.getByTestId("gotohome").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=3");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
 
   await page.getByTestId("back").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=2");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
 
   await page.getByTestId("replacetohome").click();
   await new Promise((res) => setTimeout(res, 500));
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=250");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=250");
 
   await page.getByTestId("back").click();
   await new Promise((res) => setTimeout(res, 500));
@@ -54,14 +54,14 @@ test("o-router hash router", async ({ page }) => {
   await new Promise((res) => setTimeout(res, 500));
 
   await page.goBack();
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=2");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
   await new Promise((res) => setTimeout(res, 500));
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"2"}')
   );
 
   await page.goForward();
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=3");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
   await new Promise((res) => setTimeout(res, 500));
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
@@ -83,7 +83,7 @@ test("o-router hash router", async ({ page }) => {
 
     return true;
   });
-  expect(await getHash(page)).toBe("#/test/pages/home.mjs?count=3");
+  expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
   await new Promise((res) => setTimeout(res, 500));
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
@@ -92,11 +92,68 @@ test("o-router hash router", async ({ page }) => {
 
 test("Direct access", async ({ page }) => {
   await page.goto(
-    "http://localhost:3348/libs/router/test/router-test.html#/test/pages/home.mjs?count=501"
+    "http://localhost:3348/libs/router/test/router-test.html#/test/pages/home.html?count=501"
   );
 
   await new Promise((res) => setTimeout(res, 500));
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"501"}')
+  );
+});
+
+test("cross domain page in router mode", async ({ page }) => {
+  await page.goto("http://127.0.0.1:3348/libs/router/test/router-test.html");
+  await new Promise((res) => setTimeout(res, 100));
+
+  await page.getByRole("button", { name: "Go to sub page" }).click();
+
+  await expect(page.getByTestId("src1")).toHaveText(
+    "self src:http://127.0.0.1:3348/test/pages/subs/sub-page01.html"
+  );
+
+  const { _preview: href1 } = await page.waitForFunction(() => {
+    // return location.hash; // Can cause stuck
+    return location.href;
+  });
+
+  await expect(href1).toBe(
+    "http://127.0.0.1:3348/libs/router/test/router-test.html#/test/pages/subs/sub-page01.html"
+  );
+
+  await page.getByRole("link", { name: "Page04" }).click();
+  await new Promise((res) => setTimeout(res, 400));
+
+  await expect(page.getByTestId("src4")).toHaveText(
+    "self src:http://127.0.0.1:3348/test/pages/subs/sub-page04.html"
+  );
+
+  await page.getByTestId("back").click();
+  await new Promise((res) => setTimeout(res, 400));
+  await page.getByTestId("back").click();
+  await new Promise((res) => setTimeout(res, 400));
+  await page
+    .getByRole("button", { name: "ToSubpage 33482(Cross domain)" })
+    .click();
+  await new Promise((res) => setTimeout(res, 400));
+
+  await expect(page.getByTestId("src1")).toHaveText(
+    "self src:http://127.0.0.1:33482/pages/subs/sub-page01.html"
+  );
+
+  const { _preview: href2 } = await page.waitForFunction(() => {
+    // return location.hash; // Can cause stuck
+    return location.href;
+  });
+
+  await expect(href2).toBe(
+    "http://127.0.0.1:3348/libs/router/test/router-test.html#http://127.0.0.1:33482/pages/subs/sub-page01.html"
+  );
+
+  await page.getByRole("link", { name: "Page04" }).click();
+
+  await new Promise((res) => setTimeout(res, 400));
+
+  await expect(page.getByTestId("src4")).toHaveText(
+    "self src:http://127.0.0.1:33482/pages/subs/sub-page04.html"
   );
 });

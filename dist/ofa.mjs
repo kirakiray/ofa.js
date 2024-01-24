@@ -1,4 +1,4 @@
-//! ofa.js - v4.3.43 https://github.com/kirakiray/ofa.js  (c) 2018-2023 YAO
+//! ofa.js - v4.4.1 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -466,6 +466,20 @@ mutatingMethods$1.forEach((methodName) => {
       }
 
       return reval;
+    };
+  }
+});
+
+// Object.getOwnPropertyNames(Array.prototype).forEach((methodName) => {
+["concat", "filter", "slice", "flatMap", "map"].forEach((methodName) => {
+  if (methodName === "constructor" || mutatingMethods$1.includes(methodName)) {
+    return;
+  }
+
+  const oldFunc = Array.prototype[methodName];
+  if (oldFunc instanceof Function) {
+    fn$1[methodName] = function (...args) {
+      return oldFunc.call(Array.from(this), ...args);
     };
   }
 });
@@ -1550,6 +1564,7 @@ const likeArrayFn = {
     const frag = document.createDocumentFragment();
 
     childs.forEach((ele) => {
+      // Identify internal operations to prevent detached corrections
       ele.__internal = 1;
       frag.append(ele);
     });
@@ -2003,16 +2018,39 @@ const renderElement = ({ defaults, ele, template, temps }) => {
 
     $ele.watchTick((e) => {
       for (let [name, func] of wen) {
-        if (e.hasModified(name)) {
-          func.call($ele, $ele[name], {
-            watchers: e,
-          });
+        const names = name.split(",");
+
+        if (names.length >= 2) {
+          if (names.some((name) => e.hasModified(name))) {
+            func.call(
+              $ele,
+              names.map((name) => $ele[name]),
+              {
+                watchers: e,
+              }
+            );
+          }
+        } else {
+          if (e.hasModified(name)) {
+            func.call($ele, $ele[name], {
+              watchers: e,
+            });
+          }
         }
       }
     });
 
     for (let [name, func] of wen) {
-      func.call($ele, $ele[name], {});
+      const names = name.split(",");
+      if (names.length >= 2) {
+        func.call(
+          $ele,
+          names.map((name) => $ele[name]),
+          {}
+        );
+      } else {
+        func.call($ele, $ele[name], {});
+      }
     }
   }
 };
@@ -2665,13 +2703,13 @@ register({
     value: null,
   },
   watch: {
-    value() {
-      this.refreshValue();
+    value(value, t) {
+      this.refreshValue(t?.watchers);
     },
   },
   proto: {
-    refreshValue() {
-      const val = this.value;
+    refreshValue(watchers) {
+      const arrayData = this.value;
 
       if (!this._bindend) {
         return;
@@ -2679,16 +2717,16 @@ register({
 
       const childs = this._fake.children;
 
-      if (!val) {
+      if (!arrayData) {
         childs.forEach((e) => revokeAll(e));
         this._fake.innerHTML = "";
         return;
       }
 
-      if (!(val instanceof Array)) {
+      if (!(arrayData instanceof Array)) {
         console.warn(
           `The value of x-fill component must be of type Array, and the type of the current value is ${getType(
-            val
+            arrayData
           )}`
         );
 
@@ -2710,69 +2748,167 @@ register({
 
       const targetTemp = temps[this._name];
 
+      const keyName = this.attr("fill-key") || "xid";
+
       if (!childs.length) {
         const frag = document.createDocumentFragment();
 
-        val.forEach((e, i) => {
-          const $ele = createItem(e, temps, targetTemp, data.$host || data, i);
+        arrayData.forEach((e, i) => {
+          const $ele = createItem(
+            e,
+            temps,
+            targetTemp,
+            data.$host || data,
+            i,
+            keyName
+          );
           frag.appendChild($ele.ele);
         });
 
         this._fake.appendChild(frag);
       } else {
-        const xids = childs.map((e) => e._data_xid || e);
+        if (watchers) {
+          const isReplaced = watchers.some((e) => e.path.length <= 1);
 
-        // Adjustment of elements in order
-        const len = val.length;
-        let currentEl;
-        for (let i = 0; i < len; i++) {
-          const e = val[i];
+          if (!isReplaced) {
+            // It is not a replacement, it can be corrected by binding the item internally.
+            return;
+          }
+        }
 
-          const oldIndex = xids.indexOf(e.xid || e);
+        const vals = arrayData.slice();
+        const valsKeys = new Set(
+          vals.map((e) => {
+            const val = e[keyName];
+            return val === undefined ? e : val;
+          })
+        );
 
-          if (oldIndex > -1) {
-            if (oldIndex === i) {
-              // No data changes
-              currentEl = childs[i];
-              continue;
+        const { parentNode } = this._fake;
+
+        if (keyName !== "xid" && vals.length !== valsKeys.size) {
+          const errDesc = "fill key duplicates";
+          console.error(errDesc);
+          console.log(
+            errDesc,
+            ",its parent node is:",
+            parentNode,
+            "host: ",
+            eleX(parentNode)?.host?.ele
+          );
+        }
+
+        // const positionKeys = childs.map((e) => e._data_xid || e);
+        // Delete non-existing projects in advance (used to improve performance, this step can be removed and the above comment is turned on)
+        const positionKeys = [];
+        for (let i = 0, len = childs.length; i < len; i++) {
+          const e = childs[i];
+          const key = e._data_xid || e;
+
+          if (!valsKeys.has(key)) {
+            // If it no longer exists, delete it in advance.
+            revokeAll(e);
+            e.remove();
+            childs.splice(i, 1);
+            len--;
+            i--;
+          } else {
+            positionKeys.push(key);
+          }
+        }
+
+        let target = this._fake._start;
+
+        const needRemoves = [];
+
+        let count = 0;
+
+        while (target) {
+          if (target === this._fake) {
+            if (vals.length) {
+              // We have reached the end, add all elements directly to the front
+              vals.forEach((item) => {
+                const $ele = createItem(
+                  item,
+                  temps,
+                  targetTemp,
+                  data.$host || data,
+                  count,
+                  keyName
+                );
+
+                count++;
+
+                // target.parentNode.insertBefore($ele.ele, target);
+                parentNode.insertBefore($ele.ele, target);
+              });
             }
+            break;
+          }
+          if (!(target instanceof Element)) {
+            target = target.nextSibling;
+            continue;
+          }
+          const currentVal = vals.shift();
+          const isObj = currentVal instanceof Object;
+          const $tar = eleX(target);
+          const item = $tar.__item;
 
-            // position change
-            const target = childs[oldIndex];
-            const $target = eleX(target);
-            // fix data index
-            $target.__item.$index = i;
-            target.__internal = 1;
-            if (i === 0) {
-              this._fake.insertBefore(target, childs[0]);
-            } else {
-              this._fake.insertBefore(target, currentEl.nextElementSibling);
-            }
-            currentEl = target;
-            delete target.__internal;
+          if (currentVal === undefined && !vals.length) {
+            // There will be no follow-up, just delete it directly
+            needRemoves.push(target);
+            target = target.nextSibling;
             continue;
           }
 
-          // new data
-          const $ele = createItem(e, temps, targetTemp, data.$host || data, i);
-          if (!currentEl) {
-            if (childs.length) {
-              this._fake.insertBefore($ele.ele, childs[0]);
-            } else {
-              this._fake.appendChild($ele.ele);
+          const oldId = positionKeys.indexOf(
+            isObj ? currentVal[keyName] : currentVal
+          );
+          if (oldId > -1) {
+            // If the key originally exists, perform key displacement.
+            const oldItem = childs[oldId];
+            if (
+              isObj
+                ? currentVal[keyName] !== item.$data[keyName]
+                : currentVal !== item.$data
+            ) {
+              // Adjust position
+              oldItem.__internal = 1;
+              // target.parentNode.insertBefore(oldItem, target);
+              parentNode.insertBefore(oldItem, target);
+              delete oldItem.__internal;
+              target = oldItem;
+            }
+
+            // Update object
+            const $old = eleX(oldItem);
+            if ($old.__item.$data !== currentVal) {
+              $old.__item.$data = currentVal;
             }
           } else {
-            this._fake.insertBefore($ele.ele, currentEl.nextSibling);
+            // Add new element
+            const $ele = createItem(
+              currentVal,
+              temps,
+              targetTemp,
+              data.$host || data,
+              count,
+              keyName
+            );
+
+            // target.parentNode.insertBefore($ele.ele, target);
+            parentNode.insertBefore($ele.ele, target);
+            target = $ele.ele;
           }
-          currentEl = $ele.ele;
+
+          count++;
+          target = target.nextSibling;
         }
 
-        const newChilds = this._fake.children;
-
-        if (len < newChilds.length) {
-          newChilds.slice(len).forEach((e) => {
-            e.remove();
+        if (needRemoves.length) {
+          needRemoves.forEach((e) => {
             revokeAll(e);
+            e.remove();
           });
         }
       }
@@ -2780,6 +2916,7 @@ register({
       if (this._fake.parentNode) {
         eleX(this._fake.parentNode).refresh();
       }
+
       this.emit("rendered", {
         bubbles: false,
       });
@@ -2815,11 +2952,11 @@ register({
   },
 });
 
-const createItem = (data, temps, targetTemp, $host, $index) => {
+const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
   const $ele = createXEle(targetTemp.innerHTML);
 
   const itemData = new Stanz({
-    $data: data,
+    $data,
     $ele,
     $host,
     $index,
@@ -2843,7 +2980,7 @@ const createItem = (data, temps, targetTemp, $host, $index) => {
   revokes.push(revoke);
 
   $ele.__item = itemData;
-  $ele.ele._data_xid = data.xid || data;
+  $ele.ele._data_xid = $data[keyName] || $data;
 
   return $ele;
 };
@@ -3241,6 +3378,7 @@ Object.assign($, {
   nextTick,
   fn: Xhear.prototype,
   all: (expr) => searchEle(document, expr).map(eleX),
+  frag: () => $(document.createDocumentFragment()),
 });
 
 $.register({
@@ -3488,12 +3626,16 @@ class Onion {
 }
 
 const caches = new Map();
-const wrapFetch = async (url) => {
-  let fetchObj = caches.get(url);
+const wrapFetch = async (url, params) => {
+  const d = new URL(url);
+
+  const reUrl = params.includes("-direct") ? url : `${d.origin}${d.pathname}`;
+
+  let fetchObj = caches.get(reUrl);
 
   if (!fetchObj) {
-    fetchObj = fetch(url);
-    caches.set(url, fetchObj);
+    fetchObj = fetch(reUrl);
+    caches.set(reUrl, fetchObj);
   }
 
   const resp = await fetchObj;
@@ -3555,11 +3697,11 @@ use(["mjs", "js"], async (ctx, next) => {
 
 use(["txt", "html", "htm"], async (ctx, next) => {
   if (!ctx.result) {
-    const { url } = ctx;
+    const { url, params } = ctx;
 
     let resp;
     try {
-      resp = await wrapFetch(url);
+      resp = await wrapFetch(url, params);
     } catch (error) {
       throw wrapError(`Load ${url} failed`, error);
     }
@@ -3576,9 +3718,9 @@ use(["txt", "html", "htm"], async (ctx, next) => {
 
 use("json", async (ctx, next) => {
   if (!ctx.result) {
-    const { url } = ctx;
+    const { url, params } = ctx;
 
-    ctx.result = await wrapFetch(url).then((e) => e.json());
+    ctx.result = await wrapFetch(url, params).then((e) => e.json());
   }
 
   await next();
@@ -3586,9 +3728,9 @@ use("json", async (ctx, next) => {
 
 use("wasm", async (ctx, next) => {
   if (!ctx.result) {
-    const { url } = ctx;
+    const { url, params } = ctx;
 
-    const data = await wrapFetch(url).then((e) => e.arrayBuffer());
+    const data = await wrapFetch(url, params).then((e) => e.arrayBuffer());
 
     const module = await WebAssembly.compile(data);
     const instance = new WebAssembly.Instance(module);
@@ -3601,7 +3743,7 @@ use("wasm", async (ctx, next) => {
 
 use("css", async (ctx, next) => {
   if (!ctx.result) {
-    const { url, element } = ctx;
+    const { url, element, params } = ctx;
 
     if (element) {
       const link = document.createElement("link");
@@ -3625,7 +3767,7 @@ use("css", async (ctx, next) => {
         })
       );
     } else {
-      ctx.result = await wrapFetch(url).then((e) => e.text());
+      ctx.result = await wrapFetch(url, params).then((e) => e.text());
     }
   }
 
@@ -3885,6 +4027,10 @@ function fixRelate(ele, path) {
       }
     });
   });
+
+  searchEle(ele, "template").forEach((el) => {
+    fixRelate(el.content, path);
+  });
 }
 
 function fixRelatePathContent(content, path) {
@@ -3909,8 +4055,7 @@ const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
   try {
     await callback();
   } catch (error) {
-    const err = new Error(`${desc}\n  ${error.stack}`);
-    err.error = error;
+    const err = new Error(`${desc}\n  ${error.stack}`, { cause: error });
     self.emit("error", { data: { error: err, ...rest } });
     throw err;
   }
@@ -3942,14 +4087,19 @@ const getPagesData = async (src) => {
       let err;
       if (beforeSrc) {
         err = new Error(
-          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`,
+          {
+            cause: error,
+          }
         );
       } else {
         err = new Error(
-          `Request for ${pageSrc} page failed; \n  ${error.stack}`
+          `Request for ${pageSrc} page failed; \n  ${error.stack}`,
+          {
+            cause: error,
+          }
         );
       }
-      err.error = error;
       errorObj = err;
 
       console.error(errorObj);
@@ -3984,15 +4134,13 @@ const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
 
-  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+  tempCon.innerHTML = `<o-page src="${src}" data-pause-init="1"></o-page>`;
 
   const targetPage = eleX(tempCon.children[0]);
-  targetPage._pause_init = 1;
 
   nextTick(() => {
     targetPage._renderDefault(defaults);
-
-    delete targetPage._pause_init;
+    targetPage.attr("data-pause-init", null);
   });
 
   return targetPage;
@@ -4171,8 +4319,11 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   }
 
   const str = `{"version": 3,
-    "file": "${filePath.replace(/.+\/(.+?)/, "$1").replace(".html", ".js")}",
-    "sources": ["${filePath}"],
+    "file": "${filePath
+      .replace(/\?.+/, "")
+      .replace(/.+\/(.+?)/, "$1")
+      .replace(".html", ".js")}",
+    "sources": ["${filePath.replace(/\?.+/, "")}"],
     "mappings": "${mappings}"}`;
 
   return await strToBase64DataURI(str, null);
@@ -4218,38 +4369,25 @@ async function drawUrl(content, url, isPage = true) {
 
   const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
-  export const PATH = '${url}';
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
   export const temp = \`${temp}\`;`;
 
   let scriptContent = "";
   if (scriptEl) {
-    scriptEl.html
-      .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
-      .replace(/(import .+?from .+);?/g, (str) => {
-        return str.replace(/([\s\S]+?from )([\s\S]+);?/, (a, b, afterStr) => {
-          if (/`/.test(afterStr) && !/\$\{.*\}/.test(afterStr)) {
-            // Cannot be a dynamic path
-            return;
-          }
-
-          if (/['"]/.test(afterStr)) {
-            return;
-          }
-
-          throw new Error(
-            `Unable to parse addresses of strings with variables: ${str}`
-          );
-        });
-      });
-
     scriptContent = scriptEl.html
-      .replace(/([\s\S]+?from )['"](.+?)['"]/g, (str, beforeStr, pathStr) => {
-        return `${beforeStr}"${resolvePath(pathStr, url)}";`;
+      .split(/;/g)
+      .map((content) => {
+        const t_content = content.trim();
+        // Confirm it is an import reference and correct the address
+        if (/^import[ \{'"]/.test(t_content)) {
+          // Update address string directly
+          return content.replace(/['"]([\s\S]+)['"]/, (arg0, pathStr) => {
+            return `"${resolvePath(pathStr, url)}"`;
+          });
+        }
+        return content;
       })
-      .replace(/import ['"](.+?)['"];?/g, (str, pathStr) => {
-        return `import '${resolvePath(pathStr, url)}'`;
-      });
+      .join(";");
   }
 
   const fileContent = `${beforeContent};
@@ -4320,9 +4458,11 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
       const err = new Error(
-        `Error loading Page module: ${ctx.url}\n ${error.stack}`
+        `Error loading Page module: ${ctx.url}\n ${error.stack}`,
+        {
+          cause: error,
+        }
       );
-      err.error = error;
       throw err;
     }
     ctx.resultContent = content;
@@ -4332,13 +4472,13 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
 });
 
 lm$1.use(["js", "mjs"], async (ctx, next) => {
-  const { result: moduleData, url } = ctx;
+  const { result: moduleData, url, realUrl } = ctx;
   if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
     await next();
     return;
   }
 
-  const defaultsData = await getDefault(moduleData, url);
+  const defaultsData = await getDefault(moduleData, realUrl || url);
 
   let tempSrc = defaultsData.temp;
 
@@ -4393,7 +4533,7 @@ setTimeout(() => {
 
         this.__init_src = src;
 
-        if (this._defaults || this._pause_init) {
+        if (this._defaults || this.attr("data-pause-init")) {
           return;
         }
 
@@ -4433,7 +4573,7 @@ setTimeout(() => {
       },
     },
     attached() {
-      this.css.display = "block";
+      // this.css.display = "block";
 
       const needWraps = this.__need_wraps;
       if (needWraps) {
@@ -4493,9 +4633,11 @@ setTimeout(() => {
           });
         } catch (error) {
           const err = new Error(
-            `Failed to render page:${src} \n ${error.stack}`
+            `Failed to render page:${src} \n ${error.stack}`,
+            {
+              cause: error,
+            }
           );
-          err.error = error;
           console.error(err);
         }
 
@@ -4606,12 +4748,10 @@ const dispatchLoad = async (_this, loaded) => {
   }
 };
 
-const getDefault = async (moduleData, oriUrl) => {
+const getDefault = async (moduleData, url) => {
   let finnalDefault = {};
 
-  const { default: defaultData, PATH } = moduleData;
-
-  const url = PATH || oriUrl;
+  const { default: defaultData } = moduleData;
 
   const relateLoad = lm$1({
     url,
@@ -4678,7 +4818,10 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (err) {
       const error = new Error(
-        `Error loading Component module: ${ctx.url}\n ${err.toString()}`
+        `Error loading Component module: ${ctx.url}\n ${err.toString()}`,
+        {
+          cause: err,
+        }
       );
 
       throw error;
@@ -4689,7 +4832,8 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
   await next();
 });
 
-lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
+lm$1.use(["js", "mjs"], async (ctx, next) => {
+  const { result: moduleData, url, realUrl } = ctx;
   if (typeof moduleData !== "object" || moduleData.type !== COMP) {
     next();
     return;
@@ -4697,9 +4841,9 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   let finnalDefault = {};
 
-  const { default: defaultData, PATH } = moduleData;
+  const { default: defaultData } = moduleData;
 
-  const path = PATH || url;
+  const path = realUrl || url;
 
   if (isFunction(defaultData)) {
     finnalDefault = await defaultData({
@@ -4766,11 +4910,11 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
   const oldCreated = registerOpts.created;
   registerOpts.created = function (...args) {
-    this[COMPONENT_PATH] = registerOpts.PATH;
+    this[COMPONENT_PATH] = path;
     oldCreated && oldCreated.call(this, ...args);
   };
 
-  const regTemp = fixRelatePathContent(tempContent, PATH || tempUrl);
+  const regTemp = fixRelatePathContent(tempContent, path || tempUrl);
 
   $.register({
     ...registerOpts,
@@ -4785,107 +4929,126 @@ lm$1.use(["js", "mjs"], async ({ result: moduleData, url }, next) => {
 
 const HISTORY = "_history";
 
-const appendPage = async ({ src, _this }) => {
-  const { loading, fail } = _this._module || {};
-
-  const currentPages = [];
-
-  // Pages to be deleted
-  let oldPage = _this.current;
-
-  // The next page to appear
-  let page;
-
-  if (oldPage) {
-    let target = oldPage;
-
-    do {
-      currentPages.unshift({
-        page: target,
-        src: target.src,
-      });
-      oldPage = target;
-      target = target.parent;
-    } while (target.tag === "o-page");
-  }
+const appendPage = async ({ src, app }) => {
+  const { loading, fail } = app._module || {};
 
   let loadingEl;
   if (loading) {
     loadingEl = createXEle(loading());
 
-    _this.push(loadingEl);
+    if (!loadingEl) {
+      const errDesc = `loading function returns no content`;
+      console.log(errDesc, ":", loading);
+      throw new Error(errDesc);
+    }
+
+    app.push(loadingEl);
   }
 
-  // Container for stuffing new pages; o-app by default, or o-page in subrouting mode.
-  let container = _this;
+  const currentPages = [];
+  {
+    const { current } = app;
+    if (current) {
+      currentPages.push(current);
+      for (let page of current.parents) {
+        if (page.tag !== "o-page") {
+          break;
+        }
+
+        currentPages.unshift(page);
+      }
+    }
+  }
 
   const oriNextPages = await getPagesData(src);
 
-  // Finding shared parent pages in the case of subroutes
-  const publicPages = [];
-  let targetIndex = -1;
-  const lastIndex = currentPages.length - 1;
-  currentPages.some((e, i) => {
-    const next = oriNextPages[i];
+  let container = app;
 
-    if (next.src === e.src && i !== lastIndex) {
-      publicPages.push(e);
-      targetIndex = i;
-      return false;
+  const publicParents = []; // Public parent pages that have not been cleared
+  const finalPages = [];
+  let old;
+
+  // Nested routing code
+  // Keep the parent page with the same src
+  let isSame = true;
+  oriNextPages.forEach((e, index) => {
+    const current = currentPages[index];
+
+    if (!isSame) {
+      finalPages.push(e);
+      return;
     }
 
-    return true;
+    if (!current || current.src !== e.src) {
+      isSame = false;
+      finalPages.push(e);
+      old = current;
+      return;
+    }
+
+    publicParents.push(current);
+
+    container = current;
   });
 
-  let nextPages = oriNextPages;
+  // In the case of only the parent page, the old variable needs to be corrected
+  if (currentPages.length > oriNextPages.length && !old) {
+    currentPages.some((e, index) => {
+      const current = oriNextPages[index];
 
-  if (targetIndex >= 0) {
-    container = publicPages.slice(-1)[0].page;
-    oldPage = container.slice(-1)[0];
-    nextPages = oriNextPages.slice(targetIndex + 1);
+      if (!current || current.src !== e.src) {
+        old = e;
+        return true;
+      }
+    });
   }
 
-  let targetPage;
+  let topPage, innerPage;
 
-  nextPages.some((e) => {
-    const { defaults, ISERROR: isError } = e;
+  finalPages.forEach((pageData) => {
+    const { ISERROR: isError } = pageData;
 
-    if (isError === ISERROR) {
-      const failContent = getFailContent(src, e, fail);
+    let page;
+    if (isError) {
+      const failContent = getFailContent(pageData.src, pageData, fail);
 
-      page = createPage(e.src, {
+      page = createPage(pageData.src, {
         type: $.PAGE,
         temp: failContent,
       });
-
-      return false;
+    } else {
+      page = createPage(pageData.src, pageData.defaults);
     }
 
-    const subPage = createPage(e.src, defaults);
-
-    if (!targetPage) {
-      page = subPage;
+    if (!topPage) {
+      topPage = page;
+      return;
     }
 
-    if (targetPage) {
-      targetPage.push(subPage);
+    if (!innerPage) {
+      topPage.push(page);
+      innerPage = page;
+      return;
     }
 
-    targetPage = subPage;
+    innerPage.push(page);
+    innerPage = page;
   });
+
+  if (topPage) {
+    container.push(topPage);
+  }
 
   loadingEl && loadingEl.remove();
 
-  container.push(page);
-
-  return { current: page, old: oldPage, publics: publicPages };
+  return { current: topPage, old, publics: publicParents };
 };
 
 const emitRouterChange = (_this, publics, type) => {
   if (publics && publics.length) {
     const { current } = _this;
-    publics.forEach((e) => {
-      const { page } = e;
+    publics.forEach((page) => {
+      // const { page } = e;
       const { routerChange } = page._defaults;
 
       if (routerChange) {
@@ -4968,17 +5131,19 @@ $.register({
         publics,
       } = await appendPage({
         src: newCurrent.src,
-        _this: this,
+        app: this,
       });
 
-      if (!_noanime) {
+      if (!_noanime && page) {
         pageInAnime({
           page,
           key: "previous",
         });
       }
 
-      needRemovePage = resetOldPage(needRemovePage);
+      if (needRemovePage) {
+        needRemovePage = resetOldPage(needRemovePage);
+      }
 
       this.emit("router-change", {
         data: { name: "back", delta },
@@ -4993,12 +5158,17 @@ $.register({
         });
       }
 
-      needRemovePage.remove();
+      if (needRemovePage) {
+        needRemovePage.remove();
+      }
     },
     async _navigate({ type, src }) {
       const { _noanime } = this;
       const { current: oldCurrent } = this;
-      src = new URL(src, location.href).href;
+      // src = new URL(src, location.href).href;
+      src = resolvePath(src);
+
+      runAccess(this, src);
 
       if (!oldCurrent) {
         this._initHome = src;
@@ -5010,8 +5180,12 @@ $.register({
         publics,
       } = await appendPage({
         src,
-        _this: this,
+        app: this,
       });
+
+      if (!page) {
+        return;
+      }
 
       if (!_noanime) {
         pageInAnime({
@@ -5034,7 +5208,7 @@ $.register({
 
       emitRouterChange(this, publics, type);
 
-      if (oldCurrent) {
+      if (oldCurrent && needRemovePage) {
         if (!_noanime) {
           await pageOutAnime({
             page: needRemovePage,
@@ -5051,7 +5225,19 @@ $.register({
       return this._navigate({ type: "replace", src });
     },
     get current() {
-      return this.all("o-page").slice(-1)[0];
+      return this.all("o-page")
+        .reverse()
+        .find((page) => {
+          let target = page;
+          while (target.tag === "o-page") {
+            if (target.data.willRemoved) {
+              return false;
+            }
+            target = target.parent;
+          }
+
+          return true;
+        });
     },
     get routers() {
       let { current } = this;
@@ -5071,6 +5257,8 @@ $.register({
     },
     set routers(_routers) {
       _routers = _routers.map((e) => {
+        runAccess(this, e.src);
+
         return { src: e.src };
       });
 
@@ -5092,6 +5280,32 @@ $.register({
     },
   },
 });
+
+// Ensure that the page is available, handle cross-domain pages and other operations
+const runAccess = (app, src) => {
+  const access = app?._module?.access;
+
+  const srcObj = new URL(src);
+
+  if (srcObj.origin !== location.origin && !access) {
+    const NoAccessErrDesc =
+      "To jump across domains, the access function must be set";
+    console.log(NoAccessErrDesc, app.ele, app?._module);
+    throw new Error(NoAccessErrDesc);
+  }
+
+  if (access) {
+    const result = access(src);
+
+    if (result !== true) {
+      if (result instanceof Error) {
+        throw result;
+      }
+
+      throw new Error(`Access to current address is not allowed: ${src}`);
+    }
+  }
+};
 
 const pageInAnime = ({ page, key }) => {
   const { pageAnime } = page;
@@ -5144,6 +5358,7 @@ const resetOldPage = (needRemovePage) => {
     width: `${needRemovePage.width}px`,
     height: `${needRemovePage.height}px`,
   };
+  needRemovePage.data.willRemoved = 1;
 
   return needRemovePage;
 };
@@ -5204,7 +5419,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.3.43";
+const version = "ofa.js@4.4.1";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

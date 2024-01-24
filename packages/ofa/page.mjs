@@ -36,9 +36,11 @@ lm.use(["html", "htm"], async (ctx, next) => {
       ctx.result = await lm()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
       const err = new Error(
-        `Error loading Page module: ${ctx.url}\n ${error.stack}`
+        `Error loading Page module: ${ctx.url}\n ${error.stack}`,
+        {
+          cause: error,
+        }
       );
-      err.error = error;
       throw err;
     }
     ctx.resultContent = content;
@@ -48,13 +50,13 @@ lm.use(["html", "htm"], async (ctx, next) => {
 });
 
 lm.use(["js", "mjs"], async (ctx, next) => {
-  const { result: moduleData, url } = ctx;
+  const { result: moduleData, url, realUrl } = ctx;
   if (typeof moduleData !== "object" || moduleData.type !== PAGE) {
     await next();
     return;
   }
 
-  const defaultsData = await getDefault(moduleData, url);
+  const defaultsData = await getDefault(moduleData, realUrl || url);
 
   let tempSrc = defaultsData.temp;
 
@@ -109,7 +111,7 @@ setTimeout(() => {
 
         this.__init_src = src;
 
-        if (this._defaults || this._pause_init) {
+        if (this._defaults || this.attr("data-pause-init")) {
           return;
         }
 
@@ -149,7 +151,7 @@ setTimeout(() => {
       },
     },
     attached() {
-      this.css.display = "block";
+      // this.css.display = "block";
 
       const needWraps = this.__need_wraps;
       if (needWraps) {
@@ -209,9 +211,11 @@ setTimeout(() => {
           });
         } catch (error) {
           const err = new Error(
-            `Failed to render page:${src} \n ${error.stack}`
+            `Failed to render page:${src} \n ${error.stack}`,
+            {
+              cause: error,
+            }
           );
-          err.error = error;
           console.error(err);
         }
 
@@ -322,12 +326,10 @@ export const dispatchLoad = async (_this, loaded) => {
   }
 };
 
-export const getDefault = async (moduleData, oriUrl) => {
+export const getDefault = async (moduleData, url) => {
   let finnalDefault = {};
 
-  const { default: defaultData, PATH } = moduleData;
-
-  const url = PATH || oriUrl;
+  const { default: defaultData } = moduleData;
 
   const relateLoad = lm({
     url,

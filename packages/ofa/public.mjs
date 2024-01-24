@@ -19,6 +19,10 @@ export function fixRelate(ele, path) {
       }
     });
   });
+
+  searchEle(ele, "template").forEach((el) => {
+    fixRelate(el.content, path);
+  });
 }
 
 export function fixRelatePathContent(content, path) {
@@ -43,8 +47,7 @@ export const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
   try {
     await callback();
   } catch (error) {
-    const err = new Error(`${desc}\n  ${error.stack}`);
-    err.error = error;
+    const err = new Error(`${desc}\n  ${error.stack}`, { cause: error });
     self.emit("error", { data: { error: err, ...rest } });
     throw err;
   }
@@ -76,14 +79,19 @@ export const getPagesData = async (src) => {
       let err;
       if (beforeSrc) {
         err = new Error(
-          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`
+          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`,
+          {
+            cause: error,
+          }
         );
       } else {
         err = new Error(
-          `Request for ${pageSrc} page failed; \n  ${error.stack}`
+          `Request for ${pageSrc} page failed; \n  ${error.stack}`,
+          {
+            cause: error,
+          }
         );
       }
-      err.error = error;
       errorObj = err;
 
       console.error(errorObj);
@@ -118,15 +126,13 @@ export const createPage = (src, defaults) => {
   // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
 
-  tempCon.innerHTML = `<o-page src="${src}"></o-page>`;
+  tempCon.innerHTML = `<o-page src="${src}" data-pause-init="1"></o-page>`;
 
   const targetPage = eleX(tempCon.children[0]);
-  targetPage._pause_init = 1;
 
   nextTick(() => {
     targetPage._renderDefault(defaults);
-
-    delete targetPage._pause_init;
+    targetPage.attr("data-pause-init", null);
   });
 
   return targetPage;
