@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.1 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.2 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -658,10 +658,10 @@
             const err = new Error(
               `Failed to get data : ${keys.slice(0, i).join(".")} \n${
               error.stack
-            }`
+            }`,
+              { cause: error }
             );
             Object.assign(err, {
-              error,
               target,
             });
             throw err;
@@ -685,10 +685,10 @@
             const err = new Error(
               `Failed to get data : ${keys.slice(0, i).join(".")} \n${
               error.stack
-            }`
+            }`,
+              { cause: error }
             );
             Object.assign(err, {
-              error,
               target,
             });
             throw err;
@@ -799,13 +799,14 @@
           },
         });
       } catch (error) {
-        const err = new Error(`failed to set ${key} \n ${error.stack}`);
+        const err = new Error(`failed to set ${key} \n ${error.stack}`, {
+          cause: error,
+        });
 
         Object.assign(err, {
           key,
           value,
           target: receiver,
-          error,
         });
 
         throw err;
@@ -1046,9 +1047,11 @@ try{
             }
           } catch (error) {
             const err = new Error(
-              `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`
+              `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`,
+              {
+                cause: error,
+              }
             );
-            err.error = error;
             throw err;
           }
         });
@@ -2013,9 +2016,11 @@ try{
       defaults.ready && defaults.ready.call($ele);
     } catch (error) {
       const err = new Error(
-        `Render element error: ${ele.tagName} \n  ${error.stack}`
+        `Render element error: ${ele.tagName} \n  ${error.stack}`,
+        {
+          cause: error,
+        }
       );
-      err.error = error;
       throw err;
     }
 
@@ -2106,9 +2111,9 @@ try{
       temps = convert(template);
     } catch (error) {
       const err = new Error(
-        `Register Component Error: ${defaults.tag} \n  ${error.stack}`
+        `Register Component Error: ${defaults.tag} \n  ${error.stack}`,
+        { cause: error }
       );
-      err.error = error;
       throw err;
     }
 
@@ -2891,6 +2896,7 @@ try{
               if ($old.__item.$data !== currentVal) {
                 $old.__item.$data = currentVal;
               }
+              $old.__item.$index = count;
             } else {
               // Add new element
               const $ele = createItem(
@@ -3781,8 +3787,9 @@ try{
   });
 
   const wrapError = (desc, error) => {
-    const err = new Error(`${desc} \n  ${error.toString()}`);
-    err.error = error;
+    const err = new Error(`${desc} \n  ${error.toString()}`, {
+      cause: error,
+    });
     return err;
   };
 
@@ -5425,7 +5432,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.1";
+  const version = "ofa.js@4.4.2";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

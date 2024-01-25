@@ -150,7 +150,8 @@ use("css", async (ctx, next) => {
 });
 
 const wrapError = (desc, error) => {
-  const err = new Error(`${desc} \n  ${error.toString()}`);
-  err.error = error;
+  const err = new Error(`${desc} \n  ${error.toString()}`, {
+    cause: error,
+  });
   return err;
 };

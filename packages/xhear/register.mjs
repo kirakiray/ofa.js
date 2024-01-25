@@ -50,9 +50,11 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
     defaults.ready && defaults.ready.call($ele);
   } catch (error) {
     const err = new Error(
-      `Render element error: ${ele.tagName} \n  ${error.stack}`
+      `Render element error: ${ele.tagName} \n  ${error.stack}`,
+      {
+        cause: error,
+      }
     );
-    err.error = error;
     throw err;
   }
 
@@ -143,9 +145,9 @@ export const register = (opts = {}) => {
     temps = convert(template);
   } catch (error) {
     const err = new Error(
-      `Register Component Error: ${defaults.tag} \n  ${error.stack}`
+      `Register Component Error: ${defaults.tag} \n  ${error.stack}`,
+      { cause: error }
     );
-    err.error = error;
     throw err;
   }
 

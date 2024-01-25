@@ -170,10 +170,10 @@ export default class Stanz extends Array {
           const err = new Error(
             `Failed to get data : ${keys.slice(0, i).join(".")} \n${
               error.stack
-            }`
+            }`,
+            { cause: error }
           );
           Object.assign(err, {
-            error,
             target,
           });
           throw err;
@@ -197,10 +197,10 @@ export default class Stanz extends Array {
           const err = new Error(
             `Failed to get data : ${keys.slice(0, i).join(".")} \n${
               error.stack
-            }`
+            }`,
+            { cause: error }
           );
           Object.assign(err, {
-            error,
             target,
           });
           throw err;
