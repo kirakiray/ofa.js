@@ -175,9 +175,11 @@ export function render({
           }
         } catch (error) {
           const err = new Error(
-            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`
+            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`,
+            {
+              cause: error,
+            }
           );
-          err.error = error;
           throw err;
         }
       });

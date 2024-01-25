@@ -92,13 +92,14 @@ export const handler = {
         },
       });
     } catch (error) {
-      const err = new Error(`failed to set ${key} \n ${error.stack}`);
+      const err = new Error(`failed to set ${key} \n ${error.stack}`, {
+        cause: error,
+      });
 
       Object.assign(err, {
         key,
         value,
         target: receiver,
-        error,
       });
 
       throw err;

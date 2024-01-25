@@ -194,6 +194,7 @@ register({
             if ($old.__item.$data !== currentVal) {
               $old.__item.$data = currentVal;
             }
+            $old.__item.$index = count;
           } else {
             // Add new element
             const $ele = createItem(
