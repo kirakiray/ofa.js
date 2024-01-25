@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.1 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.2 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -5426,7 +5426,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.1";
+const version = "ofa.js@4.4.2";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
