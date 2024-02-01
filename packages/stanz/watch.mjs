@@ -189,13 +189,18 @@ export default {
   },
   watchUntil(func) {
     return new Promise((resolve) => {
-      const tid = this.watch(() => {
-        const bool = func();
-        if (bool) {
-          this.unwatch(tid);
-          resolve(this);
-        }
-      });
+      let f;
+      const tid = this.watch(
+        (f = () => {
+          const bool = func();
+          if (bool) {
+            this.unwatch(tid);
+            resolve(this);
+          }
+        })
+      );
+
+      f();
     });
   },
 };
