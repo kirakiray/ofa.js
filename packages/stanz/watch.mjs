@@ -187,4 +187,15 @@ export default {
     };
     emitUpdate(options);
   },
+  watchUntil(func) {
+    return new Promise((resolve) => {
+      const tid = this.watch(() => {
+        const bool = func();
+        if (bool) {
+          this.unwatch(tid);
+          resolve(this);
+        }
+      });
+    });
+  },
 };
