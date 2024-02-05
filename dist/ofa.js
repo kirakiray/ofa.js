@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.4 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.5 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4541,6 +4541,9 @@ ${scriptContent}`;
       attrs: {
         src: null,
       },
+      data: {
+        pageIsReady: null,
+      },
       watch: {
         async src(src) {
           if (!src) {
@@ -4674,11 +4677,18 @@ ${scriptContent}`;
 
           initLink(this.shadow);
 
-          this._loaded = true;
-
           this.emit("page-loaded");
 
           this.__resolve();
+
+          this.pageIsReady = 1;
+
+          const { app } = this;
+          if (app && !app.appIsReady) {
+            nextTick(() => {
+              app.appIsReady = 1;
+            });
+          }
 
           if (this.ele.isConnected) {
             if (defaults.attached) {
@@ -5095,6 +5105,7 @@ ${scriptContent}`;
     },
     data: {
       [HISTORY]: [],
+      appIsReady: null,
     },
     watch: {
       async src(val) {
@@ -5124,14 +5135,14 @@ ${scriptContent}`;
 
         this._module = defaults;
 
-        if (this._settedRouters) {
-          return;
-        }
-
         this.extend(defaults.proto);
 
         if (defaults.ready) {
           defaults.ready.call(this);
+        }
+
+        if (this._settedRouters) {
+          return;
         }
 
         if (!this.$("o-page") && !this._initHome && defaults.home) {
@@ -5448,7 +5459,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.4";
+  const version = "ofa.js@4.4.5";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

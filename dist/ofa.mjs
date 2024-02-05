@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.4 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.5 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -4535,6 +4535,9 @@ setTimeout(() => {
     attrs: {
       src: null,
     },
+    data: {
+      pageIsReady: null,
+    },
     watch: {
       async src(src) {
         if (!src) {
@@ -4668,11 +4671,18 @@ setTimeout(() => {
 
         initLink(this.shadow);
 
-        this._loaded = true;
-
         this.emit("page-loaded");
 
         this.__resolve();
+
+        this.pageIsReady = 1;
+
+        const { app } = this;
+        if (app && !app.appIsReady) {
+          nextTick(() => {
+            app.appIsReady = 1;
+          });
+        }
 
         if (this.ele.isConnected) {
           if (defaults.attached) {
@@ -5089,6 +5099,7 @@ $.register({
   },
   data: {
     [HISTORY]: [],
+    appIsReady: null,
   },
   watch: {
     async src(val) {
@@ -5118,14 +5129,14 @@ $.register({
 
       this._module = defaults;
 
-      if (this._settedRouters) {
-        return;
-      }
-
       this.extend(defaults.proto);
 
       if (defaults.ready) {
         defaults.ready.call(this);
+      }
+
+      if (this._settedRouters) {
+        return;
       }
 
       if (!this.$("o-page") && !this._initHome && defaults.home) {
@@ -5442,7 +5453,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.4";
+const version = "ofa.js@4.4.5";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

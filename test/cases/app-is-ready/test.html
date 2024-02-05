@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>app is ready demo</title>
+    <script src="../../../packages/ofa/main.mjs" type="module"></script>
+  </head>
+  <body>
+    <o-app src="../../app.js"></o-app>
+    <div id="appready" style="display: none">App Is Ready</div>
+    <script type="module">
+      const app = $("o-app");
+      (async () => {
+        await app.watchUntil(() => app.appIsReady);
+
+        $("#appready").css.display = "";
+        console.log($("o-app").appIsReady);
+      })();
+    </script>
+  </body>
+</html>

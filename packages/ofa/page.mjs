@@ -12,6 +12,7 @@ import {
   ISERROR,
 } from "./public.mjs";
 import { initLink } from "./link.mjs";
+import { nextTick } from "../stanz/public.mjs";
 
 import { drawUrl } from "./draw-template.mjs";
 
@@ -89,6 +90,9 @@ setTimeout(() => {
     tag: "o-page",
     attrs: {
       src: null,
+    },
+    data: {
+      pageIsReady: null,
     },
     watch: {
       async src(src) {
@@ -223,11 +227,18 @@ setTimeout(() => {
 
         initLink(this.shadow);
 
-        this._loaded = true;
-
         this.emit("page-loaded");
 
         this.__resolve();
+
+        this.pageIsReady = 1;
+
+        const { app } = this;
+        if (app && !app.appIsReady) {
+          nextTick(() => {
+            app.appIsReady = 1;
+          });
+        }
 
         if (this.ele.isConnected) {
           if (defaults.attached) {
