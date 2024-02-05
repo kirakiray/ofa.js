@@ -143,6 +143,7 @@ $.register({
   },
   data: {
     [HISTORY]: [],
+    appIsReady: null,
   },
   watch: {
     async src(val) {
@@ -172,14 +173,14 @@ $.register({
 
       this._module = defaults;
 
-      if (this._settedRouters) {
-        return;
-      }
-
       this.extend(defaults.proto);
 
       if (defaults.ready) {
         defaults.ready.call(this);
+      }
+
+      if (this._settedRouters) {
+        return;
       }
 
       if (!this.$("o-page") && !this._initHome && defaults.home) {
