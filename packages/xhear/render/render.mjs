@@ -325,7 +325,9 @@ export const convert = (template) => {
 
   searchTemp(template, "x-fill:not([name])", (fillEl) => {
     if (fillEl.querySelector("x-fill:not([name])")) {
-      throw `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`;
+      throw new Error(
+        `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`
+      );
     }
 
     if (fillEl.innerHTML.trim()) {

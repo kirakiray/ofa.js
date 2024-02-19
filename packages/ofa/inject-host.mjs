@@ -46,7 +46,9 @@ $.register({
       const rel = e.attr("rel");
 
       if (rel !== "stylesheet" && rel !== "host") {
-        throw 'The "rel" attribute of the "link" tag within "inject-host" can only use "stylesheet" as its value.';
+        throw new Error(
+          'The "rel" attribute of the "link" tag within "inject-host" can only use "stylesheet" as its value.'
+        );
       }
 
       let { ele } = e;

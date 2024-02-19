@@ -2,7 +2,7 @@ import { hyphenToUpperCase } from "../public.mjs";
 const syncFn = {
   sync(propName, targetName, options) {
     if (!options) {
-      throw `Sync is only allowed within the renderer`;
+      throw new Error(`Sync is only allowed within the renderer`);
     }
 
     [propName, targetName] = options.beforeArgs;

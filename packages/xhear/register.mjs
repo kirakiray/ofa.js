@@ -137,7 +137,7 @@ export const register = (opts = {}) => {
     name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
     if (COMPS[name]) {
-      throw `Component ${name} already exists`;
+      throw new Error(`Component ${name} already exists`);
     }
 
     template = document.createElement("template");
@@ -298,11 +298,15 @@ function validateTagName(str) {
 
 function deepCopyData(obj) {
   if (obj instanceof Set || obj instanceof Map) {
-    throw "The data of the registered component should contain only regular data types such as String, Number, Object and Array. for other data types, please set them after ready.";
+    throw new Error(
+      "The data of the registered component should contain only regular data types such as String, Number, Object and Array. for other data types, please set them after ready."
+    );
   }
 
   if (obj instanceof Function) {
-    throw `Please write the function in the 'proto' property object.`;
+    throw new Error(
+      `Please write the function in the 'proto' property object.`
+    );
   }
 
   if (typeof obj !== "object" || obj === null) {

@@ -108,7 +108,9 @@ setTimeout(() => {
 
         if (this.__init_src) {
           if (this.__init_src !== src) {
-            throw "A page that has already been initialized cannot be set with the src attribute";
+            throw Error(
+              "A page that has already been initialized cannot be set with the src attribute"
+            );
           }
           return;
         }

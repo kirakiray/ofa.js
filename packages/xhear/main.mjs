@@ -252,7 +252,9 @@ export default class Xhear extends LikeArray {
     const { ele } = this;
 
     if (!ele.parentNode) {
-      throw `The target has a sibling element, so you can't use unwrap`;
+      throw new Error(
+        `The target has a sibling element, so you can't use unwrap`
+      );
     }
 
     ele.parentNode.insertBefore($el.ele, ele);
@@ -272,7 +274,7 @@ export default class Xhear extends LikeArray {
     const target = ele.parentNode;
 
     if (target.children.length > 1) {
-      throw `The element itself must have a parent`;
+      throw new Error(`The element itself must have a parent`);
     }
 
     ele.__internal = 1;

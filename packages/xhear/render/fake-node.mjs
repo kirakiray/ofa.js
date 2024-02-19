@@ -85,7 +85,7 @@ export class FakeNode extends Comment {
           break;
         }
       } else {
-        throw `This is an unclosed FakeNode`;
+        throw new Error(`This is an unclosed FakeNode`);
       }
     }
 
@@ -105,7 +105,7 @@ export class FakeNode extends Comment {
         }
         childs.unshift(prev);
       } else {
-        throw `This is an unclosed FakeNode`;
+        throw new Error(`This is an unclosed FakeNode`);
       }
     }
 

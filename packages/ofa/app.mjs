@@ -149,7 +149,9 @@ $.register({
     async src(val) {
       if (this.__init_src) {
         if (this.__init_src !== val) {
-          throw "The App that has already been initialized cannot be set with the src attribute";
+          throw new Error(
+            "The App that has already been initialized cannot be set with the src attribute"
+          );
         }
         return;
       }
