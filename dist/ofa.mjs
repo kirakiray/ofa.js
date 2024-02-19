@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.5 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.6 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -959,7 +959,10 @@ function render({
 
     const func = convertToFunc(el.getAttribute("expr"), data);
     const renderFunc = () => {
-      textEl.textContent = func();
+      const content = func();
+      if (textEl.textContent !== String(content)) {
+        textEl.textContent = content;
+      }
     };
     tasks.push(renderFunc);
 
@@ -5453,7 +5456,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.5";
+const version = "ofa.js@4.4.6";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
