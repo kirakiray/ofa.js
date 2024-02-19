@@ -965,7 +965,10 @@ try{
 
       const func = convertToFunc(el.getAttribute("expr"), data);
       const renderFunc = () => {
-        textEl.textContent = func();
+        const content = func();
+        if (textEl.textContent !== String(content)) {
+          textEl.textContent = content;
+        }
       };
       tasks.push(renderFunc);
 
