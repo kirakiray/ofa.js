@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.7 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.8 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -2161,10 +2161,27 @@ const register = (opts = {}) => {
             if (e.hasModified(key)) {
               const val = $ele[key];
               const attrName = toDashCase(key);
+              const oldVal = this.getAttribute(attrName);
               if (val === null || val === undefined) {
                 this.removeAttribute(attrName);
-              } else {
-                this.setAttribute(attrName, val);
+              } else if (oldVal !== val) {
+                let reval = val;
+
+                const valType = getType$1(val);
+
+                if (valType === "number" && oldVal === String(val)) {
+                  // Setting the number will cause an infinite loop
+                  return;
+                }
+                if (valType === "object") {
+                  // Setting the object will cause an infinite loop
+                  reval = JSON.stringify(reval);
+                  if (reval === oldVal) {
+                    return;
+                  }
+                }
+
+                this.setAttribute(attrName, reval);
               }
             }
           });
@@ -5472,7 +5489,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.7";
+const version = "ofa.js@4.4.8";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
