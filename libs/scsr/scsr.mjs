@@ -38,7 +38,9 @@ import initRouter from "../router/init-router.mjs";
     });
 
     if (!history?.state?.routerMode) {
-      app.push(`<o-page src="${location.pathname}"></o-page>`);
+      app.push(
+        `<o-page src="${location.pathname}${location.search}"></o-page>`
+      );
     }
 
     initRouter({

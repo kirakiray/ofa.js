@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.8 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.9 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -5495,7 +5495,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.8";
+  const version = "ofa.js@4.4.9";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
