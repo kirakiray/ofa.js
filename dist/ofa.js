@@ -3559,6 +3559,13 @@ try{
         );
       },
       async _initStyle(e) {
+        if (/data\(.+?\)/.test(e.html)) {
+          const errDesc = `Please do not use the data() method on style elements within inject-host, as it may cause serious performance crises.`;
+          console.log(errDesc, e.ele);
+          console.error(new Error(errDesc));
+          return;
+        }
+
         // Use only the text inside the style to prevent contaminating yourself
         const com = new Comment(e.html);
         com.__inited = true;

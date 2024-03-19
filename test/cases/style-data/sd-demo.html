@@ -18,6 +18,19 @@
       }
     </style>
   </x-if>
+
+  <!-- The original intention of inject host is to correct the multi-level self-node styles in the operation component. Directly insert the style once so that the sub-node styles can be corrected, thereby improving performance.
+If frequent changes to the style in the inject host are allowed, it is better to directly find and modify the style of the internal child nodes. -->
+  <!-- <inject-host>
+    <style>
+      @media screen and (min-width: data(twidth + "px")) {
+        body {
+          background-color: #aaa;
+        }
+      }
+    </style>
+  </inject-host> -->
+
   <div id="container">count:{{count}}</div>
   <div>
     <button on:click="tweight = 600">weight:600</button>
