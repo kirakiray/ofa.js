@@ -69,6 +69,49 @@ export function render({
   const tasks = [];
   const revokes = getRevokes(target);
 
+  // Styles with data() function to monitor and correct rendering
+  searchEle(target, "style").forEach((el) => {
+    const originStyle = el.innerHTML;
+
+    if (/data\(.+\)/.test(originStyle)) {
+      const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
+        (dataExpr) => {
+          const expr = dataExpr.replace(/data\((.+)\)/, "$1");
+          const func = convertToFunc(expr, data);
+
+          return {
+            dataExpr,
+            func,
+          };
+        }
+      );
+
+      const renderStyle = () => {
+        let afterStyle = originStyle;
+
+        matchs.forEach(({ dataExpr, func }) => {
+          afterStyle = afterStyle.replace(dataExpr, func());
+        });
+
+        if (el.innerHTML !== afterStyle) {
+          el.innerHTML = afterStyle;
+        }
+      };
+      tasks.push(renderStyle);
+
+      const revokeStyle = () => {
+        matchs.length = 0;
+        remove(tasks, renderStyle);
+        remove(getRevokes(el), revokeStyle);
+        remove(revokes, revokeStyle);
+      };
+
+      addRevoke(el, revokeStyle);
+      revokes.push(revokeStyle);
+    }
+  });
+
+  // Render text nodes
   texts.forEach((el) => {
     const textEl = document.createTextNode("");
     const { parentNode } = el;
@@ -99,6 +142,7 @@ export function render({
     eles.unshift(target);
   }
 
+  // Render properties based on expressions
   eles.forEach((el) => {
     const bindData = JSON.parse(el.getAttribute("x-bind-data"));
 
@@ -217,6 +261,7 @@ export function render({
 
     tasks.forEach((f) => f());
 
+    // After the data changes, traverse the rendering tasks
     const wid = data.watchTick((e) => {
       if (tasks.length) {
         tasks.forEach((f) => f());
