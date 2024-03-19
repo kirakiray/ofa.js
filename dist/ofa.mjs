@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.9 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.10 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -951,6 +951,49 @@ function render({
   const tasks = [];
   const revokes = getRevokes(target);
 
+  // Styles with data() function to monitor and correct rendering
+  searchEle(target, "style").forEach((el) => {
+    const originStyle = el.innerHTML;
+
+    if (/data\(.+\)/.test(originStyle)) {
+      const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
+        (dataExpr) => {
+          const expr = dataExpr.replace(/data\((.+)\)/, "$1");
+          const func = convertToFunc(expr, data);
+
+          return {
+            dataExpr,
+            func,
+          };
+        }
+      );
+
+      const renderStyle = () => {
+        let afterStyle = originStyle;
+
+        matchs.forEach(({ dataExpr, func }) => {
+          afterStyle = afterStyle.replace(dataExpr, func());
+        });
+
+        if (el.innerHTML !== afterStyle) {
+          el.innerHTML = afterStyle;
+        }
+      };
+      tasks.push(renderStyle);
+
+      const revokeStyle = () => {
+        matchs.length = 0;
+        removeArrayValue(tasks, renderStyle);
+        removeArrayValue(getRevokes(el), revokeStyle);
+        removeArrayValue(revokes, revokeStyle);
+      };
+
+      addRevoke(el, revokeStyle);
+      revokes.push(revokeStyle);
+    }
+  });
+
+  // Render text nodes
   texts.forEach((el) => {
     const textEl = document.createTextNode("");
     const { parentNode } = el;
@@ -981,6 +1024,7 @@ function render({
     eles.unshift(target);
   }
 
+  // Render properties based on expressions
   eles.forEach((el) => {
     const bindData = JSON.parse(el.getAttribute("x-bind-data"));
 
@@ -1099,6 +1143,7 @@ function render({
 
     tasks.forEach((f) => f());
 
+    // After the data changes, traverse the rendering tasks
     const wid = data.watchTick((e) => {
       if (tasks.length) {
         tasks.forEach((f) => f());
@@ -3508,6 +3553,13 @@ $.register({
       );
     },
     async _initStyle(e) {
+      if (/data\(.+?\)/.test(e.html)) {
+        const errDesc = `Please do not use the data() method on style elements within inject-host, as it may cause serious performance crises.`;
+        console.log(errDesc, e.ele);
+        console.error(new Error(errDesc));
+        return;
+      }
+
       // Use only the text inside the style to prevent contaminating yourself
       const com = new Comment(e.html);
       com.__inited = true;
@@ -5489,7 +5541,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.9";
+const version = "ofa.js@4.4.10";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
