@@ -1,0 +1,40 @@
+<template component>
+  <style>
+    #container {
+      color: data(tcolor);
+    }
+
+    @media screen and (min-width: data(twidth + "px")) {
+      #container {
+        width: data(twidth);
+        font-size: data(tsize + "px");
+      }
+    }
+  </style>
+  <x-if :value="tweight > 800">
+    <style>
+      #container {
+        font-weight: data(tweight);
+      }
+    </style>
+  </x-if>
+  <div id="container">count:{{count}}</div>
+  <div>
+    <button on:click="tweight = 600">weight:600</button>
+    <button on:click="tweight = 850">weight:850</button>
+    <button on:click="tweight = 900">weight:900</button>
+  </div>
+
+  <script>
+    export default {
+      tag: "sd-demo",
+      data: {
+        count: 0,
+        tcolor: "rgb(255, 0, 0)",
+        twidth: 600,
+        tsize: 20,
+        tweight: 900,
+      },
+    };
+  </script>
+</template>
