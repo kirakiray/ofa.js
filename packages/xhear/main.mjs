@@ -238,7 +238,9 @@ export default class Xhear extends LikeArray {
 
   remove() {
     const { parent } = this;
-    parent.splice(parent.indexOf(this), 1);
+    if (parent) {
+      parent.splice(parent.indexOf(this), 1);
+    }
     // this.ele.remove();
   }
 
