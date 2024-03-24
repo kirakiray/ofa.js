@@ -4431,12 +4431,17 @@ try{
       mappings += `${rowStr};`;
     }
 
+    const sourcesContent = JSON.stringify([originContent])
+      .replace(/^\[/, "")
+      .replace(/\]$/, "");
+
     const str = `{"version": 3,
     "file": "${filePath
       .replace(/\?.+/, "")
       .replace(/.+\/(.+?)/, "$1")
       .replace(".html", ".js")}",
     "sources": ["${filePath.replace(/\?.+/, "")}"],
+    "sourcesContent":[${sourcesContent}],
     "mappings": "${mappings}"}`;
 
     return await strToBase64DataURI(str, null);
