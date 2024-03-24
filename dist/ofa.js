@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.11 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.12 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3310,7 +3310,9 @@ try{
 
     remove() {
       const { parent } = this;
-      parent.splice(parent.indexOf(this), 1);
+      if (parent) {
+        parent.splice(parent.indexOf(this), 1);
+      }
       // this.ele.remove();
     }
 
@@ -5284,7 +5286,7 @@ ${scriptContent}`;
 
         emitRouterChange(this, publics, "back");
 
-        if (!_noanime) {
+        if (!_noanime && needRemovePage) {
           await pageOutAnime({
             page: needRemovePage,
             key: "next",
@@ -5552,7 +5554,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.11";
+  const version = "ofa.js@4.4.12";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

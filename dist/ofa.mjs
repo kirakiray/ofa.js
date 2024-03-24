@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.11 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.12 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -3304,7 +3304,9 @@ class Xhear extends LikeArray {
 
   remove() {
     const { parent } = this;
-    parent.splice(parent.indexOf(this), 1);
+    if (parent) {
+      parent.splice(parent.indexOf(this), 1);
+    }
     // this.ele.remove();
   }
 
@@ -5278,7 +5280,7 @@ $.register({
 
       emitRouterChange(this, publics, "back");
 
-      if (!_noanime) {
+      if (!_noanime && needRemovePage) {
         await pageOutAnime({
           page: needRemovePage,
           key: "next",
@@ -5546,7 +5548,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.11";
+const version = "ofa.js@4.4.12";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

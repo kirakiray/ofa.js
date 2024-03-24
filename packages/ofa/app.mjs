@@ -231,7 +231,7 @@ $.register({
 
       emitRouterChange(this, publics, "back");
 
-      if (!_noanime) {
+      if (!_noanime && needRemovePage) {
         await pageOutAnime({
           page: needRemovePage,
           key: "next",
