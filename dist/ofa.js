@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.10 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.11 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4431,12 +4431,17 @@ try{
       mappings += `${rowStr};`;
     }
 
+    const sourcesContent = JSON.stringify([originContent])
+      .replace(/^\[/, "")
+      .replace(/\]$/, "");
+
     const str = `{"version": 3,
     "file": "${filePath
       .replace(/\?.+/, "")
       .replace(/.+\/(.+?)/, "$1")
       .replace(".html", ".js")}",
     "sources": ["${filePath.replace(/\?.+/, "")}"],
+    "sourcesContent":[${sourcesContent}],
     "mappings": "${mappings}"}`;
 
     return await strToBase64DataURI(str, null);
@@ -5547,7 +5552,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.10";
+  const version = "ofa.js@4.4.11";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

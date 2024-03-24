@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.10 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.11 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -4425,12 +4425,17 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
     mappings += `${rowStr};`;
   }
 
+  const sourcesContent = JSON.stringify([originContent])
+    .replace(/^\[/, "")
+    .replace(/\]$/, "");
+
   const str = `{"version": 3,
     "file": "${filePath
       .replace(/\?.+/, "")
       .replace(/.+\/(.+?)/, "$1")
       .replace(".html", ".js")}",
     "sources": ["${filePath.replace(/\?.+/, "")}"],
+    "sourcesContent":[${sourcesContent}],
     "mappings": "${mappings}"}`;
 
   return await strToBase64DataURI(str, null);
@@ -5541,7 +5546,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.10";
+const version = "ofa.js@4.4.11";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
