@@ -85,6 +85,12 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   return await strToBase64DataURI(str, null);
 };
 
+let drawWithBlob = false;
+if (document.currentScript) {
+  drawWithBlob =
+    document.currentScript.attributes.hasOwnProperty("draw-with-blob") !== null;
+}
+
 const cacheLink = new Map();
 
 export async function drawUrl(content, url, isPage = true) {
@@ -163,7 +169,11 @@ ${scriptContent}`;
 
   const isFirefox = navigator.userAgent.includes("Firefox");
 
-  targetUrl = strToBase64DataURI(finalContent, "js", isFirefox ? false : true);
+  targetUrl = strToBase64DataURI(
+    finalContent,
+    "js",
+    isFirefox || drawWithBlob ? false : true
+  );
 
   cacheLink.set(url, targetUrl);
 
