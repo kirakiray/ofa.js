@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.12.2 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.12.4 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -4456,7 +4456,7 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
 let drawWithBlob = false;
 if (document.currentScript) {
   drawWithBlob =
-    document.currentScript.attributes.hasOwnProperty("draw-with-blob") !== null;
+    document.currentScript.attributes.hasOwnProperty("draw-with-blob");
 }
 
 const cacheLink = new Map();

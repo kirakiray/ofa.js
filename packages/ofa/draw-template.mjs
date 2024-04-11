@@ -98,7 +98,7 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
 let drawWithBlob = false;
 if (document.currentScript) {
   drawWithBlob =
-    document.currentScript.attributes.hasOwnProperty("draw-with-blob") !== null;
+    document.currentScript.attributes.hasOwnProperty("draw-with-blob");
 }
 
 const cacheLink = new Map();

@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.12.2 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.12.4 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4462,7 +4462,7 @@ try{
   let drawWithBlob = false;
   if (document.currentScript) {
     drawWithBlob =
-      document.currentScript.attributes.hasOwnProperty("draw-with-blob") !== null;
+      document.currentScript.attributes.hasOwnProperty("draw-with-blob");
   }
 
   const cacheLink = new Map();
