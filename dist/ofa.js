@@ -4365,26 +4365,36 @@ try{
     });
   };
 
+  const cachesURL = new Map();
+
   const strToBase64DataURI = async (str, type, isb64 = true) => {
+    if (cachesURL.has(str)) {
+      return cachesURL.get(str);
+    }
+
     const mime = type === "js" ? "text/javascript" : "application/json";
 
     const file = new File([str], "genfile", { type: mime });
 
+    let finallyUrl = "";
+
     if (!isb64) {
-      return URL.createObjectURL(file);
+      finallyUrl = URL.createObjectURL(file);
+    } else {
+      finallyUrl = await new Promise((resolve) => {
+        const fr = new FileReader();
+
+        fr.onload = (e) => {
+          resolve(e.target.result);
+        };
+
+        fr.readAsDataURL(file);
+      });
     }
 
-    const result = await new Promise((resolve) => {
-      const fr = new FileReader();
+    cachesURL.set(str, finallyUrl);
 
-      fr.onload = (e) => {
-        resolve(e.target.result);
-      };
-
-      fr.readAsDataURL(file);
-    });
-
-    return result;
+    return finallyUrl;
   };
 
   // In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
