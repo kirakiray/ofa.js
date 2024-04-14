@@ -1,4 +1,6 @@
 import { hyphenToUpperCase } from "../public.mjs";
+import { dataRevoked } from "../../stanz/public.mjs";
+
 const syncFn = {
   sync(propName, targetName, options) {
     if (!options) {
@@ -48,7 +50,9 @@ const syncFn = {
 
     return () => {
       this.unwatch(wid1);
-      data.unwatch(wid2);
+      if (!dataRevoked(data)) {
+        data.unwatch(wid2);
+      }
     };
   },
 };
