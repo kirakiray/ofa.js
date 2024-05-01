@@ -1,4 +1,5 @@
 import $ from "../xhear/base.mjs";
+import { isDebug } from "../stanz/public.mjs";
 import "./inject-host.mjs";
 import "./comp.mjs";
 import "./page.mjs";
@@ -10,10 +11,8 @@ const version = "ofa.js@4.4.13";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
-  const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
-
   Object.defineProperty($, "debugMode", {
-    value: isDebug,
+    get: () => isDebug.value,
   });
 }
 
