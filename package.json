@@ -1,6 +1,6 @@
 {
   "name": "ofa.js",
-  "version": "4.4.13",
+  "version": "4.4.14",
   "description": "pure web front-end componentized framework that does not require the use of nodejs",
   "scripts": {
     "bump": "node scripts/bump-version.js && npm i && npm run build",
