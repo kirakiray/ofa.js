@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.13 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.14 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -19,15 +19,45 @@
     return type === "array" || type === "object";
   };
 
+  const isDebug = {
+    value: null,
+  };
+
+  if (typeof document !== "undefined") {
+    if (document.currentScript) {
+      isDebug.value = document.currentScript.attributes.hasOwnProperty("debug");
+    } else {
+      isDebug.value = true;
+    }
+  }
+
   let asyncsCounter = 0;
   let afterTimer;
   const tickSets = new Set();
   function nextTick(callback) {
-    const tickId = `t-${getRandomId()}`;
     clearTimeout(afterTimer);
     afterTimer = setTimeout(() => {
       asyncsCounter = 0;
     });
+
+    if (isDebug.value) {
+      Promise.resolve().then(() => {
+        asyncsCounter++;
+        if (asyncsCounter > 100000) {
+          const desc = `nextTick exceeds thread limit`;
+          console.error({
+            desc,
+            lastCall: callback,
+          });
+          throw new Error(desc);
+        }
+
+        callback();
+      });
+      return;
+    }
+
+    const tickId = `t-${getRandomId()}`;
     tickSets.add(tickId);
     Promise.resolve().then(() => {
       asyncsCounter++;
@@ -48,6 +78,8 @@
     });
     return tickId;
   }
+
+  // export const clearTick = (id) => tickSets.delete(id);
 
   function debounce(func, wait = 0) {
     let timeout = null;
@@ -5556,14 +5588,12 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.13";
+  const version = "ofa.js@4.4.14";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
-    const isDebug = document.currentScript.attributes.hasOwnProperty("debug");
-
     Object.defineProperty($, "debugMode", {
-      value: isDebug,
+      get: () => isDebug.value,
     });
   }
 

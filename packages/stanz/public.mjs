@@ -12,15 +12,45 @@ export const isObject = (obj) => {
   return type === "array" || type === "object";
 };
 
+export const isDebug = {
+  value: null,
+};
+
+if (typeof document !== "undefined") {
+  if (document.currentScript) {
+    isDebug.value = document.currentScript.attributes.hasOwnProperty("debug");
+  } else {
+    isDebug.value = true;
+  }
+}
+
 let asyncsCounter = 0;
 let afterTimer;
 const tickSets = new Set();
 export function nextTick(callback) {
-  const tickId = `t-${getRandomId()}`;
   clearTimeout(afterTimer);
   afterTimer = setTimeout(() => {
     asyncsCounter = 0;
   });
+
+  if (isDebug.value) {
+    Promise.resolve().then(() => {
+      asyncsCounter++;
+      if (asyncsCounter > 100000) {
+        const desc = `nextTick exceeds thread limit`;
+        console.error({
+          desc,
+          lastCall: callback,
+        });
+        throw new Error(desc);
+      }
+
+      callback();
+    });
+    return;
+  }
+
+  const tickId = `t-${getRandomId()}`;
   tickSets.add(tickId);
   Promise.resolve().then(() => {
     asyncsCounter++;
@@ -41,7 +71,8 @@ export function nextTick(callback) {
   });
   return tickId;
 }
-export const clearTick = (id) => tickSets.delete(id);
+
+// export const clearTick = (id) => tickSets.delete(id);
 
 export function debounce(func, wait = 0) {
   let timeout = null;
