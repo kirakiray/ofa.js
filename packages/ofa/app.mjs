@@ -396,8 +396,6 @@ const runAccess = (app, src) => {
 };
 
 const pageInAnime = async ({ page, key }) => {
-  console.log("ha: ", page._rendered, page.ele);
-
   if (!page._rendered) {
     // firefox bug
     await waitPageReaded(page);
