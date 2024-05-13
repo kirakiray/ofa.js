@@ -4287,12 +4287,32 @@ try{
 
     const targetPage = eleX(tempCon.children[0]);
 
-    nextTick(() => {
+    nextTick(async () => {
+      if (!targetPage._renderDefault) {
+        await waitPageReaded(targetPage);
+      }
+
       targetPage._renderDefault(defaults);
       targetPage.attr("data-pause-init", null);
     });
 
     return targetPage;
+  };
+
+  // In the firefox environment, there will be a problem that the page component is not initialized, but the routing starts to be initialized in advance, resulting in an error. Therefore, wait for the page component to be initialized before continuing with the subsequent operations.
+  const waitPageReaded = (page) => {
+    if (page._rendered) {
+      return;
+    }
+
+    return new Promise((resolve) => {
+      const timer = setInterval(() => {
+        if (page._rendered) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 500);
+    });
   };
 
   const oldRender = renderExtends.render;
@@ -5304,7 +5324,7 @@ ${scriptContent}`;
         });
 
         if (!_noanime && page) {
-          pageInAnime({
+          await pageInAnime({
             page,
             key: "previous",
           });
@@ -5356,8 +5376,10 @@ ${scriptContent}`;
           return;
         }
 
-        if (!_noanime) {
-          pageInAnime({
+        console.log("ha: ", page._rendered);
+
+        if (!_noanime && page) {
+          await pageInAnime({
             page,
             key: "next",
           });
@@ -5476,7 +5498,12 @@ ${scriptContent}`;
     }
   };
 
-  const pageInAnime = ({ page, key }) => {
+  const pageInAnime = async ({ page, key }) => {
+    if (!page._rendered) {
+      // firefox bug
+      await waitPageReaded(page);
+    }
+
     const { pageAnime } = page;
 
     const targetAnime = pageAnime[key];
