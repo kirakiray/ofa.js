@@ -1,6 +1,12 @@
 // import lm from "../drill.js/base.mjs";
 import $ from "../xhear/base.mjs";
-import { resolvePath, getPagesData, ISERROR, createPage } from "./public.mjs";
+import {
+  resolvePath,
+  getPagesData,
+  ISERROR,
+  createPage,
+  waitPageReaded,
+} from "./public.mjs";
 import { getDefault, getFailContent } from "./page.mjs";
 import { createXEle } from "../xhear/util.mjs";
 
@@ -215,7 +221,7 @@ $.register({
       });
 
       if (!_noanime && page) {
-        pageInAnime({
+        await pageInAnime({
           page,
           key: "previous",
         });
@@ -267,8 +273,8 @@ $.register({
         return;
       }
 
-      if (!_noanime) {
-        pageInAnime({
+      if (!_noanime && page) {
+        await pageInAnime({
           page,
           key: "next",
         });
@@ -387,7 +393,12 @@ const runAccess = (app, src) => {
   }
 };
 
-const pageInAnime = ({ page, key }) => {
+const pageInAnime = async ({ page, key }) => {
+  if (!page._rendered) {
+    // firefox bug
+    await waitPageReaded(page);
+  }
+
   const { pageAnime } = page;
 
   const targetAnime = pageAnime[key];
