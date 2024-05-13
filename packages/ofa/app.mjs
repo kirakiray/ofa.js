@@ -273,8 +273,6 @@ $.register({
         return;
       }
 
-      console.log("ha: ", page._rendered);
-
       if (!_noanime && page) {
         await pageInAnime({
           page,
