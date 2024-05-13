@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.14 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.15 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -5370,8 +5370,6 @@ $.register({
         return;
       }
 
-      console.log("ha: ", page._rendered);
-
       if (!_noanime && page) {
         await pageInAnime({
           page,
@@ -5609,7 +5607,7 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.14";
+const version = "ofa.js@4.4.15";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.14 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.15 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -5376,8 +5376,6 @@ ${scriptContent}`;
           return;
         }
 
-        console.log("ha: ", page._rendered);
-
         if (!_noanime && page) {
           await pageInAnime({
             page,
@@ -5615,7 +5613,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.14";
+  const version = "ofa.js@4.4.15";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
