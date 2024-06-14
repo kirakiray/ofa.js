@@ -10,7 +10,8 @@
     "start": "node scripts/start.mjs",
     "test": "node scripts/ci-test",
     "playwright": "npx playwright test",
-    "ncu": "ncu -u xhear drill.js && npm i"
+    "ncu": "ncu -u xhear drill.js && npm i",
+    "router-server": "node ./scripts/router-server"
   },
   "author": {
     "name": "YAO",
