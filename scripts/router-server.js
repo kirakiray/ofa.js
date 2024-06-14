@@ -54,10 +54,10 @@ app.use(async (ctx, next) => {
             margin: 0;
           }
         </style>
-        <h1>current page: ${originalUrl}</h1>
-        <button on:click="goto('./${lastNum + 1}')">nextPages ${
-    lastNum + 1
-  }</button>
+        <h1 id="main-title">current page: ${originalUrl}</h1>
+        <button data-testid="gotoNextBtn" on:click="goto('./${
+          lastNum + 1
+        }')">nextPages ${lastNum + 1}</button>
 
         <script>
           export default function () {
@@ -76,4 +76,6 @@ app.use(async (ctx, next) => {
 `;
 });
 
-app.listen(33483);
+const server = app.listen(33483);
+
+module.exports = server;
