@@ -1,4 +1,4 @@
-//! ofa.js - v4.4.15 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.4.16 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4036,7 +4036,26 @@ try{
     if (oni) {
       await oni.run(ctx);
     } else {
-      ctx.result = fetch(url);
+      const result = await fetch(url);
+      const contentType = result.headers.get("Content-Type");
+
+      const targetMapObject = [
+        ["application/javascript", "js"],
+        ["application/json", "json"],
+        ["text/html", "html"],
+        ["text/xml", "xml"],
+      ].find((e) => contentType.includes(e[0]));
+
+      let newOni;
+      if (targetMapObject) {
+        newOni = processor[targetMapObject[1]];
+      }
+
+      if (newOni) {
+        await newOni.run(ctx);
+      } else {
+        ctx.result = result;
+      }
     }
 
     if (opts && opts.element) {
@@ -5613,7 +5632,7 @@ ${scriptContent}`;
     attr,
   });
 
-  const version = "ofa.js@4.4.15";
+  const version = "ofa.js@4.4.16";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
