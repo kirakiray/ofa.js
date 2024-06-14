@@ -4036,7 +4036,26 @@ try{
     if (oni) {
       await oni.run(ctx);
     } else {
-      ctx.result = fetch(url);
+      const result = await fetch(url);
+      const contentType = result.headers.get("Content-Type");
+
+      const targetMapObject = [
+        ["application/javascript", "js"],
+        ["application/json", "json"],
+        ["text/html", "html"],
+        ["text/xml", "xml"],
+      ].find((e) => contentType.includes(e[0]));
+
+      let newOni;
+      if (targetMapObject) {
+        newOni = processor[targetMapObject[1]];
+      }
+
+      if (newOni) {
+        await newOni.run(ctx);
+      } else {
+        ctx.result = result;
+      }
     }
 
     if (opts && opts.element) {
