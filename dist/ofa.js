@@ -12,7 +12,13 @@
   const errors = {};
 
   if (globalThis.navigator && navigator.language) {
-    fetch(`${error_origin}/${navigator.language.toLowerCase()}.json`)
+    let langFirst = navigator.language.toLowerCase().split("-")[0];
+
+    if (langFirst === "zh" && navigator.language.toLowerCase() !== "zh-cn") {
+      langFirst = "zhft";
+    }
+
+    fetch(`${error_origin}/${langFirst}.json`)
       .catch(() => {
         return fetch(`${error_origin}/default.json`);
       })
