@@ -3607,9 +3607,7 @@ $.register({
       const rel = e.attr("rel");
 
       if (rel !== "stylesheet" && rel !== "host") {
-        throw new Error(
-          'The "rel" attribute of the "link" tag within "inject-host" can only use "stylesheet" as its value.'
-        );
+        throw getErr("inject-link-rel");
       }
 
       let { ele } = e;
@@ -3640,10 +3638,9 @@ $.register({
     },
     async _initStyle(e) {
       if (/data\(.+?\)/.test(e.html)) {
-        const errDesc = `Please do not use the data() method on style elements within inject-host, as it may cause serious performance crises.`;
-        console.log(errDesc, e.ele);
-        console.error(new Error(errDesc));
-        return;
+        const err = getErr("use-data-inject");
+        console.log(err, e.ele);
+        throw err;
       }
 
       // Use only the text inside the style to prevent contaminating yourself
@@ -4279,16 +4276,6 @@ function fixRelatePathContent(content, path) {
   return template.innerHTML;
 }
 
-const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
-  try {
-    await callback();
-  } catch (error) {
-    const err = new Error(`${desc}\n  ${error.stack}`, { cause: error });
-    self.emit("error", { data: { error: err, ...rest } });
-    throw err;
-  }
-};
-
 const ISERROR = Symbol("loadError");
 
 const getPagesData = async (src) => {
@@ -4314,18 +4301,21 @@ const getPagesData = async (src) => {
     } catch (error) {
       let err;
       if (beforeSrc) {
-        err = new Error(
-          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`,
+        err = getErr(
+          "page_wrap_fetch",
           {
-            cause: error,
-          }
+            before: beforeSrc,
+            current: pageSrc,
+          },
+          error
         );
       } else {
-        err = new Error(
-          `Request for ${pageSrc} page failed; \n  ${error.stack}`,
+        err = getErr(
+          "load_page_module",
           {
-            cause: error,
-          }
+            url: pageSrc,
+          },
+          error
         );
       }
       errorObj = err;
@@ -4710,13 +4700,13 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       const url = await drawUrl(content, ctx.url);
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
-      const err = new Error(
-        `Error loading Page module: ${ctx.url}\n ${error.stack}`,
+      throw getErr(
+        "load_page_module",
         {
-          cause: error,
-        }
+          url: ctx.url,
+        },
+        error
       );
-      throw err;
     }
     ctx.resultContent = content;
   }
@@ -4742,15 +4732,20 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
       tempSrc = url.replace(/\.m?js.*/, ".html");
     }
 
-    await wrapErrorCall(
-      async () => {
-        defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
-      },
-      {
-        targetModule: import.meta.url,
-        desc: `${url} module request for ${tempSrc} template page failed`,
-      }
-    );
+    try {
+      defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
+    } catch (error) {
+      const err = getErr(
+        "fetch_temp_err",
+        {
+          url: realUrl || url,
+          tempSrc,
+        },
+        error
+      );
+      self.emit("error", { data: { error: err } });
+      throw err;
+    }
   }
 
   ctx.result = defaultsData;
@@ -4860,7 +4855,9 @@ setTimeout(() => {
         const { src } = this;
 
         if (this._defaults) {
-          throw new Error("The current page has already been rendered");
+          const err = getErr("page_no_defaults", { src });
+          console.log(err, this);
+          throw err;
         }
 
         this._defaults = defaults;
@@ -4870,9 +4867,8 @@ setTimeout(() => {
         }
 
         if (!defaults || defaults.type !== PAGE) {
-          const err = new Error(
-            `The currently loaded module is not a page \nLoaded string => '${src}'`
-          );
+          const err = getErr("not_page_module", { src });
+          console.log(err, this);
           this.emit("error", { data: { error: err } });
           this.__reject(err);
           throw err;
@@ -4890,13 +4886,9 @@ setTimeout(() => {
             temps,
           });
         } catch (error) {
-          const err = new Error(
-            `Failed to render page:${src} \n ${error.stack}`,
-            {
-              cause: error,
-            }
-          );
+          const err = getErr("page_failed", { src }, error);
           console.error(err);
+          console.log(err, this);
         }
 
         await dispatchLoad(this, defaults.loaded);
@@ -5082,14 +5074,13 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       const url = await drawUrl(content, ctx.url, false);
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (err) {
-      const error = new Error(
-        `Error loading Component module: ${ctx.url}\n ${err.toString()}`,
+      throw getErr(
+        "load_comp_module",
         {
-          cause: err,
-        }
+          url: ctx.url,
+        },
+        err
       );
-
-      throw error;
     }
     ctx.resultContent = content;
   }
@@ -5134,7 +5125,9 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
   const cacheUrl = cacheComps[tagName];
   if (cacheUrl) {
     if (path !== cacheUrl) {
-      throw new Error(`${tagName} components have been registered`);
+      throw getErr("comp_registered", {
+        name: tagName,
+      });
     }
 
     await next();
@@ -5202,9 +5195,9 @@ const appendPage = async ({ src, app }) => {
     loadingEl = createXEle(loading());
 
     if (!loadingEl) {
-      const errDesc = `loading function returns no content`;
-      console.log(errDesc, ":", loading);
-      throw new Error(errDesc);
+      const err = getErr("loading_nothing");
+      console.log(err, loading);
+      throw err;
     }
 
     app.push(loadingEl);
@@ -5337,9 +5330,7 @@ $.register({
     async src(val) {
       if (this.__init_src) {
         if (this.__init_src !== val) {
-          throw new Error(
-            "The App that has already been initialized cannot be set with the src attribute"
-          );
+          throw getErr("app_src_change");
         }
         return;
       }
@@ -5556,21 +5547,22 @@ const runAccess = (app, src) => {
   const srcObj = new URL(src);
 
   if (srcObj.origin !== location.origin && !access) {
-    const NoAccessErrDesc =
-      "To jump across domains, the access function must be set";
-    console.log(NoAccessErrDesc, app.ele, app?._module);
-    throw new Error(NoAccessErrDesc);
+    const err = getErr("no_cross_access_func");
+    console.log(err, app.ele, app?._module);
+    throw err;
   }
 
   if (access) {
     const result = access(src);
 
     if (result !== true) {
-      if (result instanceof Error) {
-        throw result;
-      }
-
-      throw new Error(`Access to current address is not allowed: ${src}`);
+      const err = getErr(
+        "access_return_error",
+        { src },
+        result instanceof Error ? result : undefined
+      );
+      console.log(err, app);
+      throw err;
     }
   }
 };
