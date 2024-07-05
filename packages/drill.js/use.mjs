@@ -1,3 +1,4 @@
+import { getErr } from "../ofa-error/main.js";
 import Onion from "./onion.mjs";
 
 export const caches = new Map();
@@ -54,13 +55,16 @@ use(["mjs", "js"], async (ctx, next) => {
         ctx.result = await import(`${d.origin}${d.pathname}`);
       }
     } catch (error) {
-      const err = wrapError(
-        `Failed to load module ${ctx.realUrl || url}`,
+      const err = getErr(
+        "load_module",
+        {
+          url: ctx.realUrl || url,
+        },
         error
       );
 
       if (notHttp) {
-        console.log("Failed to load module:", ctx);
+        console.log("load failed:", ctx.realUrl || url, " ctx:", ctx);
       }
 
       throw err;
@@ -78,11 +82,14 @@ use(["txt", "html", "htm"], async (ctx, next) => {
     try {
       resp = await wrapFetch(url, params);
     } catch (error) {
-      throw wrapError(`Load ${url} failed`, error);
+      throw getErr("load_fail", { url }, error);
     }
 
     if (!/^2.{2}$/.test(resp.status)) {
-      throw new Error(`Load ${url} failed: status code ${resp.status}`);
+      throw getErr("load_fail_status", {
+        url,
+        status: resp.status,
+      });
     }
 
     ctx.result = await resp.text();
@@ -148,10 +155,3 @@ use("css", async (ctx, next) => {
 
   await next();
 });
-
-const wrapError = (desc, error) => {
-  const err = new Error(`${desc} \n  ${error.toString()}`, {
-    cause: error,
-  });
-  return err;
-};

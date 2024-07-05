@@ -1,3 +1,5 @@
+import { getErr, getErrDesc } from "../ofa-error/main.js";
+
 export const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -24,6 +26,8 @@ if (typeof document !== "undefined") {
   }
 }
 
+const TICKERR = "nexttick_thread_limit";
+
 let asyncsCounter = 0;
 let afterTimer;
 const tickSets = new Set();
@@ -37,12 +41,8 @@ export function nextTick(callback) {
     Promise.resolve().then(() => {
       asyncsCounter++;
       if (asyncsCounter > 100000) {
-        const desc = `nextTick exceeds thread limit`;
-        console.error({
-          desc,
-          lastCall: callback,
-        });
-        throw new Error(desc);
+        console.log(getErrDesc(TICKERR), "lastCall => ", callback);
+        throw getErr(TICKERR);
       }
 
       callback();
@@ -57,12 +57,9 @@ export function nextTick(callback) {
     // console.log("asyncsCounter => ", asyncsCounter);
     if (asyncsCounter > 50000) {
       tickSets.clear();
-      const desc = `nextTick exceeds thread limit`;
-      console.error({
-        desc,
-        lastCall: callback,
-      });
-      throw new Error(desc);
+
+      console.log(getErrDesc(TICKERR), "lastCall => ", callback);
+      throw getErr(TICKERR);
     }
     if (tickSets.has(tickId)) {
       callback();

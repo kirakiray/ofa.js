@@ -1,3 +1,4 @@
+import { getErr } from "../../ofa-error/main.js";
 import { getRandomId, isRevokedErr } from "../../stanz/public.mjs";
 import {
   isFunction,
@@ -221,12 +222,16 @@ export function render({
             addRevoke(el, clearRevs);
           }
         } catch (error) {
-          const err = new Error(
-            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`,
+          const err = getErr(
+            "xhear_eval",
             {
-              cause: error,
-            }
+              name: actionName,
+              arg0: args[0],
+              arg1: args[1],
+            },
+            error
           );
+          console.log(err, el);
           throw err;
         }
       });
@@ -244,17 +249,15 @@ export function render({
 
   if (tasks.length) {
     if (target.__render_data && target.__render_data !== data) {
-      const error = new Error(
-        `An old listener already exists and the rendering of this element may be wrong`
-      );
+      const err = getErr("xhear_listen_already");
 
-      Object.assign(error, {
+      console.log(err, {
         element: target,
         old: target.__render_data,
         new: data,
       });
 
-      throw error;
+      throw err;
     }
 
     target.__render_data = data;
@@ -370,9 +373,7 @@ export const convert = (template) => {
 
   searchTemp(template, "x-fill:not([name])", (fillEl) => {
     if (fillEl.querySelector("x-fill:not([name])")) {
-      throw new Error(
-        `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`
-      );
+      throw getErr("xhear_dbfill_noname");
     }
 
     if (fillEl.innerHTML.trim()) {
@@ -399,7 +400,9 @@ export const convert = (template) => {
 
     Object.keys(newTemps).forEach((tempName) => {
       if (temps[tempName]) {
-        throw new Error(`Template "${tempName}" already exists`);
+        throw getErr("xhear_temp_exist", {
+          name: tempName,
+        });
       }
     });
 

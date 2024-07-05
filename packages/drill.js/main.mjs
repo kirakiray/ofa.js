@@ -90,6 +90,13 @@ export default function lm(meta, opts) {
   return createLoad(meta, opts);
 }
 
-Object.assign(lm, {
-  use,
+Object.defineProperties(lm, {
+  use: {
+    value: use,
+  },
+  alias: {
+    get() {
+      return { ...aliasMap };
+    },
+  },
 });

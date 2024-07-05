@@ -1,10 +1,11 @@
 import { hyphenToUpperCase } from "../public.mjs";
 import { dataRevoked } from "../../stanz/public.mjs";
+import { getErr } from "../../ofa-error/main.js";
 
 const syncFn = {
   sync(propName, targetName, options) {
     if (!options) {
-      throw new Error(`Sync is only allowed within the renderer`);
+      throw getErr("xhear_sync_no_options");
     }
 
     [propName, targetName] = options.beforeArgs;
@@ -17,9 +18,9 @@ const syncFn = {
     const val = data.get(targetName);
 
     if (val instanceof Object) {
-      const err = `Object values cannot be synchronized using the sync function : ${targetName}`;
+      const err = getErr("xhear_sync_object_value", { targetName });
       console.log(err, data);
-      throw new Error(err);
+      throw err;
     }
 
     this[propName] = data.get(targetName);

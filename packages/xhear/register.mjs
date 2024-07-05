@@ -1,3 +1,4 @@
+import { getErr } from "../ofa-error/main.js";
 import { getType } from "../stanz/public.mjs";
 import {
   hyphenToUpperCase,
@@ -14,7 +15,7 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
 
   try {
     const data = {
-      ...deepCopyData(defaults.data),
+      ...deepCopyData(defaults.data, defaults.tag),
       ...defaults.attrs,
     };
 
@@ -50,13 +51,13 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
 
     defaults.ready && defaults.ready.call($ele);
   } catch (error) {
-    const err = new Error(
-      `Render element error: ${ele.tagName} \n  ${error.stack}`,
+    throw getErr(
+      "xhear_reander_err",
       {
-        cause: error,
-      }
+        tag: ele.tagName,
+      },
+      error
     );
-    throw err;
   }
 
   if (defaults.watch) {
@@ -133,23 +134,19 @@ export const register = (opts = {}) => {
   try {
     validateTagName(defaults.tag);
 
-    defaults.data = deepCopyData(defaults.data);
+    defaults.data = deepCopyData(defaults.data, defaults.tag);
 
     name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
     if (COMPS[name]) {
-      throw new Error(`Component ${name} already exists`);
+      throw getErr("xhear_register_exists", { name });
     }
 
     template = document.createElement("template");
     template.innerHTML = defaults.temp;
     temps = convert(template);
   } catch (error) {
-    const err = new Error(
-      `Register Component Error: ${defaults.tag} \n  ${error.stack}`,
-      { cause: error }
-    );
-    throw err;
+    throw getErr("xhear_register_err", { tag: defaults.tag }, error);
   }
 
   const getAttrKeys = (attrs) => {
@@ -292,39 +289,33 @@ function isInternal(ele) {
 }
 
 function validateTagName(str) {
+  // Check if the string has at least one '-' character
+  if (!str.includes("-")) {
+    throw getErr("xhear_tag_noline", { str });
+  }
+
   // Check if the string starts or ends with '-'
   if (str.charAt(0) === "-" || str.charAt(str.length - 1) === "-") {
-    throw new Error(`The string "${str}" cannot start or end with "-"`);
+    throw getErr("xhear_validate_tag", { str });
   }
 
   // Check if the string has consecutive '-' characters
   for (let i = 0; i < str.length - 1; i++) {
     if (str.charAt(i) === "-" && str.charAt(i + 1) === "-") {
-      throw new Error(
-        `The string "${str}" cannot have consecutive "-" characters`
-      );
+      throw getErr("xhear_validate_tag", { str });
     }
-  }
-
-  // Check if the string has at least one '-' character
-  if (!str.includes("-")) {
-    throw new Error(`The string "${str}" must contain at least one "-"`);
   }
 
   return true;
 }
 
-function deepCopyData(obj) {
+function deepCopyData(obj, tag = "") {
   if (obj instanceof Set || obj instanceof Map) {
-    throw new Error(
-      "The data of the registered component should contain only regular data types such as String, Number, Object and Array. for other data types, please set them after ready."
-    );
+    throw getErr("xhear_regster_data_noset", { tag });
   }
 
   if (obj instanceof Function) {
-    throw new Error(
-      `Please write the function in the 'proto' property object.`
-    );
+    throw getErr("xhear_regster_data_nofunc", { tag });
   }
 
   if (typeof obj !== "object" || obj === null) {
@@ -335,7 +326,7 @@ function deepCopyData(obj) {
 
   for (let key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      copy[key] = deepCopyData(obj[key]);
+      copy[key] = deepCopyData(obj[key], tag);
     }
   }
 

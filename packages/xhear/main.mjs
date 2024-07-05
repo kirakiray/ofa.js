@@ -12,6 +12,7 @@ import Stanz, { constructor } from "../stanz/main.mjs";
 import watchFn from "../stanz/watch.mjs";
 import "./render/condition.mjs";
 import "./render/fill.mjs";
+import { getErr } from "../ofa-error/main.js";
 const { defineProperties } = Object;
 
 const init = ({ _this, ele, proxySelf }) => {
@@ -254,9 +255,7 @@ export default class Xhear extends LikeArray {
     const { ele } = this;
 
     if (!ele.parentNode) {
-      throw new Error(
-        `The target has a sibling element, so you can't use unwrap`
-      );
+      throw getErr("xhear_wrap_no_parent");
     }
 
     ele.parentNode.insertBefore($el.ele, ele);
@@ -276,7 +275,7 @@ export default class Xhear extends LikeArray {
     const target = ele.parentNode;
 
     if (target.children.length > 1) {
-      throw new Error(`The element itself must have a parent`);
+      throw getErr("xhear_unwrap_has_siblings");
     }
 
     ele.__internal = 1;

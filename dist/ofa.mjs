@@ -1,4 +1,68 @@
 //! ofa.js - v4.4.16 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+const error_origin = "http://127.0.0.1:5793/errors";
+// const error_origin = "https://ofajs.github.io/ofa-errors/errors";
+
+// 存放错误信息的数据对象
+const errors = {};
+
+if (globalThis.navigator && navigator.language) {
+  fetch(`${error_origin}/${navigator.language.toLowerCase()}.json`)
+    .catch(() => {
+      return fetch(`${error_origin}/default.json`);
+    })
+    .then((e) => e.json())
+    .catch((err) => {
+      console.error(err);
+      return {};
+    })
+    .then((data) => {
+      Object.assign(errors, data);
+    });
+}
+/**
+ * 根据键、选项和错误对象生成错误对象。
+ *
+ * @param {string} key - 错误描述的键。
+ * @param {Object} [options] - 映射相关值的选项对象。
+ * @param {Error} [error] - 原始错误对象。
+ * @returns {Error} 生成的错误对象。
+ */
+const getErr = (key, options, error) => {
+  const desc = getErrDesc(key, options);
+
+  let errObj;
+  if (error) {
+    errObj = new Error(desc, { cause: error });
+  } else {
+    errObj = new Error(desc);
+  }
+  return errObj;
+};
+
+/**
+ * 根据键、选项生成错误描述
+ *
+ * @param {string} key - 错误描述的键。
+ * @param {Object} [options] - 映射相关值的选项对象。
+ * @returns {string} 生成的错误描述。
+ */
+const getErrDesc = (key, options) => {
+  if (!errors[key]) {
+    return `Error code: "${key}", please go to https://github.com/ofajs/ofa-errors to view the corresponding error information`;
+  }
+
+  let desc = errors[key];
+
+  // 映射相关值
+  if (options) {
+    for (let k in options) {
+      desc = desc.replace(new RegExp(`{${k}}`, "g"), options[k]);
+    }
+  }
+
+  return desc;
+};
+
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -25,6 +89,8 @@ if (typeof document !== "undefined") {
   }
 }
 
+const TICKERR = "nexttick_thread_limit";
+
 let asyncsCounter = 0;
 let afterTimer;
 const tickSets = new Set();
@@ -38,12 +104,8 @@ function nextTick(callback) {
     Promise.resolve().then(() => {
       asyncsCounter++;
       if (asyncsCounter > 100000) {
-        const desc = `nextTick exceeds thread limit`;
-        console.error({
-          desc,
-          lastCall: callback,
-        });
-        throw new Error(desc);
+        console.log(getErrDesc(TICKERR), "lastCall => ", callback);
+        throw getErr(TICKERR);
       }
 
       callback();
@@ -58,12 +120,9 @@ function nextTick(callback) {
     // console.log("asyncsCounter => ", asyncsCounter);
     if (asyncsCounter > 50000) {
       tickSets.clear();
-      const desc = `nextTick exceeds thread limit`;
-      console.error({
-        desc,
-        lastCall: callback,
-      });
-      throw new Error(desc);
+
+      console.log(getErrDesc(TICKERR), "lastCall => ", callback);
+      throw getErr(TICKERR);
     }
     if (tickSets.has(tickId)) {
       callback();
@@ -697,15 +756,16 @@ class Stanz extends Array {
         try {
           target = target[keys[i]];
         } catch (error) {
-          const err = new Error(
-            `Failed to get data : ${keys.slice(0, i).join(".")} \n${
-              error.stack
-            }`,
-            { cause: error }
+          const err = getErr(
+            "failed_to_get_data",
+            {
+              key: keys.slice(0, i).join("."),
+            },
+            error
           );
-          Object.assign(err, {
-            target,
-          });
+
+          console.log(err.message, ":", key, this, error);
+
           throw err;
         }
       }
@@ -724,15 +784,16 @@ class Stanz extends Array {
         try {
           target = target[keys[i]];
         } catch (error) {
-          const err = new Error(
-            `Failed to get data : ${keys.slice(0, i).join(".")} \n${
-              error.stack
-            }`,
-            { cause: error }
+          const err = getErr(
+            "failed_to_get_data",
+            {
+              key: keys.slice(0, i).join("."),
+            },
+            error
           );
-          Object.assign(err, {
-            target,
-          });
+
+          console.log(err.message, ":", key, this, error);
+
           throw err;
         }
       }
@@ -841,15 +902,15 @@ const handler$1 = {
         },
       });
     } catch (error) {
-      const err = new Error(`failed to set ${key} \n ${error.stack}`, {
-        cause: error,
-      });
+      const err = getErr(
+        "failed_to_set_data",
+        {
+          key,
+        },
+        error
+      );
 
-      Object.assign(err, {
-        key,
-        value,
-        target: receiver,
-      });
+      console.log(err.message, key, target, value);
 
       throw err;
     }
@@ -1135,12 +1196,16 @@ function render({
             addRevoke(el, clearRevs);
           }
         } catch (error) {
-          const err = new Error(
-            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`,
+          const err = getErr(
+            "xhear_eval",
             {
-              cause: error,
-            }
+              name: actionName,
+              arg0: args[0],
+              arg1: args[1],
+            },
+            error
           );
+          console.log(err, el);
           throw err;
         }
       });
@@ -1158,17 +1223,15 @@ function render({
 
   if (tasks.length) {
     if (target.__render_data && target.__render_data !== data) {
-      const error = new Error(
-        `An old listener already exists and the rendering of this element may be wrong`
-      );
+      const err = getErr("xhear_listen_already");
 
-      Object.assign(error, {
+      console.log(err, {
         element: target,
         old: target.__render_data,
         new: data,
       });
 
-      throw error;
+      throw err;
     }
 
     target.__render_data = data;
@@ -1284,9 +1347,7 @@ const convert = (template) => {
 
   searchTemp(template, "x-fill:not([name])", (fillEl) => {
     if (fillEl.querySelector("x-fill:not([name])")) {
-      throw new Error(
-        `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`
-      );
+      throw getErr("xhear_dbfill_noname");
     }
 
     if (fillEl.innerHTML.trim()) {
@@ -1313,7 +1374,9 @@ const convert = (template) => {
 
     Object.keys(newTemps).forEach((tempName) => {
       if (temps[tempName]) {
-        throw new Error(`Template "${tempName}" already exists`);
+        throw getErr("xhear_temp_exist", {
+          name: tempName,
+        });
       }
     });
 
@@ -1400,7 +1463,7 @@ defaultData.prop.revoke = ({ target, args, $ele, data }) => {
 const syncFn = {
   sync(propName, targetName, options) {
     if (!options) {
-      throw new Error(`Sync is only allowed within the renderer`);
+      throw getErr("xhear_sync_no_options");
     }
 
     [propName, targetName] = options.beforeArgs;
@@ -1413,9 +1476,9 @@ const syncFn = {
     const val = data.get(targetName);
 
     if (val instanceof Object) {
-      const err = `Object values cannot be synchronized using the sync function : ${targetName}`;
+      const err = getErr("xhear_sync_object_value", { targetName });
       console.log(err, data);
-      throw new Error(err);
+      throw err;
     }
 
     this[propName] = data.get(targetName);
@@ -2073,7 +2136,7 @@ const renderElement = ({ defaults, ele, template, temps }) => {
 
   try {
     const data = {
-      ...deepCopyData(defaults.data),
+      ...deepCopyData(defaults.data, defaults.tag),
       ...defaults.attrs,
     };
 
@@ -2109,13 +2172,13 @@ const renderElement = ({ defaults, ele, template, temps }) => {
 
     defaults.ready && defaults.ready.call($ele);
   } catch (error) {
-    const err = new Error(
-      `Render element error: ${ele.tagName} \n  ${error.stack}`,
+    throw getErr(
+      "xhear_reander_err",
       {
-        cause: error,
-      }
+        tag: ele.tagName,
+      },
+      error
     );
-    throw err;
   }
 
   if (defaults.watch) {
@@ -2192,23 +2255,19 @@ const register = (opts = {}) => {
   try {
     validateTagName(defaults.tag);
 
-    defaults.data = deepCopyData(defaults.data);
+    defaults.data = deepCopyData(defaults.data, defaults.tag);
 
     name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
     if (COMPS[name]) {
-      throw new Error(`Component ${name} already exists`);
+      throw getErr("xhear_register_exists", { name });
     }
 
     template = document.createElement("template");
     template.innerHTML = defaults.temp;
     temps = convert(template);
   } catch (error) {
-    const err = new Error(
-      `Register Component Error: ${defaults.tag} \n  ${error.stack}`,
-      { cause: error }
-    );
-    throw err;
+    throw getErr("xhear_register_err", { tag: defaults.tag }, error);
   }
 
   const getAttrKeys = (attrs) => {
@@ -2351,39 +2410,33 @@ function isInternal(ele) {
 }
 
 function validateTagName(str) {
+  // Check if the string has at least one '-' character
+  if (!str.includes("-")) {
+    throw getErr("xhear_tag_noline", { str });
+  }
+
   // Check if the string starts or ends with '-'
   if (str.charAt(0) === "-" || str.charAt(str.length - 1) === "-") {
-    throw new Error(`The string "${str}" cannot start or end with "-"`);
+    throw getErr("xhear_validate_tag", { str });
   }
 
   // Check if the string has consecutive '-' characters
   for (let i = 0; i < str.length - 1; i++) {
     if (str.charAt(i) === "-" && str.charAt(i + 1) === "-") {
-      throw new Error(
-        `The string "${str}" cannot have consecutive "-" characters`
-      );
+      throw getErr("xhear_validate_tag", { str });
     }
-  }
-
-  // Check if the string has at least one '-' character
-  if (!str.includes("-")) {
-    throw new Error(`The string "${str}" must contain at least one "-"`);
   }
 
   return true;
 }
 
-function deepCopyData(obj) {
+function deepCopyData(obj, tag = "") {
   if (obj instanceof Set || obj instanceof Map) {
-    throw new Error(
-      "The data of the registered component should contain only regular data types such as String, Number, Object and Array. for other data types, please set them after ready."
-    );
+    throw getErr("xhear_regster_data_noset", { tag });
   }
 
   if (obj instanceof Function) {
-    throw new Error(
-      `Please write the function in the 'proto' property object.`
-    );
+    throw getErr("xhear_regster_data_nofunc", { tag });
   }
 
   if (typeof obj !== "object" || obj === null) {
@@ -2394,7 +2447,7 @@ function deepCopyData(obj) {
 
   for (let key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      copy[key] = deepCopyData(obj[key]);
+      copy[key] = deepCopyData(obj[key], tag);
     }
   }
 
@@ -2485,7 +2538,7 @@ class FakeNode extends Comment {
           break;
         }
       } else {
-        throw new Error(`This is an unclosed FakeNode`);
+        throw getErr("xhear_fakenode_unclose", { name: "children" });
       }
     }
 
@@ -2505,7 +2558,7 @@ class FakeNode extends Comment {
         }
         childs.unshift(prev);
       } else {
-        throw new Error(`This is an unclosed FakeNode`);
+        throw getErr("xhear_fakenode_unclose", { name: "childNodes" });
       }
     }
 
@@ -3065,10 +3118,9 @@ register({
     this._name = this.attr("name");
 
     if (!this._name) {
-      const desc =
-        "The target element does not have a template name to populate";
-      console.log(desc, this.ele);
-      throw new Error(desc);
+      const err = getErr("xhear_fill_tempname", { name: this._name });
+      console.log(err, this.ele);
+      throw err;
     }
 
     if (this.ele._bindingRendered) {
@@ -3354,9 +3406,7 @@ class Xhear extends LikeArray {
     const { ele } = this;
 
     if (!ele.parentNode) {
-      throw new Error(
-        `The target has a sibling element, so you can't use unwrap`
-      );
+      throw getErr("xhear_wrap_no_parent");
     }
 
     ele.parentNode.insertBefore($el.ele, ele);
@@ -3376,7 +3426,7 @@ class Xhear extends LikeArray {
     const target = ele.parentNode;
 
     if (target.children.length > 1) {
-      throw new Error(`The element itself must have a parent`);
+      throw getErr("xhear_unwrap_has_siblings");
     }
 
     ele.__internal = 1;
@@ -3819,13 +3869,16 @@ use(["mjs", "js"], async (ctx, next) => {
         ctx.result = await import(`${d.origin}${d.pathname}`);
       }
     } catch (error) {
-      const err = wrapError(
-        `Failed to load module ${ctx.realUrl || url}`,
+      const err = getErr(
+        "load_module",
+        {
+          url: ctx.realUrl || url,
+        },
         error
       );
 
       if (notHttp) {
-        console.log("Failed to load module:", ctx);
+        console.log("load failed:", ctx.realUrl || url, " ctx:", ctx);
       }
 
       throw err;
@@ -3843,11 +3896,14 @@ use(["txt", "html", "htm"], async (ctx, next) => {
     try {
       resp = await wrapFetch(url, params);
     } catch (error) {
-      throw wrapError(`Load ${url} failed`, error);
+      throw getErr("load_fail", { url }, error);
     }
 
     if (!/^2.{2}$/.test(resp.status)) {
-      throw new Error(`Load ${url} failed: status code ${resp.status}`);
+      throw getErr("load_fail_status", {
+        url,
+        status: resp.status,
+      });
     }
 
     ctx.result = await resp.text();
@@ -3914,13 +3970,6 @@ use("css", async (ctx, next) => {
   await next();
 });
 
-const wrapError = (desc, error) => {
-  const err = new Error(`${desc} \n  ${error.toString()}`, {
-    cause: error,
-  });
-  return err;
-};
-
 const aliasMap = {};
 
 async function config(opts) {
@@ -3928,18 +3977,25 @@ async function config(opts) {
 
   if (alias) {
     Object.entries(alias).forEach(([name, path]) => {
-      if (/^@.+/.test(name)) {
-        if (!aliasMap[name]) {
-          if (!/^\./.test(path)) {
-            aliasMap[name] = path;
-          } else {
-            throw new Error(
-              `The address does not match the specification, please use '/' or or the beginning of the protocol: '${path}'`
-            );
-          }
+      if (!/^@.+/.test(name)) {
+        throw getErr("config_alias_name_error", {
+          name,
+        });
+      }
+
+      if (!aliasMap[name]) {
+        if (!/^\./.test(path)) {
+          aliasMap[name] = path;
         } else {
-          throw new Error(`Alias already exists: '${name}'`);
+          throw getErr("alias_relate_name", {
+            name,
+            path,
+          });
         }
+      } else {
+        throw getErr("alias_already", {
+          name,
+        });
       }
     });
   }
@@ -3961,7 +4017,10 @@ const path = (moduleName, baseURI) => {
     if (aliasMap[first]) {
       lastUrl = [aliasMap[first].replace(/\/$/, ""), ...args].join("/");
     } else {
-      throw new Error(`No alias defined ${first}`);
+      throw getErr("no_alias", {
+        name: first,
+        url: moduleName,
+      });
     }
   }
 
@@ -4070,8 +4129,15 @@ function lm$1(meta, opts) {
   return createLoad(meta, opts);
 }
 
-Object.assign(lm$1, {
-  use,
+Object.defineProperties(lm$1, {
+  use: {
+    value: use,
+  },
+  alias: {
+    get() {
+      return { ...aliasMap };
+    },
+  },
 });
 
 class LoadModule extends HTMLElement {
