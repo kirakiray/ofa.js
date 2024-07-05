@@ -1,5 +1,5 @@
-const error_origin = "http://127.0.0.1:5793/errors";
-// const error_origin = "https://ofajs.github.io/ofa-errors/errors";
+// const error_origin = "http://127.0.0.1:5793/errors";
+const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
 // 存放错误信息的数据对象
 const errors = {};
