@@ -54,7 +54,7 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
     throw getErr(
       "xhear_reander_err",
       {
-        tag: ele.tagName,
+        tag: ele.tagName.toLowerCase(),
       },
       error
     );

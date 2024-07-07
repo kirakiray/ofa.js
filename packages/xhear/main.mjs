@@ -136,6 +136,16 @@ export default class Xhear extends LikeArray {
     return parents;
   }
 
+  get hosts() {
+    const hosts = [];
+    let target = this;
+    while (target.host) {
+      target = target.host;
+      hosts.push(target);
+    }
+    return hosts;
+  }
+
   get next() {
     const nextEle = this.ele.nextElementSibling;
     return nextEle ? eleX(nextEle) : null;

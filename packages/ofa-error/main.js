@@ -11,19 +11,43 @@ if (globalThis.navigator && navigator.language) {
     langFirst = "zhft";
   }
 
-  fetch(`${error_origin}/${langFirst}.json`)
-    .catch(() => {
-      return fetch(`${error_origin}/default.json`);
-    })
-    .then((e) => e.json())
-    .catch((err) => {
-      console.error(err);
-      return {};
-    })
-    .then((data) => {
-      Object.assign(errors, data);
-    });
+  (async () => {
+    if (localStorage["ofa-errors"]) {
+      const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
+      Object.assign(errors, targetLangErrors);
+    }
+
+    const errCacheTime = localStorage["ofa-errors-time"];
+
+    if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
+      const targetLangErrors = await fetch(`${error_origin}/${langFirst}.json`)
+        .then((e) => e.json())
+        .catch(() => null);
+
+      if (targetLangErrors) {
+        localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
+        localStorage["ofa-errors-time"] = Date.now();
+      } else {
+        targetLangErrors = await fetch(`${error_origin}/en.json`)
+          .then((e) => e.json())
+          .catch((error) => {
+            console.error(error);
+            return null;
+          });
+      }
+
+      Object.assign(errors, targetLangErrors);
+    }
+  })();
 }
+
+let isSafari = false;
+if (globalThis.navigator) {
+  isSafari =
+    navigator.userAgent.includes("Safari") &&
+    !navigator.userAgent.includes("Chrome");
+}
+
 /**
  * 根据键、选项和错误对象生成错误对象。
  *
@@ -33,10 +57,16 @@ if (globalThis.navigator && navigator.language) {
  * @returns {Error} 生成的错误对象。
  */
 export const getErr = (key, options, error) => {
-  const desc = getErrDesc(key, options);
+  let desc = getErrDesc(key, options);
 
   let errObj;
   if (error) {
+    if (isSafari) {
+      desc += `\nCaused by: ${error.toString()}\n  ${error.stack.replace(
+        /\n/g,
+        "\n    "
+      )}`;
+    }
     errObj = new Error(desc, { cause: error });
   } else {
     errObj = new Error(desc);

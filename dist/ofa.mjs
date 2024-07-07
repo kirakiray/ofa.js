@@ -12,19 +12,43 @@ if (globalThis.navigator && navigator.language) {
     langFirst = "zhft";
   }
 
-  fetch(`${error_origin}/${langFirst}.json`)
-    .catch(() => {
-      return fetch(`${error_origin}/default.json`);
-    })
-    .then((e) => e.json())
-    .catch((err) => {
-      console.error(err);
-      return {};
-    })
-    .then((data) => {
-      Object.assign(errors, data);
-    });
+  (async () => {
+    if (localStorage["ofa-errors"]) {
+      const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
+      Object.assign(errors, targetLangErrors);
+    }
+
+    const errCacheTime = localStorage["ofa-errors-time"];
+
+    if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
+      const targetLangErrors = await fetch(`${error_origin}/${langFirst}.json`)
+        .then((e) => e.json())
+        .catch(() => null);
+
+      if (targetLangErrors) {
+        localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
+        localStorage["ofa-errors-time"] = Date.now();
+      } else {
+        targetLangErrors = await fetch(`${error_origin}/en.json`)
+          .then((e) => e.json())
+          .catch((error) => {
+            console.error(error);
+            return null;
+          });
+      }
+
+      Object.assign(errors, targetLangErrors);
+    }
+  })();
 }
+
+let isSafari = false;
+if (globalThis.navigator) {
+  isSafari =
+    navigator.userAgent.includes("Safari") &&
+    !navigator.userAgent.includes("Chrome");
+}
+
 /**
  * 根据键、选项和错误对象生成错误对象。
  *
@@ -34,10 +58,16 @@ if (globalThis.navigator && navigator.language) {
  * @returns {Error} 生成的错误对象。
  */
 const getErr = (key, options, error) => {
-  const desc = getErrDesc(key, options);
+  let desc = getErrDesc(key, options);
 
   let errObj;
   if (error) {
+    if (isSafari) {
+      desc += `\nCaused by: ${error.toString()}\n  ${error.stack.replace(
+        /\n/g,
+        "\n    "
+      )}`;
+    }
     errObj = new Error(desc, { cause: error });
   } else {
     errObj = new Error(desc);
@@ -432,6 +462,10 @@ const emitUpdate = ({
 
 var watchFn = {
   watch(callback) {
+    if (!(callback instanceof Function)) {
+      throw getErr("not_func", { name: "watch" });
+    }
+
     const wid = "w-" + getRandomId();
 
     this[WATCHS].set(wid, callback);
@@ -444,6 +478,10 @@ var watchFn = {
   },
 
   watchTick(callback, wait) {
+    if (!(callback instanceof Function)) {
+      throw getErr("not_func", { name: "watchTick" });
+    }
+
     return this.watch(
       debounce((arr) => {
         if (dataRevoked(this)) {
@@ -1433,6 +1471,12 @@ const defaultData = {
 
     value = getVal(value);
 
+    if (value === false) {
+      value = null;
+    } else if (value === true) {
+      value = "";
+    }
+
     if (value === null) {
       this.ele.removeAttribute(name);
     } else {
@@ -1454,6 +1498,32 @@ const defaultData = {
       this.ele.classList.remove(name);
     }
   },
+  watch(...args) {
+    if (args.length < 3) {
+      return watchFn.watch.apply(this, args);
+    }
+
+    const options = args[2];
+    const { beforeArgs, data: target } = options;
+    const [selfPropName, targetPropName] = beforeArgs;
+
+    const wid = this.watch((e) => {
+      if (e.hasModified(selfPropName)) {
+        let val = this[selfPropName];
+        if (val instanceof Object) {
+          // If val is Object, deepClone it.
+          val = JSON.parse(JSON.stringify(val));
+          const errDesc = getErrDesc("heed_object");
+          console.log(errDesc, target);
+        }
+        target[targetPropName] = val;
+      }
+    });
+
+    return () => {
+      this.unwatch(wid);
+    };
+  },
 };
 
 defaultData.prop.always = true;
@@ -1462,8 +1532,11 @@ defaultData.class.always = true;
 
 defaultData.prop.revoke = ({ target, args, $ele, data }) => {
   const propName = args[0];
-  // target[propName] = null;
   target.set(propName, null);
+};
+
+defaultData.watch.revoke = (e) => {
+  e.result();
 };
 
 const syncFn = {
@@ -1532,7 +1605,17 @@ function getBindOptions(name, func, options) {
     const beforeValue = options.beforeArgs[1];
 
     if (!/[^\d\w_\$\.]/.test(beforeValue)) {
-      func = options.data.get(beforeValue).bind(options.data);
+      func = options.data.get(beforeValue);
+      if (!func) {
+        const tag = options.data.tag;
+        const err = getErr("not_found_func", {
+          name: beforeValue,
+          tag: tag ? `"${tag}"` : "",
+        });
+        console.log(err, " target =>", options.data);
+        throw err;
+      }
+      func = func.bind(options.data);
     }
 
     revoker = () => this.ele.removeEventListener(name, func);
@@ -2181,7 +2264,7 @@ const renderElement = ({ defaults, ele, template, temps }) => {
     throw getErr(
       "xhear_reander_err",
       {
-        tag: ele.tagName,
+        tag: ele.tagName.toLowerCase(),
       },
       error
     );
@@ -3291,6 +3374,16 @@ class Xhear extends LikeArray {
       parents.push(target);
     }
     return parents;
+  }
+
+  get hosts() {
+    const hosts = [];
+    let target = this;
+    while (target.host) {
+      target = target.host;
+      hosts.push(target);
+    }
+    return hosts;
   }
 
   get next() {
