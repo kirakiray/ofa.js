@@ -10,10 +10,13 @@
   <body>
     <div>
       I am 1
-      <o-provider name="test1" cus-1="I am Cus1">
+      <o-provider name="test1" custom-a="I am Cus1">
         <span>
           <o-consumer name="test1">
             <button>I am 2</button>
+          </o-consumer>
+          <o-consumer name="test1" custom-a>
+            <button>I am 3</button>
           </o-consumer>
         </span>
       </o-provider>

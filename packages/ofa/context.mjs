@@ -1,5 +1,6 @@
 import { nextTick } from "../stanz/public.mjs";
 import $ from "../xhear/base.mjs";
+import { hyphenToUpperCase, toDashCase } from "../xhear/public.mjs";
 
 const temp = `<style>:host{display:contents}</style><slot></slot>`;
 
@@ -40,14 +41,16 @@ $.register({
     });
 
     this.watch((e) => {
-      if (e.target === this) {
+      if (e.target === this && e.type === "set") {
         // 自身的值修改，更新consumer
         const { name, value } = e;
 
+        const attrName = toDashCase(name);
+
         if (value === null) {
-          this.ele.removeAttribute(name);
-        } else if (this.ele.getAttribute(name) !== String(value)) {
-          this.ele.setAttribute(name, value);
+          this.ele.removeAttribute(attrName);
+        } else if (this.ele.getAttribute(attrName) !== String(value)) {
+          this.ele.setAttribute(attrName, value);
         }
 
         if (name !== "name") {
@@ -68,12 +71,14 @@ $.register({
       Array.from(this.ele.attributes).forEach((item) => {
         const { name, value } = item;
 
+        const propName = hyphenToUpperCase(name);
+
         if (name === "name") {
           return;
         }
 
-        if (String(this[name]) !== value) {
-          this[name] = value;
+        if (String(this[propName]) !== value) {
+          this[propName] = value;
         }
       });
 
@@ -83,7 +88,9 @@ $.register({
           return;
         }
 
-        const val = this.ele.getAttribute(key);
+        const attrName = toDashCase(key);
+
+        const val = this.ele.getAttribute(attrName);
 
         if (val === null && this[key] !== null) {
           this[key] = null;
@@ -149,6 +156,26 @@ $.register({
   },
   ready() {
     this[PROVIDER] = null;
+
+    // 最开始带有 attribute 的 key，在 provider 更新后，也同步到 consumer 的 attributes 上
+    const names = Array.from(this.ele.attributes)
+      .map((e) => {
+        if (e.name !== "name") {
+          return e.name;
+        }
+      })
+      .filter((e) => !!e);
+
+    if (names.length) {
+      this.watch((e) => {
+        let { name } = e;
+        const attrName = toDashCase(name);
+
+        if (e.target === this && e.type === "set" && names.includes(attrName)) {
+          this.ele.setAttribute(attrName, String(e.value));
+        }
+      });
+    }
   },
   attached() {
     if (!this[PROVIDER]) {
