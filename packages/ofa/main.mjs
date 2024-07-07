@@ -6,6 +6,7 @@ import "./page.mjs";
 import "./app.mjs";
 import "./extend.mjs";
 import "./link.mjs";
+import "./context.mjs";
 
 const version = "ofa.js@4.4.16";
 $.version = version.replace("ofa.js@", "");

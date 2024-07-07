@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>context test</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+  </head>
+  <body>
+    <div>
+      I am 1
+      <o-provider name="test1" cus-1="I am Cus1">
+        <span>
+          <o-consumer name="test1">
+            <button>I am 2</button>
+          </o-consumer>
+        </span>
+      </o-provider>
+    </div>
+  </body>
+</html>

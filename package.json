@@ -6,7 +6,7 @@
     "bump": "node scripts/bump-version.js && npm i && npm run build",
     "update": "node scripts/update",
     "build": "rollup -c",
-    "static-server": "node scripts/static-server",
+    "static": "node scripts/static-server",
     "start": "node scripts/start.mjs",
     "test": "node scripts/ci-test",
     "playwright": "npx playwright test",
