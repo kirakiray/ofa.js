@@ -10,7 +10,7 @@
   <body>
     <div>
       I am 1
-      <o-provider name="test1" custom-a="I am Cus1">
+      <o-provider name="test1" custom-a="I am A" custom-b="I am B">
         <span>
           <o-consumer name="test1">
             <button>I am 2</button>
@@ -20,6 +20,16 @@
           </o-consumer>
         </span>
       </o-provider>
+
+      <script>
+        setTimeout(() => {
+          $("span").push(`
+          <o-consumer name="test1" custom-b>
+            <button>I am 4</button>
+          </o-consumer>
+          `);
+        }, 500);
+      </script>
     </div>
   </body>
 </html>

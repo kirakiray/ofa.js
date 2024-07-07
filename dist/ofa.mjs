@@ -5818,6 +5818,17 @@ $.register({
 
         // 查找到对应的provider后，禁止向上冒泡
         e.stopPropagation();
+
+        if (this._refreshed) {
+          // 刷新过后，consumer直接开始重置数据
+          Object.keys(this).forEach((key) => {
+            if (key === "name" || key === "tag" || !/\D/.test(key)) {
+              return;
+            }
+
+            consumer[key] = this[key];
+          });
+        }
       }
     });
 
@@ -5890,9 +5901,13 @@ $.register({
     });
 
     // 初次更新数据
-    nextTick(() => refreshToProps());
+    nextTick(() => {
+      refreshToProps();
+      this._refreshed = 1;
+    });
   },
   detached() {
+    this._refreshed = null;
     this._obs && this._obs.disconnect();
   },
 });
