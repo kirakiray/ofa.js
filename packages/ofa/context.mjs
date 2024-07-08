@@ -124,6 +124,8 @@ $.register({
       refreshToProps();
       this._refreshed = 1;
     });
+
+    // 对组件影子节点内，对应 slot 上冒泡的修正
   },
   detached() {
     this._refreshed = null;

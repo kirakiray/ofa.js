@@ -490,19 +490,27 @@ const defaultData = {
     const options = args[2];
     const { beforeArgs, data: target } = options;
     const [selfPropName, targetPropName] = beforeArgs;
+    const propName = hyphenToUpperCase(selfPropName);
+
+    const setData = () => {
+      let val = this[propName];
+      if (val instanceof Object) {
+        // If val is Object, deepClone it.
+        val = JSON.parse(JSON.stringify(val));
+        const errDesc = getErrDesc("heed_object");
+        console.log(errDesc, target);
+      }
+      target[targetPropName] = val;
+    };
 
     const wid = this.watch((e) => {
-      if (e.hasModified(selfPropName)) {
-        let val = this[selfPropName];
-        if (val instanceof Object) {
-          // If val is Object, deepClone it.
-          val = JSON.parse(JSON.stringify(val));
-          const errDesc = getErrDesc("heed_object");
-          console.log(errDesc, target);
-        }
-        target[targetPropName] = val;
+      if (e.hasModified(propName)) {
+        setData();
       }
     });
+
+    // Initialize once
+    setData();
 
     return () => {
       this.unwatch(wid);
