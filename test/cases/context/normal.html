@@ -8,27 +8,31 @@
     <script type="module" src="../../../packages/ofa/main.mjs"></script>
   </head>
   <body>
+    <l-m src="./comp-two.html"></l-m>
     <div>
       I am 1
       <o-provider name="test1" custom-a="I am A" custom-b="I am B">
-        <span>
-          <o-consumer name="test1">
-            <button>I am 2</button>
+        <div id="container">
+          <o-consumer name="test1" id="con1">
+            <div>I am 2</div>
           </o-consumer>
-          <o-consumer name="test1" custom-a>
-            <button>I am 3</button>
+          <o-consumer name="test1" custom-a id="con2">
+            <div>I am 3</div>
           </o-consumer>
-        </span>
+        </div>
+        <div>
+          <comp-two></comp-two>
+        </div>
       </o-provider>
 
       <script>
         setTimeout(() => {
-          $("span").push(`
-          <o-consumer name="test1" custom-b>
-            <button>I am 4</button>
+          $("#container").push(`
+          <o-consumer name="test1" custom-b id="con3">
+            <div>I am 4</div>
           </o-consumer>
           `);
-        }, 500);
+        }, 300);
       </script>
     </div>
   </body>

@@ -1,0 +1,13 @@
+<template component>
+  <o-provider name="test1" custom-a="A in One" custom-b="B in One">
+    <div>
+      <slot></slot>
+    </div>
+  </o-provider>
+  <br />
+  <script>
+    export default {
+      tag: "comp-one",
+    };
+  </script>
+</template>

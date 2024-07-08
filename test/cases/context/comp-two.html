@@ -1,0 +1,13 @@
+<template component>
+  <o-consumer name="test1" custom-b watch:custom-a="ca">
+    provider in shadow
+  </o-consumer>
+  <script>
+    export default {
+      tag: "comp-two",
+      data: {
+        ca: null,
+      },
+    };
+  </script>
+</template>
