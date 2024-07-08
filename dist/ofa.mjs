@@ -5896,7 +5896,7 @@ $.register({
           (val === null || val === undefined) &&
           (this[key] !== null || this[key] !== undefined)
         ) {
-          this[key] = null;
+          this[key] = undefined;
         }
       });
     };
@@ -6008,7 +6008,7 @@ $.register({
             return;
           }
           if (!keys.includes(key)) {
-            this[key] = null;
+            this[key] = undefined;
           }
         });
       }

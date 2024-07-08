@@ -5902,7 +5902,7 @@ ${scriptContent}`;
             (val === null || val === undefined) &&
             (this[key] !== null || this[key] !== undefined)
           ) {
-            this[key] = null;
+            this[key] = undefined;
           }
         });
       };
@@ -6014,7 +6014,7 @@ ${scriptContent}`;
               return;
             }
             if (!keys.includes(key)) {
-              this[key] = null;
+              this[key] = undefined;
             }
           });
         }
