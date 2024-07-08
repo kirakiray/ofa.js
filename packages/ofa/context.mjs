@@ -58,7 +58,7 @@ $.register({
 
         const attrName = toDashCase(name);
 
-        if (value === null) {
+        if (value === null || value === undefined) {
           this.ele.removeAttribute(attrName);
         } else if (this.ele.getAttribute(attrName) !== String(value)) {
           this.ele.setAttribute(attrName, value);
@@ -103,7 +103,10 @@ $.register({
 
         const val = this.ele.getAttribute(attrName);
 
-        if (val === null && this[key] !== null) {
+        if (
+          (val === null || val === undefined) &&
+          (this[key] !== null || this[key] !== undefined)
+        ) {
           this[key] = null;
         }
       });
@@ -123,15 +126,66 @@ $.register({
     nextTick(() => {
       refreshToProps();
       this._refreshed = 1;
-    });
 
-    // 对组件影子节点内，对应 slot 上冒泡的修正
+      // 组件影子节点内，对应 slot 上冒泡的修正
+      if (this.$("slot")) {
+        // 重新让所有子级的 consumer 重新刷新冒泡
+        const { ele } = this;
+        Array.from(ele.children).forEach((childEl) =>
+          emitAllConsumer(childEl, ele)
+        );
+      }
+    });
   },
   detached() {
     this._refreshed = null;
     this._obs && this._obs.disconnect();
   },
 });
+
+/**
+ * 递归地触发所有consumer组件的更新。
+ *
+ * 此函数会检查传入的DOM元素，如果该元素是consumer组件，它将更新该组件。
+ * 如果元素具有shadowRoot，函数将递归地通知影子节点内的元素。
+ * 如果元素是slot元素，并且emitSlot参数为true，它将检查slot的名称，并通知具有相同slot名称的元素。
+ *
+ * @param {HTMLElement} ele - 要检查和触发更新的DOM元素。
+ * @param {HTMLElement} rootProvider - 根provider元素，consumer将使用此元素作为数据源。
+ * @param {boolean} [emitSlot=true] - 是否应该触发slot元素对应的子元素的更新。
+ * @returns {void}
+ */
+const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
+  if (ele.tagName === "O-PROVIDER") {
+    return;
+  }
+
+  if (ele.tagName === "O-CONSUMER") {
+    // 重新冒泡
+    $(ele)._update(rootProvider);
+  } else if (ele.tagName === "SLOT" && emitSlot) {
+    const slotName = ele.getAttribute("name") || "";
+    const host = ele?.getRootNode()?.host;
+    Array.from(host.children).forEach((e) => {
+      const selfSlotName = e.getAttribute("slot") || "";
+      if (selfSlotName === slotName) {
+        // 继续递归符合插槽的元素
+        emitAllConsumer(e, rootProvider);
+      }
+    });
+    return;
+  } else if (ele.shadowRoot) {
+    // 通知影子节点内的元素
+    Array.from(ele.shadowRoot.children).forEach((childEl) =>
+      emitAllConsumer(childEl, rootProvider, false)
+    );
+  }
+
+  // 不符合的元素继续递归
+  Array.from(ele.children).forEach((childEl) =>
+    emitAllConsumer(childEl, rootProvider)
+  );
+};
 
 const PROVIDER = Symbol("provider");
 
@@ -150,7 +204,26 @@ $.register({
     get provider() {
       return this[PROVIDER];
     },
-    _update() {
+    _update(provider) {
+      if (provider) {
+        if (this[PROVIDER] === provider) {
+          // 相同的 provider 发送的通知，不用再继续冒泡查找
+          return true;
+        }
+
+        // 切换 provider 操作，删除不存在的属性
+        const $provider = $(provider);
+        const keys = Object.keys($provider);
+        Object.keys(this).forEach((key) => {
+          if (!/\D/.test(key)) {
+            return;
+          }
+          if (!keys.includes(key)) {
+            this[key] = null;
+          }
+        });
+      }
+
       this.clearProvider();
 
       if (this.name) {
@@ -189,6 +262,10 @@ $.register({
         const attrName = toDashCase(name);
 
         if (e.target === this && e.type === "set" && names.includes(attrName)) {
+          if (e.value === null || e.value === undefined) {
+            this.ele.removeAttribute(attrName);
+            return;
+          }
           this.ele.setAttribute(attrName, String(e.value));
         }
       });
