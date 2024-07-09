@@ -2355,10 +2355,14 @@ const renderElement = ({ defaults, ele, template, temps }) => {
         // 更新所有变量
         let content = "";
         keys.forEach((key) => {
-          content += `--${key}:${$ele[key]};`;
+          const val = $ele[key];
+          const valType = getType$1(val);
+          if (valType === "number" || valType === "string") {
+            content += `--${key}:${val};`;
+          }
         });
 
-        shadowVarStyle.innerHTML = `:host > *:not(slot):not(style){${content}}`;
+        shadowVarStyle.innerHTML = `:host > *:not(slot){${content}}`;
       };
 
       $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
