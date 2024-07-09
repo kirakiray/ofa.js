@@ -5852,7 +5852,7 @@ const temp = `<style>:host{display:contents}</style><slot></slot>`;
 const CONSUMERS = Symbol("consumers");
 const PROVIDER = Symbol("provider");
 
-$("body").on("update-consumer", (e) => {
+$("html").on("update-consumer", (e) => {
   const target = e.composedPath()[0];
   const $tar = $(target);
 
