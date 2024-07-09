@@ -5852,7 +5852,30 @@ const temp = `<style>:host{display:contents}</style><slot></slot>`;
 const CONSUMERS = Symbol("consumers");
 const PROVIDER = Symbol("provider");
 
+$("body").on("update-consumer", (e) => {
+  const target = e.composedPath()[0];
+  const $tar = $(target);
+
+  if ($tar.tag === "o-consumer") {
+    let hasData = false;
+    // 清空冒泡到根的 consumer 数据
+    Object.keys($tar[SELF]).forEach((key) => {
+      if (InvalidKeys.includes(key)) {
+        return;
+      }
+      $tar[key] = undefined;
+
+      hasData = true;
+    });
+
+    if (hasData) {
+      console.warn(getErrDesc("no_provider", { name: $tar.name }), target);
+    }
+  }
+});
+
 const publicProto = {
+  // 向上冒泡，让 provider 和 consumer 绑定
   _update(provider) {
     if (this[PROVIDER] && this[PROVIDER] === provider) {
       return;
@@ -5885,13 +5908,35 @@ const publicProto = {
   },
 };
 
-const InvalidKeys = ["name", "class", "style", "id"];
+const publicWatch = {
+  name() {
+    // 是否已经设置过
+    if (!this.__named) {
+      this.__named = 1;
+      return;
+    }
+
+    console.warn(
+      getErrDesc("context_change_name", {
+        compName: ` "${this.tag}" `,
+      }),
+      this.ele
+    );
+
+    this._update();
+  },
+};
+
+const InvalidKeys = ["tag", "name", "class", "style", "id"];
 
 $.register({
   tag: "o-provider",
   temp,
   attrs: {
     name: null,
+  },
+  watch: {
+    ...publicWatch,
   },
   proto: {
     ...publicProto,
@@ -6039,6 +6084,9 @@ $.register({
   attrs: {
     name: null,
   },
+  watch: {
+    ...publicWatch,
+  },
   proto: {
     ...publicProto,
     get provider() {
@@ -6067,7 +6115,7 @@ $.register({
 
       // 需要删除自身不存在的数据
       Object.keys(this[SELF]).forEach((key) => {
-        if (InvalidKeys.includes(key) || !keys.includes(key)) {
+        if (InvalidKeys.includes(key) || keys.includes(key)) {
           return;
         }
 

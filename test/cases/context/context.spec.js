@@ -143,6 +143,30 @@ test("change provider in shadow", async ({ page }) => {
   await expect(await page.evaluate(() => $("#con6").customA)).toBe(
     "change A in One"
   );
+});
 
-  
+test("change name in provider", async ({ page }) => {
+  await page.goto("http://localhost:3348/test/cases/context/change-name.html");
+
+  await new Promise((res) => setTimeout(res, 200));
+
+  await expect(await page.evaluate(() => $("#con6").customA)).toBe("A in One");
+  await expect(await page.evaluate(() => $("#con6").customB)).toBe(undefined);
+  await expect(await page.evaluate(() => $("#con6").customC)).toBe("C in One");
+
+  await page.evaluate(() => {
+    $("#con6").name = "test2";
+  });
+
+  await expect(await page.evaluate(() => $("#con6").customA)).toBe("I am A");
+  await expect(await page.evaluate(() => $("#con6").customB)).toBe("I am B");
+  await expect(await page.evaluate(() => $("#con6").customC)).toBe(undefined);
+
+  await page.evaluate(() => {
+    $("#con6").name = "test3";
+  });
+
+  await expect(await page.evaluate(() => $("#con6").customA)).toBe(undefined);
+  await expect(await page.evaluate(() => $("#con6").customB)).toBe(undefined);
+  await expect(await page.evaluate(() => $("#con6").customC)).toBe(undefined);
 });
