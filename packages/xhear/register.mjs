@@ -100,6 +100,54 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
       }
     }
   }
+
+  {
+    // 将组件上的变量重定义到影子节点内的css变量上
+    const { tag } = $ele;
+
+    if ($ele.__rssWid) {
+      $ele.unwatch($ele.__rssWid);
+    }
+
+    // 排除掉自定义组件
+    if (tag !== "x-if" && tag !== "x-fill" && ele.shadowRoot) {
+      // 需要更新的key
+      const keys = Object.keys({
+        ...defaults.data,
+        ...defaults.attrs,
+      });
+
+      for (let [key, item] of Object.entries(
+        Object.getOwnPropertyDescriptors(defaults.proto)
+      )) {
+        if (item.writable || item.get) {
+          keys.push(key);
+        }
+      }
+
+      const refreshShadowStyleVar = () => {
+        let shadowVarStyle = ele.shadowRoot.querySelector("#shadow-var-style");
+
+        if (!shadowVarStyle) {
+          shadowVarStyle = document.createElement("style");
+          shadowVarStyle.id = "shadow-var-style";
+          ele.shadowRoot.appendChild(shadowVarStyle);
+        }
+
+        // 更新所有变量
+        let content = "";
+        keys.forEach((key) => {
+          content += `--${key}:${$ele[key]};`;
+        });
+
+        shadowVarStyle.innerHTML = `:host > *:not(slot):not(style){${content}}`;
+      };
+
+      $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
+
+      refreshShadowStyleVar();
+    }
+  }
 };
 
 export const register = (opts = {}) => {

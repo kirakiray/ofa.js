@@ -1095,46 +1095,46 @@ try{
     const revokes = getRevokes(target);
 
     // Styles with data() function to monitor and correct rendering
-    searchEle(target, "style").forEach((el) => {
-      const originStyle = el.innerHTML;
+    // searchEle(target, "style").forEach((el) => {
+    //   const originStyle = el.innerHTML;
 
-      if (/data\(.+\)/.test(originStyle)) {
-        const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
-          (dataExpr) => {
-            const expr = dataExpr.replace(/data\((.+)\)/, "$1");
-            const func = convertToFunc(expr, data);
+    //   if (/data\(.+\)/.test(originStyle)) {
+    //     const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
+    //       (dataExpr) => {
+    //         const expr = dataExpr.replace(/data\((.+)\)/, "$1");
+    //         const func = convertToFunc(expr, data);
 
-            return {
-              dataExpr,
-              func,
-            };
-          }
-        );
+    //         return {
+    //           dataExpr,
+    //           func,
+    //         };
+    //       }
+    //     );
 
-        const renderStyle = () => {
-          let afterStyle = originStyle;
+    //     const renderStyle = () => {
+    //       let afterStyle = originStyle;
 
-          matchs.forEach(({ dataExpr, func }) => {
-            afterStyle = afterStyle.replace(dataExpr, func());
-          });
+    //       matchs.forEach(({ dataExpr, func }) => {
+    //         afterStyle = afterStyle.replace(dataExpr, func());
+    //       });
 
-          if (el.innerHTML !== afterStyle) {
-            el.innerHTML = afterStyle;
-          }
-        };
-        tasks.push(renderStyle);
+    //       if (el.innerHTML !== afterStyle) {
+    //         el.innerHTML = afterStyle;
+    //       }
+    //     };
+    //     tasks.push(renderStyle);
 
-        const revokeStyle = () => {
-          matchs.length = 0;
-          removeArrayValue(tasks, renderStyle);
-          removeArrayValue(getRevokes(el), revokeStyle);
-          removeArrayValue(revokes, revokeStyle);
-        };
+    //     const revokeStyle = () => {
+    //       matchs.length = 0;
+    //       remove(tasks, renderStyle);
+    //       remove(getRevokes(el), revokeStyle);
+    //       remove(revokes, revokeStyle);
+    //     };
 
-        addRevoke(el, revokeStyle);
-        revokes.push(revokeStyle);
-      }
-    });
+    //     addRevoke(el, revokeStyle);
+    //     revokes.push(revokeStyle);
+    //   }
+    // });
 
     // Render text nodes
     texts.forEach((el) => {
@@ -1483,7 +1483,7 @@ try{
         value = "";
       }
 
-      if (value === null) {
+      if (value === null || value === undefined) {
         this.ele.removeAttribute(name);
       } else {
         this.ele.setAttribute(name, value);
@@ -2322,6 +2322,54 @@ try{
         } else {
           func.call($ele, $ele[name], {});
         }
+      }
+    }
+
+    {
+      // 将组件上的变量重定义到影子节点内的css变量上
+      const { tag } = $ele;
+
+      if ($ele.__rssWid) {
+        $ele.unwatch($ele.__rssWid);
+      }
+
+      // 排除掉自定义组件
+      if (tag !== "x-if" && tag !== "x-fill" && ele.shadowRoot) {
+        // 需要更新的key
+        const keys = Object.keys({
+          ...defaults.data,
+          ...defaults.attrs,
+        });
+
+        for (let [key, item] of Object.entries(
+          Object.getOwnPropertyDescriptors(defaults.proto)
+        )) {
+          if (item.writable || item.get) {
+            keys.push(key);
+          }
+        }
+
+        const refreshShadowStyleVar = () => {
+          let shadowVarStyle = ele.shadowRoot.querySelector("#shadow-var-style");
+
+          if (!shadowVarStyle) {
+            shadowVarStyle = document.createElement("style");
+            shadowVarStyle.id = "shadow-var-style";
+            ele.shadowRoot.appendChild(shadowVarStyle);
+          }
+
+          // 更新所有变量
+          let content = "";
+          keys.forEach((key) => {
+            content += `--${key}:${$ele[key]};`;
+          });
+
+          shadowVarStyle.innerHTML = `:host > *:not(slot):not(style){${content}}`;
+        };
+
+        $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
+
+        refreshShadowStyleVar();
       }
     }
   };
