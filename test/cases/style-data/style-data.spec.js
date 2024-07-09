@@ -1,17 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-const getData = async ({ page }) => {
-  const { _preview } = await page.waitForFunction(async () => {
-    return JSON.stringify({
-      weight: $("sd-demo").shadow.$("#container").css.fontWeight,
-      color: $("sd-demo").shadow.$("#container").css.color,
-      size: $("sd-demo").shadow.$("#container").css.fontSize,
-    });
-  });
-
-  return JSON.parse(_preview);
-};
-
 test("style data", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/style-data/test.html");
 
@@ -40,3 +28,15 @@ test("style data", async ({ page }) => {
   const data4 = await getData({ page });
   expect(data4.size).toBe("16px");
 });
+
+const getData = async ({ page }) => {
+  const { _preview } = await page.waitForFunction(async () => {
+    return JSON.stringify({
+      weight: $("sd-demo").shadow.$("#container").css.fontWeight,
+      color: $("sd-demo").shadow.$("#container").css.color,
+      size: $("sd-demo").shadow.$("#container").css.fontSize,
+    });
+  });
+
+  return JSON.parse(_preview);
+};

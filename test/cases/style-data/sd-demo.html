@@ -1,29 +1,29 @@
 <template component>
   <style>
     #container {
-      color: data(tcolor);
+      color: var(--tColor);
     }
 
-    @media screen and (min-width: data(twidth + "px")) {
+    @media screen and (min-width: 600px) {
       #container {
-        width: data(twidth);
-        font-size: data(tsize + "px");
+        width: var(--tWidth);
+        font-size: var(--tSize);
       }
     }
   </style>
-  <x-if :value="tweight > 800">
+  <x-if :value="tWeight > 800">
     <style>
       #container {
-        font-weight: data(tweight);
+        font-weight: var(--tWeight);
       }
     </style>
   </x-if>
 
   <div id="container">count:{{count}}</div>
   <div>
-    <button on:click="tweight = 600">weight:600</button>
-    <button on:click="tweight = 850">weight:850</button>
-    <button on:click="tweight = 900">weight:900</button>
+    <button on:click="tWeight = 600">weight:600</button>
+    <button on:click="tWeight = 850">weight:850</button>
+    <button on:click="tWeight = 900">weight:900</button>
   </div>
 
   <script>
@@ -31,10 +31,10 @@
       tag: "sd-demo",
       data: {
         count: 0,
-        tcolor: "rgb(255, 0, 0)",
-        twidth: 600,
-        tsize: 20,
-        tweight: 900,
+        tColor: "rgb(255, 0, 0)",
+        tWidth: "600px",
+        tSize: "20px",
+        tWeight: 900,
       },
     };
   </script>
@@ -43,7 +43,7 @@
 If frequent changes to the style in the inject host are allowed, it is better to directly find and modify the style of the internal child nodes. -->
   <!-- <inject-host>
     <style>
-      @media screen and (min-width: data(twidth + "px")) {
+      @media screen and (min-width: data(tWidth + "px")) {
         body {
           background-color: #aaa;
         }

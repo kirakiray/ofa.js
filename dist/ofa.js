@@ -5910,7 +5910,6 @@ ${scriptContent}`;
             if (consumer._setConsumer) {
               consumer._setConsumer(name, value);
             } else {
-              debugger;
               if (consumer[name] !== value) {
                 consumer[name] = value;
               }

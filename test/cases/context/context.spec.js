@@ -100,7 +100,12 @@ test("change provider in shadow", async ({ page }) => {
     await page.evaluate(() => {
       return $("o-provider").consumers.length;
     })
-  ).toBe(0);
+  ).toBe(1);
+  await expect(
+    await page.evaluate(() => {
+      return $("o-provider").consumers[0].tag;
+    })
+  ).toBe("o-provider");
   await expect(
     await page.evaluate(() => {
       return $("comp-one").shadow.$("o-provider").consumers.length;
@@ -108,7 +113,7 @@ test("change provider in shadow", async ({ page }) => {
   ).toBe(3);
 
   await expect(await page.evaluate(() => $("#con5").customA)).toBe("A in One");
-  await expect(await page.evaluate(() => $("#con5").customB)).toBe(undefined);
+  await expect(await page.evaluate(() => $("#con5").customB)).toBe("I am B");
   await expect(await page.evaluate(() => $("#con5").customC)).toBe("C in One");
 
   await expect(
@@ -116,13 +121,13 @@ test("change provider in shadow", async ({ page }) => {
   ).toBe("A in One");
   await expect(
     await page.evaluate(() => $("comp-two").shadow.$("o-consumer").customB)
-  ).toBe(undefined);
+  ).toBe("I am B");
   await expect(
     await page.evaluate(() => $("comp-two").shadow.$("o-consumer").customC)
   ).toBe("C in One");
 
   await expect(await page.evaluate(() => $("#con6").customA)).toBe("A in One");
-  await expect(await page.evaluate(() => $("#con6").customB)).toBe(undefined);
+  await expect(await page.evaluate(() => $("#con6").customB)).toBe("I am B");
   await expect(await page.evaluate(() => $("#con6").customC)).toBe("C in One");
 
   await page.evaluate(() => {
@@ -138,4 +143,6 @@ test("change provider in shadow", async ({ page }) => {
   await expect(await page.evaluate(() => $("#con6").customA)).toBe(
     "change A in One"
   );
+
+  
 });
