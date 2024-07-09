@@ -2368,7 +2368,11 @@ try{
             }
           });
 
-          shadowVarStyle.innerHTML = `:host > *:not(slot){${content}}`;
+          const styleContent = `:host > *:not(slot){${content}}`;
+
+          if (shadowVarStyle.innerHTML !== styleContent) {
+            shadowVarStyle.innerHTML = styleContent;
+          }
         };
 
         $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
@@ -5909,6 +5913,18 @@ ${scriptContent}`;
       },
       _setConsumer(name, value, isSelf) {
         if (isSelf || this[name] === undefined || this[name] === null) {
+          if (value === undefined || value === null) {
+            // 删除属性，则向上层获取对应值，并向下设置
+            let parentProvider = this.provider;
+            while ((value === undefined || value === null) && parentProvider) {
+              value = parentProvider[name];
+              if (value) {
+                break;
+              }
+              parentProvider = parentProvider.provider;
+            }
+          }
+
           this[CONSUMERS].forEach((consumer) => {
             // 主动设置数据，性能更好
             if (consumer._setConsumer) {
@@ -5956,14 +5972,17 @@ ${scriptContent}`;
       });
     },
     attached() {
+      // 默认将attributes的值设置到props上
+      const needRemoves = [];
       Array.from(this.ele.attributes).forEach((item) => {
         const { name, value } = item;
 
         if (!InvalidKeys.includes(name)) {
           this[hyphenToUpperCase(name)] = value;
+          needRemoves.push(name);
         }
       });
-      // needRemoves.forEach((name) => this.ele.removeAttribute(name));
+      needRemoves.forEach((name) => this.ele.removeAttribute(name));
 
       this._update();
 

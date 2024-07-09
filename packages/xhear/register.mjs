@@ -144,7 +144,11 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
           }
         });
 
-        shadowVarStyle.innerHTML = `:host > *:not(slot){${content}}`;
+        const styleContent = `:host > *:not(slot){${content}}`;
+
+        if (shadowVarStyle.innerHTML !== styleContent) {
+          shadowVarStyle.innerHTML = styleContent;
+        }
       };
 
       $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
