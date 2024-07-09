@@ -5842,6 +5842,42 @@ $.fn.extend({
 const temp = `<style>:host{display:contents}</style><slot></slot>`;
 
 const CONSUMERS = Symbol("consumers");
+const PROVIDER = Symbol("provider");
+
+const publicProto = {
+  _update(provider) {
+    if (this[PROVIDER] && this[PROVIDER] === provider) {
+      return;
+    }
+
+    if (this[PROVIDER]) {
+      this._clear();
+    }
+
+    if (provider) {
+      this[PROVIDER] = provider;
+      provider[CONSUMERS].add(this);
+      return;
+    }
+
+    if (this.name) {
+      this.emit(`update-consumer`, {
+        data: {
+          name: this.name,
+          consumer: this,
+        },
+        composed: true,
+      });
+    }
+  },
+  _clear() {
+    const provider = this[PROVIDER];
+    provider[CONSUMERS].delete(this);
+    this[PROVIDER] = null;
+  },
+};
+
+const InvalidKeys = ["name", "class", "style", "id"];
 
 $.register({
   tag: "o-provider",
@@ -5849,42 +5885,53 @@ $.register({
   attrs: {
     name: null,
   },
-  watch: {
-    name() {
-      this.consumers.forEach((item) => {
-        item._update();
-      });
-    },
-  },
   proto: {
+    ...publicProto,
     get consumers() {
       return [...Array.from(this[CONSUMERS])];
+    },
+    get provider() {
+      return this[PROVIDER];
+    },
+    refresh() {
+      // 辅助consumer刷新数据
+      this.consumers.forEach((e) => e.refresh());
+    },
+    _setConsumer(name, value, isSelf) {
+      if (isSelf || this[name] === undefined || this[name] === null) {
+        this[CONSUMERS].forEach((consumer) => {
+          // 主动设置数据，性能更好
+          if (consumer._setConsumer) {
+            consumer._setConsumer(name, value);
+          } else {
+            debugger;
+            if (consumer[name] !== value) {
+              consumer[name] = value;
+            }
+          }
+        });
+      }
     },
   },
   ready() {
     this[CONSUMERS] = new Set();
 
-    // 通过监听事件，更新consumer
-    this.on(`update-consumer`, (e) => {
+    this.on("update-consumer", (e) => {
+      if (e.target === e.currentTarget) {
+        // 给自己出触发的事件，不做处理
+        return;
+      }
+
       const { name, consumer } = e.data;
 
       if (name && this.name === name) {
-        consumer[PROVIDER] = this.ele;
-        this[CONSUMERS].add(consumer.ele);
+        this[CONSUMERS].add(consumer);
+        consumer[PROVIDER] = this;
 
         // 查找到对应的provider后，禁止向上冒泡
         e.stopPropagation();
 
-        if (this._refreshed) {
-          // 刷新过后，consumer直接开始重置数据
-          Object.keys(this).forEach((key) => {
-            if (key === "name" || key === "tag" || !/\D/.test(key)) {
-              return;
-            }
-
-            consumer[key] = this[key];
-          });
-        }
+        consumer.refresh();
       }
     });
 
@@ -5893,90 +5940,32 @@ $.register({
         // 自身的值修改，更新consumer
         const { name, value } = e;
 
-        const attrName = toDashCase(name);
-
-        if (value === null || value === undefined) {
-          this.ele.removeAttribute(attrName);
-        } else if (this.ele.getAttribute(attrName) !== String(value)) {
-          this.ele.setAttribute(attrName, value);
-        }
-
-        if (name !== "name") {
-          this[CONSUMERS].forEach((el) => {
-            const consumer = $(el);
-            if (consumer[name] !== value) {
-              consumer[name] = value;
-            }
-          });
+        if (!InvalidKeys.includes(name)) {
+          this._setConsumer(name, value, 1);
         }
       }
     });
   },
   attached() {
-    // 将 attributes 的值绑定到 props 上
-    const refreshToProps = () => {
-      // 更新（添加）属性
-      Array.from(this.ele.attributes).forEach((item) => {
-        const { name, value } = item;
+    Array.from(this.ele.attributes).forEach((item) => {
+      const { name, value } = item;
 
-        const propName = hyphenToUpperCase(name);
-
-        if (name === "name") {
-          return;
-        }
-
-        if (String(this[propName]) !== value) {
-          this[propName] = value;
-        }
-      });
-
-      // 删除属性
-      Object.keys(this).forEach((key) => {
-        if (key === "name" || key === "tag" || !/\D/.test(key)) {
-          return;
-        }
-
-        const attrName = toDashCase(key);
-
-        const val = this.ele.getAttribute(attrName);
-
-        if (
-          (val === null || val === undefined) &&
-          (this[key] !== null || this[key] !== undefined)
-        ) {
-          this[key] = undefined;
-        }
-      });
-    };
-
-    // 将元素的所有 attributes 和 props 进行绑定
-    const obs = (this._obs = new MutationObserver((e) => {
-      // 更新数据
-      refreshToProps();
-    }));
-
-    obs.observe(this.ele, {
-      attributes: true,
-    });
-
-    // 初次更新数据
-    nextTick(() => {
-      refreshToProps();
-      this._refreshed = 1;
-
-      // 组件影子节点内，对应 slot 上冒泡的修正
-      if (this.$("slot")) {
-        // 重新让所有子级的 consumer 重新刷新冒泡
-        const { ele } = this;
-        Array.from(ele.children).forEach((childEl) =>
-          emitAllConsumer(childEl, ele)
-        );
+      if (!InvalidKeys.includes(name)) {
+        this[hyphenToUpperCase(name)] = value;
       }
     });
-  },
-  detached() {
-    this._refreshed = null;
-    this._obs && this._obs.disconnect();
+    // needRemoves.forEach((name) => this.ele.removeAttribute(name));
+
+    this._update();
+
+    // 组件影子节点内，对应 slot 上冒泡的修正
+    if (this.$("slot")) {
+      // 重新让所有子级的 consumer 重新刷新冒泡
+      const { ele } = this;
+      Array.from(ele.children).forEach((childEl) =>
+        emitAllConsumer(childEl, this)
+      );
+    }
   },
 });
 
@@ -5993,13 +5982,11 @@ $.register({
  * @returns {void}
  */
 const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
-  if (ele.tagName === "O-PROVIDER") {
-    return;
-  }
-
-  if (ele.tagName === "O-CONSUMER") {
+  if (ele.tagName === "O-CONSUMER" || ele.tagName === "O-PROVIDER") {
     // 重新冒泡
-    $(ele)._update(rootProvider);
+    const $ele = $(ele);
+    $ele._update(rootProvider);
+    $ele.refresh();
   } else if (ele.tagName === "SLOT" && emitSlot) {
     const slotName = ele.getAttribute("name") || "";
     const host = ele?.getRootNode()?.host;
@@ -6024,97 +6011,76 @@ const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
   );
 };
 
-const PROVIDER = Symbol("provider");
-
 $.register({
   tag: "o-consumer",
   temp,
   attrs: {
     name: null,
   },
-  watch: {
-    name() {
-      this._update();
-    },
-  },
   proto: {
+    ...publicProto,
     get provider() {
       return this[PROVIDER];
     },
-    _update(provider) {
-      if (provider) {
-        if (this[PROVIDER] === provider) {
-          // 相同的 provider 发送的通知，不用再继续冒泡查找
-          return true;
-        }
+    // 更新自身数据
+    refresh() {
+      const data = {};
+      const keys = [];
 
-        // 切换 provider 操作，删除不存在的属性
-        const $provider = $(provider);
-        const keys = Object.keys($provider);
-        Object.keys(this).forEach((key) => {
-          if (!/\D/.test(key)) {
+      let { provider } = this;
+      while (provider) {
+        Object.keys(provider[SELF]).forEach((key) => {
+          if (key === "tag" || key === "name") {
             return;
           }
-          if (!keys.includes(key)) {
-            this[key] = undefined;
+
+          if (data[key] === undefined || data[key] === null) {
+            data[key] = provider[key];
+            keys.push(key);
           }
         });
+
+        provider = provider.provider;
       }
 
-      this.clearProvider();
+      // 需要删除自身不存在的数据
+      Object.keys(this[SELF]).forEach((key) => {
+        if (InvalidKeys.includes(key) || !keys.includes(key)) {
+          return;
+        }
 
-      if (this.name) {
-        this.emit(`update-consumer`, {
-          data: {
-            name: this.name,
-            consumer: this,
-          },
-          composed: true,
-        });
-      }
-    },
-    clearProvider() {
-      if (this[PROVIDER]) {
-        // 刷新前清除旧的附身provider
-        const provider = $(this[PROVIDER]);
-        provider[CONSUMERS].delete(this.ele);
+        this[key] = undefined;
+      });
+
+      // 设置值
+      for (let [key, value] of Object.entries(data)) {
+        this[key] = value;
       }
     },
   },
   ready() {
-    this[PROVIDER] = null;
+    // 记录自身的 attributes
+    const existKeys = (this._existAttrKeys = Object.values(this.ele.attributes)
+      .map((e) => e.name)
+      .filter((e) => !InvalidKeys.includes(e)));
 
-    // 最开始带有 attribute 的 key，在 provider 更新后，也同步到 consumer 的 attributes 上
-    const names = Array.from(this.ele.attributes)
-      .map((e) => {
-        if (e.name !== "name") {
-          return e.name;
-        }
-      })
-      .filter((e) => !!e);
+    // 更新 attributes
+    this.watch((e) => {
+      if (e.target === this && e.type === "set") {
+        const attrName = toDashCase(e.name);
 
-    if (names.length) {
-      this.watch((e) => {
-        let { name } = e;
-        const attrName = toDashCase(name);
-
-        if (e.target === this && e.type === "set" && names.includes(attrName)) {
+        if (existKeys.includes(attrName)) {
           if (e.value === null || e.value === undefined) {
             this.ele.removeAttribute(attrName);
-            return;
+          } else {
+            this.ele.setAttribute(attrName, e.value);
           }
-          this.ele.setAttribute(attrName, String(e.value));
         }
-      });
-    }
+      }
+    });
   },
   attached() {
-    if (!this[PROVIDER]) {
-      this._update();
-    }
-  },
-  detached() {
-    this.clearProvider();
+    this._update();
   },
 });
 
