@@ -4775,19 +4775,25 @@ try{
       const styleContent = e.innerHTML;
       const { outerHTML } = e;
 
-      // 编译前开始的行数
-      let originStarRowIndex = 1;
-      // 编译前结束的行数
-      let originEndRowIndex = 19;
-
       // 编译后开始的行数
       let startLine = 0;
 
       // 拆分原内容
-      const marr = backupOriginContent.split(outerHTML);
-      originStarRowIndex = marr[0].split("\n").length - 1;
-      originEndRowIndex =
+      const matchArr = backupOriginContent.split(outerHTML);
+
+      // 编译前开始的行数
+      const originStarRowIndex = matchArr[0].split("\n").length - 1;
+
+      // 编译前结束的行数
+      const originEndRowIndex =
         originStarRowIndex + styleContent.split("\n").length - 1;
+
+      // 替换 backupOriginContent 中已经sourcemap过的代码为换行符
+      let middleStr = "";
+      for (let i = 0, len = outerHTML.split("\n").length - 1; i < len; i++) {
+        middleStr += "\n";
+      }
+      backupOriginContent = [matchArr[0], middleStr, matchArr[1]].join("");
 
       const sourceMapJSONURL = await getSourcemapUrl(
         filePath,
