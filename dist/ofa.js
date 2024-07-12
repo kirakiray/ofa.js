@@ -4683,9 +4683,7 @@ try{
     });
   };
 
-  const strToBase64DataURI = async (str, type, isb64 = true) => {
-    const mime = type === "js" ? "text/javascript" : "application/json";
-
+  const strToBase64DataURI = async (str, mime, isb64 = true) => {
     const file = new File([str], "genfile", { type: mime });
 
     if (!isb64) {
@@ -4705,8 +4703,16 @@ try{
     return result;
   };
 
-  // In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
-  const getSourcemapUrl = async (filePath, originContent, startLine) => {
+  /**
+   * In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
+   *  */
+  const getSourcemapUrl = async (
+    filePath,
+    originStarRowIndex,
+    originEndRowIndex,
+    originContent,
+    startLine
+  ) => {
     const originLineArr = originContent.split("\n");
 
     let mappings = "";
@@ -4714,16 +4720,6 @@ try{
     for (let i = 0; i <= startLine; i++) {
       mappings += ";";
     }
-
-    // Determine the starting line number of the source file.
-    const originStarRowIndex = originLineArr.findIndex(
-      (lineContent) => lineContent.trim() === "<script>"
-    );
-
-    // Determine the ending line number of the source file.
-    const originEndRowIndex = originLineArr.findIndex(
-      (lineContent) => lineContent.trim() === "</script>"
-    );
 
     let beforeRowIndex = 0;
     let beforeColIndex = 0;
@@ -4756,15 +4752,60 @@ try{
       .replace(/\]$/, "");
 
     const str = `{"version": 3,
-    "file": "${filePath
-      .replace(/\?.+/, "")
-      .replace(/.+\/(.+?)/, "$1")
-      .replace(".html", ".js")}",
     "sources": ["${filePath.replace(/\?.+/, "")}"],
     "sourcesContent":[${sourcesContent}],
     "mappings": "${mappings}"}`;
 
-    return await strToBase64DataURI(str, null);
+    return await strToBase64DataURI(str, "application/json");
+  };
+
+  // 将 style 映射为 sourcemap 的 base64 link 标签，方便调试
+  const addStyleSourcemap = async (temp, originContent, filePath) => {
+    let reTemp = temp;
+
+    // 备份一份可修改的的原始内容
+    let backupOriginContent = originContent;
+
+    const tempEl = document.createElement("template");
+    tempEl.innerHTML = temp;
+
+    const styleEls = tempEl.content.querySelectorAll("style");
+
+    for (let e of Array.from(styleEls)) {
+      const styleContent = e.innerHTML;
+      const { outerHTML } = e;
+
+      // 编译前开始的行数
+      let originStarRowIndex = 1;
+      // 编译前结束的行数
+      let originEndRowIndex = 19;
+
+      // 编译后开始的行数
+      let startLine = 0;
+
+      // 拆分原内容
+      const marr = backupOriginContent.split(outerHTML);
+      originStarRowIndex = marr[0].split("\n").length - 1;
+      originEndRowIndex =
+        originStarRowIndex + styleContent.split("\n").length - 1;
+
+      const sourceMapJSONURL = await getSourcemapUrl(
+        filePath,
+        originStarRowIndex,
+        originEndRowIndex,
+        originContent,
+        startLine
+      );
+
+      const sourcemapStr = `/*# sourceMappingURL=${sourceMapJSONURL}*/`;
+
+      reTemp = reTemp.replace(
+        outerHTML,
+        `${outerHTML.replace("</style>", "")}\n${sourcemapStr}</style>`
+      );
+    }
+
+    return reTemp;
   };
 
   const cacheLink = new Map();
@@ -4797,14 +4838,19 @@ try{
     let temp = "";
 
     if (hasTemp) {
-      temp =
-        "<style>*:not(:defined){display:none;}</style>" +
-        targetTemp.html
-          .replace(/\s+$/, "")
-          .replace(/`/g, "\\`")
-          .replace(/\$\{/g, "\\${");
+      temp = targetTemp.html
+        .replace(/\s+$/, "")
+        .replace(/`/g, "\\`")
+        .replace(/\$\{/g, "\\${");
+
+      if (isDebug) {
+        temp = await addStyleSourcemap(temp, content, url);
+      }
+
+      temp = "<style>*:not(:defined){display:none;}</style>" + temp;
     }
 
+    // 原来html文件中，转译后，属于前半部分的内容（后半部分就是script标签内的内容）
     const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
@@ -4834,8 +4880,22 @@ ${scriptContent}`;
     let sourcemapStr = "";
 
     if (isDebug) {
+      const originLineArr = content.split("\n");
+
+      // Determine the starting line number of the source file.
+      const originStarRowIndex = originLineArr.findIndex(
+        (lineContent) => lineContent.trim() === "<script>"
+      );
+
+      // Determine the ending line number of the source file.
+      const originEndRowIndex = originLineArr.findIndex(
+        (lineContent) => lineContent.trim() === "</script>"
+      );
+
       sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
       url,
+      originStarRowIndex,
+      originEndRowIndex,
       content,
       beforeContent.split("\n").length
     )}`;
@@ -4845,7 +4905,11 @@ ${scriptContent}`;
 
     const isFirefox = navigator.userAgent.includes("Firefox");
 
-    targetUrl = strToBase64DataURI(finalContent, "js", isFirefox ? false : true);
+    targetUrl = strToBase64DataURI(
+      finalContent,
+      "text/javascript",
+      isFirefox ? false : true
+    );
 
     cacheLink.set(url, targetUrl);
 

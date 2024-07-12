@@ -1,0 +1,49 @@
+<template component>
+  <style>
+    :host {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 38px;
+      width: 100px;
+      height: 100px;
+      background-color: #7d1a1a;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 8px;
+    }
+  </style>
+  <x-if :value="count % 3">
+    <style>
+      .container {
+        background-color: #1a7d1a;
+      }
+
+      :host {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </x-if>
+  <div class="container">{{count}}</div>
+  <button on:click="addCount">Add</button>
+  <script>
+    export default {
+      tag: "test-comp-two",
+      data: {
+        count: 10,
+      },
+      proto: {
+        addCount() {
+          this.count++;
+        },
+      },
+    };
+  </script>
+</template>
