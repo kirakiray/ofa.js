@@ -1,3 +1,4 @@
+import { getErr, getErrDesc } from "../ofa-error/main.js";
 import { getType } from "../stanz/public.mjs";
 import {
   hyphenToUpperCase,
@@ -6,6 +7,7 @@ import {
 } from "./public.mjs";
 import { convert, render } from "./render/render.mjs";
 import { eleX } from "./util.mjs";
+import $ from "./dollar.mjs";
 
 const COMPS = {};
 
@@ -14,7 +16,7 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
 
   try {
     const data = {
-      ...deepCopyData(defaults.data),
+      ...deepCopyData(defaults.data, defaults.tag),
       ...defaults.attrs,
     };
 
@@ -50,13 +52,13 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
 
     defaults.ready && defaults.ready.call($ele);
   } catch (error) {
-    const err = new Error(
-      `Render element error: ${ele.tagName} \n  ${error.stack}`,
+    throw getErr(
+      "xhear_reander_err",
       {
-        cause: error,
-      }
+        tag: ele.tagName.toLowerCase(),
+      },
+      error
     );
-    throw err;
   }
 
   if (defaults.watch) {
@@ -99,6 +101,62 @@ export const renderElement = ({ defaults, ele, template, temps }) => {
       }
     }
   }
+
+  {
+    // 将组件上的变量重定义到影子节点内的css变量上
+    const { tag } = $ele;
+
+    if ($ele.__rssWid) {
+      $ele.unwatch($ele.__rssWid);
+    }
+
+    // 排除掉自定义组件
+    if (tag !== "x-if" && tag !== "x-fill" && ele.shadowRoot) {
+      // 需要更新的key
+      const keys = Object.keys({
+        ...defaults.data,
+        ...defaults.attrs,
+      });
+
+      for (let [key, item] of Object.entries(
+        Object.getOwnPropertyDescriptors(defaults.proto)
+      )) {
+        if (item.writable || item.get) {
+          keys.push(key);
+        }
+      }
+
+      const refreshShadowStyleVar = () => {
+        let shadowVarStyle = ele.shadowRoot.querySelector("#shadow-var-style");
+
+        if (!shadowVarStyle) {
+          shadowVarStyle = document.createElement("style");
+          shadowVarStyle.id = "shadow-var-style";
+          ele.shadowRoot.appendChild(shadowVarStyle);
+        }
+
+        // 更新所有变量
+        let content = "";
+        keys.forEach((key) => {
+          const val = $ele[key];
+          const valType = getType(val);
+          if (valType === "number" || valType === "string") {
+            content += `--${key}:${val};`;
+          }
+        });
+
+        const styleContent = `:host > *:not(slot){${content}}`;
+
+        if (shadowVarStyle.innerHTML !== styleContent) {
+          shadowVarStyle.innerHTML = styleContent;
+        }
+      };
+
+      $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
+
+      refreshShadowStyleVar();
+    }
+  }
 };
 
 export const register = (opts = {}) => {
@@ -128,28 +186,50 @@ export const register = (opts = {}) => {
     ...opts,
   };
 
+  const { fn } = $;
+  if (fn) {
+    // 检查 proto 和 data 上的key，是否和fn上的key冲突
+    Object.keys(defaults.data).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        throw getErr("invalid_key", {
+          compName: defaults.tag,
+          targetName: "data",
+          name,
+        });
+      }
+    });
+    Object.keys(defaults.proto).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        console.warn(
+          getErrDesc("invalid_key", {
+            compName: defaults.tag,
+            targetName: "proto",
+            name,
+          }),
+          opts
+        );
+      }
+    });
+  }
+
   let template, temps, name;
 
   try {
     validateTagName(defaults.tag);
 
-    defaults.data = deepCopyData(defaults.data);
+    defaults.data = deepCopyData(defaults.data, defaults.tag);
 
     name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
     if (COMPS[name]) {
-      throw new Error(`Component ${name} already exists`);
+      throw getErr("xhear_register_exists", { name });
     }
 
     template = document.createElement("template");
     template.innerHTML = defaults.temp;
     temps = convert(template);
   } catch (error) {
-    const err = new Error(
-      `Register Component Error: ${defaults.tag} \n  ${error.stack}`,
-      { cause: error }
-    );
-    throw err;
+    throw getErr("xhear_register_err", { tag: defaults.tag }, error);
   }
 
   const getAttrKeys = (attrs) => {
@@ -292,39 +372,33 @@ function isInternal(ele) {
 }
 
 function validateTagName(str) {
+  // Check if the string has at least one '-' character
+  if (!str.includes("-")) {
+    throw getErr("xhear_tag_noline", { str });
+  }
+
   // Check if the string starts or ends with '-'
   if (str.charAt(0) === "-" || str.charAt(str.length - 1) === "-") {
-    throw new Error(`The string "${str}" cannot start or end with "-"`);
+    throw getErr("xhear_validate_tag", { str });
   }
 
   // Check if the string has consecutive '-' characters
   for (let i = 0; i < str.length - 1; i++) {
     if (str.charAt(i) === "-" && str.charAt(i + 1) === "-") {
-      throw new Error(
-        `The string "${str}" cannot have consecutive "-" characters`
-      );
+      throw getErr("xhear_validate_tag", { str });
     }
-  }
-
-  // Check if the string has at least one '-' character
-  if (!str.includes("-")) {
-    throw new Error(`The string "${str}" must contain at least one "-"`);
   }
 
   return true;
 }
 
-function deepCopyData(obj) {
+function deepCopyData(obj, tag = "") {
   if (obj instanceof Set || obj instanceof Map) {
-    throw new Error(
-      "The data of the registered component should contain only regular data types such as String, Number, Object and Array. for other data types, please set them after ready."
-    );
+    throw getErr("xhear_regster_data_noset", { tag });
   }
 
   if (obj instanceof Function) {
-    throw new Error(
-      `Please write the function in the 'proto' property object.`
-    );
+    throw getErr("xhear_regster_data_nofunc", { tag });
   }
 
   if (typeof obj !== "object" || obj === null) {
@@ -335,7 +409,7 @@ function deepCopyData(obj) {
 
   for (let key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      copy[key] = deepCopyData(obj[key]);
+      copy[key] = deepCopyData(obj[key], tag);
     }
   }
 

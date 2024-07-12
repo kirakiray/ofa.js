@@ -1,3 +1,4 @@
+import { getErr } from "../ofa-error/main.js";
 import $ from "../xhear/base.mjs";
 import { eleX } from "../xhear/util.mjs";
 
@@ -46,9 +47,7 @@ $.register({
       const rel = e.attr("rel");
 
       if (rel !== "stylesheet" && rel !== "host") {
-        throw new Error(
-          'The "rel" attribute of the "link" tag within "inject-host" can only use "stylesheet" as its value.'
-        );
+        throw getErr("inject-link-rel");
       }
 
       let { ele } = e;
@@ -79,10 +78,9 @@ $.register({
     },
     async _initStyle(e) {
       if (/data\(.+?\)/.test(e.html)) {
-        const errDesc = `Please do not use the data() method on style elements within inject-host, as it may cause serious performance crises.`;
-        console.log(errDesc, e.ele);
-        console.error(new Error(errDesc));
-        return;
+        const err = getErr("use-data-inject");
+        console.log(err, e.ele);
+        throw err;
       }
 
       // Use only the text inside the style to prevent contaminating yourself

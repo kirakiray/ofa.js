@@ -1,3 +1,4 @@
+import { getErr } from "../ofa-error/main.js";
 import { getType } from "../stanz/public.mjs";
 
 export const isFunction = (val) => getType(val).includes("function");
@@ -46,17 +47,6 @@ export function isEmptyObject(obj) {
     }
   }
   return true;
-}
-
-export function moveArrayValue(arr, oldValue, newIndex) {
-  const oldIndex = arr.indexOf(oldValue);
-
-  if (oldIndex === -1) {
-    throw new Error("Value not found in array");
-  }
-
-  arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
-  return arr;
 }
 
 export const removeArrayValue = (arr, target) => {

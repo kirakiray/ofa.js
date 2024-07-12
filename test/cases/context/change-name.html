@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>context test 3</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+  </head>
+  <body>
+    <l-m src="./comp-one.html"></l-m>
+    <l-m src="./comp-zero.html"></l-m>
+
+    <o-provider name="test2" custom-a="I am A" custom-b="I am B">
+      <comp-one>
+        <comp-zero>
+          <o-consumer name="test1" id="con6"> consumer child </o-consumer>
+        </comp-zero>
+      </comp-one>
+    </o-provider>
+  </body>
+</html>

@@ -1,4 +1,104 @@
-//! ofa.js - v4.4.16 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.0 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+// const error_origin = "http://127.0.0.1:5793/errors";
+const error_origin = "https://ofajs.github.io/ofa-errors/errors";
+
+// 存放错误信息的数据对象
+const errors = {};
+
+if (globalThis.navigator && navigator.language) {
+  let langFirst = navigator.language.toLowerCase().split("-")[0];
+
+  if (langFirst === "zh" && navigator.language.toLowerCase() !== "zh-cn") {
+    langFirst = "zhft";
+  }
+
+  (async () => {
+    if (localStorage["ofa-errors"]) {
+      const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
+      Object.assign(errors, targetLangErrors);
+    }
+
+    const errCacheTime = localStorage["ofa-errors-time"];
+
+    if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
+      const targetLangErrors = await fetch(`${error_origin}/${langFirst}.json`)
+        .then((e) => e.json())
+        .catch(() => null);
+
+      if (targetLangErrors) {
+        localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
+        localStorage["ofa-errors-time"] = Date.now();
+      } else {
+        targetLangErrors = await fetch(`${error_origin}/en.json`)
+          .then((e) => e.json())
+          .catch((error) => {
+            console.error(error);
+            return null;
+          });
+      }
+
+      Object.assign(errors, targetLangErrors);
+    }
+  })();
+}
+
+let isSafari = false;
+if (globalThis.navigator) {
+  isSafari =
+    navigator.userAgent.includes("Safari") &&
+    !navigator.userAgent.includes("Chrome");
+}
+
+/**
+ * 根据键、选项和错误对象生成错误对象。
+ *
+ * @param {string} key - 错误描述的键。
+ * @param {Object} [options] - 映射相关值的选项对象。
+ * @param {Error} [error] - 原始错误对象。
+ * @returns {Error} 生成的错误对象。
+ */
+const getErr = (key, options, error) => {
+  let desc = getErrDesc(key, options);
+
+  let errObj;
+  if (error) {
+    if (isSafari) {
+      desc += `\nCaused by: ${error.toString()}\n  ${error.stack.replace(
+        /\n/g,
+        "\n    "
+      )}`;
+    }
+    errObj = new Error(desc, { cause: error });
+  } else {
+    errObj = new Error(desc);
+  }
+  return errObj;
+};
+
+/**
+ * 根据键、选项生成错误描述
+ *
+ * @param {string} key - 错误描述的键。
+ * @param {Object} [options] - 映射相关值的选项对象。
+ * @returns {string} 生成的错误描述。
+ */
+const getErrDesc = (key, options) => {
+  if (!errors[key]) {
+    return `Error code: "${key}", please go to https://github.com/ofajs/ofa-errors to view the corresponding error information`;
+  }
+
+  let desc = errors[key];
+
+  // 映射相关值
+  if (options) {
+    for (let k in options) {
+      desc = desc.replace(new RegExp(`{${k}}`, "g"), options[k]);
+    }
+  }
+
+  return desc;
+};
+
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
@@ -25,6 +125,8 @@ if (typeof document !== "undefined") {
   }
 }
 
+const TICKERR = "nexttick_thread_limit";
+
 let asyncsCounter = 0;
 let afterTimer;
 const tickSets = new Set();
@@ -38,12 +140,8 @@ function nextTick(callback) {
     Promise.resolve().then(() => {
       asyncsCounter++;
       if (asyncsCounter > 100000) {
-        const desc = `nextTick exceeds thread limit`;
-        console.error({
-          desc,
-          lastCall: callback,
-        });
-        throw new Error(desc);
+        console.log(getErrDesc(TICKERR), "lastCall => ", callback);
+        throw getErr(TICKERR);
       }
 
       callback();
@@ -58,12 +156,9 @@ function nextTick(callback) {
     // console.log("asyncsCounter => ", asyncsCounter);
     if (asyncsCounter > 50000) {
       tickSets.clear();
-      const desc = `nextTick exceeds thread limit`;
-      console.error({
-        desc,
-        lastCall: callback,
-      });
-      throw new Error(desc);
+
+      console.log(getErrDesc(TICKERR), "lastCall => ", callback);
+      throw getErr(TICKERR);
     }
     if (tickSets.has(tickId)) {
       callback();
@@ -367,6 +462,10 @@ const emitUpdate = ({
 
 var watchFn = {
   watch(callback) {
+    if (!(callback instanceof Function)) {
+      throw getErr("not_func", { name: "watch" });
+    }
+
     const wid = "w-" + getRandomId();
 
     this[WATCHS].set(wid, callback);
@@ -379,6 +478,10 @@ var watchFn = {
   },
 
   watchTick(callback, wait) {
+    if (!(callback instanceof Function)) {
+      throw getErr("not_func", { name: "watchTick" });
+    }
+
     return this.watch(
       debounce((arr) => {
         if (dataRevoked(this)) {
@@ -697,15 +800,16 @@ class Stanz extends Array {
         try {
           target = target[keys[i]];
         } catch (error) {
-          const err = new Error(
-            `Failed to get data : ${keys.slice(0, i).join(".")} \n${
-              error.stack
-            }`,
-            { cause: error }
+          const err = getErr(
+            "failed_to_get_data",
+            {
+              key: keys.slice(0, i).join("."),
+            },
+            error
           );
-          Object.assign(err, {
-            target,
-          });
+
+          console.log(err.message, ":", key, this, error);
+
           throw err;
         }
       }
@@ -724,15 +828,16 @@ class Stanz extends Array {
         try {
           target = target[keys[i]];
         } catch (error) {
-          const err = new Error(
-            `Failed to get data : ${keys.slice(0, i).join(".")} \n${
-              error.stack
-            }`,
-            { cause: error }
+          const err = getErr(
+            "failed_to_get_data",
+            {
+              key: keys.slice(0, i).join("."),
+            },
+            error
           );
-          Object.assign(err, {
-            target,
-          });
+
+          console.log(err.message, ":", key, this, error);
+
           throw err;
         }
       }
@@ -841,15 +946,15 @@ const handler$1 = {
         },
       });
     } catch (error) {
-      const err = new Error(`failed to set ${key} \n ${error.stack}`, {
-        cause: error,
-      });
+      const err = getErr(
+        "failed_to_set_data",
+        {
+          key,
+        },
+        error
+      );
 
-      Object.assign(err, {
-        key,
-        value,
-        target: receiver,
-      });
+      console.log(err.message, key, target, value);
 
       throw err;
     }
@@ -984,46 +1089,46 @@ function render({
   const revokes = getRevokes(target);
 
   // Styles with data() function to monitor and correct rendering
-  searchEle(target, "style").forEach((el) => {
-    const originStyle = el.innerHTML;
+  // searchEle(target, "style").forEach((el) => {
+  //   const originStyle = el.innerHTML;
 
-    if (/data\(.+\)/.test(originStyle)) {
-      const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
-        (dataExpr) => {
-          const expr = dataExpr.replace(/data\((.+)\)/, "$1");
-          const func = convertToFunc(expr, data);
+  //   if (/data\(.+\)/.test(originStyle)) {
+  //     const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
+  //       (dataExpr) => {
+  //         const expr = dataExpr.replace(/data\((.+)\)/, "$1");
+  //         const func = convertToFunc(expr, data);
 
-          return {
-            dataExpr,
-            func,
-          };
-        }
-      );
+  //         return {
+  //           dataExpr,
+  //           func,
+  //         };
+  //       }
+  //     );
 
-      const renderStyle = () => {
-        let afterStyle = originStyle;
+  //     const renderStyle = () => {
+  //       let afterStyle = originStyle;
 
-        matchs.forEach(({ dataExpr, func }) => {
-          afterStyle = afterStyle.replace(dataExpr, func());
-        });
+  //       matchs.forEach(({ dataExpr, func }) => {
+  //         afterStyle = afterStyle.replace(dataExpr, func());
+  //       });
 
-        if (el.innerHTML !== afterStyle) {
-          el.innerHTML = afterStyle;
-        }
-      };
-      tasks.push(renderStyle);
+  //       if (el.innerHTML !== afterStyle) {
+  //         el.innerHTML = afterStyle;
+  //       }
+  //     };
+  //     tasks.push(renderStyle);
 
-      const revokeStyle = () => {
-        matchs.length = 0;
-        removeArrayValue(tasks, renderStyle);
-        removeArrayValue(getRevokes(el), revokeStyle);
-        removeArrayValue(revokes, revokeStyle);
-      };
+  //     const revokeStyle = () => {
+  //       matchs.length = 0;
+  //       remove(tasks, renderStyle);
+  //       remove(getRevokes(el), revokeStyle);
+  //       remove(revokes, revokeStyle);
+  //     };
 
-      addRevoke(el, revokeStyle);
-      revokes.push(revokeStyle);
-    }
-  });
+  //     addRevoke(el, revokeStyle);
+  //     revokes.push(revokeStyle);
+  //   }
+  // });
 
   // Render text nodes
   texts.forEach((el) => {
@@ -1135,12 +1240,16 @@ function render({
             addRevoke(el, clearRevs);
           }
         } catch (error) {
-          const err = new Error(
-            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`,
+          const err = getErr(
+            "xhear_eval",
             {
-              cause: error,
-            }
+              name: actionName,
+              arg0: args[0],
+              arg1: args[1],
+            },
+            error
           );
+          console.log(err, el);
           throw err;
         }
       });
@@ -1158,17 +1267,15 @@ function render({
 
   if (tasks.length) {
     if (target.__render_data && target.__render_data !== data) {
-      const error = new Error(
-        `An old listener already exists and the rendering of this element may be wrong`
-      );
+      const err = getErr("xhear_listen_already");
 
-      Object.assign(error, {
+      console.log(err, {
         element: target,
         old: target.__render_data,
         new: data,
       });
 
-      throw error;
+      throw err;
     }
 
     target.__render_data = data;
@@ -1284,9 +1391,7 @@ const convert = (template) => {
 
   searchTemp(template, "x-fill:not([name])", (fillEl) => {
     if (fillEl.querySelector("x-fill:not([name])")) {
-      throw new Error(
-        `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`
-      );
+      throw getErr("xhear_dbfill_noname");
     }
 
     if (fillEl.innerHTML.trim()) {
@@ -1313,7 +1418,9 @@ const convert = (template) => {
 
     Object.keys(newTemps).forEach((tempName) => {
       if (temps[tempName]) {
-        throw new Error(`Template "${tempName}" already exists`);
+        throw getErr("xhear_temp_exist", {
+          name: tempName,
+        });
       }
     });
 
@@ -1364,7 +1471,13 @@ const defaultData = {
 
     value = getVal(value);
 
-    if (value === null) {
+    if (value === false) {
+      value = null;
+    } else if (value === true) {
+      value = "";
+    }
+
+    if (value === null || value === undefined) {
       this.ele.removeAttribute(name);
     } else {
       this.ele.setAttribute(name, value);
@@ -1385,6 +1498,40 @@ const defaultData = {
       this.ele.classList.remove(name);
     }
   },
+  watch(...args) {
+    if (args.length < 3) {
+      return watchFn.watch.apply(this, args);
+    }
+
+    const options = args[2];
+    const { beforeArgs, data: target } = options;
+    const [selfPropName, targetPropName] = beforeArgs;
+    const propName = hyphenToUpperCase(selfPropName);
+
+    const setData = () => {
+      let val = this[propName];
+      if (val instanceof Object) {
+        // If val is Object, deepClone it.
+        val = JSON.parse(JSON.stringify(val));
+        const errDesc = getErrDesc("heed_object");
+        console.warn(errDesc, target);
+      }
+      target[targetPropName] = val;
+    };
+
+    const wid = this.watch((e) => {
+      if (e.hasModified(propName)) {
+        setData();
+      }
+    });
+
+    // Initialize once
+    setData();
+
+    return () => {
+      this.unwatch(wid);
+    };
+  },
 };
 
 defaultData.prop.always = true;
@@ -1393,14 +1540,17 @@ defaultData.class.always = true;
 
 defaultData.prop.revoke = ({ target, args, $ele, data }) => {
   const propName = args[0];
-  // target[propName] = null;
   target.set(propName, null);
+};
+
+defaultData.watch.revoke = (e) => {
+  e.result();
 };
 
 const syncFn = {
   sync(propName, targetName, options) {
     if (!options) {
-      throw new Error(`Sync is only allowed within the renderer`);
+      throw getErr("xhear_sync_no_options");
     }
 
     [propName, targetName] = options.beforeArgs;
@@ -1413,9 +1563,9 @@ const syncFn = {
     const val = data.get(targetName);
 
     if (val instanceof Object) {
-      const err = `Object values cannot be synchronized using the sync function : ${targetName}`;
+      const err = getErr("xhear_sync_object_value", { targetName });
       console.log(err, data);
-      throw new Error(err);
+      throw err;
     }
 
     this[propName] = data.get(targetName);
@@ -1463,7 +1613,17 @@ function getBindOptions(name, func, options) {
     const beforeValue = options.beforeArgs[1];
 
     if (!/[^\d\w_\$\.]/.test(beforeValue)) {
-      func = options.data.get(beforeValue).bind(options.data);
+      func = options.data.get(beforeValue);
+      if (!func) {
+        const tag = options.data.tag;
+        const err = getErr("not_found_func", {
+          name: beforeValue,
+          tag: tag ? `"${tag}"` : "",
+        });
+        console.log(err, " target =>", options.data);
+        throw err;
+      }
+      func = func.bind(options.data);
     }
 
     revoker = () => this.ele.removeEventListener(name, func);
@@ -2066,6 +2226,23 @@ var cssFn = {
   },
 };
 
+function $(expr) {
+  if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
+    const ele = document.querySelector(expr);
+
+    return eleX(ele);
+  }
+
+  return createXEle(expr);
+}
+
+Object.defineProperties($, {
+  // Convenient objects for use as extensions
+  extensions: {
+    value: {},
+  },
+});
+
 const COMPS = {};
 
 const renderElement = ({ defaults, ele, template, temps }) => {
@@ -2073,7 +2250,7 @@ const renderElement = ({ defaults, ele, template, temps }) => {
 
   try {
     const data = {
-      ...deepCopyData(defaults.data),
+      ...deepCopyData(defaults.data, defaults.tag),
       ...defaults.attrs,
     };
 
@@ -2109,13 +2286,13 @@ const renderElement = ({ defaults, ele, template, temps }) => {
 
     defaults.ready && defaults.ready.call($ele);
   } catch (error) {
-    const err = new Error(
-      `Render element error: ${ele.tagName} \n  ${error.stack}`,
+    throw getErr(
+      "xhear_reander_err",
       {
-        cause: error,
-      }
+        tag: ele.tagName.toLowerCase(),
+      },
+      error
     );
-    throw err;
   }
 
   if (defaults.watch) {
@@ -2158,6 +2335,62 @@ const renderElement = ({ defaults, ele, template, temps }) => {
       }
     }
   }
+
+  {
+    // 将组件上的变量重定义到影子节点内的css变量上
+    const { tag } = $ele;
+
+    if ($ele.__rssWid) {
+      $ele.unwatch($ele.__rssWid);
+    }
+
+    // 排除掉自定义组件
+    if (tag !== "x-if" && tag !== "x-fill" && ele.shadowRoot) {
+      // 需要更新的key
+      const keys = Object.keys({
+        ...defaults.data,
+        ...defaults.attrs,
+      });
+
+      for (let [key, item] of Object.entries(
+        Object.getOwnPropertyDescriptors(defaults.proto)
+      )) {
+        if (item.writable || item.get) {
+          keys.push(key);
+        }
+      }
+
+      const refreshShadowStyleVar = () => {
+        let shadowVarStyle = ele.shadowRoot.querySelector("#shadow-var-style");
+
+        if (!shadowVarStyle) {
+          shadowVarStyle = document.createElement("style");
+          shadowVarStyle.id = "shadow-var-style";
+          ele.shadowRoot.appendChild(shadowVarStyle);
+        }
+
+        // 更新所有变量
+        let content = "";
+        keys.forEach((key) => {
+          const val = $ele[key];
+          const valType = getType$1(val);
+          if (valType === "number" || valType === "string") {
+            content += `--${key}:${val};`;
+          }
+        });
+
+        const styleContent = `:host > *:not(slot){${content}}`;
+
+        if (shadowVarStyle.innerHTML !== styleContent) {
+          shadowVarStyle.innerHTML = styleContent;
+        }
+      };
+
+      $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
+
+      refreshShadowStyleVar();
+    }
+  }
 };
 
 const register = (opts = {}) => {
@@ -2187,28 +2420,50 @@ const register = (opts = {}) => {
     ...opts,
   };
 
+  const { fn } = $;
+  if (fn) {
+    // 检查 proto 和 data 上的key，是否和fn上的key冲突
+    Object.keys(defaults.data).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        throw getErr("invalid_key", {
+          compName: defaults.tag,
+          targetName: "data",
+          name,
+        });
+      }
+    });
+    Object.keys(defaults.proto).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        console.warn(
+          getErrDesc("invalid_key", {
+            compName: defaults.tag,
+            targetName: "proto",
+            name,
+          }),
+          opts
+        );
+      }
+    });
+  }
+
   let template, temps, name;
 
   try {
     validateTagName(defaults.tag);
 
-    defaults.data = deepCopyData(defaults.data);
+    defaults.data = deepCopyData(defaults.data, defaults.tag);
 
     name = capitalizeFirstLetter(hyphenToUpperCase(defaults.tag));
 
     if (COMPS[name]) {
-      throw new Error(`Component ${name} already exists`);
+      throw getErr("xhear_register_exists", { name });
     }
 
     template = document.createElement("template");
     template.innerHTML = defaults.temp;
     temps = convert(template);
   } catch (error) {
-    const err = new Error(
-      `Register Component Error: ${defaults.tag} \n  ${error.stack}`,
-      { cause: error }
-    );
-    throw err;
+    throw getErr("xhear_register_err", { tag: defaults.tag }, error);
   }
 
   const getAttrKeys = (attrs) => {
@@ -2351,39 +2606,33 @@ function isInternal(ele) {
 }
 
 function validateTagName(str) {
+  // Check if the string has at least one '-' character
+  if (!str.includes("-")) {
+    throw getErr("xhear_tag_noline", { str });
+  }
+
   // Check if the string starts or ends with '-'
   if (str.charAt(0) === "-" || str.charAt(str.length - 1) === "-") {
-    throw new Error(`The string "${str}" cannot start or end with "-"`);
+    throw getErr("xhear_validate_tag", { str });
   }
 
   // Check if the string has consecutive '-' characters
   for (let i = 0; i < str.length - 1; i++) {
     if (str.charAt(i) === "-" && str.charAt(i + 1) === "-") {
-      throw new Error(
-        `The string "${str}" cannot have consecutive "-" characters`
-      );
+      throw getErr("xhear_validate_tag", { str });
     }
-  }
-
-  // Check if the string has at least one '-' character
-  if (!str.includes("-")) {
-    throw new Error(`The string "${str}" must contain at least one "-"`);
   }
 
   return true;
 }
 
-function deepCopyData(obj) {
+function deepCopyData(obj, tag = "") {
   if (obj instanceof Set || obj instanceof Map) {
-    throw new Error(
-      "The data of the registered component should contain only regular data types such as String, Number, Object and Array. for other data types, please set them after ready."
-    );
+    throw getErr("xhear_regster_data_noset", { tag });
   }
 
   if (obj instanceof Function) {
-    throw new Error(
-      `Please write the function in the 'proto' property object.`
-    );
+    throw getErr("xhear_regster_data_nofunc", { tag });
   }
 
   if (typeof obj !== "object" || obj === null) {
@@ -2394,7 +2643,7 @@ function deepCopyData(obj) {
 
   for (let key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      copy[key] = deepCopyData(obj[key]);
+      copy[key] = deepCopyData(obj[key], tag);
     }
   }
 
@@ -2485,7 +2734,7 @@ class FakeNode extends Comment {
           break;
         }
       } else {
-        throw new Error(`This is an unclosed FakeNode`);
+        throw getErr("xhear_fakenode_unclose", { name: "children" });
       }
     }
 
@@ -2505,7 +2754,7 @@ class FakeNode extends Comment {
         }
         childs.unshift(prev);
       } else {
-        throw new Error(`This is an unclosed FakeNode`);
+        throw getErr("xhear_fakenode_unclose", { name: "childNodes" });
       }
     }
 
@@ -3065,10 +3314,9 @@ register({
     this._name = this.attr("name");
 
     if (!this._name) {
-      const desc =
-        "The target element does not have a template name to populate";
-      console.log(desc, this.ele);
-      throw new Error(desc);
+      const err = getErr("xhear_fill_tempname", { name: this._name });
+      console.log(err, this.ele);
+      throw err;
     }
 
     if (this.ele._bindingRendered) {
@@ -3235,6 +3483,16 @@ class Xhear extends LikeArray {
     return parents;
   }
 
+  get hosts() {
+    const hosts = [];
+    let target = this;
+    while (target.host) {
+      target = target.host;
+      hosts.push(target);
+    }
+    return hosts;
+  }
+
   get next() {
     const nextEle = this.ele.nextElementSibling;
     return nextEle ? eleX(nextEle) : null;
@@ -3354,9 +3612,7 @@ class Xhear extends LikeArray {
     const { ele } = this;
 
     if (!ele.parentNode) {
-      throw new Error(
-        `The target has a sibling element, so you can't use unwrap`
-      );
+      throw getErr("xhear_wrap_no_parent");
     }
 
     ele.parentNode.insertBefore($el.ele, ele);
@@ -3376,7 +3632,7 @@ class Xhear extends LikeArray {
     const target = ele.parentNode;
 
     if (target.children.length > 1) {
-      throw new Error(`The element itself must have a parent`);
+      throw getErr("xhear_unwrap_has_siblings");
     }
 
     ele.__internal = 1;
@@ -3439,12 +3695,12 @@ const objToXEle = (obj) => {
   return $ele;
 };
 
-const temp = document.createElement("template");
+const temp$1 = document.createElement("template");
 
 const strToXEle = (str) => {
-  temp.innerHTML = str;
-  const ele = temp.content.children[0] || temp.content.childNodes[0];
-  temp.innerHTML = "";
+  temp$1.innerHTML = str;
+  const ele = temp$1.content.children[0] || temp$1.content.childNodes[0];
+  temp$1.innerHTML = "";
 
   return eleX(ele);
 };
@@ -3483,23 +3739,6 @@ const revokeAll = (target) => {
     [...revokes].forEach((f) => f());
   }
 };
-
-function $(expr) {
-  if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
-    const ele = document.querySelector(expr);
-
-    return eleX(ele);
-  }
-
-  return createXEle(expr);
-}
-
-Object.defineProperties($, {
-  // Convenient objects for use as extensions
-  extensions: {
-    value: {},
-  },
-});
 
 Object.assign($, {
   stanz,
@@ -3557,9 +3796,7 @@ $.register({
       const rel = e.attr("rel");
 
       if (rel !== "stylesheet" && rel !== "host") {
-        throw new Error(
-          'The "rel" attribute of the "link" tag within "inject-host" can only use "stylesheet" as its value.'
-        );
+        throw getErr("inject-link-rel");
       }
 
       let { ele } = e;
@@ -3590,10 +3827,9 @@ $.register({
     },
     async _initStyle(e) {
       if (/data\(.+?\)/.test(e.html)) {
-        const errDesc = `Please do not use the data() method on style elements within inject-host, as it may cause serious performance crises.`;
-        console.log(errDesc, e.ele);
-        console.error(new Error(errDesc));
-        return;
+        const err = getErr("use-data-inject");
+        console.log(err, e.ele);
+        throw err;
       }
 
       // Use only the text inside the style to prevent contaminating yourself
@@ -3819,13 +4055,16 @@ use(["mjs", "js"], async (ctx, next) => {
         ctx.result = await import(`${d.origin}${d.pathname}`);
       }
     } catch (error) {
-      const err = wrapError(
-        `Failed to load module ${ctx.realUrl || url}`,
+      const err = getErr(
+        "load_module",
+        {
+          url: ctx.realUrl || url,
+        },
         error
       );
 
       if (notHttp) {
-        console.log("Failed to load module:", ctx);
+        console.log("load failed:", ctx.realUrl || url, " ctx:", ctx);
       }
 
       throw err;
@@ -3843,11 +4082,14 @@ use(["txt", "html", "htm"], async (ctx, next) => {
     try {
       resp = await wrapFetch(url, params);
     } catch (error) {
-      throw wrapError(`Load ${url} failed`, error);
+      throw getErr("load_fail", { url }, error);
     }
 
     if (!/^2.{2}$/.test(resp.status)) {
-      throw new Error(`Load ${url} failed: status code ${resp.status}`);
+      throw getErr("load_fail_status", {
+        url,
+        status: resp.status,
+      });
     }
 
     ctx.result = await resp.text();
@@ -3914,13 +4156,6 @@ use("css", async (ctx, next) => {
   await next();
 });
 
-const wrapError = (desc, error) => {
-  const err = new Error(`${desc} \n  ${error.toString()}`, {
-    cause: error,
-  });
-  return err;
-};
-
 const aliasMap = {};
 
 async function config(opts) {
@@ -3928,18 +4163,25 @@ async function config(opts) {
 
   if (alias) {
     Object.entries(alias).forEach(([name, path]) => {
-      if (/^@.+/.test(name)) {
-        if (!aliasMap[name]) {
-          if (!/^\./.test(path)) {
-            aliasMap[name] = path;
-          } else {
-            throw new Error(
-              `The address does not match the specification, please use '/' or or the beginning of the protocol: '${path}'`
-            );
-          }
+      if (!/^@.+/.test(name)) {
+        throw getErr("config_alias_name_error", {
+          name,
+        });
+      }
+
+      if (!aliasMap[name]) {
+        if (!/^\./.test(path)) {
+          aliasMap[name] = path;
         } else {
-          throw new Error(`Alias already exists: '${name}'`);
+          throw getErr("alias_relate_name", {
+            name,
+            path,
+          });
         }
+      } else {
+        throw getErr("alias_already", {
+          name,
+        });
       }
     });
   }
@@ -3961,7 +4203,10 @@ const path = (moduleName, baseURI) => {
     if (aliasMap[first]) {
       lastUrl = [aliasMap[first].replace(/\/$/, ""), ...args].join("/");
     } else {
-      throw new Error(`No alias defined ${first}`);
+      throw getErr("no_alias", {
+        name: first,
+        url: moduleName,
+      });
     }
   }
 
@@ -4070,8 +4315,15 @@ function lm$1(meta, opts) {
   return createLoad(meta, opts);
 }
 
-Object.assign(lm$1, {
-  use,
+Object.defineProperties(lm$1, {
+  use: {
+    value: use,
+  },
+  alias: {
+    get() {
+      return { ...aliasMap };
+    },
+  },
 });
 
 class LoadModule extends HTMLElement {
@@ -4213,16 +4465,6 @@ function fixRelatePathContent(content, path) {
   return template.innerHTML;
 }
 
-const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
-  try {
-    await callback();
-  } catch (error) {
-    const err = new Error(`${desc}\n  ${error.stack}`, { cause: error });
-    self.emit("error", { data: { error: err, ...rest } });
-    throw err;
-  }
-};
-
 const ISERROR = Symbol("loadError");
 
 const getPagesData = async (src) => {
@@ -4248,18 +4490,21 @@ const getPagesData = async (src) => {
     } catch (error) {
       let err;
       if (beforeSrc) {
-        err = new Error(
-          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`,
+        err = getErr(
+          "page_wrap_fetch",
           {
-            cause: error,
-          }
+            before: beforeSrc,
+            current: pageSrc,
+          },
+          error
         );
       } else {
-        err = new Error(
-          `Request for ${pageSrc} page failed; \n  ${error.stack}`,
+        err = getErr(
+          "load_page_module",
           {
-            cause: error,
-          }
+            url: pageSrc,
+          },
+          error
         );
       }
       errorObj = err;
@@ -4432,9 +4677,7 @@ const initLink = (_this) => {
   });
 };
 
-const strToBase64DataURI = async (str, type, isb64 = true) => {
-  const mime = type === "js" ? "text/javascript" : "application/json";
-
+const strToBase64DataURI = async (str, mime, isb64 = true) => {
   const file = new File([str], "genfile", { type: mime });
 
   if (!isb64) {
@@ -4454,8 +4697,16 @@ const strToBase64DataURI = async (str, type, isb64 = true) => {
   return result;
 };
 
-// In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
-const getSourcemapUrl = async (filePath, originContent, startLine) => {
+/**
+ * In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
+ *  */
+const getSourcemapUrl = async (
+  filePath,
+  originStarRowIndex,
+  originEndRowIndex,
+  originContent,
+  startLine
+) => {
   const originLineArr = originContent.split("\n");
 
   let mappings = "";
@@ -4463,16 +4714,6 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   for (let i = 0; i <= startLine; i++) {
     mappings += ";";
   }
-
-  // Determine the starting line number of the source file.
-  const originStarRowIndex = originLineArr.findIndex(
-    (lineContent) => lineContent.trim() === "<script>"
-  );
-
-  // Determine the ending line number of the source file.
-  const originEndRowIndex = originLineArr.findIndex(
-    (lineContent) => lineContent.trim() === "</script>"
-  );
 
   let beforeRowIndex = 0;
   let beforeColIndex = 0;
@@ -4505,15 +4746,66 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
     .replace(/\]$/, "");
 
   const str = `{"version": 3,
-    "file": "${filePath
-      .replace(/\?.+/, "")
-      .replace(/.+\/(.+?)/, "$1")
-      .replace(".html", ".js")}",
     "sources": ["${filePath.replace(/\?.+/, "")}"],
     "sourcesContent":[${sourcesContent}],
     "mappings": "${mappings}"}`;
 
-  return await strToBase64DataURI(str, null);
+  return await strToBase64DataURI(str, "application/json");
+};
+
+// 将 style 映射为 sourcemap 的 base64 link 标签，方便调试
+const addStyleSourcemap = async (temp, originContent, filePath) => {
+  let reTemp = temp;
+
+  // 备份一份可修改的的原始内容
+  let backupOriginContent = originContent;
+
+  const tempEl = document.createElement("template");
+  tempEl.innerHTML = temp;
+
+  const styleEls = tempEl.content.querySelectorAll("style");
+
+  for (let e of Array.from(styleEls)) {
+    const styleContent = e.innerHTML;
+    const { outerHTML } = e;
+
+    // 编译后开始的行数
+    let startLine = 0;
+
+    // 拆分原内容
+    const matchArr = backupOriginContent.split(outerHTML);
+
+    // 编译前开始的行数
+    const originStarRowIndex = matchArr[0].split("\n").length - 1;
+
+    // 编译前结束的行数
+    const originEndRowIndex =
+      originStarRowIndex + styleContent.split("\n").length - 1;
+
+    // 替换 backupOriginContent 中已经sourcemap过的代码为换行符
+    let middleStr = "";
+    for (let i = 0, len = outerHTML.split("\n").length - 1; i < len; i++) {
+      middleStr += "\n";
+    }
+    backupOriginContent = [matchArr[0], middleStr, matchArr[1]].join("");
+
+    const sourceMapJSONURL = await getSourcemapUrl(
+      filePath,
+      originStarRowIndex,
+      originEndRowIndex,
+      originContent,
+      startLine
+    );
+
+    const sourcemapStr = `/*# sourceMappingURL=${sourceMapJSONURL}*/`;
+
+    reTemp = reTemp.replace(
+      outerHTML,
+      `${outerHTML.replace("</style>", "")}\n${sourcemapStr}</style>`
+    );
+  }
+
+  return reTemp;
 };
 
 const cacheLink = new Map();
@@ -4546,14 +4838,19 @@ async function drawUrl(content, url, isPage = true) {
   let temp = "";
 
   if (hasTemp) {
-    temp =
-      "<style>*:not(:defined){display:none;}</style>" +
-      targetTemp.html
-        .replace(/\s+$/, "")
-        .replace(/`/g, "\\`")
-        .replace(/\$\{/g, "\\${");
+    temp = targetTemp.html
+      .replace(/\s+$/, "")
+      .replace(/`/g, "\\`")
+      .replace(/\$\{/g, "\\${");
+
+    if (isDebug) {
+      temp = await addStyleSourcemap(temp, content, url);
+    }
+
+    temp = "<style>*:not(:defined){display:none;}</style>" + temp;
   }
 
+  // 原来html文件中，转译后，属于前半部分的内容（后半部分就是script标签内的内容）
   const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
@@ -4583,8 +4880,22 @@ ${scriptContent}`;
   let sourcemapStr = "";
 
   if (isDebug) {
+    const originLineArr = content.split("\n");
+
+    // Determine the starting line number of the source file.
+    const originStarRowIndex = originLineArr.findIndex(
+      (lineContent) => lineContent.trim() === "<script>"
+    );
+
+    // Determine the ending line number of the source file.
+    const originEndRowIndex = originLineArr.findIndex(
+      (lineContent) => lineContent.trim() === "</script>"
+    );
+
     sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
       url,
+      originStarRowIndex,
+      originEndRowIndex,
       content,
       beforeContent.split("\n").length
     )}`;
@@ -4594,7 +4905,11 @@ ${scriptContent}`;
 
   const isFirefox = navigator.userAgent.includes("Firefox");
 
-  targetUrl = strToBase64DataURI(finalContent, "js", isFirefox ? false : true);
+  targetUrl = strToBase64DataURI(
+    finalContent,
+    "text/javascript",
+    isFirefox ? false : true
+  );
 
   cacheLink.set(url, targetUrl);
 
@@ -4644,13 +4959,13 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       const url = await drawUrl(content, ctx.url);
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
-      const err = new Error(
-        `Error loading Page module: ${ctx.url}\n ${error.stack}`,
+      throw getErr(
+        "load_page_module",
         {
-          cause: error,
-        }
+          url: ctx.url,
+        },
+        error
       );
-      throw err;
     }
     ctx.resultContent = content;
   }
@@ -4676,15 +4991,20 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
       tempSrc = url.replace(/\.m?js.*/, ".html");
     }
 
-    await wrapErrorCall(
-      async () => {
-        defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
-      },
-      {
-        targetModule: import.meta.url,
-        desc: `${url} module request for ${tempSrc} template page failed`,
-      }
-    );
+    try {
+      defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
+    } catch (error) {
+      const err = getErr(
+        "fetch_temp_err",
+        {
+          url: realUrl || url,
+          tempSrc,
+        },
+        error
+      );
+      self.emit("error", { data: { error: err } });
+      throw err;
+    }
   }
 
   ctx.result = defaultsData;
@@ -4793,8 +5113,38 @@ setTimeout(() => {
       async _renderDefault(defaults) {
         const { src } = this;
 
+        if (defaults.data) {
+          // 检查 proto 和 data 上的key，是否和fn上的key冲突
+          Object.keys(defaults.data).forEach((name) => {
+            if (name in this) {
+              throw getErr("page_invalid_key", {
+                src,
+                targetName: "data",
+                name,
+              });
+            }
+          });
+        }
+
+        if (defaults.proto) {
+          Object.keys(defaults.proto).forEach((name) => {
+            if (name in this) {
+              console.warn(
+                getErrDesc("page_invalid_key", {
+                  src,
+                  targetName: "proto",
+                  name,
+                }),
+                defaults
+              );
+            }
+          });
+        }
+
         if (this._defaults) {
-          throw new Error("The current page has already been rendered");
+          const err = getErr("page_no_defaults", { src });
+          console.log(err, this);
+          throw err;
         }
 
         this._defaults = defaults;
@@ -4804,9 +5154,8 @@ setTimeout(() => {
         }
 
         if (!defaults || defaults.type !== PAGE) {
-          const err = new Error(
-            `The currently loaded module is not a page \nLoaded string => '${src}'`
-          );
+          const err = getErr("not_page_module", { src });
+          console.log(err, this);
           this.emit("error", { data: { error: err } });
           this.__reject(err);
           throw err;
@@ -4824,13 +5173,9 @@ setTimeout(() => {
             temps,
           });
         } catch (error) {
-          const err = new Error(
-            `Failed to render page:${src} \n ${error.stack}`,
-            {
-              cause: error,
-            }
-          );
+          const err = getErr("page_failed", { src }, error);
           console.error(err);
+          console.log(err, this);
         }
 
         await dispatchLoad(this, defaults.loaded);
@@ -5016,14 +5361,13 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
       const url = await drawUrl(content, ctx.url, false);
       ctx.result = await lm$1()(`${url} .mjs --real:${ctx.url}`);
     } catch (err) {
-      const error = new Error(
-        `Error loading Component module: ${ctx.url}\n ${err.toString()}`,
+      throw getErr(
+        "load_comp_module",
         {
-          cause: err,
-        }
+          url: ctx.url,
+        },
+        err
       );
-
-      throw error;
     }
     ctx.resultContent = content;
   }
@@ -5068,7 +5412,9 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
   const cacheUrl = cacheComps[tagName];
   if (cacheUrl) {
     if (path !== cacheUrl) {
-      throw new Error(`${tagName} components have been registered`);
+      throw getErr("comp_registered", {
+        name: tagName,
+      });
     }
 
     await next();
@@ -5136,9 +5482,9 @@ const appendPage = async ({ src, app }) => {
     loadingEl = createXEle(loading());
 
     if (!loadingEl) {
-      const errDesc = `loading function returns no content`;
-      console.log(errDesc, ":", loading);
-      throw new Error(errDesc);
+      const err = getErr("loading_nothing");
+      console.log(err, loading);
+      throw err;
     }
 
     app.push(loadingEl);
@@ -5271,9 +5617,7 @@ $.register({
     async src(val) {
       if (this.__init_src) {
         if (this.__init_src !== val) {
-          throw new Error(
-            "The App that has already been initialized cannot be set with the src attribute"
-          );
+          throw getErr("app_src_change");
         }
         return;
       }
@@ -5490,21 +5834,22 @@ const runAccess = (app, src) => {
   const srcObj = new URL(src);
 
   if (srcObj.origin !== location.origin && !access) {
-    const NoAccessErrDesc =
-      "To jump across domains, the access function must be set";
-    console.log(NoAccessErrDesc, app.ele, app?._module);
-    throw new Error(NoAccessErrDesc);
+    const err = getErr("no_cross_access_func");
+    console.log(err, app.ele, app?._module);
+    throw err;
   }
 
   if (access) {
     const result = access(src);
 
     if (result !== true) {
-      if (result instanceof Error) {
-        throw result;
-      }
-
-      throw new Error(`Access to current address is not allowed: ${src}`);
+      const err = getErr(
+        "access_return_error",
+        { src },
+        result instanceof Error ? result : undefined
+      );
+      console.log(err, app);
+      throw err;
     }
   }
 };
@@ -5626,7 +5971,314 @@ $.fn.extend({
   attr,
 });
 
-const version = "ofa.js@4.4.16";
+const temp = `<style>:host{display:contents}</style><slot></slot>`;
+
+const CONSUMERS = Symbol("consumers");
+const PROVIDER = Symbol("provider");
+
+$("html").on("update-consumer", (e) => {
+  const target = e.composedPath()[0];
+  const $tar = $(target);
+
+  if ($tar.tag === "o-consumer") {
+    let hasData = false;
+    // 清空冒泡到根的 consumer 数据
+    Object.keys($tar[SELF]).forEach((key) => {
+      if (InvalidKeys.includes(key)) {
+        return;
+      }
+      $tar[key] = undefined;
+
+      hasData = true;
+    });
+
+    if (hasData) {
+      console.warn(getErrDesc("no_provider", { name: $tar.name }), target);
+    }
+  }
+});
+
+const publicProto = {
+  // 向上冒泡，让 provider 和 consumer 绑定
+  _update(provider) {
+    if (this[PROVIDER] && this[PROVIDER] === provider) {
+      return;
+    }
+
+    if (this[PROVIDER]) {
+      this._clear();
+    }
+
+    if (provider) {
+      this[PROVIDER] = provider;
+      provider[CONSUMERS].add(this);
+      return;
+    }
+
+    if (this.name) {
+      this.emit(`update-consumer`, {
+        data: {
+          name: this.name,
+          consumer: this,
+        },
+        composed: true,
+      });
+    }
+  },
+  _clear() {
+    const provider = this[PROVIDER];
+    provider[CONSUMERS].delete(this);
+    this[PROVIDER] = null;
+  },
+};
+
+const publicWatch = {
+  name() {
+    // 是否已经设置过
+    if (!this.__named) {
+      this.__named = 1;
+      return;
+    }
+
+    console.warn(
+      getErrDesc("context_change_name", {
+        compName: ` "${this.tag}" `,
+      }),
+      this.ele
+    );
+
+    this._update();
+  },
+};
+
+const InvalidKeys = ["tag", "name", "class", "style", "id"];
+
+$.register({
+  tag: "o-provider",
+  temp,
+  attrs: {
+    name: null,
+  },
+  watch: {
+    ...publicWatch,
+  },
+  proto: {
+    ...publicProto,
+    get consumers() {
+      return [...Array.from(this[CONSUMERS])];
+    },
+    get provider() {
+      return this[PROVIDER];
+    },
+    _refresh() {
+      // 辅助consumer刷新数据
+      this.consumers.forEach((e) => e._refresh());
+    },
+    _setConsumer(name, value, isSelf) {
+      if (isSelf || this[name] === undefined || this[name] === null) {
+        if (value === undefined || value === null) {
+          // 删除属性，则向上层获取对应值，并向下设置
+          let parentProvider = this.provider;
+          while ((value === undefined || value === null) && parentProvider) {
+            value = parentProvider[name];
+            if (value) {
+              break;
+            }
+            parentProvider = parentProvider.provider;
+          }
+        }
+
+        this[CONSUMERS].forEach((consumer) => {
+          // 主动设置数据，性能更好
+          if (consumer._setConsumer) {
+            consumer._setConsumer(name, value);
+          } else {
+            if (consumer[name] !== value) {
+              consumer[name] = value;
+            }
+          }
+        });
+      }
+    },
+  },
+  ready() {
+    this[CONSUMERS] = new Set();
+
+    this.on("update-consumer", (e) => {
+      if (e.target === e.currentTarget) {
+        // 给自己出触发的事件，不做处理
+        return;
+      }
+
+      const { name, consumer } = e.data;
+
+      if (name && this.name === name) {
+        this[CONSUMERS].add(consumer);
+        consumer[PROVIDER] = this;
+
+        // 查找到对应的provider后，禁止向上冒泡
+        e.stopPropagation();
+
+        consumer._refresh();
+      }
+    });
+
+    this.watch((e) => {
+      if (e.target === this && e.type === "set") {
+        // 自身的值修改，更新consumer
+        const { name, value } = e;
+
+        if (!InvalidKeys.includes(name)) {
+          this._setConsumer(name, value, 1);
+        }
+      }
+    });
+  },
+  attached() {
+    // 默认将attributes的值设置到props上
+    const needRemoves = [];
+    Array.from(this.ele.attributes).forEach((item) => {
+      const { name, value } = item;
+
+      if (!InvalidKeys.includes(name)) {
+        this[hyphenToUpperCase(name)] = value;
+        needRemoves.push(name);
+      }
+    });
+    needRemoves.forEach((name) => this.ele.removeAttribute(name));
+
+    this._update();
+
+    // 组件影子节点内，对应 slot 上冒泡的修正
+    if (this.$("slot")) {
+      // 重新让所有子级的 consumer 重新刷新冒泡
+      const { ele } = this;
+      Array.from(ele.children).forEach((childEl) =>
+        emitAllConsumer(childEl, this)
+      );
+    }
+  },
+});
+
+/**
+ * 递归地触发所有consumer组件的更新。
+ *
+ * 此函数会检查传入的DOM元素，如果该元素是consumer组件，它将更新该组件。
+ * 如果元素具有shadowRoot，函数将递归地通知影子节点内的元素。
+ * 如果元素是slot元素，并且emitSlot参数为true，它将检查slot的名称，并通知具有相同slot名称的元素。
+ *
+ * @param {HTMLElement} ele - 要检查和触发更新的DOM元素。
+ * @param {HTMLElement} rootProvider - 根provider元素，consumer将使用此元素作为数据源。
+ * @param {boolean} [emitSlot=true] - 是否应该触发slot元素对应的子元素的更新。
+ * @returns {void}
+ */
+const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
+  if (ele.tagName === "O-CONSUMER" || ele.tagName === "O-PROVIDER") {
+    // 重新冒泡
+    const $ele = $(ele);
+    $ele._update(rootProvider);
+    $ele._refresh();
+  } else if (ele.tagName === "SLOT" && emitSlot) {
+    const slotName = ele.getAttribute("name") || "";
+    const host = ele?.getRootNode()?.host;
+    Array.from(host.children).forEach((e) => {
+      const selfSlotName = e.getAttribute("slot") || "";
+      if (selfSlotName === slotName) {
+        // 继续递归符合插槽的元素
+        emitAllConsumer(e, rootProvider);
+      }
+    });
+    return;
+  } else if (ele.shadowRoot) {
+    // 通知影子节点内的元素
+    Array.from(ele.shadowRoot.children).forEach((childEl) =>
+      emitAllConsumer(childEl, rootProvider, false)
+    );
+  }
+
+  // 不符合的元素继续递归
+  Array.from(ele.children).forEach((childEl) =>
+    emitAllConsumer(childEl, rootProvider)
+  );
+};
+
+$.register({
+  tag: "o-consumer",
+  temp,
+  attrs: {
+    name: null,
+  },
+  watch: {
+    ...publicWatch,
+  },
+  proto: {
+    ...publicProto,
+    get provider() {
+      return this[PROVIDER];
+    },
+    // 更新自身数据
+    _refresh() {
+      const data = {};
+      const keys = [];
+
+      let { provider } = this;
+      while (provider) {
+        Object.keys(provider[SELF]).forEach((key) => {
+          if (key === "tag" || key === "name") {
+            return;
+          }
+
+          if (data[key] === undefined || data[key] === null) {
+            data[key] = provider[key];
+            keys.push(key);
+          }
+        });
+
+        provider = provider.provider;
+      }
+
+      // 需要删除自身不存在的数据
+      Object.keys(this[SELF]).forEach((key) => {
+        if (InvalidKeys.includes(key) || keys.includes(key)) {
+          return;
+        }
+
+        this[key] = undefined;
+      });
+
+      // 设置值
+      for (let [key, value] of Object.entries(data)) {
+        this[key] = value;
+      }
+    },
+  },
+  ready() {
+    // 记录自身的 attributes
+    const existKeys = (this._existAttrKeys = Object.values(this.ele.attributes)
+      .map((e) => e.name)
+      .filter((e) => !InvalidKeys.includes(e)));
+
+    // 更新 attributes
+    this.watch((e) => {
+      if (e.target === this && e.type === "set") {
+        const attrName = toDashCase(e.name);
+
+        if (existKeys.includes(attrName)) {
+          if (e.value === null || e.value === undefined) {
+            this.ele.removeAttribute(attrName);
+          } else {
+            this.ele.setAttribute(attrName, e.value);
+          }
+        }
+      }
+    });
+  },
+  attached() {
+    this._update();
+  },
+});
+
+const version = "ofa.js@4.5.0";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

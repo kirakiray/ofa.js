@@ -5,8 +5,10 @@ export default async function ({ load, url, query }) {
     data: {
       pm: query,
       ia: "aaa",
+      // before: "",
     },
     proto: {
+      // prev() {},
       changeInput(e) {},
     },
     ready() {

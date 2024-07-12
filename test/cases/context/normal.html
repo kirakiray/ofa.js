@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>context test</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+  </head>
+  <body>
+    <l-m src="./comp-two.html"></l-m>
+    <div>
+      I am 1
+      <o-provider name="test1" custom-a="I am A" custom-b="I am B">
+        <div id="container">
+          <o-consumer name="test1" id="con1">
+            <div>I am 2</div>
+          </o-consumer>
+          <o-consumer name="test1" custom-a id="con2">
+            <div>I am 3</div>
+          </o-consumer>
+        </div>
+        <div>
+          <comp-two></comp-two>
+        </div>
+      </o-provider>
+
+      <script>
+        setTimeout(() => {
+          $("#container").push(`
+          <o-consumer name="test1" custom-b id="con3">
+            <div>I am 4</div>
+          </o-consumer>
+          `);
+        }, 300);
+      </script>
+    </div>
+  </body>
+</html>

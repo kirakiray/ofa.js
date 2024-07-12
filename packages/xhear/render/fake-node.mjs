@@ -1,5 +1,6 @@
 import { renderExtends } from "./render.mjs";
 import { isSafariBrowser } from "../public.mjs";
+import { getErr } from "../../ofa-error/main.js";
 
 export class FakeNode extends Comment {
   constructor(markname) {
@@ -85,7 +86,7 @@ export class FakeNode extends Comment {
           break;
         }
       } else {
-        throw new Error(`This is an unclosed FakeNode`);
+        throw getErr("xhear_fakenode_unclose", { name: "children" });
       }
     }
 
@@ -105,7 +106,7 @@ export class FakeNode extends Comment {
         }
         childs.unshift(prev);
       } else {
-        throw new Error(`This is an unclosed FakeNode`);
+        throw getErr("xhear_fakenode_unclose", { name: "childNodes" });
       }
     }
 

@@ -1,10 +1,22 @@
+import { getErr } from "../ofa-error/main.js";
+
 function getBindOptions(name, func, options) {
   let revoker;
   if (options) {
     const beforeValue = options.beforeArgs[1];
 
     if (!/[^\d\w_\$\.]/.test(beforeValue)) {
-      func = options.data.get(beforeValue).bind(options.data);
+      func = options.data.get(beforeValue);
+      if (!func) {
+        const tag = options.data.tag;
+        const err = getErr("not_found_func", {
+          name: beforeValue,
+          tag: tag ? `"${tag}"` : "",
+        });
+        console.log(err, " target =>", options.data);
+        throw err;
+      }
+      func = func.bind(options.data);
     }
 
     revoker = () => this.ele.removeEventListener(name, func);

@@ -14,6 +14,10 @@ const packs = [
     name: "drill.js",
     dirs: ["../drill.js/src", "./node_modules/drill.js/src"],
   },
+  {
+    name: "ofa-error",
+    dirs: ["../ofa-errors/ofa-error", "./node_modules/ofa-errors/ofa-error"],
+  },
 ];
 
 const cwd = process.cwd();

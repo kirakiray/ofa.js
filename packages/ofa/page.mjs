@@ -6,7 +6,6 @@ import { searchEle, isFunction } from "../xhear/public.mjs";
 import {
   fixRelatePathContent,
   resolvePath,
-  wrapErrorCall,
   getPagesData,
   createPage,
   ISERROR,
@@ -15,6 +14,7 @@ import { initLink } from "./link.mjs";
 import { nextTick } from "../stanz/public.mjs";
 
 import { drawUrl } from "./draw-template.mjs";
+import { getErr, getErrDesc } from "../ofa-error/main.js";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -36,13 +36,13 @@ lm.use(["html", "htm"], async (ctx, next) => {
       const url = await drawUrl(content, ctx.url);
       ctx.result = await lm()(`${url} .mjs --real:${ctx.url}`);
     } catch (error) {
-      const err = new Error(
-        `Error loading Page module: ${ctx.url}\n ${error.stack}`,
+      throw getErr(
+        "load_page_module",
         {
-          cause: error,
-        }
+          url: ctx.url,
+        },
+        error
       );
-      throw err;
     }
     ctx.resultContent = content;
   }
@@ -68,15 +68,20 @@ lm.use(["js", "mjs"], async (ctx, next) => {
       tempSrc = url.replace(/\.m?js.*/, ".html");
     }
 
-    await wrapErrorCall(
-      async () => {
-        defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
-      },
-      {
-        targetModule: import.meta.url,
-        desc: `${url} module request for ${tempSrc} template page failed`,
-      }
-    );
+    try {
+      defaultsData.temp = await fetch(tempSrc).then((e) => e.text());
+    } catch (error) {
+      const err = getErr(
+        "fetch_temp_err",
+        {
+          url: realUrl || url,
+          tempSrc,
+        },
+        error
+      );
+      self.emit("error", { data: { error: err } });
+      throw err;
+    }
   }
 
   ctx.result = defaultsData;
@@ -185,8 +190,38 @@ setTimeout(() => {
       async _renderDefault(defaults) {
         const { src } = this;
 
+        if (defaults.data) {
+          // 检查 proto 和 data 上的key，是否和fn上的key冲突
+          Object.keys(defaults.data).forEach((name) => {
+            if (name in this) {
+              throw getErr("page_invalid_key", {
+                src,
+                targetName: "data",
+                name,
+              });
+            }
+          });
+        }
+
+        if (defaults.proto) {
+          Object.keys(defaults.proto).forEach((name) => {
+            if (name in this) {
+              console.warn(
+                getErrDesc("page_invalid_key", {
+                  src,
+                  targetName: "proto",
+                  name,
+                }),
+                defaults
+              );
+            }
+          });
+        }
+
         if (this._defaults) {
-          throw new Error("The current page has already been rendered");
+          const err = getErr("page_no_defaults", { src });
+          console.log(err, this);
+          throw err;
         }
 
         this._defaults = defaults;
@@ -196,9 +231,8 @@ setTimeout(() => {
         }
 
         if (!defaults || defaults.type !== PAGE) {
-          const err = new Error(
-            `The currently loaded module is not a page \nLoaded string => '${src}'`
-          );
+          const err = getErr("not_page_module", { src });
+          console.log(err, this);
           this.emit("error", { data: { error: err } });
           this.__reject(err);
           throw err;
@@ -216,13 +250,9 @@ setTimeout(() => {
             temps,
           });
         } catch (error) {
-          const err = new Error(
-            `Failed to render page:${src} \n ${error.stack}`,
-            {
-              cause: error,
-            }
-          );
+          const err = getErr("page_failed", { src }, error);
           console.error(err);
+          console.log(err, this);
         }
 
         await dispatchLoad(this, defaults.loaded);

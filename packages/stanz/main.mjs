@@ -2,6 +2,7 @@ import { extend, getRandomId } from "./public.mjs";
 import { handler as stanzHandler } from "./accessor.mjs";
 import arrayFn from "./array.mjs";
 import watchFn from "./watch.mjs";
+import { getErr } from "../ofa-error/main.js";
 const { defineProperties, getOwnPropertyDescriptor, entries } = Object;
 
 export const SELF = Symbol("self");
@@ -167,15 +168,16 @@ export default class Stanz extends Array {
         try {
           target = target[keys[i]];
         } catch (error) {
-          const err = new Error(
-            `Failed to get data : ${keys.slice(0, i).join(".")} \n${
-              error.stack
-            }`,
-            { cause: error }
+          const err = getErr(
+            "failed_to_get_data",
+            {
+              key: keys.slice(0, i).join("."),
+            },
+            error
           );
-          Object.assign(err, {
-            target,
-          });
+
+          console.log(err.message, ":", key, this, error);
+
           throw err;
         }
       }
@@ -194,15 +196,16 @@ export default class Stanz extends Array {
         try {
           target = target[keys[i]];
         } catch (error) {
-          const err = new Error(
-            `Failed to get data : ${keys.slice(0, i).join(".")} \n${
-              error.stack
-            }`,
-            { cause: error }
+          const err = getErr(
+            "failed_to_get_data",
+            {
+              key: keys.slice(0, i).join("."),
+            },
+            error
           );
-          Object.assign(err, {
-            target,
-          });
+
+          console.log(err.message, ":", key, this, error);
+
           throw err;
         }
       }

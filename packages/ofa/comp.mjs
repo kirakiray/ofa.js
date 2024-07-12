@@ -5,6 +5,7 @@ import { dispatchLoad } from "./page.mjs";
 import { drawUrl } from "./draw-template.mjs";
 import { fixRelatePathContent, resolvePath } from "./public.mjs";
 import { initLink } from "./link.mjs";
+import { getErr } from "../ofa-error/main.js";
 
 const COMP = Symbol("Component");
 export const COMPONENT_PATH = Symbol("PATH");
@@ -27,14 +28,13 @@ lm.use(["html", "htm"], async (ctx, next) => {
       const url = await drawUrl(content, ctx.url, false);
       ctx.result = await lm()(`${url} .mjs --real:${ctx.url}`);
     } catch (err) {
-      const error = new Error(
-        `Error loading Component module: ${ctx.url}\n ${err.toString()}`,
+      throw getErr(
+        "load_comp_module",
         {
-          cause: err,
-        }
+          url: ctx.url,
+        },
+        err
       );
-
-      throw error;
     }
     ctx.resultContent = content;
   }
@@ -79,7 +79,9 @@ lm.use(["js", "mjs"], async (ctx, next) => {
   const cacheUrl = cacheComps[tagName];
   if (cacheUrl) {
     if (path !== cacheUrl) {
-      throw new Error(`${tagName} components have been registered`);
+      throw getErr("comp_registered", {
+        name: tagName,
+      });
     }
 
     await next();

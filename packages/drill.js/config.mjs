@@ -1,3 +1,5 @@
+import { getErr } from "../ofa-error/main.js";
+
 export const aliasMap = {};
 
 export default async function config(opts) {
@@ -5,18 +7,25 @@ export default async function config(opts) {
 
   if (alias) {
     Object.entries(alias).forEach(([name, path]) => {
-      if (/^@.+/.test(name)) {
-        if (!aliasMap[name]) {
-          if (!/^\./.test(path)) {
-            aliasMap[name] = path;
-          } else {
-            throw new Error(
-              `The address does not match the specification, please use '/' or or the beginning of the protocol: '${path}'`
-            );
-          }
+      if (!/^@.+/.test(name)) {
+        throw getErr("config_alias_name_error", {
+          name,
+        });
+      }
+
+      if (!aliasMap[name]) {
+        if (!/^\./.test(path)) {
+          aliasMap[name] = path;
         } else {
-          throw new Error(`Alias already exists: '${name}'`);
+          throw getErr("alias_relate_name", {
+            name,
+            path,
+          });
         }
+      } else {
+        throw getErr("alias_already", {
+          name,
+        });
       }
     });
   }
@@ -38,7 +47,10 @@ export const path = (moduleName, baseURI) => {
     if (aliasMap[first]) {
       lastUrl = [aliasMap[first].replace(/\/$/, ""), ...args].join("/");
     } else {
-      throw new Error(`No alias defined ${first}`);
+      throw getErr("no_alias", {
+        name: first,
+        url: moduleName,
+      });
     }
   }
 

@@ -5,6 +5,7 @@ import Stanz from "../../stanz/main.mjs";
 import { createXEle, eleX, revokeAll } from "../util.mjs";
 import { removeArrayValue } from "../public.mjs";
 import { getRenderData } from "./condition.mjs";
+import { getErr } from "../../ofa-error/main.js";
 
 register({
   tag: "x-fill",
@@ -248,10 +249,9 @@ register({
     this._name = this.attr("name");
 
     if (!this._name) {
-      const desc =
-        "The target element does not have a template name to populate";
-      console.log(desc, this.ele);
-      throw new Error(desc);
+      const err = getErr("xhear_fill_tempname", { name: this._name });
+      console.log(err, this.ele);
+      throw err;
     }
 
     if (this.ele._bindingRendered) {

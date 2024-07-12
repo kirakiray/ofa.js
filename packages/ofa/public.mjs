@@ -2,6 +2,7 @@ import { nextTick } from "../stanz/public.mjs";
 import { searchEle } from "../xhear/public.mjs";
 import { path } from "../drill.js/config.mjs";
 import { eleX } from "../xhear/util.mjs";
+import { getErr } from "../ofa-error/main.js";
 
 export const resolvePath = path;
 
@@ -43,16 +44,6 @@ export function fixRelatePathContent(content, path) {
   return template.innerHTML;
 }
 
-export const wrapErrorCall = async (callback, { self, desc, ...rest }) => {
-  try {
-    await callback();
-  } catch (error) {
-    const err = new Error(`${desc}\n  ${error.stack}`, { cause: error });
-    self.emit("error", { data: { error: err, ...rest } });
-    throw err;
-  }
-};
-
 export const ISERROR = Symbol("loadError");
 
 export const getPagesData = async (src) => {
@@ -78,18 +69,21 @@ export const getPagesData = async (src) => {
     } catch (error) {
       let err;
       if (beforeSrc) {
-        err = new Error(
-          `${beforeSrc} request to parent page(${pageSrc}) fails; \n  ${error.stack}`,
+        err = getErr(
+          "page_wrap_fetch",
           {
-            cause: error,
-          }
+            before: beforeSrc,
+            current: pageSrc,
+          },
+          error
         );
       } else {
-        err = new Error(
-          `Request for ${pageSrc} page failed; \n  ${error.stack}`,
+        err = getErr(
+          "load_page_module",
           {
-            cause: error,
-          }
+            url: pageSrc,
+          },
+          error
         );
       }
       errorObj = err;

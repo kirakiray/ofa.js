@@ -9,6 +9,7 @@ import {
 } from "./public.mjs";
 import { getDefault, getFailContent } from "./page.mjs";
 import { createXEle } from "../xhear/util.mjs";
+import { getErr } from "../ofa-error/main.js";
 
 const HISTORY = "_history";
 
@@ -20,9 +21,9 @@ const appendPage = async ({ src, app }) => {
     loadingEl = createXEle(loading());
 
     if (!loadingEl) {
-      const errDesc = `loading function returns no content`;
-      console.log(errDesc, ":", loading);
-      throw new Error(errDesc);
+      const err = getErr("loading_nothing");
+      console.log(err, loading);
+      throw err;
     }
 
     app.push(loadingEl);
@@ -155,9 +156,7 @@ $.register({
     async src(val) {
       if (this.__init_src) {
         if (this.__init_src !== val) {
-          throw new Error(
-            "The App that has already been initialized cannot be set with the src attribute"
-          );
+          throw getErr("app_src_change");
         }
         return;
       }
@@ -374,21 +373,22 @@ const runAccess = (app, src) => {
   const srcObj = new URL(src);
 
   if (srcObj.origin !== location.origin && !access) {
-    const NoAccessErrDesc =
-      "To jump across domains, the access function must be set";
-    console.log(NoAccessErrDesc, app.ele, app?._module);
-    throw new Error(NoAccessErrDesc);
+    const err = getErr("no_cross_access_func");
+    console.log(err, app.ele, app?._module);
+    throw err;
   }
 
   if (access) {
     const result = access(src);
 
     if (result !== true) {
-      if (result instanceof Error) {
-        throw result;
-      }
-
-      throw new Error(`Access to current address is not allowed: ${src}`);
+      const err = getErr(
+        "access_return_error",
+        { src },
+        result instanceof Error ? result : undefined
+      );
+      console.log(err, app);
+      throw err;
     }
   }
 };

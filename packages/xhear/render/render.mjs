@@ -1,4 +1,7 @@
+import { getErr, getErrDesc } from "../../ofa-error/main.js";
 import { getRandomId, isRevokedErr } from "../../stanz/public.mjs";
+import stanzProto from "../../stanz/watch.mjs";
+
 import {
   isFunction,
   hyphenToUpperCase,
@@ -70,46 +73,46 @@ export function render({
   const revokes = getRevokes(target);
 
   // Styles with data() function to monitor and correct rendering
-  searchEle(target, "style").forEach((el) => {
-    const originStyle = el.innerHTML;
+  // searchEle(target, "style").forEach((el) => {
+  //   const originStyle = el.innerHTML;
 
-    if (/data\(.+\)/.test(originStyle)) {
-      const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
-        (dataExpr) => {
-          const expr = dataExpr.replace(/data\((.+)\)/, "$1");
-          const func = convertToFunc(expr, data);
+  //   if (/data\(.+\)/.test(originStyle)) {
+  //     const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
+  //       (dataExpr) => {
+  //         const expr = dataExpr.replace(/data\((.+)\)/, "$1");
+  //         const func = convertToFunc(expr, data);
 
-          return {
-            dataExpr,
-            func,
-          };
-        }
-      );
+  //         return {
+  //           dataExpr,
+  //           func,
+  //         };
+  //       }
+  //     );
 
-      const renderStyle = () => {
-        let afterStyle = originStyle;
+  //     const renderStyle = () => {
+  //       let afterStyle = originStyle;
 
-        matchs.forEach(({ dataExpr, func }) => {
-          afterStyle = afterStyle.replace(dataExpr, func());
-        });
+  //       matchs.forEach(({ dataExpr, func }) => {
+  //         afterStyle = afterStyle.replace(dataExpr, func());
+  //       });
 
-        if (el.innerHTML !== afterStyle) {
-          el.innerHTML = afterStyle;
-        }
-      };
-      tasks.push(renderStyle);
+  //       if (el.innerHTML !== afterStyle) {
+  //         el.innerHTML = afterStyle;
+  //       }
+  //     };
+  //     tasks.push(renderStyle);
 
-      const revokeStyle = () => {
-        matchs.length = 0;
-        remove(tasks, renderStyle);
-        remove(getRevokes(el), revokeStyle);
-        remove(revokes, revokeStyle);
-      };
+  //     const revokeStyle = () => {
+  //       matchs.length = 0;
+  //       remove(tasks, renderStyle);
+  //       remove(getRevokes(el), revokeStyle);
+  //       remove(revokes, revokeStyle);
+  //     };
 
-      addRevoke(el, revokeStyle);
-      revokes.push(revokeStyle);
-    }
-  });
+  //     addRevoke(el, revokeStyle);
+  //     revokes.push(revokeStyle);
+  //   }
+  // });
 
   // Render text nodes
   texts.forEach((el) => {
@@ -221,12 +224,16 @@ export function render({
             addRevoke(el, clearRevs);
           }
         } catch (error) {
-          const err = new Error(
-            `Execution of the ${actionName} method reports an error: ${actionName}:${args[0]}="${args[1]}"  \n ${error.stack}`,
+          const err = getErr(
+            "xhear_eval",
             {
-              cause: error,
-            }
+              name: actionName,
+              arg0: args[0],
+              arg1: args[1],
+            },
+            error
           );
+          console.log(err, el);
           throw err;
         }
       });
@@ -244,17 +251,15 @@ export function render({
 
   if (tasks.length) {
     if (target.__render_data && target.__render_data !== data) {
-      const error = new Error(
-        `An old listener already exists and the rendering of this element may be wrong`
-      );
+      const err = getErr("xhear_listen_already");
 
-      Object.assign(error, {
+      console.log(err, {
         element: target,
         old: target.__render_data,
         new: data,
       });
 
-      throw error;
+      throw err;
     }
 
     target.__render_data = data;
@@ -370,9 +375,7 @@ export const convert = (template) => {
 
   searchTemp(template, "x-fill:not([name])", (fillEl) => {
     if (fillEl.querySelector("x-fill:not([name])")) {
-      throw new Error(
-        `Don't fill unnamed x-fills with unnamed x-fill elements!!!\n${fillEl.outerHTML}`
-      );
+      throw getErr("xhear_dbfill_noname");
     }
 
     if (fillEl.innerHTML.trim()) {
@@ -399,7 +402,9 @@ export const convert = (template) => {
 
     Object.keys(newTemps).forEach((tempName) => {
       if (temps[tempName]) {
-        throw new Error(`Template "${tempName}" already exists`);
+        throw getErr("xhear_temp_exist", {
+          name: tempName,
+        });
       }
     });
 
@@ -450,7 +455,13 @@ const defaultData = {
 
     value = getVal(value);
 
-    if (value === null) {
+    if (value === false) {
+      value = null;
+    } else if (value === true) {
+      value = "";
+    }
+
+    if (value === null || value === undefined) {
       this.ele.removeAttribute(name);
     } else {
       this.ele.setAttribute(name, value);
@@ -471,6 +482,40 @@ const defaultData = {
       this.ele.classList.remove(name);
     }
   },
+  watch(...args) {
+    if (args.length < 3) {
+      return stanzProto.watch.apply(this, args);
+    }
+
+    const options = args[2];
+    const { beforeArgs, data: target } = options;
+    const [selfPropName, targetPropName] = beforeArgs;
+    const propName = hyphenToUpperCase(selfPropName);
+
+    const setData = () => {
+      let val = this[propName];
+      if (val instanceof Object) {
+        // If val is Object, deepClone it.
+        val = JSON.parse(JSON.stringify(val));
+        const errDesc = getErrDesc("heed_object");
+        console.warn(errDesc, target);
+      }
+      target[targetPropName] = val;
+    };
+
+    const wid = this.watch((e) => {
+      if (e.hasModified(propName)) {
+        setData();
+      }
+    });
+
+    // Initialize once
+    setData();
+
+    return () => {
+      this.unwatch(wid);
+    };
+  },
 };
 
 defaultData.prop.always = true;
@@ -479,8 +524,11 @@ defaultData.class.always = true;
 
 defaultData.prop.revoke = ({ target, args, $ele, data }) => {
   const propName = args[0];
-  // target[propName] = null;
   target.set(propName, null);
+};
+
+defaultData.watch.revoke = (e) => {
+  e.result();
 };
 
 export default defaultData;
