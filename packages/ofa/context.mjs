@@ -102,9 +102,9 @@ $.register({
     get provider() {
       return this[PROVIDER];
     },
-    refresh() {
+    _refresh() {
       // 辅助consumer刷新数据
-      this.consumers.forEach((e) => e.refresh());
+      this.consumers.forEach((e) => e._refresh());
     },
     _setConsumer(name, value, isSelf) {
       if (isSelf || this[name] === undefined || this[name] === null) {
@@ -151,7 +151,7 @@ $.register({
         // 查找到对应的provider后，禁止向上冒泡
         e.stopPropagation();
 
-        consumer.refresh();
+        consumer._refresh();
       }
     });
 
@@ -209,7 +209,7 @@ const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
     // 重新冒泡
     const $ele = $(ele);
     $ele._update(rootProvider);
-    $ele.refresh();
+    $ele._refresh();
   } else if (ele.tagName === "SLOT" && emitSlot) {
     const slotName = ele.getAttribute("name") || "";
     const host = ele?.getRootNode()?.host;
@@ -249,7 +249,7 @@ $.register({
       return this[PROVIDER];
     },
     // 更新自身数据
-    refresh() {
+    _refresh() {
       const data = {};
       const keys = [];
 

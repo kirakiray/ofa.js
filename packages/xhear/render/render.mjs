@@ -498,7 +498,7 @@ const defaultData = {
         // If val is Object, deepClone it.
         val = JSON.parse(JSON.stringify(val));
         const errDesc = getErrDesc("heed_object");
-        console.log(errDesc, target);
+        console.warn(errDesc, target);
       }
       target[targetPropName] = val;
     };

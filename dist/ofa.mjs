@@ -1514,7 +1514,7 @@ const defaultData = {
         // If val is Object, deepClone it.
         val = JSON.parse(JSON.stringify(val));
         const errDesc = getErrDesc("heed_object");
-        console.log(errDesc, target);
+        console.warn(errDesc, target);
       }
       target[targetPropName] = val;
     };
@@ -2226,6 +2226,23 @@ var cssFn = {
   },
 };
 
+function $(expr) {
+  if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
+    const ele = document.querySelector(expr);
+
+    return eleX(ele);
+  }
+
+  return createXEle(expr);
+}
+
+Object.defineProperties($, {
+  // Convenient objects for use as extensions
+  extensions: {
+    value: {},
+  },
+});
+
 const COMPS = {};
 
 const renderElement = ({ defaults, ele, template, temps }) => {
@@ -2402,6 +2419,32 @@ const register = (opts = {}) => {
     // slotchange() { }
     ...opts,
   };
+
+  const { fn } = $;
+  if (fn) {
+    // 检查 proto 和 data 上的key，是否和fn上的key冲突
+    Object.keys(defaults.data).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        throw getErr("invalid_key", {
+          compName: defaults.tag,
+          targetName: "data",
+          name,
+        });
+      }
+    });
+    Object.keys(defaults.proto).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        console.warn(
+          getErrDesc("invalid_key", {
+            compName: defaults.tag,
+            targetName: "proto",
+            name,
+          }),
+          opts
+        );
+      }
+    });
+  }
 
   let template, temps, name;
 
@@ -3696,23 +3739,6 @@ const revokeAll = (target) => {
     [...revokes].forEach((f) => f());
   }
 };
-
-function $(expr) {
-  if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
-    const ele = document.querySelector(expr);
-
-    return eleX(ele);
-  }
-
-  return createXEle(expr);
-}
-
-Object.defineProperties($, {
-  // Convenient objects for use as extensions
-  extensions: {
-    value: {},
-  },
-});
 
 Object.assign($, {
   stanz,
@@ -5017,6 +5043,34 @@ setTimeout(() => {
       async _renderDefault(defaults) {
         const { src } = this;
 
+        if (defaults.data) {
+          // 检查 proto 和 data 上的key，是否和fn上的key冲突
+          Object.keys(defaults.data).forEach((name) => {
+            if (name in this) {
+              throw getErr("page_invalid_key", {
+                src,
+                targetName: "data",
+                name,
+              });
+            }
+          });
+        }
+
+        if (defaults.proto) {
+          Object.keys(defaults.proto).forEach((name) => {
+            if (name in this) {
+              console.warn(
+                getErrDesc("page_invalid_key", {
+                  src,
+                  targetName: "proto",
+                  name,
+                }),
+                defaults
+              );
+            }
+          });
+        }
+
         if (this._defaults) {
           const err = getErr("page_no_defaults", { src });
           console.log(err, this);
@@ -5946,9 +6000,9 @@ $.register({
     get provider() {
       return this[PROVIDER];
     },
-    refresh() {
+    _refresh() {
       // 辅助consumer刷新数据
-      this.consumers.forEach((e) => e.refresh());
+      this.consumers.forEach((e) => e._refresh());
     },
     _setConsumer(name, value, isSelf) {
       if (isSelf || this[name] === undefined || this[name] === null) {
@@ -5995,7 +6049,7 @@ $.register({
         // 查找到对应的provider后，禁止向上冒泡
         e.stopPropagation();
 
-        consumer.refresh();
+        consumer._refresh();
       }
     });
 
@@ -6053,7 +6107,7 @@ const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
     // 重新冒泡
     const $ele = $(ele);
     $ele._update(rootProvider);
-    $ele.refresh();
+    $ele._refresh();
   } else if (ele.tagName === "SLOT" && emitSlot) {
     const slotName = ele.getAttribute("name") || "";
     const host = ele?.getRootNode()?.host;
@@ -6093,7 +6147,7 @@ $.register({
       return this[PROVIDER];
     },
     // 更新自身数据
-    refresh() {
+    _refresh() {
       const data = {};
       const keys = [];
 

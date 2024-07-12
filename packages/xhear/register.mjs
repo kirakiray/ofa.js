@@ -1,4 +1,4 @@
-import { getErr } from "../ofa-error/main.js";
+import { getErr, getErrDesc } from "../ofa-error/main.js";
 import { getType } from "../stanz/public.mjs";
 import {
   hyphenToUpperCase,
@@ -7,6 +7,7 @@ import {
 } from "./public.mjs";
 import { convert, render } from "./render/render.mjs";
 import { eleX } from "./util.mjs";
+import $ from "./dollar.mjs";
 
 const COMPS = {};
 
@@ -184,6 +185,32 @@ export const register = (opts = {}) => {
     // slotchange() { }
     ...opts,
   };
+
+  const { fn } = $;
+  if (fn) {
+    // 检查 proto 和 data 上的key，是否和fn上的key冲突
+    Object.keys(defaults.data).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        throw getErr("invalid_key", {
+          compName: defaults.tag,
+          targetName: "data",
+          name,
+        });
+      }
+    });
+    Object.keys(defaults.proto).forEach((name) => {
+      if (fn.hasOwnProperty(name)) {
+        console.warn(
+          getErrDesc("invalid_key", {
+            compName: defaults.tag,
+            targetName: "proto",
+            name,
+          }),
+          opts
+        );
+      }
+    });
+  }
 
   let template, temps, name;
 

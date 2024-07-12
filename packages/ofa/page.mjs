@@ -14,7 +14,7 @@ import { initLink } from "./link.mjs";
 import { nextTick } from "../stanz/public.mjs";
 
 import { drawUrl } from "./draw-template.mjs";
-import { getErr } from "../ofa-error/main.js";
+import { getErr, getErrDesc } from "../ofa-error/main.js";
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -189,6 +189,34 @@ setTimeout(() => {
     proto: {
       async _renderDefault(defaults) {
         const { src } = this;
+
+        if (defaults.data) {
+          // 检查 proto 和 data 上的key，是否和fn上的key冲突
+          Object.keys(defaults.data).forEach((name) => {
+            if (name in this) {
+              throw getErr("page_invalid_key", {
+                src,
+                targetName: "data",
+                name,
+              });
+            }
+          });
+        }
+
+        if (defaults.proto) {
+          Object.keys(defaults.proto).forEach((name) => {
+            if (name in this) {
+              console.warn(
+                getErrDesc("page_invalid_key", {
+                  src,
+                  targetName: "proto",
+                  name,
+                }),
+                defaults
+              );
+            }
+          });
+        }
 
         if (this._defaults) {
           const err = getErr("page_no_defaults", { src });
