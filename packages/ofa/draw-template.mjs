@@ -24,7 +24,13 @@ const strToBase64DataURI = async (str, type, isb64 = true) => {
 };
 
 // In the actual logical code, the generated code and the source code actually use the exact same logic, with only a change in line numbers. Therefore, it is only necessary to map the generated valid code back to the corresponding line numbers in the source file.
-const getSourcemapUrl = async (filePath, originContent, startLine) => {
+const getSourcemapUrl = async (
+  filePath,
+  originStarRowIndex,
+  originEndRowIndex,
+  originContent,
+  startLine
+) => {
   const originLineArr = originContent.split("\n");
 
   let mappings = "";
@@ -32,16 +38,6 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   for (let i = 0; i <= startLine; i++) {
     mappings += ";";
   }
-
-  // Determine the starting line number of the source file.
-  const originStarRowIndex = originLineArr.findIndex(
-    (lineContent) => lineContent.trim() === "<script>"
-  );
-
-  // Determine the ending line number of the source file.
-  const originEndRowIndex = originLineArr.findIndex(
-    (lineContent) => lineContent.trim() === "</script>"
-  );
 
   let beforeRowIndex = 0;
   let beforeColIndex = 0;
@@ -85,6 +81,10 @@ const getSourcemapUrl = async (filePath, originContent, startLine) => {
   return await strToBase64DataURI(str, null);
 };
 
+const styleToSourcemapUrl = async (temp, originContent, filePath) => {
+  return temp;
+};
+
 const cacheLink = new Map();
 
 export async function drawUrl(content, url, isPage = true) {
@@ -123,6 +123,11 @@ export async function drawUrl(content, url, isPage = true) {
         .replace(/\$\{/g, "\\${");
   }
 
+  if (isDebug) {
+    temp = await styleToSourcemapUrl(temp, content, url);
+  }
+
+  // 原来html文件中，转译后，属于前半部分的内容（后半部分就是script标签内的内容）
   const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
   ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
@@ -152,8 +157,22 @@ ${scriptContent}`;
   let sourcemapStr = "";
 
   if (isDebug) {
+    const originLineArr = content.split("\n");
+
+    // Determine the starting line number of the source file.
+    const originStarRowIndex = originLineArr.findIndex(
+      (lineContent) => lineContent.trim() === "<script>"
+    );
+
+    // Determine the ending line number of the source file.
+    const originEndRowIndex = originLineArr.findIndex(
+      (lineContent) => lineContent.trim() === "</script>"
+    );
+
     sourcemapStr = `//# sourceMappingURL=${await getSourcemapUrl(
       url,
+      originStarRowIndex,
+      originEndRowIndex,
       content,
       beforeContent.split("\n").length
     )}`;
