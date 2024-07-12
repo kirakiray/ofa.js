@@ -6,10 +6,9 @@ export default async function ({ load, url, query }) {
       pm: query,
       ia: "aaa",
       // before: "",
-      aaa
     },
     proto: {
-      prev() {},
+      // prev() {},
       changeInput(e) {},
     },
     ready() {
