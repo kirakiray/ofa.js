@@ -83,7 +83,7 @@ const publicWatch = {
   },
 };
 
-const InvalidKeys = ["tag", "name", "class", "style", "id"];
+const InvalidKeys = ["tag", "name", "class", "style", "id", "x-bind-data"];
 
 $.register({
   tag: "o-provider",
