@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.0 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.2 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1095,46 +1095,46 @@ try{
     const revokes = getRevokes(target);
 
     // Styles with data() function to monitor and correct rendering
-    // searchEle(target, "style").forEach((el) => {
-    //   const originStyle = el.innerHTML;
+    searchEle(target, "style").forEach((el) => {
+      const originStyle = el.innerHTML;
 
-    //   if (/data\(.+\)/.test(originStyle)) {
-    //     const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
-    //       (dataExpr) => {
-    //         const expr = dataExpr.replace(/data\((.+)\)/, "$1");
-    //         const func = convertToFunc(expr, data);
+      if (/data\(.+\)/.test(originStyle)) {
+        const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
+          (dataExpr) => {
+            const expr = dataExpr.replace(/data\((.+)\)/, "$1");
+            const func = convertToFunc(expr, data);
 
-    //         return {
-    //           dataExpr,
-    //           func,
-    //         };
-    //       }
-    //     );
+            return {
+              dataExpr,
+              func,
+            };
+          }
+        );
 
-    //     const renderStyle = () => {
-    //       let afterStyle = originStyle;
+        const renderStyle = () => {
+          let afterStyle = originStyle;
 
-    //       matchs.forEach(({ dataExpr, func }) => {
-    //         afterStyle = afterStyle.replace(dataExpr, func());
-    //       });
+          matchs.forEach(({ dataExpr, func }) => {
+            afterStyle = afterStyle.replace(dataExpr, func());
+          });
 
-    //       if (el.innerHTML !== afterStyle) {
-    //         el.innerHTML = afterStyle;
-    //       }
-    //     };
-    //     tasks.push(renderStyle);
+          if (el.innerHTML !== afterStyle) {
+            el.innerHTML = afterStyle;
+          }
+        };
+        tasks.push(renderStyle);
 
-    //     const revokeStyle = () => {
-    //       matchs.length = 0;
-    //       remove(tasks, renderStyle);
-    //       remove(getRevokes(el), revokeStyle);
-    //       remove(revokes, revokeStyle);
-    //     };
+        const revokeStyle = () => {
+          matchs.length = 0;
+          removeArrayValue(tasks, renderStyle);
+          removeArrayValue(getRevokes(el), revokeStyle);
+          removeArrayValue(revokes, revokeStyle);
+        };
 
-    //     addRevoke(el, revokeStyle);
-    //     revokes.push(revokeStyle);
-    //   }
-    // });
+        addRevoke(el, revokeStyle);
+        revokes.push(revokeStyle);
+      }
+    });
 
     // Render text nodes
     texts.forEach((el) => {
@@ -1515,14 +1515,8 @@ try{
       const propName = hyphenToUpperCase(selfPropName);
 
       const setData = () => {
-        let val = this[propName];
-        if (val instanceof Object) {
-          // If val is Object, deepClone it.
-          val = JSON.parse(JSON.stringify(val));
-          const errDesc = getErrDesc("heed_object");
-          console.warn(errDesc, target);
-        }
-        target[targetPropName] = val;
+        let val = this.get(propName);
+        target.set(targetPropName, val);
       };
 
       const wid = this.watch((e) => {
@@ -1551,6 +1545,8 @@ try{
 
   defaultData.watch.revoke = (e) => {
     e.result();
+    const propName = e.beforeArgs[1];
+    e.data.set(propName, null);
   };
 
   const syncFn = {
@@ -2342,61 +2338,63 @@ try{
       }
     }
 
-    {
-      // 将组件上的变量重定义到影子节点内的css变量上
-      const { tag } = $ele;
+    // {
+    //   // 将组件上的变量重定义到影子节点内的css变量上
+    //   const { tag } = $ele;
 
-      if ($ele.__rssWid) {
-        $ele.unwatch($ele.__rssWid);
-      }
+    //   if ($ele.__rssWid) {
+    //     $ele.unwatch($ele.__rssWid);
+    //   }
 
-      // 排除掉自定义组件
-      if (tag !== "x-if" && tag !== "x-fill" && ele.shadowRoot) {
-        // 需要更新的key
-        const keys = Object.keys({
-          ...defaults.data,
-          ...defaults.attrs,
-        });
+    //   // 排除掉自定义组件
+    //   if (tag !== "x-if" && tag !== "x-fill" && ele.shadowRoot) {
+    //     // 需要更新的key
+    //     const keys = Object.keys({
+    //       ...defaults.data,
+    //       ...defaults.attrs,
+    //     });
 
-        for (let [key, item] of Object.entries(
-          Object.getOwnPropertyDescriptors(defaults.proto)
-        )) {
-          if (item.writable || item.get) {
-            keys.push(key);
-          }
-        }
+    //     for (let [key, item] of Object.entries(
+    //       Object.getOwnPropertyDescriptors(defaults.proto)
+    //     )) {
+    //       if (item.writable || item.get) {
+    //         keys.push(key);
+    //       }
+    //     }
 
-        const refreshShadowStyleVar = () => {
-          let shadowVarStyle = ele.shadowRoot.querySelector("#shadow-var-style");
+    //     const refreshShadowStyleVar = () => {
+    //       let shadowVarStyle = ele.shadowRoot.querySelector("#shadow-var-style");
 
-          if (!shadowVarStyle) {
-            shadowVarStyle = document.createElement("style");
-            shadowVarStyle.id = "shadow-var-style";
-            ele.shadowRoot.appendChild(shadowVarStyle);
-          }
+    //       if (!shadowVarStyle) {
+    //         shadowVarStyle = document.createElement("style");
+    //         shadowVarStyle.id = "shadow-var-style";
+    //         ele.shadowRoot.appendChild(shadowVarStyle);
+    //       }
 
-          // 更新所有变量
-          let content = "";
-          keys.forEach((key) => {
-            const val = $ele[key];
-            const valType = getType$1(val);
-            if (valType === "number" || valType === "string") {
-              content += `--${key}:${val};`;
-            }
-          });
+    //       // 更新所有变量
+    //       let content = "";
+    //       let slotContent = "";
+    //       keys.forEach((key) => {
+    //         const val = $ele[key];
+    //         const valType = getType(val);
+    //         if (valType === "number" || valType === "string") {
+    //           content += `--${key}:${val};`;
+    //           slotContent += `--${key}:;`;
+    //         }
+    //       });
 
-          const styleContent = `:host > *:not(slot){${content}}`;
+    //       const styleContent = `:host > *:not(slot) {${content}} slot{${slotContent}}`;
 
-          if (shadowVarStyle.innerHTML !== styleContent) {
-            shadowVarStyle.innerHTML = styleContent;
-          }
-        };
+    //       if (shadowVarStyle.innerHTML !== styleContent) {
+    //         shadowVarStyle.innerHTML = styleContent;
+    //       }
+    //     };
 
-        $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
+    //     $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
 
-        refreshShadowStyleVar();
-      }
-    }
+    //     refreshShadowStyleVar();
+    //   }
+    // }
   };
 
   const register = (opts = {}) => {
@@ -6057,7 +6055,7 @@ ${scriptContent}`;
     },
   };
 
-  const InvalidKeys = ["tag", "name", "class", "style", "id"];
+  const InvalidKeys = ["tag", "name", "class", "style", "id", "x-bind-data"];
 
   $.register({
     tag: "o-provider",
@@ -6284,7 +6282,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.0";
+  const version = "ofa.js@4.5.1";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

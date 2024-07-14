@@ -73,46 +73,46 @@ export function render({
   const revokes = getRevokes(target);
 
   // Styles with data() function to monitor and correct rendering
-  // searchEle(target, "style").forEach((el) => {
-  //   const originStyle = el.innerHTML;
+  searchEle(target, "style").forEach((el) => {
+    const originStyle = el.innerHTML;
 
-  //   if (/data\(.+\)/.test(originStyle)) {
-  //     const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
-  //       (dataExpr) => {
-  //         const expr = dataExpr.replace(/data\((.+)\)/, "$1");
-  //         const func = convertToFunc(expr, data);
+    if (/data\(.+\)/.test(originStyle)) {
+      const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
+        (dataExpr) => {
+          const expr = dataExpr.replace(/data\((.+)\)/, "$1");
+          const func = convertToFunc(expr, data);
 
-  //         return {
-  //           dataExpr,
-  //           func,
-  //         };
-  //       }
-  //     );
+          return {
+            dataExpr,
+            func,
+          };
+        }
+      );
 
-  //     const renderStyle = () => {
-  //       let afterStyle = originStyle;
+      const renderStyle = () => {
+        let afterStyle = originStyle;
 
-  //       matchs.forEach(({ dataExpr, func }) => {
-  //         afterStyle = afterStyle.replace(dataExpr, func());
-  //       });
+        matchs.forEach(({ dataExpr, func }) => {
+          afterStyle = afterStyle.replace(dataExpr, func());
+        });
 
-  //       if (el.innerHTML !== afterStyle) {
-  //         el.innerHTML = afterStyle;
-  //       }
-  //     };
-  //     tasks.push(renderStyle);
+        if (el.innerHTML !== afterStyle) {
+          el.innerHTML = afterStyle;
+        }
+      };
+      tasks.push(renderStyle);
 
-  //     const revokeStyle = () => {
-  //       matchs.length = 0;
-  //       remove(tasks, renderStyle);
-  //       remove(getRevokes(el), revokeStyle);
-  //       remove(revokes, revokeStyle);
-  //     };
+      const revokeStyle = () => {
+        matchs.length = 0;
+        remove(tasks, renderStyle);
+        remove(getRevokes(el), revokeStyle);
+        remove(revokes, revokeStyle);
+      };
 
-  //     addRevoke(el, revokeStyle);
-  //     revokes.push(revokeStyle);
-  //   }
-  // });
+      addRevoke(el, revokeStyle);
+      revokes.push(revokeStyle);
+    }
+  });
 
   // Render text nodes
   texts.forEach((el) => {
@@ -493,14 +493,8 @@ const defaultData = {
     const propName = hyphenToUpperCase(selfPropName);
 
     const setData = () => {
-      let val = this[propName];
-      if (val instanceof Object) {
-        // If val is Object, deepClone it.
-        val = JSON.parse(JSON.stringify(val));
-        const errDesc = getErrDesc("heed_object");
-        console.warn(errDesc, target);
-      }
-      target[targetPropName] = val;
+      let val = this.get(propName);
+      target.set(targetPropName, val);
     };
 
     const wid = this.watch((e) => {
@@ -529,6 +523,8 @@ defaultData.prop.revoke = ({ target, args, $ele, data }) => {
 
 defaultData.watch.revoke = (e) => {
   e.result();
+  const propName = e.beforeArgs[1];
+  e.data.set(propName, null);
 };
 
 export default defaultData;
