@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.1 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.2 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1515,14 +1515,8 @@ try{
       const propName = hyphenToUpperCase(selfPropName);
 
       const setData = () => {
-        let val = this[propName];
-        if (val instanceof Object) {
-          // If val is Object, deepClone it.
-          val = JSON.parse(JSON.stringify(val));
-          const errDesc = getErrDesc("heed_object");
-          console.warn(errDesc, target);
-        }
-        target[targetPropName] = val;
+        let val = this.get(propName);
+        target.set(targetPropName, val);
       };
 
       const wid = this.watch((e) => {
@@ -1551,6 +1545,8 @@ try{
 
   defaultData.watch.revoke = (e) => {
     e.result();
+    const propName = e.beforeArgs[1];
+    e.data.set(propName, null);
   };
 
   const syncFn = {

@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.1 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.2 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -1509,14 +1509,8 @@ const defaultData = {
     const propName = hyphenToUpperCase(selfPropName);
 
     const setData = () => {
-      let val = this[propName];
-      if (val instanceof Object) {
-        // If val is Object, deepClone it.
-        val = JSON.parse(JSON.stringify(val));
-        const errDesc = getErrDesc("heed_object");
-        console.warn(errDesc, target);
-      }
-      target[targetPropName] = val;
+      let val = this.get(propName);
+      target.set(targetPropName, val);
     };
 
     const wid = this.watch((e) => {
@@ -1545,6 +1539,8 @@ defaultData.prop.revoke = ({ target, args, $ele, data }) => {
 
 defaultData.watch.revoke = (e) => {
   e.result();
+  const propName = e.beforeArgs[1];
+  e.data.set(propName, null);
 };
 
 const syncFn = {
