@@ -43,7 +43,7 @@ const getSourcemapUrl = async (
   let beforeColIndex = 0;
 
   for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
-    const target = originLineArr[rowId];
+    const target = originLineArr[rowId] || "";
 
     let rowStr = "";
 

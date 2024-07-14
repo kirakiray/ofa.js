@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.3 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.4 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -4723,7 +4723,7 @@ try{
     let beforeColIndex = 0;
 
     for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
-      const target = originLineArr[rowId];
+      const target = originLineArr[rowId] || "";
 
       let rowStr = "";
 
@@ -6282,7 +6282,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.3";
+  const version = "ofa.js@4.5.4";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

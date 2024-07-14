@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.3 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.4 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -4717,7 +4717,7 @@ const getSourcemapUrl = async (
   let beforeColIndex = 0;
 
   for (let rowId = originStarRowIndex + 1; rowId < originEndRowIndex; rowId++) {
-    const target = originLineArr[rowId];
+    const target = originLineArr[rowId] || "";
 
     let rowStr = "";
 
@@ -6276,7 +6276,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.3";
+const version = "ofa.js@4.5.4";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
