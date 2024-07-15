@@ -1,7 +1,10 @@
 import $ from "../xhear/base.mjs";
 import { SELF } from "../stanz/main.mjs";
 import { hyphenToUpperCase, toDashCase } from "../xhear/public.mjs";
-import { getErrDesc } from "../ofa-error/main.js";
+import { getErr, getErrDesc } from "../ofa-error/main.js";
+
+// 根provider
+const rootProviders = {};
 
 const temp = `<style>:host{display:contents}</style><slot></slot>`;
 
@@ -12,7 +15,13 @@ $("html").on("update-consumer", (e) => {
   const target = e.composedPath()[0];
   const $tar = $(target);
 
-  if ($tar.tag === "o-consumer") {
+  const targetRootProvider = rootProviders[$tar.name];
+
+  if (targetRootProvider) {
+    debugger;
+  }
+
+  if ($tar.tag === "o-consumer" && targetRootProvider) {
     let hasData = false;
     // 清空冒泡到根的 consumer 数据
     Object.keys($tar[SELF]).forEach((key) => {
@@ -83,7 +92,46 @@ const publicWatch = {
   },
 };
 
-const InvalidKeys = ["tag", "name", "class", "style", "id", "x-bind-data"];
+const InvalidKeys = [
+  "tag",
+  "name",
+  "class",
+  "style",
+  "id",
+  "x-bind-data",
+  "is-root",
+];
+
+$.register({
+  tag: "o-root-provider",
+  attrs: {
+    name: null,
+  },
+  watch: {
+    name() {
+      // 是否已经设置过
+      if (!this.__named) {
+        this.__named = 1;
+        return;
+      }
+
+      throw getErr("root_provider_name_change", {
+        name: this.name,
+      });
+    },
+  },
+  attached() {
+    if (rootProviders[this.name]) {
+      throw getErr("root_provider_exist", { name: this.name });
+    }
+
+    rootProviders[this.name] = this;
+  },
+  detached() {
+    debugger;
+    rootProviders[this.name] = null;
+  },
+});
 
 $.register({
   tag: "o-provider",

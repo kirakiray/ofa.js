@@ -25,10 +25,22 @@
         </div>
       </o-provider>
 
-      <script>
+      <o-root-provider
+        name="test2"
+        val="I am test2"
+        custom-b="test2 bbbbb"
+      ></o-root-provider>
+
+      <script type="module">
         setTimeout(() => {
           $("#container").push(`
           <o-consumer name="test1" custom-b id="con3">
+            <div>I am 4</div>
+          </o-consumer>
+          `);
+
+          $("#container").push(`
+          <o-consumer name="test2" custom-b id="con3">
             <div>I am 4</div>
           </o-consumer>
           `);
