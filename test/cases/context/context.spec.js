@@ -170,3 +170,84 @@ test("change name in provider", async ({ page }) => {
   await expect(await page.evaluate(() => $("#con6").customB)).toBe(undefined);
   await expect(await page.evaluate(() => $("#con6").customC)).toBe(undefined);
 });
+
+test("root provider", async ({ page }) => {
+  await page.goto(
+    "http://localhost:3348/test/cases/context/root-provider.html"
+  );
+
+  await new Promise((res) => setTimeout(res, 400));
+
+  await expect(await page.evaluate(() => $("#con1").customA)).toBe("I am A");
+  await expect(await page.evaluate(() => $("#con1").customB)).toBe(
+    "root custom b"
+  );
+  await expect(await page.evaluate(() => $("#con1").customC)).toBe(
+    "root custom c"
+  );
+  await expect(await page.evaluate(() => $("#con1").attr("custom-b"))).toBe(
+    null
+  );
+
+  await expect(await page.evaluate(() => $("#con2").customA)).toBe("I am A");
+  await expect(await page.evaluate(() => $("#con2").customB)).toBe("Sub B");
+  await expect(await page.evaluate(() => $("#con2").customC)).toBe(
+    "root custom c"
+  );
+
+  await expect(await page.evaluate(() => $("#con3").customA)).toBe("I am A");
+  await expect(await page.evaluate(() => $("#con3").customB)).toBe(
+    "root custom b"
+  );
+  await expect(await page.evaluate(() => $("#con3").customC)).toBe(
+    "root custom c"
+  );
+  await expect(await page.evaluate(() => $("#con3").attr("custom-b"))).toBe(
+    "root custom b"
+  );
+
+  await expect(
+    await page.evaluate(() => $("comp-two").shadow.$("o-consumer").customA)
+  ).toBe("I am A");
+  await expect(
+    await page.evaluate(() => $("comp-two").shadow.$("o-consumer").customB)
+  ).toBe("root custom b");
+  await expect(
+    await page.evaluate(() => $("comp-two").shadow.$("o-consumer").customC)
+  ).toBe("root custom c");
+  await expect(
+    await page.evaluate(() =>
+      $("comp-two").shadow.$("o-consumer").attr("custom-b")
+    )
+  ).toBe("root custom b");
+
+  await page.evaluate(() => {
+    $("o-root-provider").customB = "change root b";
+  });
+
+  await expect(await page.evaluate(() => $("#con1").customB)).toBe(
+    "change root b"
+  );
+  await expect(await page.evaluate(() => $("#con2").customB)).toBe("Sub B");
+  await expect(await page.evaluate(() => $("#con3").customB)).toBe(
+    "change root b"
+  );
+  await expect(
+    await page.evaluate(() =>
+      $("comp-two").shadow.$("o-consumer").attr("custom-b")
+    )
+  ).toBe("change root b");
+
+  await page.evaluate(() => {
+    $("o-root-provider").remove();
+  });
+
+  await expect(await page.evaluate(() => $("#con1").customB)).toBe(undefined);
+  await expect(await page.evaluate(() => $("#con2").customB)).toBe("Sub B");
+  await expect(await page.evaluate(() => $("#con3").customB)).toBe(undefined);
+  await expect(
+    await page.evaluate(() =>
+      $("comp-two").shadow.$("o-consumer").attr("custom-b")
+    )
+  ).toBe(null);
+});

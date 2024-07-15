@@ -5969,29 +5969,41 @@ $.fn.extend({
   attr,
 });
 
+// 根provider
+const rootProviders = {};
+
 const temp = `<style>:host{display:contents}</style><slot></slot>`;
 
 const CONSUMERS = Symbol("consumers");
 const PROVIDER = Symbol("provider");
 
 $("html").on("update-consumer", (e) => {
-  const target = e.composedPath()[0];
-  const $tar = $(target);
+  const { name, consumer } = e.data;
 
-  if ($tar.tag === "o-consumer") {
+  const targetRootProvider = rootProviders[name];
+
+  if (targetRootProvider) {
+    targetRootProvider[CONSUMERS].add(consumer);
+    consumer[PROVIDER] = targetRootProvider;
+    consumer._refresh();
+    return;
+  }
+
+  if (consumer.tag === "o-consumer") {
     let hasData = false;
+
     // 清空冒泡到根的 consumer 数据
-    Object.keys($tar[SELF]).forEach((key) => {
+    Object.keys(consumer[SELF]).forEach((key) => {
       if (InvalidKeys.includes(key)) {
         return;
       }
-      $tar[key] = undefined;
+      consumer[key] = undefined;
 
       hasData = true;
     });
 
     if (hasData) {
-      console.warn(getErrDesc("no_provider", { name: $tar.name }), target);
+      console.warn(getErrDesc("no_provider", { name: consumer.name }), target);
     }
   }
 });
@@ -6007,11 +6019,11 @@ const publicProto = {
       this._clear();
     }
 
-    if (provider) {
-      this[PROVIDER] = provider;
-      provider[CONSUMERS].add(this);
-      return;
-    }
+    // if (provider) {
+    //   this[PROVIDER] = provider;
+    //   provider[CONSUMERS].add(this);
+    //   return;
+    // }
 
     if (this.name) {
       this.emit(`update-consumer`, {
@@ -6049,9 +6061,17 @@ const publicWatch = {
   },
 };
 
-const InvalidKeys = ["tag", "name", "class", "style", "id", "x-bind-data"];
+const InvalidKeys = [
+  "tag",
+  "name",
+  "class",
+  "style",
+  "id",
+  "x-bind-data",
+  "is-root",
+];
 
-$.register({
+const providerOptions = {
   tag: "o-provider",
   temp,
   attrs: {
@@ -6156,7 +6176,67 @@ $.register({
       );
     }
   },
+};
+
+$.register({
+  tag: "o-root-provider",
+  attrs: {
+    name: null,
+  },
+  watch: {
+    name() {
+      // 是否已经设置过
+      if (!this.__named) {
+        this.__named = 1;
+        return;
+      }
+
+      throw getErr("root_provider_name_change", {
+        name: this.name,
+      });
+    },
+  },
+  proto: {
+    _update() {
+      // 根节点不需要 update
+    },
+    _refresh: providerOptions.proto._refresh,
+    _setConsumer: providerOptions.proto._setConsumer,
+    get consumers() {
+      return [...Array.from(this[CONSUMERS])];
+    },
+  },
+  ready() {
+    providerOptions.ready.call(this);
+  },
+  attached() {
+    if (rootProviders[this.name]) {
+      throw getErr("root_provider_exist", { name: this.name });
+    }
+
+    const isDeleted = rootProviders[this.name] === null;
+
+    rootProviders[this.name] = this;
+
+    if (isDeleted) {
+      // 曾经被删除过，再次加入就要遍历
+      emitAllConsumer(document.body, this);
+    }
+
+    providerOptions.attached.call(this);
+  },
+  detached() {
+    if (rootProviders[this.name] === this) {
+      rootProviders[this.name] = null;
+      this[CONSUMERS].forEach((e) => {
+        e._clear();
+        e._refresh();
+      });
+    }
+  },
 });
+
+$.register(providerOptions);
 
 /**
  * 递归地触发所有consumer组件的更新。
@@ -6171,11 +6251,16 @@ $.register({
  * @returns {void}
  */
 const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
-  if (ele.tagName === "O-CONSUMER" || ele.tagName === "O-PROVIDER") {
-    // 重新冒泡
+  if (ele.tagName === "O-ROOT-PROVIDER") {
+    return;
+  } else if (ele.tagName === "O-CONSUMER" || ele.tagName === "O-PROVIDER") {
     const $ele = $(ele);
-    $ele._update(rootProvider);
-    $ele._refresh();
+    if ($ele.name === rootProvider.name) {
+      // 重新冒泡
+      $ele._update(rootProvider);
+      $ele._refresh();
+      return;
+    }
   } else if (ele.tagName === "SLOT" && emitSlot) {
     const slotName = ele.getAttribute("name") || "";
     const host = ele?.getRootNode()?.host;

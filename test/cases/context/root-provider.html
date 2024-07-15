@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>context test</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+  </head>
+  <body>
+    <l-m src="./comp-two.html"></l-m>
+
+    <o-root-provider
+      name="test1"
+      custom-c="root custom c"
+      custom-b="root custom b"
+    >
+    </o-root-provider>
+
+    <div>
+      I am 1
+      <o-provider name="test1" custom-a="I am A">
+        <div id="container">
+          <o-consumer name="test1" id="con1">
+            <div>I am 2</div>
+          </o-consumer>
+          <o-provider name="test1" custom-b="Sub B">
+            <o-consumer name="test1" custom-a custom-b id="con2">
+              <div>I am 3</div>
+            </o-consumer>
+          </o-provider>
+        </div>
+        <div>
+          <comp-two></comp-two>
+        </div>
+      </o-provider>
+
+      <script type="module">
+        setTimeout(() => {
+          $("#container").push(`
+          <o-consumer name="test1" custom-b id="con3">
+            <div>I am 4</div>
+          </o-consumer>
+          `);
+          $("body").push(`
+          <o-consumer name="test1" custom-b custom-a id="con4">
+            <div>I am 5</div>
+          </o-consumer>
+          `);
+        }, 300);
+      </script>
+    </div>
+  </body>
+</html>
