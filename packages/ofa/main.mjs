@@ -8,7 +8,7 @@ import "./extend.mjs";
 import "./link.mjs";
 import "./context.mjs";
 
-const version = "ofa.js@4.5.4";
+const version = "ofa.js@4.5.5";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
