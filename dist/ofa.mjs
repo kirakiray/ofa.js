@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.5 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.6 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -5977,6 +5977,12 @@ const temp = `<style>:host{display:contents}</style><slot></slot>`;
 const CONSUMERS = Symbol("consumers");
 const PROVIDER = Symbol("provider");
 
+Object.defineProperty($, "getRootProvider", {
+  value(name) {
+    return rootProviders[name];
+  },
+});
+
 $("html").on("update-consumer", (e) => {
   const { name, consumer } = e.data;
 
@@ -5987,6 +5993,9 @@ $("html").on("update-consumer", (e) => {
     consumer[PROVIDER] = targetRootProvider;
     consumer._refresh();
     return;
+  } else {
+    // 提示后面加入的根provider需要遍历
+    rootProviders[name] = null;
   }
 
   if (consumer.tag === "o-consumer") {
@@ -6191,9 +6200,13 @@ $.register({
         return;
       }
 
-      throw getErr("root_provider_name_change", {
+      const err = getErr("root_provider_name_change", {
         name: this.name,
       });
+
+      console.warn(err, this.ele);
+
+      throw err;
     },
   },
   proto: {
@@ -6211,7 +6224,15 @@ $.register({
   },
   attached() {
     if (rootProviders[this.name]) {
-      throw getErr("root_provider_exist", { name: this.name });
+      const err = getErr("root_provider_exist", { name: this.name });
+      console.warn(
+        err,
+        "exist:",
+        rootProviders[this.name],
+        ", current:",
+        this.ele
+      );
+      throw err;
     }
 
     const isDeleted = rootProviders[this.name] === null;
@@ -6361,7 +6382,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.5";
+const version = "ofa.js@4.5.6";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
