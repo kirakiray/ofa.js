@@ -203,6 +203,8 @@ $.register({
         return;
       }
 
+      const oldRouters = this.routers;
+
       const { _noanime } = this;
 
       // Delete historical data for response numbers
@@ -231,7 +233,7 @@ $.register({
       }
 
       this.emit("router-change", {
-        data: { name: "back", delta },
+        data: { name: "back", delta, historys: oldRouters.slice(-1 * delta) },
       });
 
       emitRouterChange(this, publics, "back");
