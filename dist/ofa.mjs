@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.6 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.7 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -5662,6 +5662,8 @@ $.register({
         return;
       }
 
+      const oldRouters = this.routers;
+
       const { _noanime } = this;
 
       // Delete historical data for response numbers
@@ -5690,7 +5692,7 @@ $.register({
       }
 
       this.emit("router-change", {
-        data: { name: "back", delta },
+        data: { name: "back", delta, historys: oldRouters.slice(-1 * delta) },
       });
 
       emitRouterChange(this, publics, "back");
@@ -6382,7 +6384,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.6";
+const version = "ofa.js@4.5.7";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
