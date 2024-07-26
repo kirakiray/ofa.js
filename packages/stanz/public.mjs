@@ -41,8 +41,9 @@ export function nextTick(callback) {
     Promise.resolve().then(() => {
       asyncsCounter++;
       if (asyncsCounter > 100000) {
-        console.log(getErrDesc(TICKERR), "lastCall => ", callback);
-        throw getErr(TICKERR);
+        const err = getErr(TICKERR);
+        console.warn(err, "lastCall => ", callback);
+        throw err;
       }
 
       callback();
@@ -58,8 +59,9 @@ export function nextTick(callback) {
     if (asyncsCounter > 50000) {
       tickSets.clear();
 
-      console.log(getErrDesc(TICKERR), "lastCall => ", callback);
-      throw getErr(TICKERR);
+      const err = getErr(TICKERR);
+      console.warn(err, "lastCall => ", callback);
+      throw err;
     }
     if (tickSets.has(tickId)) {
       callback();

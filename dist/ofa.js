@@ -78,6 +78,7 @@
     } else {
       errObj = new Error(desc);
     }
+    errObj.code = key;
     return errObj;
   };
 
@@ -146,8 +147,9 @@
       Promise.resolve().then(() => {
         asyncsCounter++;
         if (asyncsCounter > 100000) {
-          console.log(getErrDesc(TICKERR), "lastCall => ", callback);
-          throw getErr(TICKERR);
+          const err = getErr(TICKERR);
+          console.warn(err, "lastCall => ", callback);
+          throw err;
         }
 
         callback();
@@ -163,8 +165,9 @@
       if (asyncsCounter > 50000) {
         tickSets.clear();
 
-        console.log(getErrDesc(TICKERR), "lastCall => ", callback);
-        throw getErr(TICKERR);
+        const err = getErr(TICKERR);
+        console.warn(err, "lastCall => ", callback);
+        throw err;
       }
       if (tickSets.has(tickId)) {
         callback();
@@ -427,7 +430,14 @@
     path = [],
   }) => {
     if (path && path.includes(currentTarget)) {
-      console.warn("Circular references appear");
+      const err = getErr("circular_data");
+
+      console.warn(err, {
+        currentTarget,
+        target,
+        path,
+      });
+
       return;
     }
 
@@ -814,7 +824,10 @@
               error
             );
 
-            console.log(err.message, ":", key, this, error);
+            console.warn(err, {
+              key,
+              self: this,
+            });
 
             throw err;
           }
@@ -842,7 +855,10 @@
               error
             );
 
-            console.log(err.message, ":", key, this, error);
+            console.warn(err, {
+              key,
+              self: this,
+            });
 
             throw err;
           }
@@ -910,11 +926,12 @@
       if (index > -1) {
         val._owner.splice(index, 1);
       } else {
-        console.error({
-          desc: "This data is wrong, the owner has no boarding object at the time of deletion",
+        const err = getErr("error_no_owner");
+        console.warn(err, {
           target,
           mismatch: val,
         });
+        console.error(err);
       }
     }
   };
@@ -960,7 +977,7 @@
           error
         );
 
-        console.log(err.message, key, target, value);
+        console.warn(err, { target, value });
 
         throw err;
       }
@@ -3787,10 +3804,8 @@ try{
             // Components of a rendered nature do not need to be alerted
             break;
           default:
-            console.log(
-              `This element will be invalidated within the inject-host`,
-              e
-            );
+            const err = getErr("invalidated_inject_host");
+            console.warn(err, e);
         }
       },
 
@@ -3832,7 +3847,7 @@ try{
       async _initStyle(e) {
         if (/data\(.+?\)/.test(e.html)) {
           const err = getErr("use-data-inject");
-          console.log(err, e.ele);
+          console.warn(err, e.ele);
           throw err;
         }
 
@@ -4068,7 +4083,7 @@ try{
         );
 
         if (notHttp) {
-          console.log("load failed:", ctx.realUrl || url, " ctx:", ctx);
+          console.warn(err, ctx);
         }
 
         throw err;
@@ -4390,10 +4405,11 @@ try{
         if (newValue && oldValue === null) {
           this._init();
         } else if (this.__initSrc && oldValue && newValue !== this.__initSrc) {
-          console.warn(
-            `${this.tagName.toLowerCase()} change src is invalid, only the first change will be loaded`
-          );
           this.setAttribute("src", this.__initSrc);
+
+          throw getErr("change_lm_src", {
+            tag: this.tagName.toLowerCase(),
+          });
         }
       } else if (name === "pause" && newValue === null) {
         this._init();
@@ -4675,7 +4691,7 @@ try{
             });
           }
         } else {
-          console.warn("olink is only allowed within o-apps");
+          console.warn(getErr("olink_out_app"), _this);
         }
       }
     });
@@ -5147,7 +5163,7 @@ ${scriptContent}`;
 
           if (this._defaults) {
             const err = getErr("page_no_defaults", { src });
-            console.log(err, this);
+            console.warn(err, this);
             throw err;
           }
 
@@ -5159,7 +5175,7 @@ ${scriptContent}`;
 
           if (!defaults || defaults.type !== PAGE) {
             const err = getErr("not_page_module", { src });
-            console.log(err, this);
+            console.warn(err, this);
             this.emit("error", { data: { error: err } });
             this.__reject(err);
             throw err;
@@ -5179,7 +5195,7 @@ ${scriptContent}`;
           } catch (error) {
             const err = getErr("page_failed", { src }, error);
             console.error(err);
-            console.log(err, this);
+            console.warn(err, this);
           }
 
           await dispatchLoad(this, defaults.loaded);
@@ -5487,7 +5503,7 @@ ${scriptContent}`;
 
       if (!loadingEl) {
         const err = getErr("loading_nothing");
-        console.log(err, loading);
+        console.warn(err, loading);
         throw err;
       }
 
@@ -5664,7 +5680,10 @@ ${scriptContent}`;
     proto: {
       async back(delta = 1) {
         if (!this[HISTORY].length) {
-          console.warn(`It's already the first page, can't go back`);
+          const err = getErr("app_noback");
+          console.warn(err, {
+            app: this,
+          });
           return;
         }
 
@@ -5841,7 +5860,7 @@ ${scriptContent}`;
 
     if (srcObj.origin !== location.origin && !access) {
       const err = getErr("no_cross_access_func");
-      console.log(err, app.ele, app?._module);
+      console.warn(err, app.ele, app?._module);
       throw err;
     }
 
@@ -5854,7 +5873,7 @@ ${scriptContent}`;
           { src },
           result instanceof Error ? result : undefined
         );
-        console.log(err, app);
+        console.warn(err, app);
         throw err;
       }
     }
@@ -5991,6 +6010,23 @@ ${scriptContent}`;
     },
   });
 
+  // 获取对应name的上一级 provider 元素
+  $.fn.getProvider = function (name) {
+    let reval = null;
+
+    this.emit("update-consumer", {
+      data: {
+        method: "getProvider",
+        name,
+        callback(target) {
+          reval = target;
+        },
+      },
+    });
+
+    return reval;
+  };
+
   $("html").on("update-consumer", (e) => {
     const { name, consumer } = e.data;
 
@@ -6006,7 +6042,7 @@ ${scriptContent}`;
       rootProviders[name] = null;
     }
 
-    if (consumer.tag === "o-consumer") {
+    if (consumer && consumer.tag === "o-consumer") {
       let hasData = false;
 
       // 清空冒泡到根的 consumer 数据
@@ -6145,7 +6181,14 @@ ${scriptContent}`;
           return;
         }
 
-        const { name, consumer } = e.data;
+        const { name, consumer, method } = e.data;
+
+        if (name && this.name === name && method === "getProvider") {
+          // 查找provider
+          e.data.callback(this);
+          e.stopPropagation();
+          return;
+        }
 
         if (name && this.name === name) {
           this[CONSUMERS].add(consumer);

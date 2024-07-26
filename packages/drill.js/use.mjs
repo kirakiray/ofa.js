@@ -64,7 +64,7 @@ use(["mjs", "js"], async (ctx, next) => {
       );
 
       if (notHttp) {
-        console.log("load failed:", ctx.realUrl || url, " ctx:", ctx);
+        console.warn(err, ctx);
       }
 
       throw err;

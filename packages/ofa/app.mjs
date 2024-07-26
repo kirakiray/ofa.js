@@ -22,7 +22,7 @@ const appendPage = async ({ src, app }) => {
 
     if (!loadingEl) {
       const err = getErr("loading_nothing");
-      console.log(err, loading);
+      console.warn(err, loading);
       throw err;
     }
 
@@ -199,7 +199,10 @@ $.register({
   proto: {
     async back(delta = 1) {
       if (!this[HISTORY].length) {
-        console.warn(`It's already the first page, can't go back`);
+        const err = getErr("app_noback");
+        console.warn(err, {
+          app: this,
+        });
         return;
       }
 
@@ -376,7 +379,7 @@ const runAccess = (app, src) => {
 
   if (srcObj.origin !== location.origin && !access) {
     const err = getErr("no_cross_access_func");
-    console.log(err, app.ele, app?._module);
+    console.warn(err, app.ele, app?._module);
     throw err;
   }
 
@@ -389,7 +392,7 @@ const runAccess = (app, src) => {
         { src },
         result instanceof Error ? result : undefined
       );
-      console.log(err, app);
+      console.warn(err, app);
       throw err;
     }
   }

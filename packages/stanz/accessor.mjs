@@ -51,11 +51,12 @@ export const clearData = (val, target) => {
     if (index > -1) {
       val._owner.splice(index, 1);
     } else {
-      console.error({
-        desc: "This data is wrong, the owner has no boarding object at the time of deletion",
+      const err = getErr("error_no_owner");
+      console.warn(err, {
         target,
         mismatch: val,
       });
+      console.error(err);
     }
   }
 };
@@ -101,7 +102,7 @@ export const handler = {
         error
       );
 
-      console.log(err.message, key, target, value);
+      console.warn(err, { target, value });
 
       throw err;
     }
