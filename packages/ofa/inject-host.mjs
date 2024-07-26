@@ -34,10 +34,8 @@ $.register({
           // Components of a rendered nature do not need to be alerted
           break;
         default:
-          console.log(
-            `This element will be invalidated within the inject-host`,
-            e
-          );
+          const err = getErr("invalidated_inject_host");
+          console.warn(err, e);
       }
     },
 
@@ -79,7 +77,7 @@ $.register({
     async _initStyle(e) {
       if (/data\(.+?\)/.test(e.html)) {
         const err = getErr("use-data-inject");
-        console.log(err, e.ele);
+        console.warn(err, e.ele);
         throw err;
       }
 

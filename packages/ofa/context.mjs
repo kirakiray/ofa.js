@@ -17,6 +17,23 @@ Object.defineProperty($, "getRootProvider", {
   },
 });
 
+// 获取对应name的上一级 provider 元素
+$.fn.getProvider = function (name) {
+  let reval = null;
+
+  this.emit("update-consumer", {
+    data: {
+      method: "getProvider",
+      name,
+      callback(target) {
+        reval = target;
+      },
+    },
+  });
+
+  return reval;
+};
+
 $("html").on("update-consumer", (e) => {
   const { name, consumer } = e.data;
 
@@ -32,7 +49,7 @@ $("html").on("update-consumer", (e) => {
     rootProviders[name] = null;
   }
 
-  if (consumer.tag === "o-consumer") {
+  if (consumer && consumer.tag === "o-consumer") {
     let hasData = false;
 
     // 清空冒泡到根的 consumer 数据
@@ -171,7 +188,14 @@ const providerOptions = {
         return;
       }
 
-      const { name, consumer } = e.data;
+      const { name, consumer, method } = e.data;
+
+      if (name && this.name === name && method === "getProvider") {
+        // 查找provider
+        e.data.callback(this);
+        e.stopPropagation();
+        return;
+      }
 
       if (name && this.name === name) {
         this[CONSUMERS].add(consumer);

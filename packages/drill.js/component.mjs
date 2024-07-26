@@ -1,3 +1,4 @@
+import { getErr } from "../ofa-error/main.js";
 import { agent, LOADED } from "./main.mjs";
 
 class LoadModule extends HTMLElement {
@@ -60,10 +61,11 @@ class LoadModule extends HTMLElement {
       if (newValue && oldValue === null) {
         this._init();
       } else if (this.__initSrc && oldValue && newValue !== this.__initSrc) {
-        console.warn(
-          `${this.tagName.toLowerCase()} change src is invalid, only the first change will be loaded`
-        );
         this.setAttribute("src", this.__initSrc);
+
+        throw getErr("change_lm_src", {
+          tag: this.tagName.toLowerCase(),
+        });
       }
     } else if (name === "pause" && newValue === null) {
       this._init();

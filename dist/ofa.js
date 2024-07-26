@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.7 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.8 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -78,6 +78,7 @@
     } else {
       errObj = new Error(desc);
     }
+    errObj.code = key;
     return errObj;
   };
 
@@ -146,8 +147,9 @@
       Promise.resolve().then(() => {
         asyncsCounter++;
         if (asyncsCounter > 100000) {
-          console.log(getErrDesc(TICKERR), "lastCall => ", callback);
-          throw getErr(TICKERR);
+          const err = getErr(TICKERR);
+          console.warn(err, "lastCall => ", callback);
+          throw err;
         }
 
         callback();
@@ -163,8 +165,9 @@
       if (asyncsCounter > 50000) {
         tickSets.clear();
 
-        console.log(getErrDesc(TICKERR), "lastCall => ", callback);
-        throw getErr(TICKERR);
+        const err = getErr(TICKERR);
+        console.warn(err, "lastCall => ", callback);
+        throw err;
       }
       if (tickSets.has(tickId)) {
         callback();
@@ -427,7 +430,14 @@
     path = [],
   }) => {
     if (path && path.includes(currentTarget)) {
-      console.warn("Circular references appear");
+      const err = getErr("circular_data");
+
+      console.warn(err, {
+        currentTarget,
+        target,
+        path,
+      });
+
       return;
     }
 
@@ -814,7 +824,10 @@
               error
             );
 
-            console.log(err.message, ":", key, this, error);
+            console.warn(err, {
+              key,
+              self: this,
+            });
 
             throw err;
           }
@@ -842,7 +855,10 @@
               error
             );
 
-            console.log(err.message, ":", key, this, error);
+            console.warn(err, {
+              key,
+              self: this,
+            });
 
             throw err;
           }
@@ -910,11 +926,12 @@
       if (index > -1) {
         val._owner.splice(index, 1);
       } else {
-        console.error({
-          desc: "This data is wrong, the owner has no boarding object at the time of deletion",
+        const err = getErr("error_no_owner");
+        console.warn(err, {
           target,
           mismatch: val,
         });
+        console.error(err);
       }
     }
   };
@@ -960,7 +977,7 @@
           error
         );
 
-        console.log(err.message, key, target, value);
+        console.warn(err, { target, value });
 
         throw err;
       }
@@ -1186,9 +1203,20 @@ try{
 
               const func = convertToFunc(expr, data, {
                 errCall: (error) => {
-                  const stack = `Rendering of target element failed: ${$el.ele.outerHTML} \n  ${error.stack}`;
-                  console.error(stack);
-                  console.error({ stack, element: $el.ele, target, error });
+                  const errorExpr = `:${key}="${expr}"`;
+                  const err = getErr(
+                    "render_el_error",
+                    {
+                      expr: errorExpr,
+                    },
+                    error
+                  );
+
+                  console.warn(err, {
+                    target: $el.ele,
+                    errorExpr,
+                  });
+                  console.error(err);
 
                   return false;
                 },
@@ -1255,7 +1283,7 @@ try{
               },
               error
             );
-            console.log(err, el);
+            console.warn(err, el);
             throw err;
           }
         });
@@ -1275,7 +1303,7 @@ try{
       if (target.__render_data && target.__render_data !== data) {
         const err = getErr("xhear_listen_already");
 
-        console.log(err, {
+        console.warn(err, {
           element: target,
           old: target.__render_data,
           new: data,
@@ -1379,16 +1407,21 @@ try{
       const tempChilds = template.content.children;
       if (tempChilds.length > 1) {
         if (!isWarned) {
-          console.warn(
-            `Only one child element can be contained within a template element. If multiple child elements appear, the child elements will be rewrapped within a <div> element`
-          );
+          const err = getErr("temp_multi_child");
+          console.warn(err, {
+            content: template.content,
+          });
           isWarned = 1;
         }
 
         const wrapName = `wrapper-${tempName}`;
         template.innerHTML = `<div ${wrapName} style="display:contents">${template.innerHTML}</div>`;
         console.warn(
-          `The template "${tempName}" contains ${tempChilds.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
+          getErr("temp_wrap_child", {
+            tempName,
+            len: tempChilds.length,
+            wrapName,
+          })
         );
       }
       temps[tempName] = template;
@@ -1566,7 +1599,7 @@ try{
 
       if (val instanceof Object) {
         const err = getErr("xhear_sync_object_value", { targetName });
-        console.log(err, data);
+        console.warn(err, data);
         throw err;
       }
 
@@ -1622,7 +1655,7 @@ try{
             name: beforeValue,
             tag: tag ? `"${tag}"` : "",
           });
-          console.log(err, " target =>", options.data);
+          console.warn(err, " target =>", options.data);
           throw err;
         }
         func = func.bind(options.data);
@@ -3104,9 +3137,9 @@ try{
 
         if (!(arrayData instanceof Array)) {
           console.warn(
-            `The value of x-fill component must be of type Array, and the type of the current value is ${getType(
-            arrayData
-          )}`
+            getErr("fill_type", {
+              type: getType(arrayData),
+            })
           );
 
           childs &&
@@ -3166,15 +3199,12 @@ try{
           const { parentNode } = this._fake;
 
           if (keyName !== "xid" && vals.length !== valsKeys.size) {
-            const errDesc = "fill key duplicates";
-            console.error(errDesc);
-            console.log(
-              errDesc,
-              ",its parent node is:",
+            const err = getErr("fill_key_duplicates");
+            console.error(err);
+            console.warn(err, {
               parentNode,
-              "host: ",
-              eleX(parentNode)?.host?.ele
-            );
+              host: eleX(parentNode)?.host?.ele,
+            });
           }
 
           // const positionKeys = childs.map((e) => e._data_xid || e);
@@ -3319,7 +3349,7 @@ try{
 
       if (!this._name) {
         const err = getErr("xhear_fill_tempname", { name: this._name });
-        console.log(err, this.ele);
+        console.warn(err, this.ele);
         throw err;
       }
 
@@ -3365,6 +3395,8 @@ try{
   };
 
   const { defineProperties } = Object;
+
+  const GET_COMPOSE_PATH = `get-${Math.random()}`;
 
   const init = ({ _this, ele, proxySelf }) => {
     const descs = {
@@ -3495,6 +3527,18 @@ try{
         hosts.push(target);
       }
       return hosts;
+    }
+
+    composedPath() {
+      let paths = [];
+      this.one(GET_COMPOSE_PATH, (e) => {
+        paths = e.composedPath();
+        e.stopPropagation();
+      });
+      this.emit(GET_COMPOSE_PATH, {
+        composed: true,
+      });
+      return paths;
     }
 
     get next() {
@@ -3787,10 +3831,8 @@ try{
             // Components of a rendered nature do not need to be alerted
             break;
           default:
-            console.log(
-              `This element will be invalidated within the inject-host`,
-              e
-            );
+            const err = getErr("invalidated_inject_host");
+            console.warn(err, e);
         }
       },
 
@@ -3832,7 +3874,7 @@ try{
       async _initStyle(e) {
         if (/data\(.+?\)/.test(e.html)) {
           const err = getErr("use-data-inject");
-          console.log(err, e.ele);
+          console.warn(err, e.ele);
           throw err;
         }
 
@@ -4068,7 +4110,7 @@ try{
         );
 
         if (notHttp) {
-          console.log("load failed:", ctx.realUrl || url, " ctx:", ctx);
+          console.warn(err, ctx);
         }
 
         throw err;
@@ -4390,10 +4432,11 @@ try{
         if (newValue && oldValue === null) {
           this._init();
         } else if (this.__initSrc && oldValue && newValue !== this.__initSrc) {
-          console.warn(
-            `${this.tagName.toLowerCase()} change src is invalid, only the first change will be loaded`
-          );
           this.setAttribute("src", this.__initSrc);
+
+          throw getErr("change_lm_src", {
+            tag: this.tagName.toLowerCase(),
+          });
         }
       } else if (name === "pause" && newValue === null) {
         this._init();
@@ -4675,7 +4718,7 @@ try{
             });
           }
         } else {
-          console.warn("olink is only allowed within o-apps");
+          console.warn(getErr("olink_out_app"), _this);
         }
       }
     });
@@ -5147,7 +5190,7 @@ ${scriptContent}`;
 
           if (this._defaults) {
             const err = getErr("page_no_defaults", { src });
-            console.log(err, this);
+            console.warn(err, this);
             throw err;
           }
 
@@ -5159,7 +5202,7 @@ ${scriptContent}`;
 
           if (!defaults || defaults.type !== PAGE) {
             const err = getErr("not_page_module", { src });
-            console.log(err, this);
+            console.warn(err, this);
             this.emit("error", { data: { error: err } });
             this.__reject(err);
             throw err;
@@ -5179,7 +5222,7 @@ ${scriptContent}`;
           } catch (error) {
             const err = getErr("page_failed", { src }, error);
             console.error(err);
-            console.log(err, this);
+            console.warn(err, this);
           }
 
           await dispatchLoad(this, defaults.loaded);
@@ -5487,7 +5530,7 @@ ${scriptContent}`;
 
       if (!loadingEl) {
         const err = getErr("loading_nothing");
-        console.log(err, loading);
+        console.warn(err, loading);
         throw err;
       }
 
@@ -5664,7 +5707,10 @@ ${scriptContent}`;
     proto: {
       async back(delta = 1) {
         if (!this[HISTORY].length) {
-          console.warn(`It's already the first page, can't go back`);
+          const err = getErr("app_noback");
+          console.warn(err, {
+            app: this,
+          });
           return;
         }
 
@@ -5841,7 +5887,7 @@ ${scriptContent}`;
 
     if (srcObj.origin !== location.origin && !access) {
       const err = getErr("no_cross_access_func");
-      console.log(err, app.ele, app?._module);
+      console.warn(err, app.ele, app?._module);
       throw err;
     }
 
@@ -5854,7 +5900,7 @@ ${scriptContent}`;
           { src },
           result instanceof Error ? result : undefined
         );
-        console.log(err, app);
+        console.warn(err, app);
         throw err;
       }
     }
@@ -5991,6 +6037,23 @@ ${scriptContent}`;
     },
   });
 
+  // 获取对应name的上一级 provider 元素
+  $.fn.getProvider = function (name) {
+    let reval = null;
+
+    this.emit("update-consumer", {
+      data: {
+        method: "getProvider",
+        name,
+        callback(target) {
+          reval = target;
+        },
+      },
+    });
+
+    return reval;
+  };
+
   $("html").on("update-consumer", (e) => {
     const { name, consumer } = e.data;
 
@@ -6006,7 +6069,7 @@ ${scriptContent}`;
       rootProviders[name] = null;
     }
 
-    if (consumer.tag === "o-consumer") {
+    if (consumer && consumer.tag === "o-consumer") {
       let hasData = false;
 
       // 清空冒泡到根的 consumer 数据
@@ -6145,7 +6208,14 @@ ${scriptContent}`;
           return;
         }
 
-        const { name, consumer } = e.data;
+        const { name, consumer, method } = e.data;
+
+        if (name && this.name === name && method === "getProvider") {
+          // 查找provider
+          e.data.callback(this);
+          e.stopPropagation();
+          return;
+        }
 
         if (name && this.name === name) {
           this[CONSUMERS].add(consumer);
@@ -6390,7 +6460,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.7";
+  const version = "ofa.js@4.5.8";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

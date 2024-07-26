@@ -176,7 +176,10 @@ export default class Stanz extends Array {
             error
           );
 
-          console.log(err.message, ":", key, this, error);
+          console.warn(err, {
+            key,
+            self: this,
+          });
 
           throw err;
         }
@@ -204,7 +207,10 @@ export default class Stanz extends Array {
             error
           );
 
-          console.log(err.message, ":", key, this, error);
+          console.warn(err, {
+            key,
+            self: this,
+          });
 
           throw err;
         }

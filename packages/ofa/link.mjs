@@ -2,6 +2,7 @@ import { nextTick } from "../stanz/public.mjs";
 import $ from "../xhear/base.mjs";
 import { fixRelate } from "./public.mjs";
 import { renderExtends } from "../xhear/render/render.mjs";
+import { getErr } from "../ofa-error/main.js";
 
 const oldRender = renderExtends.render;
 renderExtends.render = (e) => {
@@ -101,7 +102,7 @@ export const initLink = (_this) => {
           });
         }
       } else {
-        console.warn("olink is only allowed within o-apps");
+        console.warn(getErr("olink_out_app"), _this);
       }
     }
   });

@@ -105,7 +105,14 @@ export const emitUpdate = ({
   path = [],
 }) => {
   if (path && path.includes(currentTarget)) {
-    console.warn("Circular references appear");
+    const err = getErr("circular_data");
+
+    console.warn(err, {
+      currentTarget,
+      target,
+      path,
+    });
+
     return;
   }
 

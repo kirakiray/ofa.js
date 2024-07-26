@@ -220,7 +220,7 @@ setTimeout(() => {
 
         if (this._defaults) {
           const err = getErr("page_no_defaults", { src });
-          console.log(err, this);
+          console.warn(err, this);
           throw err;
         }
 
@@ -232,7 +232,7 @@ setTimeout(() => {
 
         if (!defaults || defaults.type !== PAGE) {
           const err = getErr("not_page_module", { src });
-          console.log(err, this);
+          console.warn(err, this);
           this.emit("error", { data: { error: err } });
           this.__reject(err);
           throw err;
@@ -252,7 +252,7 @@ setTimeout(() => {
         } catch (error) {
           const err = getErr("page_failed", { src }, error);
           console.error(err);
-          console.log(err, this);
+          console.warn(err, this);
         }
 
         await dispatchLoad(this, defaults.loaded);

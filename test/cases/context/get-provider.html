@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>get provider</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+  </head>
+  <body>
+    <l-m src="./comp-two.html"></l-m>
+    <l-m src="./comp-one.html"></l-m>
+    <l-m src="./comp-zero.html"></l-m>
+
+    <o-provider name="test2" custom-a="I am A" custom-b="I am B">
+      <comp-one>
+        <o-consumer name="test1" id="con5" custom-a custom-b>
+          <div>I am 5</div>
+        </o-consumer>
+        <comp-two> </comp-two>
+        <comp-zero>
+          <div data-testid="target">I am Target</div>
+        </comp-zero>
+      </comp-one>
+    </o-provider>
+    <script type="module">
+      setTimeout(() => {
+        const p1 = $('[data-testid="target"]').getProvider("test1");
+        console.log(p1);
+        const p2 = $('[data-testid="target"]').getProvider("test2");
+        console.log(p2);
+      }, 300);
+    </script>
+  </body>
+</html>
