@@ -13,7 +13,7 @@ ofa.js 可以像 jQuery 一样作为库使用，也能像 React、Vue 和 Angula
 要开始使用 ofa.js，只需将 ofa.js 的引用添加到 HTML 文件中即可。
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.5.8/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.5.9/dist/ofa.min.js"></script>
 ```
 
 ## 使用体验
@@ -34,7 +34,7 @@ ofa.js 的核心理念在于简化 Web Components 的封装过程。传统的 We
 
 ```html
 <!-- 使用封装好的组件 -->
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.5.8/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.5.9/dist/ofa.min.js"></script>
 <l-m src="./my-component.html"></l-m>
 <my-component>
     ...
