@@ -1,4 +1,4 @@
-import { getErr } from "../ofa-error/main";
+import { getErr } from "../ofa-error/main.js";
 import { agent, LOADED } from "./main.mjs";
 
 class LoadModule extends HTMLElement {

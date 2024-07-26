@@ -1197,9 +1197,20 @@ function render({
 
             const func = convertToFunc(expr, data, {
               errCall: (error) => {
-                const stack = `Rendering of target element failed: ${$el.ele.outerHTML} \n  ${error.stack}`;
-                console.error(stack);
-                console.error({ stack, element: $el.ele, target, error });
+                const errorExpr = `:${key}="${expr}"`;
+                const err = getErr(
+                  "render_el_error",
+                  {
+                    expr: errorExpr,
+                  },
+                  error
+                );
+
+                console.warn(err, {
+                  target: $el.ele,
+                  errorExpr,
+                });
+                console.error(err);
 
                 return false;
               },
@@ -1266,7 +1277,7 @@ function render({
             },
             error
           );
-          console.log(err, el);
+          console.warn(err, el);
           throw err;
         }
       });
@@ -1286,7 +1297,7 @@ function render({
     if (target.__render_data && target.__render_data !== data) {
       const err = getErr("xhear_listen_already");
 
-      console.log(err, {
+      console.warn(err, {
         element: target,
         old: target.__render_data,
         new: data,
@@ -1390,16 +1401,21 @@ const convert = (template) => {
     const tempChilds = template.content.children;
     if (tempChilds.length > 1) {
       if (!isWarned) {
-        console.warn(
-          `Only one child element can be contained within a template element. If multiple child elements appear, the child elements will be rewrapped within a <div> element`
-        );
+        const err = getErr("temp_multi_child");
+        console.warn(err, {
+          content: template.content,
+        });
         isWarned = 1;
       }
 
       const wrapName = `wrapper-${tempName}`;
       template.innerHTML = `<div ${wrapName} style="display:contents">${template.innerHTML}</div>`;
       console.warn(
-        `The template "${tempName}" contains ${tempChilds.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
+        getErr("temp_wrap_child", {
+          tempName,
+          len: tempChilds.length,
+          wrapName,
+        })
       );
     }
     temps[tempName] = template;
@@ -1577,7 +1593,7 @@ const syncFn = {
 
     if (val instanceof Object) {
       const err = getErr("xhear_sync_object_value", { targetName });
-      console.log(err, data);
+      console.warn(err, data);
       throw err;
     }
 
@@ -1633,7 +1649,7 @@ function getBindOptions(name, func, options) {
           name: beforeValue,
           tag: tag ? `"${tag}"` : "",
         });
-        console.log(err, " target =>", options.data);
+        console.warn(err, " target =>", options.data);
         throw err;
       }
       func = func.bind(options.data);
@@ -3115,9 +3131,9 @@ register({
 
       if (!(arrayData instanceof Array)) {
         console.warn(
-          `The value of x-fill component must be of type Array, and the type of the current value is ${getType(
-            arrayData
-          )}`
+          getErr("fill_type", {
+            type: getType(arrayData),
+          })
         );
 
         childs &&
@@ -3177,15 +3193,12 @@ register({
         const { parentNode } = this._fake;
 
         if (keyName !== "xid" && vals.length !== valsKeys.size) {
-          const errDesc = "fill key duplicates";
-          console.error(errDesc);
-          console.log(
-            errDesc,
-            ",its parent node is:",
+          const err = getErr("fill_key_duplicates");
+          console.error(err);
+          console.warn(err, {
             parentNode,
-            "host: ",
-            eleX(parentNode)?.host?.ele
-          );
+            host: eleX(parentNode)?.host?.ele,
+          });
         }
 
         // const positionKeys = childs.map((e) => e._data_xid || e);
@@ -3330,7 +3343,7 @@ register({
 
     if (!this._name) {
       const err = getErr("xhear_fill_tempname", { name: this._name });
-      console.log(err, this.ele);
+      console.warn(err, this.ele);
       throw err;
     }
 
@@ -3376,6 +3389,8 @@ const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
 };
 
 const { defineProperties } = Object;
+
+const GET_COMPOSE_PATH = `get-${Math.random()}`;
 
 const init = ({ _this, ele, proxySelf }) => {
   const descs = {
@@ -3506,6 +3521,18 @@ class Xhear extends LikeArray {
       hosts.push(target);
     }
     return hosts;
+  }
+
+  composedPath() {
+    let paths = [];
+    this.one(GET_COMPOSE_PATH, (e) => {
+      paths = e.composedPath();
+      e.stopPropagation();
+    });
+    this.emit(GET_COMPOSE_PATH, {
+      composed: true,
+    });
+    return paths;
   }
 
   get next() {

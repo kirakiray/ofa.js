@@ -19,7 +19,7 @@ const syncFn = {
 
     if (val instanceof Object) {
       const err = getErr("xhear_sync_object_value", { targetName });
-      console.log(err, data);
+      console.warn(err, data);
       throw err;
     }
 

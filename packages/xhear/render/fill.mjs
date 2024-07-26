@@ -35,9 +35,9 @@ register({
 
       if (!(arrayData instanceof Array)) {
         console.warn(
-          `The value of x-fill component must be of type Array, and the type of the current value is ${getType(
-            arrayData
-          )}`
+          getErr("fill_type", {
+            type: getType(arrayData),
+          })
         );
 
         childs &&
@@ -97,15 +97,12 @@ register({
         const { parentNode } = this._fake;
 
         if (keyName !== "xid" && vals.length !== valsKeys.size) {
-          const errDesc = "fill key duplicates";
-          console.error(errDesc);
-          console.log(
-            errDesc,
-            ",its parent node is:",
+          const err = getErr("fill_key_duplicates");
+          console.error(err);
+          console.warn(err, {
             parentNode,
-            "host: ",
-            eleX(parentNode)?.host?.ele
-          );
+            host: eleX(parentNode)?.host?.ele,
+          });
         }
 
         // const positionKeys = childs.map((e) => e._data_xid || e);
@@ -250,7 +247,7 @@ register({
 
     if (!this._name) {
       const err = getErr("xhear_fill_tempname", { name: this._name });
-      console.log(err, this.ele);
+      console.warn(err, this.ele);
       throw err;
     }
 

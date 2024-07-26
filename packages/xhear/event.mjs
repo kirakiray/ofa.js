@@ -13,7 +13,7 @@ function getBindOptions(name, func, options) {
           name: beforeValue,
           tag: tag ? `"${tag}"` : "",
         });
-        console.log(err, " target =>", options.data);
+        console.warn(err, " target =>", options.data);
         throw err;
       }
       func = func.bind(options.data);

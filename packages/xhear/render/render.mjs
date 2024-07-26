@@ -164,9 +164,20 @@ export function render({
 
             const func = convertToFunc(expr, data, {
               errCall: (error) => {
-                const stack = `Rendering of target element failed: ${$el.ele.outerHTML} \n  ${error.stack}`;
-                console.error(stack);
-                console.error({ stack, element: $el.ele, target, error });
+                const errorExpr = `:${key}="${expr}"`;
+                const err = getErr(
+                  "render_el_error",
+                  {
+                    expr: errorExpr,
+                  },
+                  error
+                );
+
+                console.warn(err, {
+                  target: $el.ele,
+                  errorExpr,
+                });
+                console.error(err);
 
                 return false;
               },
@@ -233,7 +244,7 @@ export function render({
             },
             error
           );
-          console.log(err, el);
+          console.warn(err, el);
           throw err;
         }
       });
@@ -253,7 +264,7 @@ export function render({
     if (target.__render_data && target.__render_data !== data) {
       const err = getErr("xhear_listen_already");
 
-      console.log(err, {
+      console.warn(err, {
         element: target,
         old: target.__render_data,
         new: data,
@@ -357,16 +368,21 @@ export const convert = (template) => {
     const tempChilds = template.content.children;
     if (tempChilds.length > 1) {
       if (!isWarned) {
-        console.warn(
-          `Only one child element can be contained within a template element. If multiple child elements appear, the child elements will be rewrapped within a <div> element`
-        );
+        const err = getErr("temp_multi_child");
+        console.warn(err, {
+          content: template.content,
+        });
         isWarned = 1;
       }
 
       const wrapName = `wrapper-${tempName}`;
       template.innerHTML = `<div ${wrapName} style="display:contents">${template.innerHTML}</div>`;
       console.warn(
-        `The template "${tempName}" contains ${tempChilds.length} child elements that have been wrapped in a div element with attribute "${wrapName}".`
+        getErr("temp_wrap_child", {
+          tempName,
+          len: tempChilds.length,
+          wrapName,
+        })
       );
     }
     temps[tempName] = template;
