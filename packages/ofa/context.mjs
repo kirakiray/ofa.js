@@ -29,6 +29,7 @@ $.fn.getProvider = function (name) {
         reval = target;
       },
     },
+    composed: true,
   });
 
   return reval;
