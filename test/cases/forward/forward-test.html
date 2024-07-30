@@ -11,7 +11,8 @@
         user-select: none;
       }
       o-app o-page {
-        display: block;
+        display: flex;
+        flex-direction: column;
       }
     </style>
   </head>
@@ -21,7 +22,7 @@
     <div>
       <button id="appBack">back</button>
       <button id="appForawd">forward</button>
-      <button id="appForawd3">forward 3</button>
+      <button id="appForawd3">forward3</button>
     </div>
     <script type="module">
       $("o-app").on("router-change", (e) => {
