@@ -12,6 +12,7 @@ import { createXEle } from "../xhear/util.mjs";
 import { getErr } from "../ofa-error/main.js";
 
 const HISTORY = "_history";
+const FORWARDS = "_forwards";
 
 const appendPage = async ({ src, app }) => {
   const { loading, fail } = app._module || {};
@@ -128,6 +129,7 @@ const appendPage = async ({ src, app }) => {
   return { current: topPage, old, publics: publicParents };
 };
 
+// 触发父page的 routerChange 事件
 const emitRouterChange = (_this, publics, type) => {
   if (publics && publics.length) {
     const { current } = _this;
@@ -151,6 +153,7 @@ $.register({
   data: {
     [HISTORY]: [],
     appIsReady: null,
+    // _forwards: [],
   },
   watch: {
     async src(val) {
@@ -176,6 +179,10 @@ $.register({
 
       const moduleData = await load(selfUrl);
 
+      if (moduleData.allowForward) {
+        this[FORWARDS] = [];
+      }
+
       const defaults = await getDefault(moduleData, selfUrl);
 
       this._module = defaults;
@@ -197,6 +204,32 @@ $.register({
     },
   },
   proto: {
+    async forward(delta = 1) {
+      if (!this[FORWARDS]) {
+        const err = getErr("need_forwards");
+        console.warn(err, this);
+        return;
+      }
+
+      delta = delta < this[FORWARDS].length ? delta : this[FORWARDS].length;
+
+      const forwardHistory = this[FORWARDS].splice(-delta);
+
+      if (!forwardHistory.length) {
+        const err = getErr("app_noforward");
+        console.warn(err, {
+          app: this,
+        });
+        return;
+      }
+
+      return this._navigate({
+        type: "forward",
+        src: forwardHistory[0].src,
+        forwardHistory,
+        delta,
+      });
+    },
     async back(delta = 1) {
       if (!this[HISTORY].length) {
         const err = getErr("app_noback");
@@ -235,8 +268,14 @@ $.register({
         needRemovePage = resetOldPage(needRemovePage);
       }
 
+      const oldHis = oldRouters.slice(-1 * delta);
+
+      if (this[FORWARDS]) {
+        this[FORWARDS].push(...oldHis);
+      }
+
       this.emit("router-change", {
-        data: { name: "back", delta, historys: oldRouters.slice(-1 * delta) },
+        data: { name: "back", delta, historys: oldHis },
       });
 
       emitRouterChange(this, publics, "back");
@@ -252,7 +291,9 @@ $.register({
         needRemovePage.remove();
       }
     },
-    async _navigate({ type, src }) {
+    async _navigate(options) {
+      let { type, src } = options;
+
       const { _noanime } = this;
       const { current: oldCurrent } = this;
       // src = new URL(src, location.href).href;
@@ -288,12 +329,27 @@ $.register({
         needRemovePage = resetOldPage(needRemovePage);
       }
 
-      if (type === "goto") {
+      const routerData = { name: type, src };
+
+      if (type === "goto" || type === "forward") {
         oldCurrent && this[HISTORY].push({ src: oldCurrent.src });
       }
 
+      if (type === "goto") {
+        if (Array.isArray(this[FORWARDS])) {
+          this[FORWARDS] = [];
+        }
+      }
+
+      if (type === "forward") {
+        const { forwardHistory } = options;
+        const nextHistory = forwardHistory.slice(1).reverse();
+        this[HISTORY].push(...nextHistory);
+        routerData.delta = options.delta;
+      }
+
       this.emit("router-change", {
-        data: { name: type, src },
+        data: routerData,
       });
 
       emitRouterChange(this, publics, type);

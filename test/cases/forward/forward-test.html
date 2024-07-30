@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>forward demo</title>
+    <script src="../../../packages/ofa/main.mjs" type="module"></script>
+    <style>
+      o-app {
+        background-color: #eee;
+        user-select: none;
+      }
+      o-app o-page {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <o-app src="./app-config.js"> </o-app>
+    <br />
+    <div>
+      <button id="appBack">back</button>
+      <button id="appForawd">forward</button>
+      <button id="appForawd3">forward3</button>
+    </div>
+    <script type="module">
+      $("o-app").on("router-change", (e) => {
+        console.log("router change: ", e.data);
+      });
+      $("#appBack").on("click", () => {
+        $("o-app").back();
+      });
+      $("#appForawd").on("click", () => {
+        $("o-app").forward();
+      });
+      $("#appForawd3").on("click", () => {
+        $("o-app").forward(3);
+      });
+    </script>
+  </body>
+</html>
