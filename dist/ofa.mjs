@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.9 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.10 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -5514,6 +5514,7 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
 // import lm from "../drill.js/base.mjs";
 
 const HISTORY = "_history";
+const FORWARDS = "_forwards";
 
 const appendPage = async ({ src, app }) => {
   const { loading, fail } = app._module || {};
@@ -5681,7 +5682,7 @@ $.register({
       const moduleData = await load(selfUrl);
 
       if (moduleData.allowForward) {
-        this._forwards = [];
+        this[FORWARDS] = [];
       }
 
       const defaults = await getDefault(moduleData, selfUrl);
@@ -5706,15 +5707,15 @@ $.register({
   },
   proto: {
     async forward(delta = 1) {
-      if (!this._forwards) {
+      if (!this[FORWARDS]) {
         const err = getErr("need_forwards");
         console.warn(err, this);
         return;
       }
 
-      delta = delta < this._forwards.length ? delta : this._forwards.length;
+      delta = delta < this[FORWARDS].length ? delta : this[FORWARDS].length;
 
-      const forwardHistory = this._forwards.splice(-delta);
+      const forwardHistory = this[FORWARDS].splice(-delta);
 
       if (!forwardHistory.length) {
         const err = getErr("app_noforward");
@@ -5771,8 +5772,8 @@ $.register({
 
       const oldHis = oldRouters.slice(-1 * delta);
 
-      if (this._forwards) {
-        this._forwards.push(...oldHis);
+      if (this[FORWARDS]) {
+        this[FORWARDS].push(...oldHis);
       }
 
       this.emit("router-change", {
@@ -5837,8 +5838,8 @@ $.register({
       }
 
       if (type === "goto") {
-        if (Array.isArray(this._forwards)) {
-          this._forwards = [];
+        if (Array.isArray(this[FORWARDS])) {
+          this[FORWARDS] = [];
         }
       }
 
@@ -6510,7 +6511,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.9";
+const version = "ofa.js@4.5.10";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
