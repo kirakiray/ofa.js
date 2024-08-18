@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.10 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.11 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -2674,7 +2674,12 @@ function deepCopyData(obj, tag = "") {
 
   for (let key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      copy[key] = deepCopyData(obj[key], tag);
+      if (/^_/.test(key)) {
+        // 直接赋值私有属性
+        copy[key] = obj[key];
+      } else {
+        copy[key] = deepCopyData(obj[key], tag);
+      }
     }
   }
 
@@ -6511,7 +6516,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.10";
+const version = "ofa.js@4.5.11";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

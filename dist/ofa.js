@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.10 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.11 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -2680,7 +2680,12 @@ try{
 
     for (let key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        copy[key] = deepCopyData(obj[key], tag);
+        if (/^_/.test(key)) {
+          // 直接赋值私有属性
+          copy[key] = obj[key];
+        } else {
+          copy[key] = deepCopyData(obj[key], tag);
+        }
       }
     }
 
@@ -6517,7 +6522,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.10";
+  const version = "ofa.js@4.5.11";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
