@@ -264,9 +264,18 @@ const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
 
   const itemData = new Stanz({
     $data,
-    $ele,
+    // $ele,
     $host,
     $index,
+  });
+
+  // tips: 如果$ele被设置为item的子属性，$ele内出现自定义组件，进一步导致改动冒泡，会出现xfill内元素不停渲染的死循环
+  Object.defineProperties(itemData, {
+    $ele: {
+      get() {
+        return $ele;
+      },
+    },
   });
 
   render({

@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.11 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.12 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -2657,13 +2657,13 @@ function validateTagName(str) {
   return true;
 }
 
-function deepCopyData(obj, tag = "") {
+function deepCopyData(obj, tag = "", keyName) {
   if (obj instanceof Set || obj instanceof Map) {
     throw getErr("xhear_regster_data_noset", { tag });
   }
 
   if (obj instanceof Function) {
-    throw getErr("xhear_regster_data_nofunc", { tag });
+    throw getErr("xhear_regster_data_nofunc", { tag, key: keyName });
   }
 
   if (typeof obj !== "object" || obj === null) {
@@ -2678,7 +2678,7 @@ function deepCopyData(obj, tag = "") {
         // 直接赋值私有属性
         copy[key] = obj[key];
       } else {
-        copy[key] = deepCopyData(obj[key], tag);
+        copy[key] = deepCopyData(obj[key], tag, key);
       }
     }
   }
@@ -3365,9 +3365,18 @@ const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
 
   const itemData = new Stanz({
     $data,
-    $ele,
+    // $ele,
     $host,
     $index,
+  });
+
+  // tips: 如果$ele被设置为item的子属性，$ele内出现自定义组件，进一步导致改动冒泡，会出现xfill内元素不停渲染的死循环
+  Object.defineProperties(itemData, {
+    $ele: {
+      get() {
+        return $ele;
+      },
+    },
   });
 
   render({
@@ -6516,7 +6525,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.11";
+const version = "ofa.js@4.5.12";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
