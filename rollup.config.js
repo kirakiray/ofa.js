@@ -84,13 +84,13 @@ module.exports = [
     input: "libs/body-ghost/body-ghost.js",
     output: [
       {
-        file: "libs/body-ghost/body-ghost.min.mjs",
+        file: "libs/body-ghost/dist/body-ghost.min.mjs",
         format: "esm",
         banner,
         sourcemap: true,
       },
       {
-        file: "libs/body-ghost/body-ghost.min.js",
+        file: "libs/body-ghost/dist/body-ghost.min.js",
         format: "umd",
         banner,
         sourcemap: true,
