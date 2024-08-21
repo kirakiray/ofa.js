@@ -233,8 +233,13 @@ register({
       if (this._bindend) {
         return;
       }
+
       this._bindend = true;
       const fake = (this._fake = new FakeNode("x-fill"));
+
+      // 搬动 revokes
+      fake.__revokes = this.ele.__revokes;
+
       this.before(fake);
       fake.init();
       this.remove();

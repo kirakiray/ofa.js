@@ -1,5 +1,3 @@
-// import { revokeAll } from "../../packages/xhear/util.mjs";
-
 const MAPPGING_ELE = Symbol("mapping-element");
 const ORIGIN_ELE = Symbol("origin-element");
 
@@ -10,7 +8,7 @@ $.register({
 
 $.register({
   tag: "body-ghost",
-  data: {
+  attrs: {
     ghostId: Math.random().toString(32).slice(2),
   },
   temp: `<style>:host{display:none}</style>`,
@@ -60,13 +58,8 @@ $.register({
   },
   detached() {
     if (this[MAPPGING_ELE]) {
-      const oldMapping = this[MAPPGING_ELE];
       this[MAPPGING_ELE].remove();
       this[MAPPGING_ELE] = null;
-
-      // 回收旧内容
-      //   revokeAll(oldMapping.);
-      //   debugger;
     }
   },
 });
