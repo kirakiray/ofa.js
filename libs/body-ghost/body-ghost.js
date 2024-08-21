@@ -3,6 +3,14 @@ const ORIGIN_ELE = Symbol("origin-element");
 
 $.register({
   tag: "body-ghost-mapping",
+  attrs: {
+    ghostId: null,
+  },
+  proto: {
+    get origin() {
+      return $(this[ORIGIN_ELE]);
+    },
+  },
   temp: `<style>:host{display:contents}</style>`,
 });
 
@@ -14,7 +22,7 @@ $.register({
   temp: `<style>:host{display:none}</style>`,
   proto: {
     get mapping() {
-      return this[MAPPGING_ELE];
+      return $(this[MAPPGING_ELE]);
     },
   },
   ready() {
@@ -24,7 +32,9 @@ $.register({
     const mappingEl = (this[MAPPGING_ELE] =
       document.createElement("body-ghost-mapping"));
 
-    mappingEl[ORIGIN_ELE] = this.ele;
+    mappingEl.setAttribute("ghost-id", this.ghostId);
+
+    $(mappingEl)[ORIGIN_ELE] = this.ele;
 
     Object.defineProperties(mappingEl.shadowRoot, {
       // 伪装parentNode，让所有事情向上冒泡
