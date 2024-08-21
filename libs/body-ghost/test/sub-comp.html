@@ -1,0 +1,36 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+      border: goldenrod solid 1px;
+    }
+
+    h5 {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <h5>host tag: {{hosttag}}</h5>
+  <div>attachedCount:{{attachedCount}}</div>
+  <div>detachedCount:{{detachedCount}}</div>
+  <div>
+    <slot></slot>
+  </div>
+  <script>
+    export default {
+      tag: "sub-comp",
+      data: {
+        hosttag: "",
+        attachedCount: 0,
+        detachedCount: 0,
+      },
+      attached() {
+        this.hosttag = this.host.tag;
+        this.attachedCount++;
+      },
+      detached() {
+        this.detachedCount++;
+      },
+    };
+  </script>
+</template>

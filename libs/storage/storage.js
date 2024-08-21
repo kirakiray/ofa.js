@@ -115,7 +115,7 @@
         }
       });
     }
-    async getLength() {
+    async getSize() {
       let db = await this.dbPms;
 
       return new Promise((resolve, reject) => {
