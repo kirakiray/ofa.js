@@ -80,4 +80,22 @@ module.exports = [
     ],
     plugins: [terser()],
   },
+  {
+    input: "libs/body-ghost/body-ghost.js",
+    output: [
+      {
+        file: "libs/body-ghost/body-ghost.min.mjs",
+        format: "esm",
+        banner,
+        sourcemap: true,
+      },
+      {
+        file: "libs/body-ghost/body-ghost.min.js",
+        format: "umd",
+        banner,
+        sourcemap: true,
+      },
+    ],
+    plugins: [terser()],
+  },
 ];
