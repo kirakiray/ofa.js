@@ -90,7 +90,8 @@ const regOptions = {
 
       this.__rendered = false;
 
-      revokeAll(this._fake);
+      // revokeAll(this._fake);
+      this._fake?.childNodes?.forEach((el) => revokeAll(el));
       this._fake.innerHTML = "";
 
       this.emit("clear", {
@@ -104,6 +105,7 @@ const regOptions = {
 
       this._bindend = true;
       const fake = (this._fake = new FakeNode(this.tag));
+      fake.__revokes = this.ele.__revokes;
       this.before(fake);
       fake.init();
       this.remove();

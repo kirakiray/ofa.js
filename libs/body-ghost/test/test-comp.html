@@ -1,0 +1,80 @@
+<template component>
+  <l-m src="../body-ghost.js"></l-m>
+  <l-m src="./sub-comp.html"></l-m>
+  <style>
+    :host {
+      display: block;
+      border: red solid 1px;
+      padding: 4px;
+      margin: 4px;
+    }
+  </style>
+
+  <div style="border: #aaa solid 1px; padding: 16px">I am test comp</div>
+  <!-- <div>owner size:{{ownersize}}</div> -->
+  <div>owner size:{{owner.size}}</div>
+  <div>count:{{count}}</div>
+  <button on:click="count++">count++</button>
+
+  <!-- <br /><br />
+
+  <div>
+    <x-if :value="count % 7">
+      <div>
+        <x-fill :value="farr">
+          <sub-comp> {{$data}} - {{$host.count}} </sub-comp>
+        </x-fill>
+      </div>
+    </x-if>
+  </div>
+
+  <br /><br /> -->
+
+  <x-if :value="count % 7">
+    <body-ghost>
+      <div style="border: green solid 1px; padding: 4px; margin: 4px">
+        <div>I am Body Ghost Content - {{count}}</div>
+        <div>{{val}}</div>
+        <div>
+          <x-fill :value="farr">
+            <sub-comp> {{$data}} - {{$host.count}} </sub-comp>
+          </x-fill>
+        </div>
+      </div>
+    </body-ghost>
+  </x-if>
+  <script>
+    export default async () => {
+      return {
+        tag: "test-comp",
+        data: {
+          val: "I am val",
+          count: 100,
+          ownersize: 0,
+        },
+        proto: {
+          get farr() {
+            let arr = [];
+
+            for (let len = this.count % 7; len > 0; len--) {
+              arr.push(len);
+            }
+
+            return arr;
+          },
+        },
+        ready() {
+          // let f;
+          // this.watchTick(
+          //   (f = () => {
+          //     setTimeout(() => {
+          //       this.ownersize = this.owner.size;
+          //     }, 100);
+          //   })
+          // );
+          // f();
+        },
+      };
+    };
+  </script>
+</template>

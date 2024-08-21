@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.12 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.13 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -2992,7 +2992,8 @@ const regOptions = {
 
       this.__rendered = false;
 
-      revokeAll(this._fake);
+      // revokeAll(this._fake);
+      this._fake?.childNodes?.forEach((el) => revokeAll(el));
       this._fake.innerHTML = "";
 
       this.emit("clear", {
@@ -3006,6 +3007,7 @@ const regOptions = {
 
       this._bindend = true;
       const fake = (this._fake = new FakeNode(this.tag));
+      fake.__revokes = this.ele.__revokes;
       this.before(fake);
       fake.init();
       this.remove();
@@ -3334,8 +3336,13 @@ register({
       if (this._bindend) {
         return;
       }
+
       this._bindend = true;
       const fake = (this._fake = new FakeNode("x-fill"));
+
+      // 搬动 revokes
+      fake.__revokes = this.ele.__revokes;
+
       this.before(fake);
       fake.init();
       this.remove();
@@ -6525,7 +6532,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.12";
+const version = "ofa.js@4.5.13";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
