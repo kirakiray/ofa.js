@@ -6,6 +6,7 @@ import { createXEle, eleX, revokeAll } from "../util.mjs";
 import { removeArrayValue } from "../public.mjs";
 import { getRenderData } from "./condition.mjs";
 import { getErr } from "../../ofa-error/main.js";
+import { getType } from "../../stanz/public.mjs";
 
 register({
   tag: "x-fill",

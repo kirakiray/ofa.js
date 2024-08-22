@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.13 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.14 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -103,14 +103,14 @@ const getErrDesc = (key, options) => {
 const getRandomId = () => Math.random().toString(32).slice(2);
 
 const objectToString = Object.prototype.toString;
-const getType$1 = (value) =>
+const getType = (value) =>
   objectToString
     .call(value)
     .toLowerCase()
     .replace(/(\[object )|(])/g, "");
 
 const isObject = (obj) => {
-  const type = getType$1(obj);
+  const type = getType(obj);
   return type === "array" || type === "object";
 };
 
@@ -255,7 +255,7 @@ function isRevokedErr(error) {
   return false;
 }
 
-const isFunction = (val) => getType$1(val).includes("function");
+const isFunction = (val) => getType(val).includes("function");
 
 const hyphenToUpperCase = (str) =>
   str.replace(/-([a-z])/g, (match, p1) => {
@@ -2234,7 +2234,7 @@ var cssFn = {
     return new XhearCSS(this);
   },
   set css(d) {
-    if (getType$1(d) == "string") {
+    if (getType(d) == "string") {
       this.ele.style = d;
       return;
     }
@@ -2256,7 +2256,7 @@ var cssFn = {
 };
 
 function $(expr) {
-  if (getType$1(expr) === "string" && !/<.+>/.test(expr)) {
+  if (getType(expr) === "string" && !/<.+>/.test(expr)) {
     const ele = document.querySelector(expr);
 
     return eleX(ele);
@@ -2532,7 +2532,7 @@ const register = (opts = {}) => {
               } else if (oldVal !== val) {
                 let reval = val;
 
-                const valType = getType$1(val);
+                const valType = getType(val);
 
                 if (valType === "number" && oldVal === String(val)) {
                   // Setting the number will cause an infinite loop
@@ -3777,7 +3777,7 @@ const createXEle = (expr, exprType) => {
     return eleX(expr);
   }
 
-  const type = getType$1(expr);
+  const type = getType(expr);
 
   switch (type) {
     case "object":
@@ -6532,7 +6532,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.13";
+const version = "ofa.js@4.5.14";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
