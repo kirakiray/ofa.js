@@ -36,9 +36,14 @@ $.fn.getProvider = function (name) {
 };
 
 $("html").on("update-consumer", (e) => {
-  const { name, consumer } = e.data;
+  const { name, consumer, method } = e.data;
 
   const targetRootProvider = rootProviders[name];
+
+  if (method === "getProvider") {
+    e.data.callback(targetRootProvider);
+    return;
+  }
 
   if (targetRootProvider) {
     targetRootProvider[CONSUMERS].add(consumer);
