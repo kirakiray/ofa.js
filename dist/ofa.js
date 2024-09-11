@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.15 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.16 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -3811,6 +3811,7 @@ try{
 
   Object.assign($, {
     stanz,
+    Stanz,
     render,
     convert,
     register,
@@ -6543,7 +6544,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.15";
+  const version = "ofa.js@4.5.16";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
