@@ -3805,6 +3805,7 @@ const revokeAll = (target) => {
 
 Object.assign($, {
   stanz,
+  Stanz,
   render,
   convert,
   register,

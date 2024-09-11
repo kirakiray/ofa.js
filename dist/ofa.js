@@ -3811,6 +3811,7 @@ try{
 
   Object.assign($, {
     stanz,
+    Stanz,
     render,
     convert,
     register,
