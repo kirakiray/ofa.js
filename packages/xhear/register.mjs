@@ -411,7 +411,7 @@ function deepCopyData(obj, tag = "", keyName) {
 
   for (let key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      if (/^_/.test(key)) {
+      if (/^_/.test(key) && obj[key] instanceof Function) {
         // 直接赋值私有属性
         copy[key] = obj[key];
       } else {
