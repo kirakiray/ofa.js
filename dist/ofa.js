@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.17 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.18 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1093,7 +1093,7 @@ try{
     target,
     template,
     temps,
-    isRenderSelf,
+    isRenderSelf, // 是否将当前target元素也渲染处理
     ...otherOpts
   }) {
     const content = template && template.innerHTML;
@@ -2861,21 +2861,37 @@ try{
     }
   }
 
+  // 将temp元素替换到原来的位置上
   const replaceTempInit = (_this) => {
     const parent = _this.parentNode;
     if (parent) {
       const parent = _this.parentNode;
-      Array.from(_this.content.children).forEach((e) => {
+      const children = Array.from(_this.content.children);
+      children.forEach((e) => {
         parent.insertBefore(e, _this);
       });
 
       _this.remove();
+
+      if (parent.querySelector("[x-bind-data]")) {
+        const regData = getRenderData(parent);
+
+        if (regData) {
+          // 重新渲染未绑定元素
+          render({
+            data: regData.data,
+            target: regData.target,
+            temps: regData.temps,
+          });
+        }
+      }
     }
   };
 
   if (isSafariBrowser()) {
     renderExtends.beforeRender = ({ target }) => {
       let replaces = [];
+
       while (true) {
         replaces = Array.from(
           target.querySelectorAll('template[is="replace-temp"]')
@@ -3396,7 +3412,7 @@ try{
       target: $ele.ele,
       data: itemData,
       temps,
-      $host,
+      // $host,
       isRenderSelf: true,
     });
 
@@ -6544,7 +6560,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.17";
+  const version = "ofa.js@4.5.18";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

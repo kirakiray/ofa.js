@@ -288,7 +288,7 @@ const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
     target: $ele.ele,
     data: itemData,
     temps,
-    $host,
+    // $host,
     isRenderSelf: true,
   });
 

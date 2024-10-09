@@ -1,7 +1,7 @@
-import { renderExtends } from "./render.mjs";
+import { renderExtends, render } from "./render.mjs";
 import { isSafariBrowser } from "../public.mjs";
 import { getErr } from "../../ofa-error/main.js";
-
+import { getRenderData } from "./condition.mjs";
 export class FakeNode extends Comment {
   constructor(markname) {
     const tagText = `Fake Node${markname ? ": " + markname : ""}`;
@@ -171,21 +171,37 @@ export class FakeNode extends Comment {
   }
 }
 
+// 将temp元素替换到原来的位置上
 const replaceTempInit = (_this) => {
   const parent = _this.parentNode;
   if (parent) {
     const parent = _this.parentNode;
-    Array.from(_this.content.children).forEach((e) => {
+    const children = Array.from(_this.content.children);
+    children.forEach((e) => {
       parent.insertBefore(e, _this);
     });
 
     _this.remove();
+
+    if (parent.querySelector("[x-bind-data]")) {
+      const regData = getRenderData(parent);
+
+      if (regData) {
+        // 重新渲染未绑定元素
+        render({
+          data: regData.data,
+          target: regData.target,
+          temps: regData.temps,
+        });
+      }
+    }
   }
 };
 
 if (isSafariBrowser()) {
   renderExtends.beforeRender = ({ target }) => {
     let replaces = [];
+
     while (true) {
       replaces = Array.from(
         target.querySelectorAll('template[is="replace-temp"]')
