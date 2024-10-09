@@ -54,7 +54,7 @@ export function render({
   target,
   template,
   temps,
-  isRenderSelf,
+  isRenderSelf, // 是否将当前target元素也渲染处理
   ...otherOpts
 }) {
   const content = template && template.innerHTML;

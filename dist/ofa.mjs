@@ -1087,7 +1087,7 @@ function render({
   target,
   template,
   temps,
-  isRenderSelf,
+  isRenderSelf, // 是否将当前target元素也渲染处理
   ...otherOpts
 }) {
   const content = template && template.innerHTML;
@@ -2855,21 +2855,37 @@ class FakeNode extends Comment {
   }
 }
 
+// 将temp元素替换到原来的位置上
 const replaceTempInit = (_this) => {
   const parent = _this.parentNode;
   if (parent) {
     const parent = _this.parentNode;
-    Array.from(_this.content.children).forEach((e) => {
+    const children = Array.from(_this.content.children);
+    children.forEach((e) => {
       parent.insertBefore(e, _this);
     });
 
     _this.remove();
+
+    if (parent.querySelector("[x-bind-data]")) {
+      const regData = getRenderData(parent);
+
+      if (regData) {
+        // 重新渲染未绑定元素
+        render({
+          data: regData.data,
+          target: regData.target,
+          temps: regData.temps,
+        });
+      }
+    }
   }
 };
 
 if (isSafariBrowser()) {
   renderExtends.beforeRender = ({ target }) => {
     let replaces = [];
+
     while (true) {
       replaces = Array.from(
         target.querySelectorAll('template[is="replace-temp"]')
@@ -3390,7 +3406,7 @@ const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
     target: $ele.ele,
     data: itemData,
     temps,
-    $host,
+    // $host,
     isRenderSelf: true,
   });
 
