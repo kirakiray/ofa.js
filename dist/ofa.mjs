@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.18 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.19 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -2790,6 +2790,9 @@ class FakeNode extends Comment {
         }
         childs.unshift(prev);
       } else {
+        if (!this.isConnected) {
+          break;
+        }
         throw getErr("xhear_fakenode_unclose", { name: "childNodes" });
       }
     }
@@ -6554,7 +6557,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.18";
+const version = "ofa.js@4.5.19";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
