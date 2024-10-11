@@ -2796,6 +2796,9 @@ try{
           }
           childs.unshift(prev);
         } else {
+          if (!this.isConnected) {
+            break;
+          }
           throw getErr("xhear_fakenode_unclose", { name: "childNodes" });
         }
       }
