@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.20 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.21 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -5475,6 +5475,7 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
       load: lm$1({
         url: path,
       }),
+      url: path,
     });
   } else if (defaultData instanceof Object) {
     finnalDefault = { ...defaultData };
@@ -6557,7 +6558,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.20";
+const version = "ofa.js@4.5.21";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

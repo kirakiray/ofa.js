@@ -60,6 +60,7 @@ lm.use(["js", "mjs"], async (ctx, next) => {
       load: lm({
         url: path,
       }),
+      url: path,
     });
   } else if (defaultData instanceof Object) {
     finnalDefault = { ...defaultData };
