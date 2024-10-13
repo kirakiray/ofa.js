@@ -74,7 +74,7 @@ const eventFn = {
       event = new Event(name, { bubbles: true, ...options });
     }
 
-    data && (event.data = data);
+    event.data = data;
 
     this.ele.dispatchEvent(event);
 
