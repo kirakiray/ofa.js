@@ -1567,13 +1567,21 @@ defaultData.class.always = true;
 
 defaultData.prop.revoke = ({ target, args, $ele, data }) => {
   const propName = args[0];
-  target.set(propName, null);
+
+  const oldVal = target.get(propName);
+  if (isxdata(oldVal)) {
+    target.set(propName, {});
+  }
 };
 
 defaultData.watch.revoke = (e) => {
   e.result();
   const propName = e.beforeArgs[1];
-  e.data.set(propName, null);
+
+  const oldVal = e.data.get(propName);
+  if (isxdata(oldVal)) {
+    e.data.set(propName, {});
+  }
 };
 
 const syncFn = {
