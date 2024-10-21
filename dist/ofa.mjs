@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.21 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.22 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -1567,13 +1567,21 @@ defaultData.class.always = true;
 
 defaultData.prop.revoke = ({ target, args, $ele, data }) => {
   const propName = args[0];
-  target.set(propName, null);
+
+  const oldVal = target.get(propName);
+  if (isxdata(oldVal)) {
+    target.set(propName, {});
+  }
 };
 
 defaultData.watch.revoke = (e) => {
   e.result();
   const propName = e.beforeArgs[1];
-  e.data.set(propName, null);
+
+  const oldVal = e.data.get(propName);
+  if (isxdata(oldVal)) {
+    e.data.set(propName, {});
+  }
 };
 
 const syncFn = {
@@ -6558,7 +6566,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.21";
+const version = "ofa.js@4.5.22";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

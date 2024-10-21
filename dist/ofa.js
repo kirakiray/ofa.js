@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.21 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.22 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -1573,13 +1573,21 @@ try{
 
   defaultData.prop.revoke = ({ target, args, $ele, data }) => {
     const propName = args[0];
-    target.set(propName, null);
+
+    const oldVal = target.get(propName);
+    if (isxdata(oldVal)) {
+      target.set(propName, {});
+    }
   };
 
   defaultData.watch.revoke = (e) => {
     e.result();
     const propName = e.beforeArgs[1];
-    e.data.set(propName, null);
+
+    const oldVal = e.data.get(propName);
+    if (isxdata(oldVal)) {
+      e.data.set(propName, {});
+    }
   };
 
   const syncFn = {
@@ -6564,7 +6572,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.21";
+  const version = "ofa.js@4.5.22";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
