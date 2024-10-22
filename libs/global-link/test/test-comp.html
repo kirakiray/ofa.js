@@ -1,0 +1,19 @@
+<template component>
+    <!-- <link rel="stylesheet" href="./global.css"> -->
+  <style>
+    :host {
+      display: block;
+      border: green solid 1px;
+      padding: 8px;
+    }
+  </style>
+  <div class="test-class">{{val}}</div>
+  <script>
+    export default {
+      tag: "test-comp",
+      data: {
+        val: "I am Test Comp",
+      },
+    };
+  </script>
+</template>
