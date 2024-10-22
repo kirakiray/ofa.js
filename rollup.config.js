@@ -98,4 +98,22 @@ module.exports = [
     ],
     plugins: [terser()],
   },
+  {
+    input: "libs/global-link/global-link.js",
+    output: [
+      {
+        file: "libs/global-link/dist/global-link.min.mjs",
+        format: "esm",
+        banner,
+        sourcemap: true,
+      },
+      {
+        file: "libs/global-link/dist/global-link.min.js",
+        format: "umd",
+        banner,
+        sourcemap: true,
+      },
+    ],
+    plugins: [terser()],
+  },
 ];
