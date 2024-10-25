@@ -48,9 +48,9 @@ $.register({
 $.extensions.afterAttached = (el) => {
   if (el.tag !== "o-global-link") {
     // 添加 globalLink
-    globalLinks.forEach((href) =>
-      el.shadow.push(`<link rel="stylesheet" href="${href}">`)
+    globalLinks.forEach(
+      (href) =>
+        el.shadow && el.shadow.push(`<link rel="stylesheet" href="${href}">`)
     );
   }
-  console.log("afterAttached: ", el);
 };
