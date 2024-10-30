@@ -118,7 +118,8 @@ const regOptions = {
         while (true) {
           next = next.nextElementSibling;
 
-          if (!next) {
+          if (!next || next.tagName == "X-IF") {
+            // 下一个还是if的话，就直接跳过遍历的逻辑，因为下一个if后面可能有它们的else
             break;
           }
 
