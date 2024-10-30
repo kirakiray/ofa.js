@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.24 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.25 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -3050,7 +3050,8 @@ const regOptions = {
         while (true) {
           next = next.nextElementSibling;
 
-          if (!next) {
+          if (!next || next.tagName == "X-IF") {
+            // 下一个还是if的话，就直接跳过遍历的逻辑，因为下一个if后面可能有它们的else
             break;
           }
 
@@ -6569,7 +6570,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.24";
+const version = "ofa.js@4.5.25";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
