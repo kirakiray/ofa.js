@@ -1,11 +1,16 @@
 import { getErr } from "../ofa-error/main.js";
 import Onion from "./onion.mjs";
 
+const getNotHttp = (url) => /^blob:/.test(url) || /^data:/.test(url);
+
 export const caches = new Map();
 export const wrapFetch = async (url, params) => {
-  const d = new URL(url);
+  let reUrl = url;
 
-  const reUrl = params.includes("-direct") ? url : `${d.origin}${d.pathname}`;
+  if (!getNotHttp(url)) {
+    const d = new URL(url);
+    reUrl = params.includes("-direct") ? url : `${d.origin}${d.pathname}`;
+  }
 
   let fetchObj = caches.get(reUrl);
 
@@ -47,7 +52,7 @@ use(["mjs", "js"], async (ctx, next) => {
     const { url, params } = ctx;
     const d = new URL(url);
 
-    const notHttp = /^blob:/.test(url) || /^data:/.test(url);
+    const notHttp = getNotHttp(url);
     try {
       if (notHttp || params.includes("-direct")) {
         ctx.result = await import(url);

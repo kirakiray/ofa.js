@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.25 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.26 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -4094,11 +4094,16 @@ class Onion {
   }
 }
 
+const getNotHttp = (url) => /^blob:/.test(url) || /^data:/.test(url);
+
 const caches = new Map();
 const wrapFetch = async (url, params) => {
-  const d = new URL(url);
+  let reUrl = url;
 
-  const reUrl = params.includes("-direct") ? url : `${d.origin}${d.pathname}`;
+  if (!getNotHttp(url)) {
+    const d = new URL(url);
+    reUrl = params.includes("-direct") ? url : `${d.origin}${d.pathname}`;
+  }
 
   let fetchObj = caches.get(reUrl);
 
@@ -4140,7 +4145,7 @@ use(["mjs", "js"], async (ctx, next) => {
     const { url, params } = ctx;
     const d = new URL(url);
 
-    const notHttp = /^blob:/.test(url) || /^data:/.test(url);
+    const notHttp = getNotHttp(url);
     try {
       if (notHttp || params.includes("-direct")) {
         ctx.result = await import(url);
@@ -6570,7 +6575,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.25";
+const version = "ofa.js@4.5.26";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
