@@ -466,8 +466,10 @@ const defaultData = {
   attr(...args) {
     let [name, value] = args;
 
+    const { ele } = this;
+
     if (args.length === 1) {
-      return this.ele.getAttribute(name);
+      return ele.getAttribute(name);
     }
 
     value = getVal(value);
@@ -479,9 +481,9 @@ const defaultData = {
     }
 
     if (value === null || value === undefined) {
-      this.ele.removeAttribute(name);
-    } else {
-      this.ele.setAttribute(name, value);
+      ele.removeAttribute(name);
+    } else if (ele.getAttribute(name) != value) {
+      ele.setAttribute(name, value);
     }
   },
   class(...args) {
