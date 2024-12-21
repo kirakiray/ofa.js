@@ -12,31 +12,35 @@ if (globalThis.navigator && navigator.language) {
   }
 
   (async () => {
-    if (localStorage["ofa-errors"]) {
-      const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
-      Object.assign(errors, targetLangErrors);
-    }
-
-    const errCacheTime = localStorage["ofa-errors-time"];
-
-    if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
-      const targetLangErrors = await fetch(`${error_origin}/${langFirst}.json`)
-        .then((e) => e.json())
-        .catch(() => null);
-
-      if (targetLangErrors) {
-        localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
-        localStorage["ofa-errors-time"] = Date.now();
-      } else {
-        targetLangErrors = await fetch(`${error_origin}/en.json`)
-          .then((e) => e.json())
-          .catch((error) => {
-            console.error(error);
-            return null;
-          });
+    if (typeof localStorage !== "undefined") {
+      if (localStorage["ofa-errors"]) {
+        const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
+        Object.assign(errors, targetLangErrors);
       }
 
-      Object.assign(errors, targetLangErrors);
+      const errCacheTime = localStorage["ofa-errors-time"];
+
+      if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
+        const targetLangErrors = await fetch(
+          `${error_origin}/${langFirst}.json`
+        )
+          .then((e) => e.json())
+          .catch(() => null);
+
+        if (targetLangErrors) {
+          localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
+          localStorage["ofa-errors-time"] = Date.now();
+        } else {
+          targetLangErrors = await fetch(`${error_origin}/en.json`)
+            .then((e) => e.json())
+            .catch((error) => {
+              console.error(error);
+              return null;
+            });
+        }
+
+        Object.assign(errors, targetLangErrors);
+      }
     }
   })();
 }
@@ -62,10 +66,11 @@ export const getErr = (key, options, error) => {
   let errObj;
   if (error) {
     if (isSafari) {
-      desc += `\nCaused by: ${error.toString()}\n  ${error.stack.replace(
-        /\n/g,
-        "\n    "
-      )}`;
+      desc += `\nCaused by: ${error.toString()}\n`;
+
+      if (error.stack) {
+        desc += `  ${error.stack.replace(/\n/g, "\n    ")}`;
+      }
     }
     errObj = new Error(desc, { cause: error });
   } else {

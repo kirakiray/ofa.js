@@ -1,5 +1,5 @@
 import { getErr, getErrDesc } from "../../ofa-error/main.js";
-import { getRandomId, isRevokedErr } from "../../stanz/public.mjs";
+import { getRandomId, dataRevoked } from "../../stanz/public.mjs";
 import stanzProto from "../../stanz/watch.mjs";
 import { isxdata } from "../../stanz/main.mjs";
 
@@ -23,17 +23,17 @@ const addRevoke = (target, revoke) => getRevokes(target).push(revoke);
 
 const convertToFunc = (expr, data, opts) => {
   const funcStr = `
-const isRevokedErr = ${isRevokedErr.toString()}
+const dataRevoked = ${dataRevoked.toString()};
 const [$event] = $args;
 const {data, errCall} = this;
+if(dataRevoked(data)){
+  return;
+}
 try{
   with(data){
     return ${expr};
   }
 }catch(error){
-  if(isRevokedErr(error)){
-    return;
-  }
   if(data.ele && !data.ele.isConnected){
     return;
   }
