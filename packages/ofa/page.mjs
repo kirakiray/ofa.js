@@ -409,7 +409,9 @@ export const getFailContent = (src, target, fail) => {
       error: target.error,
     });
   } else {
-    failContent = `<div style="padding:20px;color:red;">${target.error.stack
+    failContent = `<div style="padding:20px;color:red;">${(
+      target.error.stack || target.error.toString()
+    )
       .replace(/\n/g, "<br>")
       .replace(/ /g, "&nbsp;")}</div>`;
   }

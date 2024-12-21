@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.27 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
+//! ofa.js - v4.5.28 https://github.com/kirakiray/ofa.js  (c) 2018-2024 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -19,31 +19,35 @@
     }
 
     (async () => {
-      if (localStorage["ofa-errors"]) {
-        const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
-        Object.assign(errors, targetLangErrors);
-      }
-
-      const errCacheTime = localStorage["ofa-errors-time"];
-
-      if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
-        const targetLangErrors = await fetch(`${error_origin}/${langFirst}.json`)
-          .then((e) => e.json())
-          .catch(() => null);
-
-        if (targetLangErrors) {
-          localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
-          localStorage["ofa-errors-time"] = Date.now();
-        } else {
-          targetLangErrors = await fetch(`${error_origin}/en.json`)
-            .then((e) => e.json())
-            .catch((error) => {
-              console.error(error);
-              return null;
-            });
+      if (typeof localStorage !== "undefined") {
+        if (localStorage["ofa-errors"]) {
+          const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
+          Object.assign(errors, targetLangErrors);
         }
 
-        Object.assign(errors, targetLangErrors);
+        const errCacheTime = localStorage["ofa-errors-time"];
+
+        if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
+          const targetLangErrors = await fetch(
+            `${error_origin}/${langFirst}.json`
+          )
+            .then((e) => e.json())
+            .catch(() => null);
+
+          if (targetLangErrors) {
+            localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
+            localStorage["ofa-errors-time"] = Date.now();
+          } else {
+            targetLangErrors = await fetch(`${error_origin}/en.json`)
+              .then((e) => e.json())
+              .catch((error) => {
+                console.error(error);
+                return null;
+              });
+          }
+
+          Object.assign(errors, targetLangErrors);
+        }
       }
     })();
   }
@@ -69,10 +73,11 @@
     let errObj;
     if (error) {
       if (isSafari) {
-        desc += `\nCaused by: ${error.toString()}\n  ${error.stack.replace(
-        /\n/g,
-        "\n    "
-      )}`;
+        desc += `\nCaused by: ${error.toString()}\n`;
+
+        if (error.stack) {
+          desc += `  ${error.stack.replace(/\n/g, "\n    ")}`;
+        }
       }
       errObj = new Error(desc, { cause: error });
     } else {
@@ -242,23 +247,19 @@
     return _this;
   };
 
-  function dataRevoked(data) {
+  // 检测 Proxy 是否被撤销的函数
+  function dataRevoked(proxyToCheck) {
     try {
-      data.xid;
-    } catch (err) {
-      return isRevokedErr(err);
+      // 尝试对 Proxy 做一个无害的操作，例如获取原型
+      Object.getPrototypeOf(proxyToCheck);
+      return false; // 如果没有抛出错误，则 Proxy 没有被撤销
+    } catch (error) {
+      if (error instanceof TypeError) {
+        return true; // 如果抛出了 TypeError，则 Proxy 已经被撤销
+      }
+      // throw error; // 抛出其他类型的错误
+      return false;
     }
-
-    return false;
-  }
-
-  function isRevokedErr(error) {
-    const firstLine = error.stack.split(/\\n/)[0].toLowerCase();
-    if (firstLine.includes("proxy") && firstLine.includes("revoked")) {
-      return true;
-    }
-
-    return false;
   }
 
   const isFunction = (val) => getType(val).includes("function");
@@ -1061,17 +1062,17 @@
 
   const convertToFunc = (expr, data, opts) => {
     const funcStr = `
-const isRevokedErr = ${isRevokedErr.toString()}
+const dataRevoked = ${dataRevoked.toString()};
 const [$event] = $args;
 const {data, errCall} = this;
+if(dataRevoked(data)){
+  return;
+}
 try{
   with(data){
     return ${expr};
   }
 }catch(error){
-  if(isRevokedErr(error)){
-    return;
-  }
   if(data.ele && !data.ele.isConnected){
     return;
   }
@@ -5439,7 +5440,9 @@ ${scriptContent}`;
         error: target.error,
       });
     } else {
-      failContent = `<div style="padding:20px;color:red;">${target.error.stack
+      failContent = `<div style="padding:20px;color:red;">${(
+      target.error.stack || target.error.toString()
+    )
       .replace(/\n/g, "<br>")
       .replace(/ /g, "&nbsp;")}</div>`;
     }
@@ -6583,7 +6586,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.27";
+  const version = "ofa.js@4.5.28";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

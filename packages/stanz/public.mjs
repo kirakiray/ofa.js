@@ -136,21 +136,17 @@ export const extend = (_this, proto, descriptor = {}) => {
   return _this;
 };
 
-export function dataRevoked(data) {
+// 检测 Proxy 是否被撤销的函数
+export function dataRevoked(proxyToCheck) {
   try {
-    data.xid;
-  } catch (err) {
-    return isRevokedErr(err);
+    // 尝试对 Proxy 做一个无害的操作，例如获取原型
+    Object.getPrototypeOf(proxyToCheck);
+    return false; // 如果没有抛出错误，则 Proxy 没有被撤销
+  } catch (error) {
+    if (error instanceof TypeError) {
+      return true; // 如果抛出了 TypeError，则 Proxy 已经被撤销
+    }
+    // throw error; // 抛出其他类型的错误
+    return false;
   }
-
-  return false;
-}
-
-export function isRevokedErr(error) {
-  const firstLine = error.stack.split(/\\n/)[0].toLowerCase();
-  if (firstLine.includes("proxy") && firstLine.includes("revoked")) {
-    return true;
-  }
-
-  return false;
 }
