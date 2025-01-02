@@ -85,8 +85,10 @@ export class FakeNode extends Comment {
         } else if (prev === this._start) {
           break;
         }
-      } else {
+      } else if (this.isConnected) {
         throw getErr("xhear_fakenode_unclose", { name: "children" });
+      } else {
+        break;
       }
     }
 
