@@ -1,9 +1,9 @@
 //! ofa.js - v4.5.29 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.$ = factory());
-})(this, (function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.$ = {}));
+})(this, (function (exports) { 'use strict';
 
   // const error_origin = "http://127.0.0.1:5793/errors";
   const error_origin = "https://ofajs.github.io/ofa-errors/errors";
@@ -529,18 +529,27 @@
       };
       emitUpdate(options);
     },
-    watchUntil(func) {
-      return new Promise((resolve) => {
+    watchUntil(func, outTime = 30000) {
+      return new Promise((resolve, reject) => {
         let f;
+        let timer;
         const tid = this.watch(
           (f = () => {
             const bool = func();
             if (bool) {
+              clearTimeout(timer);
               this.unwatch(tid);
               resolve(this);
             }
           })
         );
+
+        timer = setTimeout(() => {
+          this.unwatch(tid);
+          const err = getErr("watchuntil_timeout");
+          console.warn(err, func, this);
+          reject(err);
+        }, outTime);
 
         f();
       });
@@ -893,7 +902,7 @@
     } else if (isObject(value)) {
       const desc = Object.getOwnPropertyDescriptor(target, key);
       if (!desc || desc.hasOwnProperty("value")) {
-        data = new Stanz(value);
+        data = new (target.__OriginStanz || Stanz)(value);
         data._owner.push(receiver);
       }
     }
@@ -6605,6 +6614,9 @@ ${scriptContent}`;
     value: $,
   });
 
-  return $;
+  exports.Stanz = Stanz;
+  exports.default = $;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 }));

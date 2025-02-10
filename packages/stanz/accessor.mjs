@@ -17,7 +17,7 @@ export const setData = ({ target, key, value, receiver, type, succeed }) => {
   } else if (isObject(value)) {
     const desc = Object.getOwnPropertyDescriptor(target, key);
     if (!desc || desc.hasOwnProperty("value")) {
-      data = new Stanz(value);
+      data = new (target.__OriginStanz || Stanz)(value);
       data._owner.push(receiver);
     }
   }
