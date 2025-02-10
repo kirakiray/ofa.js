@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.29 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.5.30 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -523,18 +523,27 @@ var watchFn = {
     };
     emitUpdate(options);
   },
-  watchUntil(func) {
-    return new Promise((resolve) => {
+  watchUntil(func, outTime = 30000) {
+    return new Promise((resolve, reject) => {
       let f;
+      let timer;
       const tid = this.watch(
         (f = () => {
           const bool = func();
           if (bool) {
+            clearTimeout(timer);
             this.unwatch(tid);
             resolve(this);
           }
         })
       );
+
+      timer = setTimeout(() => {
+        this.unwatch(tid);
+        const err = getErr("watchuntil_timeout");
+        console.warn(err, func, this);
+        reject(err);
+      }, outTime);
 
       f();
     });
@@ -887,7 +896,7 @@ const setData = ({ target, key, value, receiver, type, succeed }) => {
   } else if (isObject(value)) {
     const desc = Object.getOwnPropertyDescriptor(target, key);
     if (!desc || desc.hasOwnProperty("value")) {
-      data = new Stanz(value);
+      data = new (target.__OriginStanz || Stanz)(value);
       data._owner.push(receiver);
     }
   }
@@ -6582,7 +6591,7 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.29";
+const version = "ofa.js@4.5.30";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
@@ -6599,4 +6608,4 @@ Object.defineProperty(globalThis, "ofa", {
   value: $,
 });
 
-export { $ as default };
+export { Stanz, $ as default };

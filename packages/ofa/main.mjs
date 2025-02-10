@@ -7,8 +7,9 @@ import "./app.mjs";
 import "./extend.mjs";
 import "./link.mjs";
 import "./context.mjs";
+import Stanz from "../stanz/main.mjs";
 
-const version = "ofa.js@4.5.29";
+const version = "ofa.js@4.5.30";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {
@@ -26,3 +27,5 @@ Object.defineProperty(globalThis, "ofa", {
 });
 
 export default $;
+
+export { Stanz };

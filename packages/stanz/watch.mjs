@@ -203,18 +203,27 @@ export default {
     };
     emitUpdate(options);
   },
-  watchUntil(func) {
-    return new Promise((resolve) => {
+  watchUntil(func, outTime = 30000) {
+    return new Promise((resolve, reject) => {
       let f;
+      let timer;
       const tid = this.watch(
         (f = () => {
           const bool = func();
           if (bool) {
+            clearTimeout(timer);
             this.unwatch(tid);
             resolve(this);
           }
         })
       );
+
+      timer = setTimeout(() => {
+        this.unwatch(tid);
+        const err = getErr("watchuntil_timeout");
+        console.warn(err, func, this);
+        reject(err);
+      }, outTime);
 
       f();
     });
