@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.30 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.5.31 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -732,7 +732,8 @@
   }
 
   class Stanz extends Array {
-    constructor(data) {
+    constructor(data, options) {
+      // options是被继承的类库使用的参数，当前stanz不需要使用
       super();
 
       return constructor.call(this, data);
@@ -902,7 +903,10 @@
     } else if (isObject(value)) {
       const desc = Object.getOwnPropertyDescriptor(target, key);
       if (!desc || desc.hasOwnProperty("value")) {
-        data = new (target.__OriginStanz || Stanz)(value);
+        data = new (target.__OriginStanz || Stanz)(value, {
+          owner: receiver,
+        });
+
         data._owner.push(receiver);
       }
     }
@@ -6597,7 +6601,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.30";
+  const version = "ofa.js@4.5.31";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {

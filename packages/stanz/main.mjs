@@ -74,7 +74,8 @@ export function constructor(data, handler = stanzHandler) {
 }
 
 export default class Stanz extends Array {
-  constructor(data) {
+  constructor(data, options) {
+    // options是被继承的类库使用的参数，当前stanz不需要使用
     super();
 
     return constructor.call(this, data);
