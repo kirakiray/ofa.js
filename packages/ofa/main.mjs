@@ -9,7 +9,7 @@ import "./link.mjs";
 import "./context.mjs";
 import Stanz from "../stanz/main.mjs";
 
-const version = "ofa.js@4.5.31";
+const version = "ofa.js@4.5.32";
 $.version = version.replace("ofa.js@", "");
 
 if (document.currentScript) {

@@ -1,4 +1,4 @@
-import { clearData } from "./accessor.mjs";
+import { clearOwner } from "./accessor.mjs";
 import { SELF, PROXY, isxdata } from "./main.mjs";
 import { isObject } from "./public.mjs";
 import { emitUpdate } from "./watch.mjs";
@@ -73,7 +73,7 @@ mutatingMethods.forEach((methodName) => {
       }
 
       for (let item of deletedItems) {
-        clearData(item, this);
+        clearOwner(item, this);
       }
 
       emitUpdate({

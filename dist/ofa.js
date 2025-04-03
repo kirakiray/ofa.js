@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.31 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.5.32 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -626,7 +626,7 @@
         }
 
         for (let item of deletedItems) {
-          clearData(item, this);
+          clearOwner(item, this);
         }
 
         emitUpdate({
@@ -914,7 +914,7 @@
     const isSame = oldValue === value;
 
     if (!isSame && isxdata(oldValue)) {
-      clearData(oldValue, receiver);
+      clearOwner(oldValue, receiver);
     }
 
     const reval = succeed(data);
@@ -934,16 +934,17 @@
     return reval;
   };
 
-  const clearData = (val, target) => {
-    if (isxdata(val)) {
-      const index = val._owner.indexOf(target);
+  // 当数据被移除时，清除 owner 数据
+  const clearOwner = (targetData, owner) => {
+    if (isxdata(targetData)) {
+      const index = targetData._owner.indexOf(owner);
       if (index > -1) {
-        val._owner.splice(index, 1);
+        targetData._owner.splice(index, 1);
       } else {
         const err = getErr("error_no_owner");
         console.warn(err, {
-          target,
-          mismatch: val,
+          owner,
+          mismatch: targetData,
         });
         console.error(err);
       }
@@ -6601,7 +6602,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.31";
+  const version = "ofa.js@4.5.32";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
