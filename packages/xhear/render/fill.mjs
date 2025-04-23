@@ -90,6 +90,10 @@ register({
         const vals = arrayData.slice();
         const valsKeys = new Set(
           vals.map((e) => {
+            if (!e) {
+              return;
+            }
+
             const val = e[keyName];
             return val === undefined ? e : val;
           })
@@ -302,7 +306,7 @@ const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
   revokes.push(revoke);
 
   $ele.__item = itemData;
-  $ele.ele._data_xid = $data[keyName] || $data;
+  $ele.ele._data_xid = $data?.[keyName] || $data;
 
   return $ele;
 };

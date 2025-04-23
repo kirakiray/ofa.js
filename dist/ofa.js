@@ -1,4 +1,4 @@
-//! ofa.js - v4.5.32 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.5.33 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -3248,6 +3248,10 @@ try{
           const vals = arrayData.slice();
           const valsKeys = new Set(
             vals.map((e) => {
+              if (!e) {
+                return;
+              }
+
               const val = e[keyName];
               return val === undefined ? e : val;
             })
@@ -3460,7 +3464,7 @@ try{
     revokes.push(revoke);
 
     $ele.__item = itemData;
-    $ele.ele._data_xid = $data[keyName] || $data;
+    $ele.ele._data_xid = $data?.[keyName] || $data;
 
     return $ele;
   };
@@ -6602,7 +6606,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.5.32";
+  const version = "ofa.js@4.5.33";
   $.version = version.replace("ofa.js@", "");
 
   if (document.currentScript) {
