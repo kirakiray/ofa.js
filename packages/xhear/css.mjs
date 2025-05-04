@@ -11,6 +11,10 @@ const cssHandler = {
       return 0;
     }
 
+    if (key.startsWith("--")) {
+      return getComputedStyle(target._ele).getPropertyValue(key);
+    }
+
     const { style } = target._ele;
     if (Array.from(style).includes(key)) {
       return style[key];

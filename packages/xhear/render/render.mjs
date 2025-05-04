@@ -2,6 +2,7 @@ import { getErr, getErrDesc } from "../../ofa-error/main.js";
 import { getRandomId, dataRevoked } from "../../stanz/public.mjs";
 import stanzProto from "../../stanz/watch.mjs";
 import { isxdata } from "../../stanz/main.mjs";
+import { supportStyleQueries } from "./container-style-polyfill.js";
 
 import {
   isFunction,
@@ -77,6 +78,7 @@ export function render({
   searchEle(target, "style").forEach((el) => {
     const originStyle = el.innerHTML;
 
+    // 查询带有 data(xxx) 内容，进行特定渲染
     if (/data\(.+\)/.test(originStyle)) {
       const matchs = Array.from(new Set(originStyle.match(/data\(.+?\)/g))).map(
         (dataExpr) => {
@@ -112,6 +114,11 @@ export function render({
 
       addRevoke(el, revokeStyle);
       revokes.push(revokeStyle);
+    }
+
+    if (!supportStyleQueries && /@container style\(.+\)/.test(originStyle)) {
+      // 需要兼容 @container 处理
+      // debugger;
     }
   });
 

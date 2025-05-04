@@ -2232,6 +2232,10 @@ try{
         return 0;
       }
 
+      if (key.startsWith("--")) {
+        return getComputedStyle(target._ele).getPropertyValue(key);
+      }
+
       const { style } = target._ele;
       if (Array.from(style).includes(key)) {
         return style[key];
@@ -3591,6 +3595,29 @@ try{
         target = target.parent;
         parents.push(target);
       }
+      return parents;
+    }
+
+    parentsUntil(expr) {
+      const allParents = this.parents;
+      const parents = [];
+
+      const exprIsObj = typeof expr === "object";
+
+      while (allParents.length) {
+        const target = allParents.shift();
+
+        if (exprIsObj) {
+          if (target === expr || target.ele === expr) {
+            break;
+          }
+        } else if (meetsEle(target.ele, expr)) {
+          break;
+        }
+
+        parents.push(target);
+      }
+
       return parents;
     }
 
