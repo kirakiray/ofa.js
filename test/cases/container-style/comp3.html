@@ -5,14 +5,19 @@
     }
   </style>
 
-  <match-var t-count="200" mu-count="600">
-    <style>
-      .main {
-        font-size: 20px;
-        font-weight: bold;
-      }
-    </style>
-  </match-var>
+  <x-if :value="showStyle">
+    <match-var t-count="200" mu-count="600">
+      <style>
+        .main {
+          font-size: 20px;
+          font-weight: 800;
+        }
+      </style>
+    </match-var>
+  </x-if>
+
+  <button on:click="showStyle = !showStyle">toggle style</button>
+
   <match-var t-count="300" mu-count="700">
     <style>
       .main {
@@ -28,7 +33,9 @@
   <script>
     export default {
       tag: "comp-three",
-      data: {},
+      data: {
+        showStyle: true,
+      },
     };
   </script>
 </template>

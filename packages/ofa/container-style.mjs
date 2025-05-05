@@ -12,7 +12,8 @@ $.register({
       }
 
       // 获取style内容后，清除内容
-      const styleContent = this.$("style").text;
+      const styleContent = this._styleOriginText || this.$("style").text;
+      this._styleOriginText = styleContent;
 
       // 获取属性值
       const attrs = Array.from(this.ele.attributes);
@@ -20,8 +21,6 @@ $.register({
       this.__style.html = `@container ${attrs
         .map((attr) => `style(--${attr.name}: ${attr.value})`)
         .join(" and ")} {${styleContent}}`;
-
-      // this.__style.html = `@container style(--${attrs[0].name}:${attrs[0].value}){${styleContent}}`;
 
       // 清空内容
       this.html = "";
