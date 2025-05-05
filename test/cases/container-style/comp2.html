@@ -1,0 +1,45 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+    }
+    .main {
+      color: black;
+    }
+  </style>
+
+  <match-var t-count="100">
+    <style>
+      .main {
+        color: red;
+      }
+    </style>
+  </match-var>
+  <match-var t-count="200">
+    <style>
+      .main {
+        color: green;
+        font-size: 20px;
+        --mu-count: 600;
+      }
+    </style>
+  </match-var>
+  <match-var t-count="300">
+    <style>
+      .main {
+        color: blue;
+        --mu-count: 800;
+      }
+    </style>
+  </match-var>
+
+  <div class="main">
+    <slot></slot>
+  </div>
+  <script>
+    export default {
+      tag: "comp-two",
+      data: {},
+    };
+  </script>
+</template>
