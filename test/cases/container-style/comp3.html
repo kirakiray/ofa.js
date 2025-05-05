@@ -16,7 +16,7 @@
     </match-var>
   </x-if>
 
-  <button on:click="showStyle = !showStyle">toggle style</button>
+  <button on:click="toggleVar">toggle style</button>
 
   <match-var t-count="300" mu-count="700">
     <style>
@@ -35,6 +35,12 @@
       tag: "comp-three",
       data: {
         showStyle: true,
+      },
+      proto: {
+        toggleVar() {
+          this.showStyle = !this.showStyle;
+          $.checkMatch();
+        },
       },
     };
   </script>

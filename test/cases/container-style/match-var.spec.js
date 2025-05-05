@@ -15,6 +15,7 @@ test("match var", async ({ page }) => {
   expect(css1.fontSize).toBe("16px");
 
   await page.getByRole("button", { name: "count += 100" }).click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   const css2 = await page.evaluate(() => {
     return {
@@ -27,6 +28,7 @@ test("match var", async ({ page }) => {
   expect(css2.fontSize).toBe("16px");
 
   await page.getByRole("button", { name: "count += 100" }).click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   const css3 = await page.evaluate(() => {
     return {
@@ -39,6 +41,7 @@ test("match var", async ({ page }) => {
   expect(css3.fontSize).toBe("20px");
 
   await page.getByRole("button", { name: "toggle style" }).click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   const css4 = await page.evaluate(() => {
     return {
@@ -51,6 +54,7 @@ test("match var", async ({ page }) => {
   expect(css4.fontSize).toBe("16px");
 
   await page.getByRole("button", { name: "toggle style" }).click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   const css5 = await page.evaluate(() => {
     return {
@@ -63,6 +67,7 @@ test("match var", async ({ page }) => {
   expect(css5.fontSize).toBe("20px");
 
   await page.getByRole("button", { name: "count += 100" }).click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   const css6 = await page.evaluate(() => {
     return {
@@ -75,6 +80,7 @@ test("match var", async ({ page }) => {
   expect(css6.fontSize).toBe("16px");
 
   await page.getByRole("button", { name: "count += 100" }).click();
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   const css7 = await page.evaluate(() => {
     return {
