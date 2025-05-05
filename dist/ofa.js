@@ -5,6 +5,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.$ = {}));
 })(this, (function (exports) { 'use strict';
 
+  var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
   // const error_origin = "http://127.0.0.1:5793/errors";
   const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -125,61 +126,59 @@
     return type === "array" || type === "object";
   };
 
-  const isDebug = {
-    value: null,
-  };
+  // export const isDebug = {
+  //   value: null,
+  // };
 
-  if (typeof document !== "undefined") {
-    if (document.currentScript) {
-      isDebug.value = document.currentScript.attributes.hasOwnProperty("debug");
-    } else {
-      isDebug.value = true;
-    }
-  }
+  // try {
+  //   const fileUrl = import.meta.url;
+  //   isDebug.value = fileUrl.includes("#debug");
+  // } catch (err) {
+  //   isDebug.value = false;
+  // }
 
   const TICKERR = "nexttick_thread_limit";
 
   let asyncsCounter = 0;
   let afterTimer;
-  const tickSets = new Set();
   function nextTick(callback) {
     clearTimeout(afterTimer);
     afterTimer = setTimeout(() => {
       asyncsCounter = 0;
     });
 
-    if (isDebug.value) {
-      Promise.resolve().then(() => {
-        asyncsCounter++;
-        if (asyncsCounter > 100000) {
-          const err = getErr(TICKERR);
-          console.warn(err, "lastCall => ", callback);
-          throw err;
-        }
-
-        callback();
-      });
-      return;
-    }
-
-    const tickId = `t-${getRandomId()}`;
-    tickSets.add(tickId);
+    // if (isDebug.value) {
     Promise.resolve().then(() => {
       asyncsCounter++;
-      // console.log("asyncsCounter => ", asyncsCounter);
-      if (asyncsCounter > 50000) {
-        tickSets.clear();
-
+      if (asyncsCounter > 100000) {
         const err = getErr(TICKERR);
         console.warn(err, "lastCall => ", callback);
         throw err;
       }
-      if (tickSets.has(tickId)) {
-        callback();
-        tickSets.delete(tickId);
-      }
+
+      callback();
     });
-    return tickId;
+    return;
+    // }
+
+    // const tickId = `t-${getRandomId()}`;
+    // tickSets.add(tickId);
+    // Promise.resolve().then(() => {
+    //   asyncsCounter++;
+    //   // console.log("asyncsCounter => ", asyncsCounter);
+    //   if (asyncsCounter > 50000) {
+    //     tickSets.clear();
+
+    //     const err = getErr(TICKERR);
+    //     console.warn(err, "lastCall => ", callback);
+    //     throw err;
+    //   }
+    //   if (tickSets.has(tickId)) {
+    //     callback();
+    //     tickSets.delete(tickId);
+    //   }
+    // });
+    // return tickId;
   }
 
   // export const clearTick = (id) => tickSets.delete(id);
@@ -4971,11 +4970,7 @@ try{
       return targetUrl;
     }
 
-    let isDebug = true;
-
-    if ($.hasOwnProperty("debugMode")) {
-      isDebug = $.debugMode;
-    }
+    let isDebug = $.debugMode;
 
     const tempEl = $("<template></template>");
     tempEl.html = content;
@@ -6805,8 +6800,8 @@ ${scriptContent}`;
       container.id = "match-var-test-container";
       child.id = "match-var-test-child";
       container.appendChild(child);
-      document.body.appendChild(style);
-      document.body.appendChild(container);
+      document.documentElement.appendChild(style);
+      document.documentElement.appendChild(container);
 
       // 检测是否应用了样式
       const isSupported = window
@@ -6814,8 +6809,8 @@ ${scriptContent}`;
         .fontFamily.includes("match-var-test");
 
       // 清理测试元素
-      document.body.removeChild(style);
-      document.body.removeChild(container);
+      document.documentElement.removeChild(style);
+      document.documentElement.removeChild(container);
 
       return isSupported;
     } catch (err) {
@@ -6827,11 +6822,18 @@ ${scriptContent}`;
   const version = "ofa.js@4.5.33";
   $.version = version.replace("ofa.js@", "");
 
-  if (document.currentScript) {
-    Object.defineProperty($, "debugMode", {
-      get: () => isDebug.value,
-    });
+  let isDebug = false;
+
+  try {
+    const fileUrl = (typeof document === 'undefined' && typeof location === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : typeof document === 'undefined' ? location.href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('ofa.js', document.baseURI).href));
+    isDebug = fileUrl.includes("#debug");
+  } catch (err) {
+    isDebug = false;
   }
+
+  Object.defineProperty($, "debugMode", {
+    get: () => isDebug,
+  });
 
   if (typeof window !== "undefined") {
     window.$ = $;

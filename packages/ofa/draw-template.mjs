@@ -140,11 +140,7 @@ export async function drawUrl(content, url, isPage = true) {
     return targetUrl;
   }
 
-  let isDebug = true;
-
-  if ($.hasOwnProperty("debugMode")) {
-    isDebug = $.debugMode;
-  }
+  let isDebug = $.debugMode;
 
   const tempEl = $("<template></template>");
   tempEl.html = content;

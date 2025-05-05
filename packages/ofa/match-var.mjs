@@ -172,8 +172,8 @@ function supportsContainerStyleQueries() {
     container.id = "match-var-test-container";
     child.id = "match-var-test-child";
     container.appendChild(child);
-    document.body.appendChild(style);
-    document.body.appendChild(container);
+    document.documentElement.appendChild(style);
+    document.documentElement.appendChild(container);
 
     // 检测是否应用了样式
     const isSupported = window
@@ -181,8 +181,8 @@ function supportsContainerStyleQueries() {
       .fontFamily.includes("match-var-test");
 
     // 清理测试元素
-    document.body.removeChild(style);
-    document.body.removeChild(container);
+    document.documentElement.removeChild(style);
+    document.documentElement.removeChild(container);
 
     return isSupported;
   } catch (err) {

@@ -14,17 +14,16 @@ export const isObject = (obj) => {
   return type === "array" || type === "object";
 };
 
-export const isDebug = {
-  value: null,
-};
+// export const isDebug = {
+//   value: null,
+// };
 
-if (typeof document !== "undefined") {
-  if (document.currentScript) {
-    isDebug.value = document.currentScript.attributes.hasOwnProperty("debug");
-  } else {
-    isDebug.value = true;
-  }
-}
+// try {
+//   const fileUrl = import.meta.url;
+//   isDebug.value = fileUrl.includes("#debug");
+// } catch (err) {
+//   isDebug.value = false;
+// }
 
 const TICKERR = "nexttick_thread_limit";
 
@@ -37,38 +36,38 @@ export function nextTick(callback) {
     asyncsCounter = 0;
   });
 
-  if (isDebug.value) {
-    Promise.resolve().then(() => {
-      asyncsCounter++;
-      if (asyncsCounter > 100000) {
-        const err = getErr(TICKERR);
-        console.warn(err, "lastCall => ", callback);
-        throw err;
-      }
-
-      callback();
-    });
-    return;
-  }
-
-  const tickId = `t-${getRandomId()}`;
-  tickSets.add(tickId);
+  // if (isDebug.value) {
   Promise.resolve().then(() => {
     asyncsCounter++;
-    // console.log("asyncsCounter => ", asyncsCounter);
-    if (asyncsCounter > 50000) {
-      tickSets.clear();
-
+    if (asyncsCounter > 100000) {
       const err = getErr(TICKERR);
       console.warn(err, "lastCall => ", callback);
       throw err;
     }
-    if (tickSets.has(tickId)) {
-      callback();
-      tickSets.delete(tickId);
-    }
+
+    callback();
   });
-  return tickId;
+  return;
+  // }
+
+  // const tickId = `t-${getRandomId()}`;
+  // tickSets.add(tickId);
+  // Promise.resolve().then(() => {
+  //   asyncsCounter++;
+  //   // console.log("asyncsCounter => ", asyncsCounter);
+  //   if (asyncsCounter > 50000) {
+  //     tickSets.clear();
+
+  //     const err = getErr(TICKERR);
+  //     console.warn(err, "lastCall => ", callback);
+  //     throw err;
+  //   }
+  //   if (tickSets.has(tickId)) {
+  //     callback();
+  //     tickSets.delete(tickId);
+  //   }
+  // });
+  // return tickId;
 }
 
 // export const clearTick = (id) => tickSets.delete(id);
