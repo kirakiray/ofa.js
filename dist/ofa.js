@@ -6662,7 +6662,7 @@ ${scriptContent}`;
         this.html = "";
       },
       __addStyle() {
-        if (this.__added) {
+        if (this.__added || supportStyleQueries) {
           return;
         }
 
@@ -6674,7 +6674,7 @@ ${scriptContent}`;
         this.__added = true;
       },
       __removeStyle() {
-        if (!this.__added) {
+        if (!this.__added || supportStyleQueries) {
           return;
         }
 

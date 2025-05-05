@@ -5,6 +5,7 @@
     }
   </style>
 
+  <!-- bug: 在safari上这种重新渲染的样式，会丢失，最好不要这样操作 -->
   <x-if :value="showStyle">
     <match-var t-count="200" mu-count="600">
       <style>

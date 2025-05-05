@@ -11,7 +11,8 @@
   </style>
   <div>count:{{count}}</div>
   <div>
-    <button on:click="haha">count += 100</button>
+    <button on:click="haha(100)">count += 100</button>
+    <button on:click="haha(-100)">count -= 100</button>
   </div>
   <div class="main">
     <slot></slot>
@@ -23,8 +24,8 @@
         count: 0,
       },
       proto: {
-        haha() {
-          this.count += 100;
+        haha(count) {
+          this.count += count;
 
           $.checkMatch();
         },
