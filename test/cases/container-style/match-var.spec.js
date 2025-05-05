@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("provider and consumer attributes", async ({ page }) => {
+test("match var", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/container-style/demo.html");
 
   const css1 = await page.evaluate(() => {

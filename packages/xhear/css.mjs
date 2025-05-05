@@ -11,7 +11,7 @@ const cssHandler = {
       return 0;
     }
 
-    if (key.startsWith("--")) {
+    if (key.startsWith && key.startsWith("--")) {
       return getComputedStyle(target._ele).getPropertyValue(key);
     }
 
