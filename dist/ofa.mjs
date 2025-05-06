@@ -238,7 +238,7 @@ const isObject = (obj) => {
 //   isDebug.value = false;
 // }
 
-const TICKERR = "nexttick_thread_limit";
+// const TICKERR = "nexttick_thread_limit";
 
 let asyncsCounter = 0;
 let afterTimer;
@@ -252,7 +252,7 @@ function nextTick(callback) {
   Promise.resolve().then(() => {
     asyncsCounter++;
     if (asyncsCounter > 100000) {
-      const err = getErr(TICKERR);
+      const err = getErr("nexttick_thread_limit");
       console.warn(err, "lastCall => ", callback);
       throw err;
     }
@@ -6919,6 +6919,162 @@ function supportsContainerStyleQueries() {
     return false;
   }
 }
+
+const refreshCondition = (conditionEl) => {
+  const conditionEls = [conditionEl];
+
+  // 获取所有兄弟元素
+  if (conditionEl.tag == "o-if") {
+    let nexts = getNexts(conditionEl.next);
+    conditionEls.push(...nexts);
+  } else if (conditionEl.tag == "o-else-if") {
+    let nexts = getNexts(conditionEl.next);
+    conditionEls.push(...nexts);
+    let prevs = getPrevs(conditionEl.prev);
+    conditionEls.unshift(...prevs);
+  }
+
+  // 在第一个元素上做缓刷新
+  const firstEl = conditionEls[0];
+  if (firstEl.tag == "o-if") {
+    clearTimeout(firstEl.__refreshTimer);
+    firstEl.__refreshTimer = setTimeout(() => {
+      // 按顺序获取条件元素的value值，找到第一个为true的元素
+      let targetCondition = null;
+      for (let i = 0; i < conditionEls.length; i++) {
+        const el = conditionEls[i];
+        if (el.tag == "o-if" || el.tag == "o-else-if") {
+          if (el.value) {
+            targetCondition = el;
+            break;
+          }
+        } else {
+          // 最后一个 o-else 元素
+          targetCondition = el;
+        }
+      }
+
+      // 如果找到目标，就渲染目标元素
+      if (targetCondition) {
+        renderContent(targetCondition);
+      }
+
+      // 清空其他元素内容
+      conditionEls.forEach((el) => {
+        if (el !== targetCondition) {
+          clearContent(el);
+        }
+      });
+    }, 0);
+  } else {
+    // 报错
+    console.error("o-if must be the first element", conditionEls);
+  }
+};
+
+// 渲染内容
+const renderContent = (conditionEl) => {
+  if (conditionEl.__rendered) {
+    // 已经渲染过，直接返回
+    return;
+  }
+
+  const result = getRenderData(conditionEl.ele);
+
+  if (!result) {
+    return;
+  }
+
+  const { target, data, temps } = result;
+
+  conditionEl.html = conditionEl.__originHTML;
+
+  render({ target, data, temps });
+
+  conditionEl.__rendered = true;
+
+  // 触发渲染事件
+  conditionEl.emit("rendered", {
+    bubbles: false,
+  });
+};
+
+// 清空内容
+const clearContent = (conditionEl) => {
+  if (!conditionEl.__rendered) {
+    // 没有渲染过，直接返回
+    return;
+  }
+
+  conditionEl.ele.childNodes?.forEach((el) => revokeAll(el));
+
+  // 清空元素内容
+  conditionEl.html = "";
+
+  conditionEl.__rendered = false;
+};
+
+// 获取后方兄弟元素
+const getNexts = (next) => {
+  const nexts = [];
+  while (next && (next.tag === "o-else-if" || next.tag === "o-else")) {
+    nexts.push(next);
+    next = next.next;
+  }
+  return nexts;
+};
+
+// 获取前方兄弟元素
+const getPrevs = (prev) => {
+  const prevs = [];
+  while (prev && (prev.tag == "o-if" || prev.tag == "o-else-if")) {
+    prevs.unshift(prev);
+    prev = prev.prev;
+  }
+  return prevs;
+};
+
+const createdFunc = function (_this) {
+  _this.__originHTML = _this.html;
+  _this.html = "";
+};
+
+$.register({
+  tag: "o-if",
+  data: {
+    value: null,
+  },
+  watch: {
+    value() {
+      refreshCondition(this);
+    },
+  },
+  created() {
+    createdFunc(this);
+  },
+});
+
+$.register({
+  tag: "o-else-if",
+  data: {
+    value: null,
+  },
+  watch: {
+    value() {
+      refreshCondition(this);
+    },
+  },
+  created() {
+    createdFunc(this);
+  },
+});
+
+$.register({
+  tag: "o-else",
+  created() {
+    createdFunc(this);
+  },
+});
 
 const version = "ofa.js@4.5.33";
 $.version = version.replace("ofa.js@", "");

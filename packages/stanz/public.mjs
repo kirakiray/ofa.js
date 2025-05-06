@@ -25,7 +25,7 @@ export const isObject = (obj) => {
 //   isDebug.value = false;
 // }
 
-const TICKERR = "nexttick_thread_limit";
+// const TICKERR = "nexttick_thread_limit";
 
 let asyncsCounter = 0;
 let afterTimer;
@@ -40,7 +40,7 @@ export function nextTick(callback) {
   Promise.resolve().then(() => {
     asyncsCounter++;
     if (asyncsCounter > 100000) {
-      const err = getErr(TICKERR);
+      const err = getErr("nexttick_thread_limit");
       console.warn(err, "lastCall => ", callback);
       throw err;
     }
