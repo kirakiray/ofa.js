@@ -8,6 +8,7 @@ import "./link.mjs";
 import "./context.mjs";
 import "./match-var.mjs";
 import "./if.mjs";
+import "./fill.mjs";
 import Stanz from "../stanz/main.mjs";
 
 const version = "ofa.js@4.5.33";

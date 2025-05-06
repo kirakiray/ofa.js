@@ -40,11 +40,13 @@ const refreshCondition = (conditionEl) => {
       // 如果找到目标，就渲染目标元素
       if (targetCondition) {
         renderContent(targetCondition);
+        targetCondition.attr("actived", "");
       }
 
       // 清空其他元素内容
       conditionEls.forEach((el) => {
         if (el !== targetCondition) {
+          el.attr("actived", null);
           clearContent(el);
         }
       });
@@ -122,8 +124,11 @@ const createdFunc = function (_this) {
   _this.html = "";
 };
 
+const temp = `<style>:host{display:contents;}</style><slot></slot>`;
+
 $.register({
   tag: "o-if",
+  temp,
   data: {
     value: null,
   },
@@ -139,6 +144,7 @@ $.register({
 
 $.register({
   tag: "o-else-if",
+  temp,
   data: {
     value: null,
   },
@@ -154,6 +160,7 @@ $.register({
 
 $.register({
   tag: "o-else",
+  temp,
   created() {
     createdFunc(this);
   },
