@@ -1,0 +1,30 @@
+import { test, expect } from "@playwright/test";
+
+test("match var", async ({ page }) => {
+  await page.goto("http://localhost:3348/test/cases/o-if/demo.html");
+
+  // 断言文本是否包含 'I am 0 green'
+  expect(await page.$eval("#tips", (el) => el.textContent)).toContain(
+    "I am 0 green"
+  );
+
+  await page.getByRole("button", { name: "+1" }).click();
+
+  expect(await page.$eval("#tips", (el) => el.textContent)).toContain(
+    "I am 1 pink"
+  );
+
+  await page.getByRole("button", { name: "+1" }).click();
+
+  expect(await page.$eval("#tips", (el) => el.textContent)).toContain(
+    "I am 2 red"
+  );
+
+  await page.getByRole("button", { name: "-1" }).click();
+  await page.getByRole("button", { name: "-1" }).click();
+  await page.getByRole("button", { name: "-1" }).click();
+
+  expect(await page.$eval("#tips", (el) => el.textContent)).toContain(
+    "I am -1 blue"
+  );
+});
