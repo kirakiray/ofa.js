@@ -2,6 +2,7 @@ import $ from "../xhear/base.mjs";
 import { getRenderData } from "../xhear/render/condition.mjs";
 import { eleX, revokeAll } from "../xhear/util.mjs";
 import { createItem } from "../xhear/render/fill.mjs";
+import { getErr } from "../ofa-error/main.js";
 
 $.register({
   tag: "o-fill",
@@ -12,8 +13,13 @@ $.register({
   proto: {
     refreshView() {
       const arr = this.value;
+      const tempName = this.attr("name");
 
-      if (!arr || !arr.length) {
+      if (
+        !arr ||
+        !arr.length ||
+        (this.__oldTempName && this.__oldTempName !== tempName)
+      ) {
         // 没有值，清空内容
         Array.from(this.ele.childNodes).forEach((e) => {
           revokeAll(e);
@@ -24,14 +30,20 @@ $.register({
 
       const { data, target, temps } = getRenderData(this.ele);
 
-      const tempName = this.attr("name");
       const keyName = this.attr("fill-key") || "xid";
 
-      const targetTemp = temps[tempName];
+      let targetTemp = temps[tempName];
 
       if (!targetTemp) {
-        throw new Error("o-fill: 没有找到模板: ", tempName);
+        // 没有找到模板，查看是否有默认的模板
+        if (this.__originHTML) {
+          targetTemp = $(`<template>${this.__originHTML}</template>`).ele;
+        } else {
+          throw new Error("o-fill - Template not found: " + tempName);
+        }
       }
+
+      this.__oldTempName = tempName;
 
       if (!this.length) {
         // 没有子元素，优化性能的添加方式
@@ -136,9 +148,24 @@ $.register({
       }
     });
   },
+  attached() {
+    if (this.value) {
+      this.refreshView();
+    }
+  },
   created() {
-    // 创建的时候，将内容抽取成模板
-    this.__originHTML = this.html;
+    if (this.length > 1 || (this.length === 0 && this.html.trim())) {
+      const err = getErr("temp_multi_child");
+      console.warn(err, this.ele, {
+        content: this.html.trim(),
+      });
+
+      this.__originHTML = `<div style="display: contents;">${this.html}</div>`;
+    } else {
+      // 创建的时候，将内容抽取成模板
+      this.__originHTML = this.html.trim();
+    }
+
     this.html = "";
   },
 });
