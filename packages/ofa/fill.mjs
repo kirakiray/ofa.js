@@ -28,7 +28,7 @@ $.register({
         return;
       }
 
-      const { data, target, temps } = getRenderData(this.ele);
+      const { data, target, temps = {} } = getRenderData(this.ele);
 
       const keyName = this.attr("fill-key") || "xid";
 
