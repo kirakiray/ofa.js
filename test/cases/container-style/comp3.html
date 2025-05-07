@@ -1,0 +1,48 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+
+  <!-- bug: 在safari上这种重新渲染的样式，会丢失，最好不要这样操作 -->
+  <x-if :value="showStyle">
+    <match-var t-count="200" mu-count="600">
+      <style>
+        .main {
+          font-size: 20px;
+          font-weight: 800;
+        }
+      </style>
+    </match-var>
+  </x-if>
+
+  <button on:click="toggleVar">toggle style</button>
+
+  <match-var t-count="300" mu-count="700">
+    <style>
+      .main {
+        font-size: 26px;
+        font-weight: 100;
+      }
+    </style>
+  </match-var>
+
+  <div class="main">
+    <slot></slot>
+  </div>
+  <script>
+    export default {
+      tag: "comp-three",
+      data: {
+        showStyle: true,
+      },
+      proto: {
+        toggleVar() {
+          this.showStyle = !this.showStyle;
+          $.checkMatch();
+        },
+      },
+    };
+  </script>
+</template>

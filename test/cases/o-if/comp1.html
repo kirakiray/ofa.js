@@ -1,0 +1,35 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <div>count:{{count}}</div>
+  <button on:click="count++">+1</button>
+  <button on:click="count--">-1</button>
+  <o-if :value="count >= 1">
+    <o-if :value="count >= 2">
+      <div id="tips" style="color: red">I am {{count}} red</div>
+    </o-if>
+    <o-else>
+      <div id="tips" style="color: pink">I am {{count}} pink</div>
+    </o-else>
+  </o-if>
+  <o-else-if :value="count <= -1">
+    <div id="tips" style="color: blue">I am {{count}} blue</div>
+  </o-else-if>
+  <o-else>
+    <div id="tips" style="color: green">I am {{count}} green</div>
+  </o-else>
+  <div class="main">
+    <slot></slot>
+  </div>
+  <script>
+    export default {
+      tag: "comp-one",
+      data: {
+        count: 0,
+      },
+    };
+  </script>
+</template>

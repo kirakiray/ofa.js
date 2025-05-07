@@ -1,0 +1,115 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+
+  <div>
+    <o-fill :value="arr" name="temp1"> </o-fill>
+  </div>
+
+  <div>
+    <o-fill :value="arr">
+      <div
+        :css.color="$data.color"
+        style="border: #aaa solid 1px; border-radius: 6px; margin: 8px"
+        data-testid="item"
+      >
+        {{$data.val}}
+      </div>
+    </o-fill>
+  </div>
+
+  <div>
+    <button on:click="changeSome">Change Some</button>
+    <button on:click="newArr">New Arr</button>
+    <button on:click="arr = null">Clear</button>
+  </div>
+
+  <template name="temp1">
+    <div>
+      <div data-testid="temp1" :css.color="$data.color">{{$data.val}}</div>
+      <o-fill :value="$data.arr2" name="temp2"></o-fill>
+    </div>
+  </template>
+
+  <template name="temp2">
+    <div data-testid="temp2" style="padding-left: 16px">{{$data.val2}}</div>
+  </template>
+  <script>
+    export default {
+      tag: "comp-one",
+      data: {
+        arr: [
+          {
+            val: "1111",
+            color: "red",
+            arr2: [
+              {
+                val2: "1111-1",
+              },
+              {
+                val2: "1111-2",
+              },
+            ],
+          },
+          {
+            val: "222",
+            color: "blue",
+          },
+          {
+            val: "33",
+            color: "green",
+            arr2: [
+              {
+                val2: "33-1",
+              },
+            ],
+          },
+        ],
+      },
+      proto: {
+        changeSome() {
+          if (!this.arr) {
+            this.arr = [];
+          }
+
+          this.arr.reverse();
+          this.arr.splice(
+            1,
+            1,
+            {
+              val: "2.1111",
+              // val: "2." + Math.random().toString().slice(2, 8),
+              color: `rgb(${parseInt(256 * Math.random())}, 0, 256)`,
+            },
+            {
+              val: "2.2222",
+              // val: "2." + Math.random().toString().slice(2, 8),
+              color: `rgb(0, ${parseInt(256 * Math.random())}, 256)`,
+            }
+          );
+
+          console.log(this.arr.toJSON());
+        },
+        newArr() {
+          this.arr = [
+            {
+              val: "4444",
+              color: "pink",
+            },
+            {
+              val: "55555",
+              color: "orange",
+            },
+            {
+              val: "666666",
+              color: "yellow",
+            },
+          ];
+        },
+      },
+    };
+  </script>
+</template>

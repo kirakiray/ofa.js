@@ -269,7 +269,7 @@ register({
   },
 });
 
-const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
+export const createItem = ($data, temps, targetTemp, $host, $index, keyName) => {
   const $ele = createXEle(targetTemp.innerHTML);
 
   const itemData = new Stanz({

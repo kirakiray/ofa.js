@@ -1,9 +1,111 @@
-//! ofa.js - v4.5.33 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.0 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
 // 存放错误信息的数据对象
-const errors = {};
+const errors = {
+  load_fail: "Load {url} failed",
+  load_fail_status: "Load {url} failed, status code: {status}",
+  load_module: "Load module failed, module address: {url}",
+  no_alias: "No alias found: {name}, so '{url}' request is invalid",
+  config_alias_name_error: "Error in setting alias, must start with '@'",
+  alias_already: "Alias ​​'{name}' already exists",
+  alias_relate_name:
+    "Alias ​​cannot be configured with relative address, '{name}': '{path}'",
+  failed_to_set_data: "Error in setting attribute value {key}",
+  failed_to_get_data: "Error in getting {key}",
+  nexttick_thread_limit:
+    "nextTick exceeds thread limit, may have an infinite loop, please try to repair or optimize the function",
+  not_func: "The callback parameter of the {name} method must be a Function",
+  not_found_func:
+    "The '{name}' method was not found on the target {tag}. Please define the '{name}' method on the 'proto' of the component {tag}",
+  invalid_key:
+    "The parameters for registering the '{compName}' component are incorrect. The '{name}' on '{targetName}' is already occupied. Please change '{name}' to another name.",
+  xhear_wrap_no_parent:
+    "The target element has no parent element, the warp method cannot be used",
+  xhear_unwrap_has_siblings:
+    "The target element contains adjacent nodes, the unwrap method cannot be used",
+  xhear_reander_err: "Failed to render the tag '{tag}'",
+  xhear_register_exists:
+    "The component '{name}' already exists, and this component cannot be registered repeatedly",
+  xhear_register_err: "Error in registering the '{tag}' component",
+  xhear_validate_tag:
+    "The registered component name '{str}' is incorrect. For the Web Components naming rules, please refer to: https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names ",
+  xhear_tag_noline:
+    "The registered component name '{str}' is incorrect and contains at least one '-' character; Web Components For naming rules, please refer to: https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names ",
+  xhear_regster_data_noset:
+    "Error in registering component {tag}, custom data cannot have data of type 'Set' or 'Map'",
+  xhear_regster_data_nofunc:
+    "Registration component {tag} error, functions cannot appear in custom data, please put the function in 'proto'; or change '{key}' to '_{key}'",
+  xhear_fakenode_unclose:
+    "This is an unclosed FakeNode; use the wrong attribute name: {name}",
+  xhear_fill_tempname: "Fill component template '{name}' not found",
+  xhear_eval:
+    "Template syntax '{name}' error, expression {name}:{arg0}=\"{arg1}\"",
+  xhear_listen_already:
+    "An old listener already exists, and this element is rendering incorrectly. ",
+  xhear_dbfill_noname:
+    "Only fill components with the 'name' attribute can be rendered in the fill component",
+  xhear_temp_exist: "Template '{name}' already exists",
+  xhear_sync_no_options:
+    "Direct use of the 'sync' method is not allowed, it is only used for template rendering",
+  xhear_sync_object_value:
+    "Cannot use 'sync' to synchronize values ​​of Object type, target {targetName}",
+  loading_nothing: "Loading function has no return content",
+  app_src_change:
+    "The app element that has been initialized cannot modify the src attribute",
+  no_cross_access_func:
+    "To jump to a page across domains, you must set the access function",
+  access_return_error: "Jumping to {src} is not allowed",
+  load_comp_module:
+    "Error loading component module, wrong module address: {url}",
+  comp_registered:
+    "Component '{tag}' has been registered, and the component cannot be registered again",
+  "inject-link-rel":
+    "The rel attribute value of the link element in the inject-host component can only be 'stylesheet'",
+  "use-data-inject":
+    "Please do not use data() on the style element in the inject-host, because it will cause serious performance crisis",
+  load_page_module: "Loading page module {url} failed",
+  page_no_defaults:
+    "The current page ({src}) has been rendered and cannot be rendered again",
+  not_page_module:
+    "{src} is not a page module and cannot be set as the src of the page component",
+  page_failed: "Loading page failed: {src}",
+  fetch_temp_err: "Page module {url} failed to load template {tempSrc}",
+  page_wrap_fetch: "Page {before} failed to get the parent page ({current})",
+  context_change_name:
+    "Changing the 'name' of {compName} may cause performance issues, please avoid changing this property",
+  no_provider:
+    "The consumer named '{name}' was not captured by the corresponding provider",
+  page_invalid_key:
+    "The registration parameters of page {src} are incorrect. '{name}' on '{targetName}' is already taken. Please change '{name}' to another name.",
+  root_provider_exist:
+    "An exception occurred in the root provider named '{name}'. The root provider component can only appear once",
+  root_provider_name_change:
+    "An exception occurred in the root provider named '{name}'. The root provider component cannot change the 'name' attribute",
+  change_lm_src:
+    "{tag} element changes 'src' attribute invalid, this attribute can only be set once.",
+  error_no_owner:
+    "This data is incorrect, the owner has not registered this object",
+  circular_data: "An object with a circular reference",
+  fill_type:
+    "'value' of 'x-fill' must be of type Array, the current value is of type {type}",
+  fill_key_duplicates: "The key in the fill component is repeated",
+  render_el_error: "Rendering element failed, rendering error is {expr}",
+  temp_multi_child:
+    "The template element can only contain one child element. If multiple child elements appear, the child elements will be repackaged in a <div> element",
+  temp_wrap_child:
+    "The template '{tempName}' contains {len} child elements, which have been wrapped in a div element with the attribute '{wrapName}'.",
+  app_noback:
+    "This is already the first page, and the 'back' operation cannot be performed again",
+  invalidated_inject_host: "This element will be invalidated in 'inject-host'",
+  olink_out_app: "The element of [olink] is only allowed in o-app",
+  app_noforward:
+    "This is the last page, you can no longer perform the 'forward' operation",
+  need_forwards:
+    "The target o-app does not allow forward operations, please add the '_forwards' attribute to the target; or in the app config file, add 'export const allowForward = true' ",
+  watchuntil_timeout: "watchUntil timed out, target value not monitored",
+};
 
 if (globalThis.navigator && navigator.language) {
   let langFirst = navigator.language.toLowerCase().split("-")[0];
@@ -12,36 +114,42 @@ if (globalThis.navigator && navigator.language) {
     langFirst = "zhft";
   }
 
+  // 根据用户的语言首字母加载对应的错误匹配库，匹配开发人员报错信息
   (async () => {
-    if (typeof localStorage !== "undefined") {
-      if (localStorage["ofa-errors"]) {
-        const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
-        Object.assign(errors, targetLangErrors);
-      }
+    if (!globalThis.localStorage) {
+      // 不支持 localStorage，不加载错误库
+      return;
+    }
 
-      const errCacheTime = localStorage["ofa-errors-time"];
+    if (globalThis.navigator && !navigator.onLine) {
+      // 网络不可用，不加载错误库
+      return;
+    }
 
-      if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
-        const targetLangErrors = await fetch(
-          `${error_origin}/${langFirst}.json`
-        )
+    if (localStorage["ofa-errors"]) {
+      const targetLangErrors = JSON.parse(localStorage["ofa-errors"]);
+      Object.assign(errors, targetLangErrors);
+    }
+
+    const errCacheTime = localStorage["ofa-errors-time"];
+
+    if (!errCacheTime || Date.now() > Number(errCacheTime) + 5 * 60 * 1000) {
+      const targetLangErrors = await fetch(`${error_origin}/${langFirst}.json`)
+        .then((e) => e.json())
+        .catch(() => null);
+
+      if (targetLangErrors) {
+        localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
+        localStorage["ofa-errors-time"] = Date.now();
+      } else {
+        targetLangErrors = await fetch(`${error_origin}/en.json`)
           .then((e) => e.json())
-          .catch(() => null);
-
-        if (targetLangErrors) {
-          localStorage["ofa-errors"] = JSON.stringify(targetLangErrors);
-          localStorage["ofa-errors-time"] = Date.now();
-        } else {
-          targetLangErrors = await fetch(`${error_origin}/en.json`)
-            .then((e) => e.json())
-            .catch((error) => {
-              console.error(error);
-              return null;
-            });
-        }
-
-        Object.assign(errors, targetLangErrors);
+          .catch((error) => {
+            return null;
+          });
       }
+
+      Object.assign(errors, targetLangErrors);
     }
   })();
 }
@@ -119,61 +227,59 @@ const isObject = (obj) => {
   return type === "array" || type === "object";
 };
 
-const isDebug = {
-  value: null,
-};
+// export const isDebug = {
+//   value: null,
+// };
 
-if (typeof document !== "undefined") {
-  if (document.currentScript) {
-    isDebug.value = document.currentScript.attributes.hasOwnProperty("debug");
-  } else {
-    isDebug.value = true;
-  }
-}
+// try {
+//   const fileUrl = import.meta.url;
+//   isDebug.value = fileUrl.includes("#debug");
+// } catch (err) {
+//   isDebug.value = false;
+// }
 
-const TICKERR = "nexttick_thread_limit";
+// const TICKERR = "nexttick_thread_limit";
 
 let asyncsCounter = 0;
 let afterTimer;
-const tickSets = new Set();
 function nextTick(callback) {
   clearTimeout(afterTimer);
   afterTimer = setTimeout(() => {
     asyncsCounter = 0;
   });
 
-  if (isDebug.value) {
-    Promise.resolve().then(() => {
-      asyncsCounter++;
-      if (asyncsCounter > 100000) {
-        const err = getErr(TICKERR);
-        console.warn(err, "lastCall => ", callback);
-        throw err;
-      }
-
-      callback();
-    });
-    return;
-  }
-
-  const tickId = `t-${getRandomId()}`;
-  tickSets.add(tickId);
+  // if (isDebug.value) {
   Promise.resolve().then(() => {
     asyncsCounter++;
-    // console.log("asyncsCounter => ", asyncsCounter);
-    if (asyncsCounter > 50000) {
-      tickSets.clear();
-
-      const err = getErr(TICKERR);
+    if (asyncsCounter > 100000) {
+      const err = getErr("nexttick_thread_limit");
       console.warn(err, "lastCall => ", callback);
       throw err;
     }
-    if (tickSets.has(tickId)) {
-      callback();
-      tickSets.delete(tickId);
-    }
+
+    callback();
   });
-  return tickId;
+  return;
+  // }
+
+  // const tickId = `t-${getRandomId()}`;
+  // tickSets.add(tickId);
+  // Promise.resolve().then(() => {
+  //   asyncsCounter++;
+  //   // console.log("asyncsCounter => ", asyncsCounter);
+  //   if (asyncsCounter > 50000) {
+  //     tickSets.clear();
+
+  //     const err = getErr(TICKERR);
+  //     console.warn(err, "lastCall => ", callback);
+  //     throw err;
+  //   }
+  //   if (tickSets.has(tickId)) {
+  //     callback();
+  //     tickSets.delete(tickId);
+  //   }
+  // });
+  // return tickId;
 }
 
 // export const clearTick = (id) => tickSets.delete(id);
@@ -2226,6 +2332,10 @@ const cssHandler = {
       return 0;
     }
 
+    if (key.startsWith && key.startsWith("--")) {
+      return getComputedStyle(target._ele).getPropertyValue(key);
+    }
+
     const { style } = target._ele;
     if (Array.from(style).includes(key)) {
       return style[key];
@@ -3588,6 +3698,29 @@ class Xhear extends LikeArray {
     return parents;
   }
 
+  parentsUntil(expr) {
+    const allParents = this.parents;
+    const parents = [];
+
+    const exprIsObj = typeof expr === "object";
+
+    while (allParents.length) {
+      const target = allParents.shift();
+
+      if (exprIsObj) {
+        if (target === expr || target.ele === expr) {
+          break;
+        }
+      } else if (meetsEle(target.ele, expr)) {
+        break;
+      }
+
+      parents.push(target);
+    }
+
+    return parents;
+  }
+
   get hosts() {
     const hosts = [];
     let target = this;
@@ -3812,12 +3945,12 @@ const objToXEle = (obj) => {
   return $ele;
 };
 
-const temp$1 = document.createElement("template");
+const temp$2 = document.createElement("template");
 
 const strToXEle = (str) => {
-  temp$1.innerHTML = str;
-  const ele = temp$1.content.children[0] || temp$1.content.childNodes[0];
-  temp$1.innerHTML = "";
+  temp$2.innerHTML = str;
+  const ele = temp$2.content.children[0] || temp$2.content.childNodes[0];
+  temp$2.innerHTML = "";
 
   return eleX(ele);
 };
@@ -4938,11 +5071,7 @@ async function drawUrl(content, url, isPage = true) {
     return targetUrl;
   }
 
-  let isDebug = true;
-
-  if ($.hasOwnProperty("debugMode")) {
-    isDebug = $.debugMode;
-  }
+  let isDebug = $.debugMode;
 
   const tempEl = $("<template></template>");
   tempEl.html = content;
@@ -6160,7 +6289,7 @@ $.fn.extend({
 // 根provider
 const rootProviders = {};
 
-const temp = `<style>:host{display:contents}</style><slot></slot>`;
+const temp$1 = `<style>:host{display:contents}</style><slot></slot>`;
 
 const CONSUMERS = Symbol("consumers");
 const PROVIDER = Symbol("provider");
@@ -6293,7 +6422,7 @@ const InvalidKeys = [
 
 const providerOptions = {
   tag: "o-provider",
-  temp,
+  temp: temp$1,
   attrs: {
     name: null,
   },
@@ -6526,7 +6655,7 @@ const emitAllConsumer = (ele, rootProvider, emitSlot = true) => {
 
 $.register({
   tag: "o-consumer",
-  temp,
+  temp: temp$1,
   attrs: {
     name: null,
   },
@@ -6600,14 +6729,555 @@ $.register({
   },
 });
 
-const version = "ofa.js@4.5.33";
+// 是否支持  @container style 查询
+const supportStyleQueries = supportsContainerStyleQueries();
+// const supportStyleQueries = false; // debug code
+
+$.register({
+  tag: "match-var",
+  temp: `<style>:host{display:none !important; }</style>`,
+  data: {},
+  proto: {
+    initContainerStyle() {
+      // 支持 container style query 的时候，可以直接使用
+      if (!this.__style) {
+        this.__style = $("<style></style>");
+        this.before(this.__style);
+      }
+
+      const styleContent = this._styleOriginText;
+
+      // 获取属性值
+      const attrs = Array.from(this.ele.attributes);
+
+      this.__style.html = `@container ${attrs
+        .map((attr) => `style(--${attr.name}: ${attr.value})`)
+        .join(" and ")} {${styleContent}}`;
+
+      // 清空内容
+      this.html = "";
+    },
+    __addStyle() {
+      if (this.__added || supportStyleQueries) {
+        return;
+      }
+
+      // 在不兼容 container style query 的时候，运行这个方法代表塞入原样式
+      this.html = `<style>
+      ${this._styleOriginText}
+      </style>`;
+
+      this.__added = true;
+    },
+    __removeStyle() {
+      if (!this.__added || supportStyleQueries) {
+        return;
+      }
+
+      this.html = "";
+
+      this.__added = false;
+    },
+  },
+  attached() {
+    // 获取style内容后，清除内容
+    if (!this._styleOriginText) {
+      this._styleOriginText = this.$("style").text;
+      this.html = "";
+    }
+
+    if (supportStyleQueries) {
+      this.initContainerStyle();
+    } else {
+      matchEles.add(this);
+    }
+  },
+  detached() {
+    if (supportStyleQueries) {
+      if (this.__style) {
+        this.__style.remove();
+        this.__style = null;
+      }
+    } else {
+      matchEles.delete(this);
+    }
+  },
+});
+
+const matchEles = new Set();
+{
+  let timer = null;
+  const checkMatchEles = async () => {
+    clearTimeout(timer);
+    for (const $e of matchEles) {
+      const result = Array.from($e.ele.attributes).every((e) => {
+        const value = getComputedStyle($e.ele).getPropertyValue(`--${e.name}`);
+
+        return value === e.value;
+      });
+
+      if ($.checkMatch.delay) {
+        // 添加延迟，防止频繁执行无法渲染
+        await new Promise((resolve) => setTimeout(resolve, $.checkMatch.delay));
+      }
+
+      if (result) {
+        $e.__addStyle();
+      } else {
+        $e.__removeStyle();
+      }
+    }
+
+    timer = setTimeout(checkMatchEles, $.checkMatch.time || 100);
+  };
+
+  if (!supportStyleQueries) {
+    // 每秒轮询检测一次
+    setTimeout(() => {
+      checkMatchEles();
+    }, 100);
+  }
+
+  Object.defineProperties($, {
+    // 添加主动刷新 match var 方法
+    checkMatch: {
+      value() {
+        if (supportStyleQueries) {
+          // 如果支持，不需要执行此方法
+          return false;
+        }
+
+        requestAnimationFrame(() => {
+          checkMatchEles();
+        });
+
+        return true;
+      },
+    },
+  });
+
+  if (!supportStyleQueries) {
+    // 延迟时间，单位毫秒
+    $.checkMatch.delay = 2;
+  }
+}
+
+/**
+ * 检测浏览器是否原生支持 @container style 查询
+ * @returns {boolean} 返回是否支持
+ */
+function supportsContainerStyleQueries() {
+  try {
+    // 创建测试用的DOM元素
+    const container = document.createElement("div");
+    const child = document.createElement("div");
+
+    // 设置容器和子元素的样式
+    container.style.cssText = `
+          container-type: style;
+          position: absolute;
+          left: -9px;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          --test-prop: true;
+        `;
+
+    child.style.cssText = `
+          position: absolute;
+        `;
+
+    // 添加测试样式
+    const style = document.createElement("style");
+    style.textContent = `
+          @container style(--test-prop: true) {
+            #match-var-test-child {
+              font-family: "match-var-test";
+            }
+          }
+        `;
+
+    // 组装DOM结构
+    container.id = "match-var-test-container";
+    child.id = "match-var-test-child";
+    container.appendChild(child);
+    document.documentElement.appendChild(style);
+    document.documentElement.appendChild(container);
+
+    // 检测是否应用了样式
+    const isSupported = window
+      .getComputedStyle(child)
+      .fontFamily.includes("match-var-test");
+
+    // 清理测试元素
+    document.documentElement.removeChild(style);
+    document.documentElement.removeChild(container);
+
+    return isSupported;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+const refreshCondition = (conditionEl) => {
+  const conditionEls = [conditionEl];
+
+  // 获取所有兄弟元素
+  if (conditionEl.tag == "o-if") {
+    let nexts = getNexts(conditionEl.next);
+    conditionEls.push(...nexts);
+  } else if (conditionEl.tag == "o-else-if") {
+    let nexts = getNexts(conditionEl.next);
+    conditionEls.push(...nexts);
+    let prevs = getPrevs(conditionEl.prev);
+    conditionEls.unshift(...prevs);
+  }
+
+  // 在第一个元素上做缓刷新
+  const firstEl = conditionEls[0];
+  if (firstEl.tag == "o-if") {
+    clearTimeout(firstEl.__refreshTimer);
+    firstEl.__refreshTimer = setTimeout(() => {
+      // 按顺序获取条件元素的value值，找到第一个为true的元素
+      let targetCondition = null;
+      for (let i = 0; i < conditionEls.length; i++) {
+        const el = conditionEls[i];
+        if (el.tag == "o-if" || el.tag == "o-else-if") {
+          if (el.value) {
+            targetCondition = el;
+            break;
+          }
+        } else {
+          // 最后一个 o-else 元素
+          targetCondition = el;
+        }
+      }
+
+      // 如果找到目标，就渲染目标元素
+      if (targetCondition) {
+        renderContent(targetCondition);
+        targetCondition.attr("actived", "");
+      }
+
+      // 清空其他元素内容
+      conditionEls.forEach((el) => {
+        if (el !== targetCondition) {
+          el.attr("actived", null);
+          clearContent(el);
+        }
+      });
+    }, 0);
+  } else {
+    // 报错
+    console.error("o-if must be the first element", conditionEls);
+  }
+};
+
+// 渲染内容
+const renderContent = (conditionEl) => {
+  if (conditionEl.__rendered) {
+    // 已经渲染过，直接返回
+    return;
+  }
+
+  const result = getRenderData(conditionEl.ele);
+
+  if (!result) {
+    return;
+  }
+
+  const { target, data, temps } = result;
+
+  conditionEl.html = conditionEl.__originHTML;
+
+  render({ target, data, temps });
+
+  conditionEl.__rendered = true;
+
+  // 触发渲染事件
+  conditionEl.emit("rendered", {
+    bubbles: false,
+  });
+};
+
+// 清空内容
+const clearContent = (conditionEl) => {
+  if (!conditionEl.__rendered) {
+    // 没有渲染过，直接返回
+    return;
+  }
+
+  conditionEl.ele.childNodes?.forEach((el) => revokeAll(el));
+
+  // 清空元素内容
+  conditionEl.html = "";
+
+  conditionEl.__rendered = false;
+};
+
+// 获取后方兄弟元素
+const getNexts = (next) => {
+  const nexts = [];
+  while (next && (next.tag === "o-else-if" || next.tag === "o-else")) {
+    nexts.push(next);
+    next = next.next;
+  }
+  return nexts;
+};
+
+// 获取前方兄弟元素
+const getPrevs = (prev) => {
+  const prevs = [];
+  while (prev && (prev.tag == "o-if" || prev.tag == "o-else-if")) {
+    prevs.unshift(prev);
+    prev = prev.prev;
+  }
+  return prevs;
+};
+
+const createdFunc = function (_this) {
+  _this.__originHTML = _this.html;
+  _this.html = "";
+};
+
+const temp = `<style>:host{display:contents;}</style><slot></slot>`;
+
+$.register({
+  tag: "o-if",
+  temp,
+  data: {
+    value: null,
+  },
+  watch: {
+    value() {
+      refreshCondition(this);
+    },
+  },
+  created() {
+    createdFunc(this);
+  },
+});
+
+$.register({
+  tag: "o-else-if",
+  temp,
+  data: {
+    value: null,
+  },
+  watch: {
+    value() {
+      refreshCondition(this);
+    },
+  },
+  created() {
+    createdFunc(this);
+  },
+});
+
+$.register({
+  tag: "o-else",
+  temp,
+  created() {
+    createdFunc(this);
+  },
+});
+
+$.register({
+  tag: "o-fill",
+  temp: `<style>:host{display:contents;}</style><slot></slot>`,
+  data: {
+    value: null,
+  },
+  proto: {
+    refreshView() {
+      const arr = this.value;
+      const tempName = this.attr("name");
+
+      if (
+        !arr ||
+        !arr.length ||
+        (this.__oldTempName && this.__oldTempName !== tempName)
+      ) {
+        // 没有值，清空内容
+        Array.from(this.ele.childNodes).forEach((e) => {
+          revokeAll(e);
+          e.remove();
+        });
+        return;
+      }
+
+      const { data, target, temps } = getRenderData(this.ele);
+
+      const keyName = this.attr("fill-key") || "xid";
+
+      let targetTemp = temps[tempName];
+
+      if (!targetTemp) {
+        // 没有找到模板，查看是否有默认的模板
+        if (this.__originHTML) {
+          targetTemp = $(`<template>${this.__originHTML}</template>`).ele;
+        } else {
+          throw new Error("o-fill - Template not found: " + tempName);
+        }
+      }
+
+      this.__oldTempName = tempName;
+
+      if (!this.length) {
+        // 没有子元素，优化性能的添加方式
+        const frag = document.createDocumentFragment();
+
+        // 渲染模板
+        for (let i = 0, len = arr.length; i < len; i++) {
+          const item = arr[i];
+
+          const $ele = createItem(
+            item,
+            temps,
+            targetTemp,
+            data.$host || data,
+            i,
+            keyName
+          );
+
+          frag.appendChild($ele.ele);
+        }
+
+        this.ele.appendChild(frag);
+        return;
+      }
+
+      // 有子元素，优化性能的方式更新方式
+      const keyValsArr = arr.map((e) => e[keyName]);
+
+      // 先删除不存在的元素
+      for (let e of Array.from(this.ele.children)) {
+        const renderedItem = e.__render_data;
+
+        const currentKeyVal = renderedItem.$data[keyName];
+
+        // 不存在的id，需要删除
+        if (!keyValsArr.includes(currentKeyVal)) {
+          e.remove();
+          revokeAll(e);
+        }
+      }
+
+      const { children } = this.ele;
+
+      // 获取当前所有的key值
+      let keyVals = [];
+      const refreshKeyVals = () => {
+        keyVals = Array.from(children).map(
+          (e) => e.__render_data.$data[keyName]
+        );
+      };
+      refreshKeyVals();
+
+      const selfEl = this.ele;
+
+      // 遍历一遍进行更新数据
+      for (let i = 0, len = arr.length; i < len; i++) {
+        const item = arr[i];
+        const keyVal = item[keyName];
+
+        // 查找是否存在
+        const index = keyVals.indexOf(keyVal);
+
+        if (index > -1) {
+          // 存在，更新数据
+          const $ele = eleX(children[index]);
+
+          // 如果不是目标元素，则进行位置调整
+          if (children[i] !== $ele.ele) {
+            selfEl.insertBefore($ele.ele, children[i]);
+            refreshKeyVals();
+          }
+
+          // 按需更新绑定的数据
+          if ($ele.__item.$data !== item) {
+            $ele.__item.$data = item;
+          }
+          if ($ele.__item.$index !== i) {
+            $ele.__item.$index = i;
+          }
+        } else {
+          // 不存在，添加新的元素
+          const $ele = createItem(
+            item,
+            temps,
+            targetTemp,
+            data.$host || data,
+            i,
+            keyName
+          );
+
+          selfEl.insertBefore($ele.ele, children[i]);
+          refreshKeyVals();
+        }
+      }
+    },
+  },
+  ready() {
+    this.watchTick((e) => {
+      if (e.hasModified("value")) {
+        // value发生变动，重新渲染
+        this.refreshView();
+      }
+    });
+  },
+  attached() {
+    if (this.value) {
+      this.refreshView();
+    }
+  },
+  created() {
+    // 检查内部是否包含无name的o-fill
+    const fillEls = this.all("o-fill:not([name])");
+
+    if (fillEls.length > 0) {
+      const err = getErr("xhear_dbfill_noname");
+      console.warn(err, this.ele, {
+        content: this.html.trim(),
+      });
+      fillEls.forEach((e) => {
+        e.remove();
+      });
+      throw err;
+    }
+
+    if (this.length > 1 || (this.length === 0 && this.html.trim())) {
+      const err = getErr("temp_multi_child");
+      console.warn(err, this.ele, {
+        content: this.html.trim(),
+      });
+
+      this.__originHTML = `<div style="display: contents;">${this.html}</div>`;
+    } else {
+      // 创建的时候，将内容抽取成模板
+      this.__originHTML = this.html.trim();
+    }
+
+    this.html = "";
+  },
+});
+
+const version = "ofa.js@4.6.0";
 $.version = version.replace("ofa.js@", "");
 
-if (document.currentScript) {
-  Object.defineProperty($, "debugMode", {
-    get: () => isDebug.value,
-  });
+let isDebug = false;
+
+try {
+  const fileUrl = import.meta.url;
+  isDebug = fileUrl.includes("#debug");
+} catch (err) {
+  isDebug = false;
 }
+
+Object.defineProperty($, "debugMode", {
+  get: () => isDebug,
+});
 
 if (typeof window !== "undefined") {
   window.$ = $;
