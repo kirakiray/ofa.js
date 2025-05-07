@@ -2,6 +2,8 @@
 
 [Official Documentation / 官方文档 / 官方文檔](https://ofajs.com)
 
+当前官网文档可能会有延迟，但是正在积极更新中。
+
 ## 什么是 ofa.js？
 
 ofa.js 是用于构建 Web 界面和应用的库。通过将 `script` 标签引入到 HTML 中，就可以立即开始开发。是目前替代 jQuery 最佳的解决方案之一。
@@ -14,6 +16,13 @@ ofa.js 可以像 jQuery 一样作为库使用，也能像 React、Vue 和 Angula
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.0/dist/ofa.min.js"></script>
+```
+### 调试模式
+
+为了更好地进行开发调试，ofa.js 提供了调试模式功能。在调试模式下，组件模板会启用 sourcemap 功能，让您能够更轻松地定位和解决问题。启用调试模式非常简单，只需在 ofa.js 的引用地址后添加 `#debug` 参数即可：
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.0/dist/ofa.js#debug"></script>
 ```
 
 ## 使用体验
