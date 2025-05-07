@@ -14,10 +14,9 @@
       <div
         :css.color="$data.color"
         style="border: #aaa solid 1px; border-radius: 6px; margin: 8px"
+        data-testid="item"
       >
         {{$data.val}}
-
-        <!-- <o-fill :value="$data.arr2" name="temp2"></o-fill> -->
       </div>
     </o-fill>
   </div>
@@ -30,13 +29,13 @@
 
   <template name="temp1">
     <div>
-      <div :css.color="$data.color">{{$data.val}}</div>
+      <div data-testid="temp1" :css.color="$data.color">{{$data.val}}</div>
       <o-fill :value="$data.arr2" name="temp2"></o-fill>
     </div>
   </template>
 
   <template name="temp2">
-    <div style="padding-left: 16px">{{$data.val2}}</div>
+    <div data-testid="temp2" style="padding-left: 16px">{{$data.val2}}</div>
   </template>
   <script>
     export default {
@@ -81,11 +80,13 @@
             1,
             1,
             {
-              val: "2." + Math.random().toString().slice(2, 8),
+              val: "2.1111",
+              // val: "2." + Math.random().toString().slice(2, 8),
               color: `rgb(${parseInt(256 * Math.random())}, 0, 256)`,
             },
             {
-              val: "2." + Math.random().toString().slice(2, 8),
+              val: "2.2222",
+              // val: "2." + Math.random().toString().slice(2, 8),
               color: `rgb(0, ${parseInt(256 * Math.random())}, 256)`,
             }
           );
