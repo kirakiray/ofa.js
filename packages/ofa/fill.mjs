@@ -154,6 +154,20 @@ $.register({
     }
   },
   created() {
+    // 检查内部是否包含无name的o-fill
+    const fillEls = this.all("o-fill:not([name])");
+
+    if (fillEls.length > 0) {
+      const err = getErr("xhear_dbfill_noname");
+      console.warn(err, this.ele, {
+        content: this.html.trim(),
+      });
+      fillEls.forEach((e) => {
+        e.remove();
+      });
+      throw err;
+    }
+
     if (this.length > 1 || (this.length === 0 && this.html.trim())) {
       const err = getErr("temp_multi_child");
       console.warn(err, this.ele, {
