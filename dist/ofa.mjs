@@ -7157,6 +7157,12 @@ $.register({
 
         const currentKeyVal = renderedItem.$data[keyName];
 
+        if (currentKeyVal === undefined || currentKeyVal === null) {
+          throw new Error(
+            "o-fill - The key value cannot be empty: " + currentKeyVal
+          );
+        }
+
         // 不存在的id，需要删除
         if (!keyValsArr.includes(currentKeyVal)) {
           e.remove();
