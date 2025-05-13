@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.1 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.2 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -7164,6 +7164,12 @@ ${scriptContent}`;
 
           const currentKeyVal = renderedItem.$data[keyName];
 
+          if (currentKeyVal === undefined || currentKeyVal === null) {
+            throw new Error(
+              "o-fill - The key value cannot be empty: " + currentKeyVal
+            );
+          }
+
           // 不存在的id，需要删除
           if (!keyValsArr.includes(currentKeyVal)) {
             e.remove();
@@ -7270,7 +7276,7 @@ ${scriptContent}`;
     },
   });
 
-  const version = "ofa.js@4.6.1";
+  const version = "ofa.js@4.6.2";
   $.version = version.replace("ofa.js@", "");
 
   let isDebug = false;
