@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>style data</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <l-m src="./t-c.html"></l-m>
+    <t-c></t-c>
+    <div id="log"></div>
+    <script type="module">
+      $("t-c").obj = {
+        name: "get_config",
+        inputSchema: {
+          type: "object",
+          properties: {},
+        },
+        testArr: [],
+      };
+
+      $("#log").text = JSON.stringify($("t-c").obj);
+
+      console.log("toJSON: ", $("t-c").obj.toJSON());
+    </script>
+  </body>
+</html>
