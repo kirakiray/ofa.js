@@ -184,8 +184,14 @@ $.register({
       this.__originHTML = `<div style="display: contents;">${this.html}</div>`;
     } else {
       console.log("o-fill created: ", this.ele, this.html);
+
+      if (this[0].is("template[inner-code]")) {
+        this.__originHTML = this[0].html.trim();
+        this.html = "";
+      }
       // 创建的时候，将内容抽取成模板
-      this.__originHTML = this.html.trim();
+      // this.__originHTML = this.html.trim();
+      // this.__originHTML = decodeURIComponent(this.data.originCode);
     }
 
     this.html = "";
@@ -198,44 +204,62 @@ renderExtends.afterConvert = (e) => {
   oldAfterConvert(e);
   const { template, temps } = e;
   wrapTemp(template);
-  // console.log(template, temps);
 };
 
 // 给需要预处理的元素的外部添加一个template包裹标签，防止被提前污染代码
 const needWrapTags = ["o-fill", "o-if", "o-else-if", "o-else"];
 
-const oldBeforeRender = renderExtends.beforeRender;
-renderExtends.beforeRender = (e) => {
-  oldBeforeRender(e);
+// const oldBeforeRender = renderExtends.beforeRender;
+// renderExtends.beforeRender = (e) => {
+//   oldBeforeRender(e);
 
-  // 解除包裹
-  if (e?.target?.querySelectorAll) {
-    const wrappers = e.target.querySelectorAll(`template[wrap]`);
+//   // 解除包裹
+//   // if (e?.target?.querySelectorAll) {
+//   //   const innerCodes = e.target.querySelectorAll(`template[inner-code]`);
+//   //   console.log("content: ", e.target);
+//   //   innerCodes.forEach((temp) => {
+//   //     debugger;
+//   //   });
+//   // }
 
-    wrappers.forEach((temp) => {
-      const { parentNode } = temp;
-      const cloneTemp = temp.content.cloneNode(true);
-      parentNode.insertBefore(cloneTemp, temp);
-      temp.remove();
-    });
-  }
-};
+//   // // 解除包裹
+//   // if (e?.target?.querySelectorAll) {
+//   //   const wrappers = e.target.querySelectorAll(`template[wrapper]`);
+
+//   //   wrappers.forEach((temp) => {
+//   //     const { parentNode } = temp;
+//   //     const cloneTemp = temp.content.cloneNode(true);
+//   //     parentNode.insertBefore(cloneTemp, temp);
+//   //     temp.remove();
+//   //   });
+//   // }
+// };
 
 export const wrapTemp = (template) => {
   const eles = Array.from(
     template.content.querySelectorAll(needWrapTags.join(","))
   );
 
+  // 先修正底层的元素，性能会更好
   eles.reverse();
+  // TODO: 应该改用循环templte嵌套
 
   eles.forEach((e) => {
-    if (e.parentNode.tagName !== "TEMPLATE") {
-      // 如果不是已经被包裹在template中，则进行包裹
-      const temp = document.createElement("template");
-      temp.setAttribute("wrap", "1");
-      e.parentNode.insertBefore(temp, e);
-      temp.innerHTML = e.outerHTML;
-      e.remove();
-    }
+    const originCode = e.innerHTML;
+    // e.dataset.originCode = encodeURIComponent(originCode);
+    // e.innerHTML = "";
+    // debugger;
+    console.log("originCode: ", originCode);
+    e.innerHTML = `<template inner-code>${originCode}</template>`;
+
+    // 先隐藏内部代码
+    // if (e.parentNode.tagName !== "TEMPLATE") {
+    // // 如果不是已经被包裹在template中，则进行包裹
+    // const temp = document.createElement("template");
+    // temp.setAttribute("wrapper", "1");
+    // e.parentNode.insertBefore(temp, e);
+    // temp.innerHTML = e.outerHTML;
+    // e.remove();
+    // }
   });
 };
