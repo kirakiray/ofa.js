@@ -1176,6 +1176,8 @@ const handler = {
 };
 
 const renderExtends = {
+  beforeConvert() {},
+  afterConvert() {},
   beforeRender() {},
   render() {},
 };
@@ -1510,6 +1512,10 @@ const convert = (template) => {
   let temps = {};
   const codeEls = {};
 
+  renderExtends.beforeConvert({
+    template,
+  });
+
   searchTemp(template, "code", (code) => {
     const cid = getRandomId();
     code.setAttribute("code-id", cid);
@@ -1600,6 +1606,11 @@ const convert = (template) => {
       el.innerHTML = value;
     });
   }
+
+  renderExtends.afterConvert({
+    template,
+    temps,
+  });
 
   return temps;
 };
@@ -2508,64 +2519,6 @@ const renderElement = ({ defaults, ele, template, temps }) => {
       }
     }
   }
-
-  // {
-  //   // 将组件上的变量重定义到影子节点内的css变量上
-  //   const { tag } = $ele;
-
-  //   if ($ele.__rssWid) {
-  //     $ele.unwatch($ele.__rssWid);
-  //   }
-
-  //   // 排除掉自定义组件
-  //   if (tag !== "x-if" && tag !== "x-fill" && ele.shadowRoot) {
-  //     // 需要更新的key
-  //     const keys = Object.keys({
-  //       ...defaults.data,
-  //       ...defaults.attrs,
-  //     });
-
-  //     for (let [key, item] of Object.entries(
-  //       Object.getOwnPropertyDescriptors(defaults.proto)
-  //     )) {
-  //       if (item.writable || item.get) {
-  //         keys.push(key);
-  //       }
-  //     }
-
-  //     const refreshShadowStyleVar = () => {
-  //       let shadowVarStyle = ele.shadowRoot.querySelector("#shadow-var-style");
-
-  //       if (!shadowVarStyle) {
-  //         shadowVarStyle = document.createElement("style");
-  //         shadowVarStyle.id = "shadow-var-style";
-  //         ele.shadowRoot.appendChild(shadowVarStyle);
-  //       }
-
-  //       // 更新所有变量
-  //       let content = "";
-  //       let slotContent = "";
-  //       keys.forEach((key) => {
-  //         const val = $ele[key];
-  //         const valType = getType(val);
-  //         if (valType === "number" || valType === "string") {
-  //           content += `--${key}:${val};`;
-  //           slotContent += `--${key}:;`;
-  //         }
-  //       });
-
-  //       const styleContent = `:host > *:not(slot) {${content}} slot{${slotContent}}`;
-
-  //       if (shadowVarStyle.innerHTML !== styleContent) {
-  //         shadowVarStyle.innerHTML = styleContent;
-  //       }
-  //     };
-
-  //     $ele.__rssWid = $ele.watchTick(() => refreshShadowStyleVar());
-
-  //     refreshShadowStyleVar();
-  //   }
-  // }
 };
 
 const register = (opts = {}) => {
@@ -7046,7 +6999,11 @@ const getPrevs = (prev) => {
 };
 
 const createdFunc = function (_this) {
-  _this.__originHTML = _this.html;
+  if (_this[0].is("template[inner-code]")) {
+    _this.__originHTML = _this[0].html.trim();
+  } else {
+    _this.__originHTML = _this.html.trim();
+  }
   _this.html = "";
 };
 
@@ -7262,21 +7219,62 @@ $.register({
       throw err;
     }
 
-    if (this.length > 1 || (this.length === 0 && this.html.trim())) {
+    let originHTML = "";
+
+    if (this[0].is("template[inner-code]")) {
+      originHTML = this[0].html.trim();
+    } else {
+      originHTML = this.html.trim();
+    }
+
+    // 判断是否有多个子元素
+    const temp = $(`<template><div>${originHTML}</div></template>`);
+    const tempContent = temp.ele.content.children[0];
+
+    if (
+      tempContent.children.length > 1 ||
+      (tempContent.children.length === 0 && tempContent.innerHTML.trim())
+    ) {
       const err = getErr("temp_multi_child");
       console.warn(err, this.ele, {
         content: this.html.trim(),
       });
 
-      this.__originHTML = `<div style="display: contents;">${this.html}</div>`;
-    } else {
-      // 创建的时候，将内容抽取成模板
-      this.__originHTML = this.html.trim();
+      originHTML = `<div style="display: contents;">${originHTML}</div>`;
     }
+
+    this.__originHTML = originHTML;
 
     this.html = "";
   },
 });
+
+// 修正转换前的内容
+const oldAfterConvert = renderExtends.afterConvert;
+renderExtends.afterConvert = (e) => {
+  oldAfterConvert(e);
+  const { template, temps } = e;
+  wrapTemp(template);
+  Object.values(temps).forEach((temp) => wrapTemp(temp));
+};
+
+// 给需要预处理的元素的外部添加一个template包裹标签，防止被提前污染代码
+const needWrapTags = ["o-fill", "o-if", "o-else-if", "o-else"];
+
+const wrapTemp = (template) => {
+  const eles = Array.from(
+    template.content.querySelectorAll(needWrapTags.join(","))
+  );
+
+  // 倒转之后性能好像好点
+  // eles.reverse();
+
+  eles.forEach((e) => {
+    const originCode = e.innerHTML;
+    e.innerHTML = `<template inner-code>${originCode}</template>`;
+    wrapTemp(e.children[0]);
+  });
+};
 
 const version = "ofa.js@4.6.3";
 $.version = version.replace("ofa.js@", "");
