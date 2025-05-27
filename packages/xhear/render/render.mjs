@@ -14,6 +14,8 @@ import {
 import { eleX } from "../util.mjs";
 
 export const renderExtends = {
+  beforeConvert() {},
+  afterConvert() {},
   beforeRender() {},
   render() {},
 };
@@ -348,6 +350,10 @@ export const convert = (template) => {
   let temps = {};
   const codeEls = {};
 
+  renderExtends.beforeConvert({
+    template,
+  });
+
   searchTemp(template, "code", (code) => {
     const cid = getRandomId();
     code.setAttribute("code-id", cid);
@@ -438,6 +444,11 @@ export const convert = (template) => {
       el.innerHTML = value;
     });
   }
+
+  renderExtends.afterConvert({
+    template,
+    temps,
+  });
 
   return temps;
 };

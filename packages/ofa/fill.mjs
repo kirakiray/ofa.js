@@ -3,6 +3,7 @@ import { getRenderData } from "../xhear/render/condition.mjs";
 import { eleX, revokeAll } from "../xhear/util.mjs";
 import { createItem } from "../xhear/render/fill.mjs";
 import { getErr } from "../ofa-error/main.js";
+import { renderExtends } from "../xhear/render/render.mjs";
 
 $.register({
   tag: "o-fill",
@@ -182,6 +183,7 @@ $.register({
 
       this.__originHTML = `<div style="display: contents;">${this.html}</div>`;
     } else {
+      console.log("o-fill created: ", this.ele, this.html);
       // 创建的时候，将内容抽取成模板
       this.__originHTML = this.html.trim();
     }
@@ -189,3 +191,51 @@ $.register({
     this.html = "";
   },
 });
+
+// 修正转换前的内容
+const oldAfterConvert = renderExtends.afterConvert;
+renderExtends.afterConvert = (e) => {
+  oldAfterConvert(e);
+  const { template, temps } = e;
+  wrapTemp(template);
+  // console.log(template, temps);
+};
+
+// 给需要预处理的元素的外部添加一个template包裹标签，防止被提前污染代码
+const needWrapTags = ["o-fill", "o-if", "o-else-if", "o-else"];
+
+const oldBeforeRender = renderExtends.beforeRender;
+renderExtends.beforeRender = (e) => {
+  oldBeforeRender(e);
+
+  // 解除包裹
+  if (e?.target?.querySelectorAll) {
+    const wrappers = e.target.querySelectorAll(`template[wrap]`);
+
+    wrappers.forEach((temp) => {
+      const { parentNode } = temp;
+      const cloneTemp = temp.content.cloneNode(true);
+      parentNode.insertBefore(cloneTemp, temp);
+      temp.remove();
+    });
+  }
+};
+
+export const wrapTemp = (template) => {
+  const eles = Array.from(
+    template.content.querySelectorAll(needWrapTags.join(","))
+  );
+
+  eles.reverse();
+
+  eles.forEach((e) => {
+    if (e.parentNode.tagName !== "TEMPLATE") {
+      // 如果不是已经被包裹在template中，则进行包裹
+      const temp = document.createElement("template");
+      temp.setAttribute("wrap", "1");
+      e.parentNode.insertBefore(temp, e);
+      temp.innerHTML = e.outerHTML;
+      e.remove();
+    }
+  });
+};

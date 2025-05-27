@@ -120,6 +120,7 @@ const getPrevs = (prev) => {
 };
 
 const createdFunc = function (_this) {
+  console.log("createdFunc: ", _this.html);
   _this.__originHTML = _this.html;
   _this.html = "";
 };
