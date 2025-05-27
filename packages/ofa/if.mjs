@@ -120,12 +120,12 @@ const getPrevs = (prev) => {
 };
 
 const createdFunc = function (_this) {
-  console.log("createdFunc: ", _this.html);
-
   if (_this[0].is("template[inner-code]")) {
     _this.__originHTML = _this[0].html.trim();
-    _this.html = "";
+  } else {
+    _this.__originHTML = _this.html.trim();
   }
+  _this.html = "";
 };
 
 const temp = `<style>:host{display:contents;}</style><slot></slot>`;
