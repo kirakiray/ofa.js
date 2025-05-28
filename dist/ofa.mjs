@@ -7114,20 +7114,31 @@ $.register({
         return;
       }
 
+      const getKeyVal = (e, i) => {
+        const key = e[keyName];
+
+        if (key === undefined || key === null) {
+          if (e.xid) {
+            return e.xid;
+          }
+
+          return `${i}-${e}`;
+        }
+
+        return key;
+      };
+
       // 有子元素，优化性能的方式更新方式
-      const keyValsArr = arr.map((e) => e[keyName]);
+      const keyValsArr = arr.map(getKeyVal);
+
+      const tempChildren = Array.from(this.ele.children);
 
       // 先删除不存在的元素
-      for (let e of Array.from(this.ele.children)) {
+      for (let i = 0; i < tempChildren.length; i++) {
+        const e = tempChildren[i];
         const renderedItem = e.__render_data;
 
-        const currentKeyVal = renderedItem.$data[keyName];
-
-        if (currentKeyVal === undefined || currentKeyVal === null) {
-          throw new Error(
-            "o-fill - The key value cannot be empty: " + currentKeyVal
-          );
-        }
+        const currentKeyVal = getKeyVal(renderedItem.$data, i);
 
         // 不存在的id，需要删除
         if (!keyValsArr.includes(currentKeyVal)) {
@@ -7141,8 +7152,8 @@ $.register({
       // 获取当前所有的key值
       let keyVals = [];
       const refreshKeyVals = () => {
-        keyVals = Array.from(children).map(
-          (e) => e.__render_data.$data[keyName]
+        keyVals = Array.from(children).map((e, i) =>
+          getKeyVal(e.__render_data.$data, i)
         );
       };
       refreshKeyVals();
@@ -7152,7 +7163,8 @@ $.register({
       // 遍历一遍进行更新数据
       for (let i = 0, len = arr.length; i < len; i++) {
         const item = arr[i];
-        const keyVal = item[keyName];
+        // const keyVal = item[keyName];
+        const keyVal = getKeyVal(item, i);
 
         // 查找是否存在
         const index = keyVals.indexOf(keyVal);
