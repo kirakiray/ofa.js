@@ -16,6 +16,7 @@
             Inner: {{$data.innerArr}}
           </div>
           <ul>
+            <!-- <o-fill :value="$data.innerArr" name="li2"> </o-fill> -->
             <o-fill :value="$data.innerArr">
               <li style="color: purple">Inner Item: {{$data}} <br /></li>
             </o-fill>
@@ -24,6 +25,9 @@
       </o-fill>
     </ul>
   </div>
+  <template name="li2">
+    <li style="color: purple">Inner Item: {{$data}} <br /></li>
+  </template>
   <button on:click="addOuterItem">Add Outer Item</button>
   <button on:click="addInnerItem">Add Inner Item to First Outer</button>
   <script>
