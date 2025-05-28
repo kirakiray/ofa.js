@@ -104,6 +104,9 @@ const getNexts = (next) => {
   const nexts = [];
   while (next && (next.tag === "o-else-if" || next.tag === "o-else")) {
     nexts.push(next);
+    if (next.tag == "o-else") {
+      break;
+    }
     next = next.next;
   }
   return nexts;
@@ -114,6 +117,9 @@ const getPrevs = (prev) => {
   const prevs = [];
   while (prev && (prev.tag == "o-if" || prev.tag == "o-else-if")) {
     prevs.unshift(prev);
+    if (prev.tag == "o-if") {
+      break;
+    }
     prev = prev.prev;
   }
   return prevs;

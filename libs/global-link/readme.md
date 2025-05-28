@@ -8,8 +8,8 @@ Reference the `global-link` component after `ofa.js`, and reference the style fi
 
 ```html
 ...
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.4/dist/ofa.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.4/libs/global-link/dist/global-link.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.5/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.5/libs/global-link/dist/global-link.min.js"></script>
 ...
 
 <body>
