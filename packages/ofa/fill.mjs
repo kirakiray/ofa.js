@@ -80,6 +80,8 @@ $.register({
 
           return `${i}-${e}`;
         }
+
+        return key;
       };
 
       // 有子元素，优化性能的方式更新方式
