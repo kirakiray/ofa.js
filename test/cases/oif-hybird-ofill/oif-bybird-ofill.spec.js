@@ -78,3 +78,58 @@ test("o-fill in o-if", async ({ page }) => {
   item: C
   item: D`);
 });
+
+test("o-fill in o-fill", async ({ page }) => {
+  await page.goto(
+    "http://localhost:3348/test/cases/oif-hybird-ofill/demo4.html"
+  );
+
+  await expect(page.locator("c-fillinfill")).toContainText(
+    `Outer: [{\"id\":1,\"innerArr\":[\"A\",\"B\"]},{\"id\":2,\"innerArr\":[\"C\",\"D\"]}]
+          Outer Item: 1
+          Inner: [\"A\",\"B\"]
+            Inner Item: A
+            Inner Item: B
+          Outer Item: 2
+          Inner: [\"C\",\"D\"]
+            Inner Item: C
+            Inner Item: D`
+  );
+
+  await page.getByRole("button", { name: "Add Outer Item" }).click();
+  await expect(page.locator("c-fillinfill")).toContainText(
+    `Outer: [{\"id\":1,\"innerArr\":[\"A\",\"B\"]},{\"id\":2,\"innerArr\":[\"C\",\"D\"]},{\"id\":3,\"innerArr\":[\"Item 3-1\",\"Item 3-2\"]}]
+          Outer Item: 1
+          Inner: [\"A\",\"B\"]
+            Inner Item: A
+            Inner Item: B
+          Outer Item: 2
+          Inner: [\"C\",\"D\"]
+            Inner Item: C
+            Inner Item: D
+          Outer Item: 3
+          Inner: [\"Item 3-1\",\"Item 3-2\"]
+            Inner Item: Item 3-1
+            Inner Item: Item 3-2`
+  );
+
+  await page
+    .getByRole("button", { name: "Add Inner Item to First Outer" })
+    .click();
+  await expect(page.locator("c-fillinfill")).toContainText(
+    `Outer: [{\"id\":1,\"innerArr\":[\"A\",\"B\",\"C\"]},{\"id\":2,\"innerArr\":[\"C\",\"D\"]},{\"id\":3,\"innerArr\":[\"Item 3-1\",\"Item 3-2\"]}]
+          Outer Item: 1
+          Inner: [\"A\",\"B\",\"C\"]
+            Inner Item: A
+            Inner Item: B
+            Inner Item: C
+          Outer Item: 2
+          Inner: [\"C\",\"D\"]
+            Inner Item: C
+            Inner Item: D
+          Outer Item: 3
+          Inner: [\"Item 3-1\",\"Item 3-2\"]
+            Inner Item: Item 3-1
+            Inner Item: Item 3-2`
+  );
+});

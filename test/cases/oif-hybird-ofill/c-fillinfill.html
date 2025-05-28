@@ -1,0 +1,65 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+      border: green 1px solid;
+      padding: 8px;
+    }
+  </style>
+  <div>
+    <div style="padding: 4px; border: pink solid 1px">Outer: {{outerArr}}</div>
+    <ul>
+      <o-fill :value="outerArr">
+        <li>
+          Outer Item: {{$data.id}}
+          <div style="padding: 4px; border: lightblue solid 1px">
+            Inner: {{$data.innerArr}}
+          </div>
+          <ul>
+            <o-fill :value="$data.innerArr">
+              <li style="color: purple">Inner Item: {{$data}} <br /></li>
+            </o-fill>
+          </ul>
+        </li>
+      </o-fill>
+    </ul>
+  </div>
+  <button on:click="addOuterItem">Add Outer Item</button>
+  <button on:click="addInnerItem">Add Inner Item to First Outer</button>
+  <script>
+    export default async () => {
+      return {
+        tag: "c-fillinfill",
+        data: {
+          outerArr: [
+            {
+              id: 1,
+              innerArr: ["A", "B"],
+            },
+            {
+              id: 2,
+              innerArr: ["C", "D"],
+            },
+          ],
+        },
+        proto: {
+          addOuterItem() {
+            const newId = this.outerArr.length + 1;
+            this.outerArr.push({
+              id: newId,
+              innerArr: [`Item ${newId}-1`, `Item ${newId}-2`],
+            });
+          },
+          addInnerItem() {
+            if (this.outerArr.length > 0) {
+              const firstOuter = this.outerArr[0];
+              firstOuter.innerArr.push(
+                String.fromCharCode(65 + firstOuter.innerArr.length)
+              );
+            }
+          },
+        },
+      };
+    };
+  </script>
+</template>
