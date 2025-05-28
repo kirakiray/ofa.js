@@ -65,12 +65,14 @@ test("o-fill in o-if", async ({ page }) => {
     item: C`);
 
   await page.getByRole("button", { name: "Toggle List" }).click();
-  await expect(page.locator("c-fillinif")).toContainText(`{"showList":false,"items":["A","B","C"]}
+  await expect(page.locator("c-fillinif"))
+    .toContainText(`{"showList":false,"items":["A","B","C"]}
     List is hidden`);
 
   await page.getByRole("button", { name: "Toggle List" }).click();
-  await page.getByRole("button", { name: "Add Item" }).click(); await expect(page.locator("c-fillinif"))
-  .toContainText(`{"showList":true,"items":["A","B","C","D"]}
+  await page.getByRole("button", { name: "Add Item" }).click();
+  await expect(page.locator("c-fillinif"))
+    .toContainText(`{"showList":true,"items":["A","B","C","D"]}
   item: A
   item: B
   item: C
