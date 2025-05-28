@@ -11,7 +11,7 @@ import "./if.mjs";
 import "./fill.mjs";
 import Stanz from "../stanz/main.mjs";
 
-const version = "ofa.js@4.6.4";
+const version = "ofa.js@4.6.5";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
