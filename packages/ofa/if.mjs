@@ -120,7 +120,11 @@ const getPrevs = (prev) => {
 };
 
 const createdFunc = function (_this) {
-  _this.__originHTML = _this.html;
+  if (_this[0].is("template[inner-code]")) {
+    _this.__originHTML = _this[0].html.trim();
+  } else {
+    _this.__originHTML = _this.html.trim();
+  }
   _this.html = "";
 };
 

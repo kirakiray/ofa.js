@@ -1,0 +1,44 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+      border: green 1px solid;
+      padding: 8px;
+    }
+  </style>
+  <div>
+    <div style="padding: 4px; border: pink solid 1px">{{arr}}</div>
+    <ul>
+      <o-fill :value="arr">
+        <div>
+          <o-if :value="$data.count % 2">
+            <li style="color: red">count: {{$data.count}} red</li>
+          </o-if>
+          <o-else>
+            <li style="color: blue">count: {{$data.count}} blue</li>
+          </o-else>
+        </div>
+      </o-fill>
+    </ul>
+  </div>
+  <button on:click="addOne">AddOne</button>
+  <script>
+    export default async () => {
+      return {
+        tag: "c-ifinfill",
+        data: {
+          arr: [
+            {
+              count: 0,
+            },
+          ],
+        },
+        proto: {
+          addOne() {
+            this.arr[0].count++;
+          },
+        },
+      };
+    };
+  </script>
+</template>

@@ -3,6 +3,7 @@ import { getRenderData } from "../xhear/render/condition.mjs";
 import { eleX, revokeAll } from "../xhear/util.mjs";
 import { createItem } from "../xhear/render/fill.mjs";
 import { getErr } from "../ofa-error/main.js";
+import { renderExtends } from "../xhear/render/render.mjs";
 
 $.register({
   tag: "o-fill",
@@ -69,20 +70,31 @@ $.register({
         return;
       }
 
+      const getKeyVal = (e, i) => {
+        const key = e[keyName];
+
+        if (key === undefined || key === null) {
+          if (e.xid) {
+            return e.xid;
+          }
+
+          return `${i}-${e}`;
+        }
+
+        return key;
+      };
+
       // 有子元素，优化性能的方式更新方式
-      const keyValsArr = arr.map((e) => e[keyName]);
+      const keyValsArr = arr.map(getKeyVal);
+
+      const tempChildren = Array.from(this.ele.children);
 
       // 先删除不存在的元素
-      for (let e of Array.from(this.ele.children)) {
+      for (let i = 0; i < tempChildren.length; i++) {
+        const e = tempChildren[i];
         const renderedItem = e.__render_data;
 
-        const currentKeyVal = renderedItem.$data[keyName];
-
-        if (currentKeyVal === undefined || currentKeyVal === null) {
-          throw new Error(
-            "o-fill - The key value cannot be empty: " + currentKeyVal
-          );
-        }
+        const currentKeyVal = getKeyVal(renderedItem.$data, i);
 
         // 不存在的id，需要删除
         if (!keyValsArr.includes(currentKeyVal)) {
@@ -96,8 +108,8 @@ $.register({
       // 获取当前所有的key值
       let keyVals = [];
       const refreshKeyVals = () => {
-        keyVals = Array.from(children).map(
-          (e) => e.__render_data.$data[keyName]
+        keyVals = Array.from(children).map((e, i) =>
+          getKeyVal(e.__render_data.$data, i)
         );
       };
       refreshKeyVals();
@@ -107,7 +119,8 @@ $.register({
       // 遍历一遍进行更新数据
       for (let i = 0, len = arr.length; i < len; i++) {
         const item = arr[i];
-        const keyVal = item[keyName];
+        // const keyVal = item[keyName];
+        const keyVal = getKeyVal(item, i);
 
         // 查找是否存在
         const index = keyVals.indexOf(keyVal);
@@ -160,32 +173,59 @@ $.register({
     }
   },
   created() {
-    // 检查内部是否包含无name的o-fill
-    const fillEls = this.all("o-fill:not([name])");
+    let originHTML = "";
 
-    if (fillEls.length > 0) {
-      const err = getErr("xhear_dbfill_noname");
-      console.warn(err, this.ele, {
-        content: this.html.trim(),
-      });
-      fillEls.forEach((e) => {
-        e.remove();
-      });
-      throw err;
+    if (this[0].is("template[inner-code]")) {
+      originHTML = this[0].html.trim();
+    } else {
+      originHTML = this.html.trim();
     }
 
-    if (this.length > 1 || (this.length === 0 && this.html.trim())) {
+    // 判断是否有多个子元素
+    const temp = $(`<template><div>${originHTML}</div></template>`);
+    const tempContent = temp.ele.content.children[0];
+
+    if (
+      tempContent.children.length > 1 ||
+      (tempContent.children.length === 0 && tempContent.innerHTML.trim())
+    ) {
       const err = getErr("temp_multi_child");
       console.warn(err, this.ele, {
         content: this.html.trim(),
       });
 
-      this.__originHTML = `<div style="display: contents;">${this.html}</div>`;
-    } else {
-      // 创建的时候，将内容抽取成模板
-      this.__originHTML = this.html.trim();
+      originHTML = `<div style="display: contents;">${originHTML}</div>`;
     }
+
+    this.__originHTML = originHTML;
 
     this.html = "";
   },
 });
+
+// 修正转换前的内容
+const oldAfterConvert = renderExtends.afterConvert;
+renderExtends.afterConvert = (e) => {
+  oldAfterConvert(e);
+  const { template, temps } = e;
+  wrapTemp(template);
+  Object.values(temps).forEach((temp) => wrapTemp(temp));
+};
+
+// 给需要预处理的元素的外部添加一个template包裹标签，防止被提前污染代码
+const needWrapTags = ["o-fill", "o-if", "o-else-if", "o-else"];
+
+export const wrapTemp = (template) => {
+  const eles = Array.from(
+    template.content.querySelectorAll(needWrapTags.join(","))
+  );
+
+  // 倒转之后性能好像好点
+  // eles.reverse();
+
+  eles.forEach((e) => {
+    const originCode = e.innerHTML;
+    e.innerHTML = `<template inner-code>${originCode}</template>`;
+    wrapTemp(e.children[0]);
+  });
+};

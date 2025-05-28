@@ -1,0 +1,47 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+      border: green 1px solid;
+      padding: 8px;
+    }
+  </style>
+  <div>
+    <div style="padding: 4px; border: pink solid 1px">{{obj}}</div>
+    <ul>
+      <o-if :value="obj.showList">
+        <o-fill :value="obj.items">
+          <li style="color: blue">item: {{$data}} <br></li>
+        </o-fill>
+      </o-if>
+      <o-else>
+        <div>List is hidden</div>
+      </o-else>
+    </ul>
+  </div>
+  <button on:click="toggleList">Toggle List</button>
+  <button on:click="addItem">Add Item</button>
+  <script>
+    export default async () => {
+      return {
+        tag: "c-fillinif",
+        data: {
+          obj: {
+            showList: true,
+            items: ["A", "B", "C"],
+          },
+        },
+        proto: {
+          toggleList() {
+            this.obj.showList = !this.obj.showList;
+          },
+          addItem() {
+            this.obj.items.push(
+              String.fromCharCode(65 + this.obj.items.length)
+            );
+          },
+        },
+      };
+    };
+  </script>
+</template>
