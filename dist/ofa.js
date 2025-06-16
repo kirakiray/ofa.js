@@ -1432,21 +1432,21 @@ try{
       target.__render_temps = temps;
     }
 
+    if (target.__render_data && target.__render_data !== data) {
+      const err = getErr("xhear_listen_already");
+
+      console.warn(err, {
+        element: target,
+        old: target.__render_data,
+        new: data,
+      });
+
+      throw err;
+    }
+
+    target.__render_data = data;
+
     if (tasks.length) {
-      if (target.__render_data && target.__render_data !== data) {
-        const err = getErr("xhear_listen_already");
-
-        console.warn(err, {
-          element: target,
-          old: target.__render_data,
-          new: data,
-        });
-
-        throw err;
-      }
-
-      target.__render_data = data;
-
       tasks.forEach((f) => f());
 
       // After the data changes, traverse the rendering tasks
