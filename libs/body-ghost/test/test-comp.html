@@ -19,30 +19,30 @@
   <!-- <br /><br />
 
   <div>
-    <x-if :value="count % 7">
+    <o-if :value="count % 7">
       <div>
-        <x-fill :value="farr">
+        <o-fill :value="farr">
           <sub-comp> {{$data}} - {{$host.count}} </sub-comp>
-        </x-fill>
+        </o-fill>
       </div>
-    </x-if>
+    </o-if>
   </div>
 
   <br /><br /> -->
 
-  <x-if :value="count % 7">
+  <o-if :value="count % 7">
     <body-ghost>
       <div style="border: green solid 1px; padding: 4px; margin: 4px">
         <div>I am Body Ghost Content - {{count}}</div>
         <div>{{val}}</div>
         <div>
-          <x-fill :value="farr">
+          <o-fill :value="farr">
             <sub-comp> {{$data}} - {{$host.count}} </sub-comp>
-          </x-fill>
+          </o-fill>
         </div>
       </div>
     </body-ghost>
-  </x-if>
+  </o-if>
   <script>
     export default async () => {
       return {

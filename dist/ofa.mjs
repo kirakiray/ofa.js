@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.5 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.6 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -1425,21 +1425,21 @@ function render({
     target.__render_temps = temps;
   }
 
+  if (target.__render_data && target.__render_data !== data) {
+    const err = getErr("xhear_listen_already");
+
+    console.warn(err, {
+      element: target,
+      old: target.__render_data,
+      new: data,
+    });
+
+    throw err;
+  }
+
+  target.__render_data = data;
+
   if (tasks.length) {
-    if (target.__render_data && target.__render_data !== data) {
-      const err = getErr("xhear_listen_already");
-
-      console.warn(err, {
-        element: target,
-        old: target.__render_data,
-        new: data,
-      });
-
-      throw err;
-    }
-
-    target.__render_data = data;
-
     tasks.forEach((f) => f());
 
     // After the data changes, traverse the rendering tasks
@@ -7280,7 +7280,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.5";
+const version = "ofa.js@4.6.6";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
