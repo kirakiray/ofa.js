@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.6 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.7 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -377,13 +377,6 @@ const toDashCase = (str) => {
   return str.replace(/[A-Z]/g, function (match) {
     return "-" + match.toLowerCase();
   });
-};
-
-// Determine if an element is eligible
-const meetsEle = (ele, expr) => {
-  const temp = document.createElement("template");
-  temp.content.append(ele.cloneNode());
-  return !!temp.content.querySelector(expr);
 };
 
 function isEmptyObject(obj) {
@@ -1306,7 +1299,7 @@ function render({
 
   const eles = searchEle(target, `[x-bind-data]`);
 
-  if (isRenderSelf && meetsEle(target, `[x-bind-data]`)) {
+  if (isRenderSelf && target.matches(`[x-bind-data]`)) {
     eles.unshift(target);
   }
 
@@ -3673,7 +3666,7 @@ class Xhear extends LikeArray {
         if (target === expr || target.ele === expr) {
           break;
         }
-      } else if (meetsEle(target.ele, expr)) {
+      } else if (target.ele.matches(expr)) {
         break;
       }
 
@@ -3803,7 +3796,7 @@ class Xhear extends LikeArray {
   }
 
   is(expr) {
-    return meetsEle(this.ele, expr);
+    return this.ele.matches(expr);
   }
 
   remove() {
@@ -7280,7 +7273,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.6";
+const version = "ofa.js@4.6.7";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;

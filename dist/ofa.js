@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.6 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.7 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -384,13 +384,6 @@
     return str.replace(/[A-Z]/g, function (match) {
       return "-" + match.toLowerCase();
     });
-  };
-
-  // Determine if an element is eligible
-  const meetsEle = (ele, expr) => {
-    const temp = document.createElement("template");
-    temp.content.append(ele.cloneNode());
-    return !!temp.content.querySelector(expr);
   };
 
   function isEmptyObject(obj) {
@@ -1313,7 +1306,7 @@ try{
 
     const eles = searchEle(target, `[x-bind-data]`);
 
-    if (isRenderSelf && meetsEle(target, `[x-bind-data]`)) {
+    if (isRenderSelf && target.matches(`[x-bind-data]`)) {
       eles.unshift(target);
     }
 
@@ -3680,7 +3673,7 @@ try{
           if (target === expr || target.ele === expr) {
             break;
           }
-        } else if (meetsEle(target.ele, expr)) {
+        } else if (target.ele.matches(expr)) {
           break;
         }
 
@@ -3810,7 +3803,7 @@ try{
     }
 
     is(expr) {
-      return meetsEle(this.ele, expr);
+      return this.ele.matches(expr);
     }
 
     remove() {
@@ -7287,7 +7280,7 @@ ${scriptContent}`;
     });
   };
 
-  const version = "ofa.js@4.6.6";
+  const version = "ofa.js@4.6.7";
   $.version = version.replace("ofa.js@", "");
 
   let isDebug = false;
