@@ -1,5 +1,5 @@
 import { createXEle, eleX } from "./util.mjs";
-import { meetsEle, searchEle } from "./public.mjs";
+import { searchEle } from "./public.mjs";
 import { handler } from "./accessor.mjs";
 import renderFn from "./render/render.mjs";
 import syncFn from "./render/sync.mjs";
@@ -151,7 +151,7 @@ export default class Xhear extends LikeArray {
         if (target === expr || target.ele === expr) {
           break;
         }
-      } else if (meetsEle(target.ele, expr)) {
+      } else if (target.ele.matches(expr)) {
         break;
       }
 
@@ -281,7 +281,7 @@ export default class Xhear extends LikeArray {
   }
 
   is(expr) {
-    return meetsEle(this.ele, expr);
+    return this.ele.matches(expr);
   }
 
   remove() {

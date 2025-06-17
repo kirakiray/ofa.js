@@ -30,13 +30,6 @@ export const toDashCase = (str) => {
   });
 };
 
-// Determine if an element is eligible
-export const meetsEle = (ele, expr) => {
-  const temp = document.createElement("template");
-  temp.content.append(ele.cloneNode());
-  return !!temp.content.querySelector(expr);
-};
-
 export function isEmptyObject(obj) {
   if (!obj) {
     return false;

@@ -379,13 +379,6 @@ const toDashCase = (str) => {
   });
 };
 
-// Determine if an element is eligible
-const meetsEle = (ele, expr) => {
-  const temp = document.createElement("template");
-  temp.content.append(ele.cloneNode());
-  return !!temp.content.querySelector(expr);
-};
-
 function isEmptyObject(obj) {
   if (!obj) {
     return false;
@@ -1306,7 +1299,7 @@ function render({
 
   const eles = searchEle(target, `[x-bind-data]`);
 
-  if (isRenderSelf && meetsEle(target, `[x-bind-data]`)) {
+  if (isRenderSelf && target.matches(`[x-bind-data]`)) {
     eles.unshift(target);
   }
 
@@ -3673,7 +3666,7 @@ class Xhear extends LikeArray {
         if (target === expr || target.ele === expr) {
           break;
         }
-      } else if (meetsEle(target.ele, expr)) {
+      } else if (target.ele.matches(expr)) {
         break;
       }
 
@@ -3803,7 +3796,7 @@ class Xhear extends LikeArray {
   }
 
   is(expr) {
-    return meetsEle(this.ele, expr);
+    return this.ele.matches(expr);
   }
 
   remove() {

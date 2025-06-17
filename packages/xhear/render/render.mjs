@@ -6,7 +6,6 @@ import { isxdata } from "../../stanz/main.mjs";
 import {
   isFunction,
   hyphenToUpperCase,
-  meetsEle,
   isEmptyObject,
   searchEle,
   removeArrayValue as remove,
@@ -144,7 +143,7 @@ export function render({
 
   const eles = searchEle(target, `[x-bind-data]`);
 
-  if (isRenderSelf && meetsEle(target, `[x-bind-data]`)) {
+  if (isRenderSelf && target.matches(`[x-bind-data]`)) {
     eles.unshift(target);
   }
 
