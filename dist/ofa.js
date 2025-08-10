@@ -6258,6 +6258,9 @@ ${scriptContent}`;
     "is-root",
   ];
 
+  const providers = {}; // 存储所有的provider元素
+  const consumers = {}; // 存储所有的consumer元素
+
   // 根provider
   const rootProviders = {};
 
@@ -6353,13 +6356,14 @@ ${scriptContent}`;
     // 获取最近的 provider 元素
     let provider = ancestors.find((element) => {
       return (
+        element !== this.ele &&
         element.tagName &&
         element.tagName.toLowerCase() === "o-provider" &&
         element.getAttribute("name") === name
       );
     });
 
-    if (!provider) {
+    if (!provider && this !== rootProviders[name]) {
       provider = rootProviders[name];
     }
 
@@ -6369,9 +6373,6 @@ ${scriptContent}`;
 
     return $(provider);
   };
-
-  const providers = {}; // 存储所有的provider元素
-  const consumers = {}; // 存储所有的consumer元素
 
   /**
    * 创建元素池操作函数
@@ -6438,11 +6439,25 @@ ${scriptContent}`;
       ...publicWatch,
     },
     proto: {
+      get provider() {
+        return this.getProvider(this.name);
+      },
+
+      get providers() {
+        const providers = [];
+
+        let provider = this.provider;
+        while (provider) {
+          providers.push(provider);
+          provider = provider.getProvider(this.name);
+        }
+
+        return providers;
+      },
+
       // 更新自身的数据
       _refresh() {
-        const provider = this.getProvider(this.name);
-
-        if (!provider) {
+        if (!this.getProvider(this.name)) {
           // 应该清空自身的数据
           for (let name of Object.keys(this)) {
             if (InvalidKeys.includes(name) || !/\D/.test(name)) {
@@ -6454,13 +6469,22 @@ ${scriptContent}`;
           return;
         }
 
-        // 更新自身的数据
-        for (let name of Object.keys(provider)) {
-          const value = provider[name];
-          if (InvalidKeys.includes(name) || !/\D/.test(name)) {
-            // 跳过默认key和数字
-            continue;
+        const finnalData = {};
+
+        for (let provider of this.providers) {
+          for (let name of Object.keys(provider)) {
+            if (InvalidKeys.includes(name) || !/\D/.test(name)) {
+              // 跳过默认key和数字
+              continue;
+            }
+
+            finnalData[name] = provider[name];
           }
+        }
+
+        // 更新自身的数据
+        for (let name of Object.keys(finnalData)) {
+          const value = finnalData[name];
 
           if (this[name] !== value) {
             this[name] = value;
@@ -6474,20 +6498,17 @@ ${scriptContent}`;
             continue;
           }
 
-          if (provider[name] === undefined) {
+          if (finnalData[name] === undefined) {
             this[name] = undefined;
           }
         }
       },
     },
     attached() {
-      addConsumer(this);
-      this._refresh();
-
       // 记录自身的 attributes
-      const existKeys = (this._existAttrKeys = Object.values(this.ele.attributes)
+      const existKeys = Object.values(this.ele.attributes)
         .map((e) => e.name)
-        .filter((e) => !InvalidKeys.includes(e)));
+        .filter((e) => !InvalidKeys.includes(e));
 
       // 更新 attributes
       this.watch((e) => {
@@ -6503,6 +6524,9 @@ ${scriptContent}`;
           }
         }
       });
+
+      addConsumer(this);
+      this._refresh();
     },
     detached() {
       removeConsumer(this);
