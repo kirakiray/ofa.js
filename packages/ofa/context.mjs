@@ -61,13 +61,21 @@ const updateProvider = (provider) => {
 
 // 初始化 provider
 const initProvider = async (provider) => {
+  const needRemoves = [];
+
+  const ele = provider.ele;
+
   // 将 attributes 上的属性设置到 provider 上
-  for (const key of provider.ele.attributes) {
+  for (const key of ele.attributes) {
     if (InvalidKeys.includes(key.name)) {
       continue;
     }
+
     provider[hyphenToUpperCase(key.name)] = key.value;
+    needRemoves.push(key.name);
   }
+
+  needRemoves.forEach((key) => ele.removeAttribute(key));
 
   // 监听数据变化升级consumer
   provider._init_tid = provider.watchTick(() => updateProvider(provider));

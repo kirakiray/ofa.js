@@ -6306,13 +6306,21 @@ ${scriptContent}`;
 
   // 初始化 provider
   const initProvider = async (provider) => {
+    const needRemoves = [];
+
+    const ele = provider.ele;
+
     // 将 attributes 上的属性设置到 provider 上
-    for (const key of provider.ele.attributes) {
+    for (const key of ele.attributes) {
       if (InvalidKeys.includes(key.name)) {
         continue;
       }
-      provider[key.name] = key.value;
+
+      provider[hyphenToUpperCase(key.name)] = key.value;
+      needRemoves.push(key.name);
     }
+
+    needRemoves.forEach((key) => ele.removeAttribute(key));
 
     // 监听数据变化升级consumer
     provider._init_tid = provider.watchTick(() => updateProvider(provider));
@@ -6475,6 +6483,26 @@ ${scriptContent}`;
     attached() {
       addConsumer(this);
       this._refresh();
+
+      // 记录自身的 attributes
+      const existKeys = (this._existAttrKeys = Object.values(this.ele.attributes)
+        .map((e) => e.name)
+        .filter((e) => !InvalidKeys.includes(e)));
+
+      // 更新 attributes
+      this.watch((e) => {
+        if (e.target === this && e.type === "set") {
+          const attrName = toDashCase(e.name);
+
+          if (existKeys.includes(attrName)) {
+            if (e.value === null || e.value === undefined) {
+              this.ele.removeAttribute(attrName);
+            } else {
+              this.ele.setAttribute(attrName, e.value);
+            }
+          }
+        }
+      });
     },
     detached() {
       removeConsumer(this);
