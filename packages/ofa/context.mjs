@@ -13,6 +13,9 @@ const InvalidKeys = [
   "is-root",
 ];
 
+const providers = {}; // 存储所有的provider元素
+const consumers = {}; // 存储所有的consumer元素
+
 // 根provider
 const rootProviders = {};
 
@@ -124,9 +127,6 @@ $.fn.getProvider = function (name) {
 
   return $(provider);
 };
-
-const providers = {}; // 存储所有的provider元素
-const consumers = {}; // 存储所有的consumer元素
 
 /**
  * 创建元素池操作函数
