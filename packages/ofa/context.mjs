@@ -48,7 +48,6 @@ const publicWatch = {
 
 const updateProvider = (provider) => {
   if (!provider.name) {
-    debugger;
     return;
   }
 
@@ -191,7 +190,14 @@ $.register({
       const provider = this.getProvider(this.name);
 
       if (!provider) {
-        // TODO: 应该清空自身的数据
+        // 应该清空自身的数据
+        for (let name of Object.keys(this)) {
+          if (InvalidKeys.includes(name) || !/\D/.test(name)) {
+            // 跳过默认key和数字
+            continue;
+          }
+          this[name] = undefined;
+        }
         return;
       }
 
