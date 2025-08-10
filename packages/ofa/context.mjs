@@ -1,6 +1,5 @@
 import $ from "../xhear/base.mjs";
 import { hyphenToUpperCase, toDashCase } from "../xhear/public.mjs";
-import { getErr, getErrDesc } from "../ofa-error/main.js";
 
 const InvalidKeys = [
   "tag",
