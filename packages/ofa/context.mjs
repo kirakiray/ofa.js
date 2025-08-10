@@ -1,5 +1,4 @@
 import $ from "../xhear/base.mjs";
-import { SELF } from "../stanz/main.mjs";
 import { hyphenToUpperCase, toDashCase } from "../xhear/public.mjs";
 import { getErr, getErrDesc } from "../ofa-error/main.js";
 
@@ -111,13 +110,14 @@ $.fn.getProvider = function (name) {
   // 获取最近的 provider 元素
   let provider = ancestors.find((element) => {
     return (
+      element !== this.ele &&
       element.tagName &&
       element.tagName.toLowerCase() === "o-provider" &&
       element.getAttribute("name") === name
     );
   });
 
-  if (!provider) {
+  if (!provider && this !== rootProviders[name]) {
     provider = rootProviders[name];
   }
 
@@ -193,11 +193,25 @@ $.register({
     ...publicWatch,
   },
   proto: {
+    get provider() {
+      return this.getProvider(this.name);
+    },
+
+    get providers() {
+      const providers = [];
+
+      let provider = this.provider;
+      while (provider) {
+        providers.push(provider);
+        provider = provider.getProvider(this.name);
+      }
+
+      return providers;
+    },
+
     // 更新自身的数据
     _refresh() {
-      const provider = this.getProvider(this.name);
-
-      if (!provider) {
+      if (!this.getProvider(this.name)) {
         // 应该清空自身的数据
         for (let name of Object.keys(this)) {
           if (InvalidKeys.includes(name) || !/\D/.test(name)) {
@@ -209,13 +223,22 @@ $.register({
         return;
       }
 
-      // 更新自身的数据
-      for (let name of Object.keys(provider)) {
-        const value = provider[name];
-        if (InvalidKeys.includes(name) || !/\D/.test(name)) {
-          // 跳过默认key和数字
-          continue;
+      const finnalData = {};
+
+      for (let provider of this.providers) {
+        for (let name of Object.keys(provider)) {
+          if (InvalidKeys.includes(name) || !/\D/.test(name)) {
+            // 跳过默认key和数字
+            continue;
+          }
+
+          finnalData[name] = provider[name];
         }
+      }
+
+      // 更新自身的数据
+      for (let name of Object.keys(finnalData)) {
+        const value = finnalData[name];
 
         if (this[name] !== value) {
           this[name] = value;
@@ -229,7 +252,7 @@ $.register({
           continue;
         }
 
-        if (provider[name] === undefined) {
+        if (finnalData[name] === undefined) {
           this[name] = undefined;
         }
       }
