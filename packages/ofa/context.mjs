@@ -259,13 +259,10 @@ $.register({
     },
   },
   attached() {
-    addConsumer(this);
-    this._refresh();
-
     // 记录自身的 attributes
-    const existKeys = (this._existAttrKeys = Object.values(this.ele.attributes)
+    const existKeys = Object.values(this.ele.attributes)
       .map((e) => e.name)
-      .filter((e) => !InvalidKeys.includes(e)));
+      .filter((e) => !InvalidKeys.includes(e));
 
     // 更新 attributes
     this.watch((e) => {
@@ -281,6 +278,9 @@ $.register({
         }
       }
     });
+
+    addConsumer(this);
+    this._refresh();
   },
   detached() {
     removeConsumer(this);
