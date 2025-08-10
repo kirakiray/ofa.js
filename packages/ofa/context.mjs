@@ -66,7 +66,7 @@ const initProvider = async (provider) => {
     if (InvalidKeys.includes(key.name)) {
       continue;
     }
-    provider[key.name] = key.value;
+    provider[hyphenToUpperCase(key.name)] = key.value;
   }
 
   // 监听数据变化升级consumer
@@ -230,6 +230,26 @@ $.register({
   attached() {
     addConsumer(this);
     this._refresh();
+
+    // 记录自身的 attributes
+    const existKeys = (this._existAttrKeys = Object.values(this.ele.attributes)
+      .map((e) => e.name)
+      .filter((e) => !InvalidKeys.includes(e)));
+
+    // 更新 attributes
+    this.watch((e) => {
+      if (e.target === this && e.type === "set") {
+        const attrName = toDashCase(e.name);
+
+        if (existKeys.includes(attrName)) {
+          if (e.value === null || e.value === undefined) {
+            this.ele.removeAttribute(attrName);
+          } else {
+            this.ele.setAttribute(attrName, e.value);
+          }
+        }
+      }
+    });
   },
   detached() {
     removeConsumer(this);
