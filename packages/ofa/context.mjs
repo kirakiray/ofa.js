@@ -12,7 +12,6 @@ const InvalidKeys = [
   "is-root",
 ];
 
-const providers = {}; // 存储所有的provider元素
 const consumers = {}; // 存储所有的consumer元素
 
 // 根provider
@@ -37,14 +36,27 @@ const publicWatch = {
       return;
     }
 
-    console.warn(
-      getErrDesc("context_change_name", {
-        compName: ` "${this.tag}" `,
-      }),
-      this.ele
-    );
-
-    debugger;
+    if (oldName !== name) {
+      if (this.tag === "o-consumer") {
+        // consumer 导致的更新
+        if (consumers[oldName]) {
+          consumers[oldName].delete(this);
+        }
+        if (!consumers[name]) {
+          consumers[name] = new Set();
+        }
+        consumers[name].add(this);
+        this._refresh();
+      } else {
+        // provider 导致的更新
+        if (oldName && consumers[oldName]) {
+          consumers[oldName].forEach((item) => item._refresh());
+        }
+        if (name && consumers[name]) {
+          consumers[name].forEach((item) => item._refresh());
+        }
+      }
+    }
   },
 };
 
@@ -100,6 +112,7 @@ $.register({
   detached() {
     this.unwatch(this._init_tid);
     delete rootProviders[this.name];
+    updateProvider(this);
   },
 });
 
@@ -127,42 +140,27 @@ $.fn.getProvider = function (name) {
 
   return $(provider);
 };
+/**
+ * 向消费者元素池中添加元素
+ * @param {$ele} $ele - 要添加的元素
+ */
+const addConsumer = ($ele) => {
+  if (!consumers[$ele.name]) {
+    consumers[$ele.name] = new Set();
+  }
+  consumers[$ele.name].add($ele);
+};
 
 /**
- * 创建元素池操作函数
- * @param {Object} poolObj - 元素池对象
- * @returns {Object} 包含添加和移除元素的方法
+ * 从消费者元素池中移除元素
+ * @param {$ele} $ele - 要移除的元素
  */
-function createPoolOperations(poolObj) {
-  /**
-   * 向元素池中添加元素
-   * @param {$ele} $ele - 要添加的元素
-   */
-  const add = ($ele) => {
-    if (!poolObj[$ele.name]) {
-      poolObj[$ele.name] = new Set();
-    }
-    poolObj[$ele.name].add($ele);
-  };
-
-  /**
-   * 从元素池中移除元素
-   * @param {$ele} $ele - 要移除的元素
-   */
-  const remove = ($ele) => {
-    const pool = poolObj[$ele.name];
-    if (pool) {
-      pool.delete($ele);
-    }
-  };
-
-  return { add, remove };
-}
-
-const { add: addProvider, remove: removeProvider } =
-  createPoolOperations(providers);
-const { add: addConsumer, remove: removeConsumer } =
-  createPoolOperations(consumers);
+const removeConsumer = ($ele) => {
+  const pool = consumers[$ele.name];
+  if (pool) {
+    pool.delete($ele);
+  }
+};
 
 $.register({
   tag: "o-provider",
@@ -174,12 +172,11 @@ $.register({
     ...publicWatch,
   },
   attached() {
-    addProvider(this);
     initProvider(this);
   },
   detached() {
     this.unwatch(this._init_tid);
-    removeProvider(this);
+    updateProvider(this);
   },
 });
 
@@ -232,7 +229,9 @@ $.register({
             continue;
           }
 
-          finnalData[name] = provider[name];
+          if (!finnalData[name]) {
+            finnalData[name] = provider[name];
+          }
         }
       }
 

@@ -6346,6 +6346,7 @@ ${scriptContent}`;
     detached() {
       this.unwatch(this._init_tid);
       delete rootProviders[this.name];
+      updateProvider(this);
     },
   });
 
@@ -6426,6 +6427,7 @@ ${scriptContent}`;
     detached() {
       this.unwatch(this._init_tid);
       removeProvider(this);
+      updateProvider(this);
     },
   });
 
@@ -6478,7 +6480,9 @@ ${scriptContent}`;
               continue;
             }
 
-            finnalData[name] = provider[name];
+            if (!finnalData[name]) {
+              finnalData[name] = provider[name];
+            }
           }
         }
 
