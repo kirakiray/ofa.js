@@ -96,22 +96,6 @@ test("change provider in shadow", async ({ page }) => {
 
   await new Promise((res) => setTimeout(res, 100));
 
-  await expect(
-    await page.evaluate(() => {
-      return $("o-provider").consumers.length;
-    })
-  ).toBe(1);
-  await expect(
-    await page.evaluate(() => {
-      return $("o-provider").consumers[0].tag;
-    })
-  ).toBe("o-provider");
-  await expect(
-    await page.evaluate(() => {
-      return $("comp-one").shadow.$("o-provider").consumers.length;
-    })
-  ).toBe(3);
-
   await expect(await page.evaluate(() => $("#con5").customA)).toBe("A in One");
   await expect(await page.evaluate(() => $("#con5").customB)).toBe("I am B");
   await expect(await page.evaluate(() => $("#con5").customC)).toBe("C in One");
