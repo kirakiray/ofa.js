@@ -30,26 +30,15 @@ attr.always = oldAttr.always;
 
 $.fn.extend({
   get app() {
-    let target = this;
+    // 获取所有上级元素
+    const composed = this.composedPath();
 
-    while (target && target !== "o-app") {
-      if (target.tag === "o-page") {
-        const result = target.parents.find((el) => el.tag === "o-app");
+    // 查找o-app元素
+    const app = composed.find((el) => el.tagName === "O-APP");
 
-        if (result) {
-          target = result;
-          break;
-        }
-      }
-
-      target = target.host;
-
-      if (!target) {
-        break;
-      }
+    if (app) {
+      return $(app);
     }
-
-    return target;
   },
   get PATH() {
     // component or page file path
