@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.8 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.9 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -6220,26 +6220,15 @@ ${scriptContent}`;
 
   $.fn.extend({
     get app() {
-      let target = this;
+      // 获取所有上级元素
+      const composed = this.composedPath();
 
-      while (target && target !== "o-app") {
-        if (target.tag === "o-page") {
-          const result = target.parents.find((el) => el.tag === "o-app");
+      // 查找o-app元素
+      const app = composed.find((el) => el.tagName === "O-APP");
 
-          if (result) {
-            target = result;
-            break;
-          }
-        }
-
-        target = target.host;
-
-        if (!target) {
-          break;
-        }
+      if (app) {
+        return $(app);
       }
-
-      return target;
     },
     get PATH() {
       // component or page file path
@@ -7121,7 +7110,7 @@ ${scriptContent}`;
     });
   };
 
-  const version = "ofa.js@4.6.8";
+  const version = "ofa.js@4.6.9";
   $.version = version.replace("ofa.js@", "");
 
   let isDebug = false;
