@@ -281,7 +281,31 @@ export default class Xhear extends LikeArray {
   }
 
   is(expr) {
-    return this.ele.matches(expr);
+    if (typeof expr === "string") {
+      return this.ele.matches(expr);
+    }
+
+    if (expr instanceof Xhear) {
+      return this.ele === expr.ele;
+    }
+
+    if (expr instanceof Node) {
+      return this.ele === expr;
+    }
+  }
+
+  contains(expr) {
+    if (typeof expr === "string") {
+      return this.ele.querySelector(expr) !== null;
+    }
+
+    if (expr instanceof Xhear) {
+      return this.ele.contains(expr.ele);
+    }
+
+    if (expr instanceof Node) {
+      return this.ele.contains(expr);
+    }
   }
 
   remove() {
