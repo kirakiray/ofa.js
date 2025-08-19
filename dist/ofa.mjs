@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.10 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.11 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -2667,8 +2667,10 @@ const register = (opts = {}) => {
         return;
       }
 
-      defaults.attached && defaults.attached.call(eleX(this));
-      extensions.afterAttached && extensions.afterAttached(eleX(this));
+      const $ele = eleX(this);
+      defaults.attached && defaults.attached.call($ele);
+      $ele.emit("attached", { bubbles: false });
+      extensions.afterAttached && extensions.afterAttached($ele);
     }
 
     disconnectedCallback() {
@@ -2676,8 +2678,10 @@ const register = (opts = {}) => {
         return;
       }
 
-      defaults.detached && defaults.detached.call(eleX(this));
-      extensions.afterDetached && extensions.afterDetached(eleX(this));
+      const $ele = eleX(this);
+      defaults.detached && defaults.detached.call($ele);
+      $ele.emit("detached", { bubbles: false });
+      extensions.afterDetached && extensions.afterDetached($ele);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -7127,7 +7131,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.10";
+const version = "ofa.js@4.6.11";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
