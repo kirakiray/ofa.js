@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.10 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.11 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -2674,8 +2674,10 @@ try{
           return;
         }
 
-        defaults.attached && defaults.attached.call(eleX(this));
-        extensions.afterAttached && extensions.afterAttached(eleX(this));
+        const $ele = eleX(this);
+        defaults.attached && defaults.attached.call($ele);
+        $ele.emit("attached", { bubbles: false });
+        extensions.afterAttached && extensions.afterAttached($ele);
       }
 
       disconnectedCallback() {
@@ -2683,8 +2685,10 @@ try{
           return;
         }
 
-        defaults.detached && defaults.detached.call(eleX(this));
-        extensions.afterDetached && extensions.afterDetached(eleX(this));
+        const $ele = eleX(this);
+        defaults.detached && defaults.detached.call($ele);
+        $ele.emit("detached", { bubbles: false });
+        extensions.afterDetached && extensions.afterDetached($ele);
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -7134,7 +7138,7 @@ ${scriptContent}`;
     });
   };
 
-  const version = "ofa.js@4.6.10";
+  const version = "ofa.js@4.6.11";
   $.version = version.replace("ofa.js@", "");
 
   let isDebug = false;
