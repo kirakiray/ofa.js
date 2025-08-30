@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.11 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.12 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -5087,7 +5087,11 @@ async function drawUrl(content, url, isPage = true) {
   // 原来html文件中，转译后，属于前半部分的内容（后半部分就是script标签内的内容）
   const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
-  ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
+  ${
+    isPage && titleEl
+      ? `export const title = '${titleEl.text.replace(/\'/g, "\\'")}';`
+      : ""
+  }
   export const temp = \`${temp}\`;`;
 
   let scriptContent = "";
@@ -7131,7 +7135,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.11";
+const version = "ofa.js@4.6.12";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
