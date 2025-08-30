@@ -5094,7 +5094,11 @@ try{
     // 原来html文件中，转译后，属于前半部分的内容（后半部分就是script标签内的内容）
     const beforeContent = `
   export const type = ${isPage ? "ofa.PAGE" : "ofa.COMP"};
-  ${isPage && titleEl ? `export const title = '${titleEl.text}';` : ""}
+  ${
+    isPage && titleEl
+      ? `export const title = '${titleEl.text.replace(/\'/g, "\\'")}';`
+      : ""
+  }
   export const temp = \`${temp}\`;`;
 
     let scriptContent = "";
