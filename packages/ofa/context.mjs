@@ -96,6 +96,30 @@ const initProvider = async (provider) => {
   updateProvider(provider); // 尝试初次更新 consumer
 };
 
+const providerProto = {
+  dispatch(eventName, options) {
+    const pool = consumers[this.name];
+
+    // 筛选可用的元素
+    if (pool) {
+      const event = new Event(eventName, { bubbles: false, cancelable: true });
+      event.data = options?.data;
+
+      for (let $ele of pool) {
+        if (event.defaultPrevented) {
+          break;
+        }
+        // 确认是当前provider的consumer
+        if ($ele.providers.includes(this)) {
+          event.provider = this.ele;
+
+          $ele.ele.dispatchEvent(event);
+        }
+      }
+    }
+  },
+};
+
 $.register({
   tag: "o-root-provider",
   attrs: {
@@ -103,6 +127,9 @@ $.register({
   },
   watch: {
     ...publicWatch,
+  },
+  proto: {
+    ...providerProto,
   },
   attached() {
     initProvider(this);
@@ -169,6 +196,9 @@ $.register({
   },
   watch: {
     ...publicWatch,
+  },
+  proto: {
+    ...providerProto,
   },
   attached() {
     initProvider(this);

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dispatch test</title>
+    <script type="module" src="../../../packages/ofa/main.mjs"></script>
+  </head>
+  <body>
+    <l-m src="./comp-two.html"></l-m>
+    <l-m src="./comp-zero.html"></l-m>
+    <div>
+      I am 1
+      <o-provider
+        id="targetProvider"
+        name="test1"
+        custom-a="I am A"
+        custom-b="I am B"
+      >
+        <div id="container">
+          <o-consumer name="test1" id="con1">
+            <div>I am 2</div>
+          </o-consumer>
+          <comp-zero>
+            <o-consumer name="test1" custom-a id="con2">
+              <div>I am 3</div>
+            </o-consumer>
+          </comp-zero>
+        </div>
+        <div>
+          <comp-two></comp-two>
+        </div>
+      </o-provider>
+
+      <div id="result1"></div>
+      <div id="result2"></div>
+
+      <script type="module">
+        $("#container").on("custom-event", (e) => {
+          console.error("container received:", e);
+        });
+        $("#con1").on("custom-event", (e) => {
+          console.log("con1 received:", e);
+          $("#result1").text = "con1 got: " + e.data.val;
+          //   e.preventDefault();
+        });
+        $("#con2").on("custom-event", (e) => {
+          console.log("con2 received:", e);
+          $("#result2").text = "con2 got: " + e.data.val;
+        });
+
+        setTimeout(() => {
+          $("#targetProvider").dispatch("custom-event", {
+            data: {
+              val: "Hello World",
+            },
+          });
+        }, 200);
+      </script>
+    </div>
+  </body>
+</html>

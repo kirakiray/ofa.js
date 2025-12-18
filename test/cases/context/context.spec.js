@@ -235,3 +235,20 @@ test("root provider", async ({ page }) => {
     )
   ).toBe(null);
 });
+
+test("dispatch event from provider", async ({ page }) => {
+  await page.goto("http://localhost:3348/test/cases/context/dispatch.html");
+
+  await new Promise((res) => setTimeout(res, 400));
+
+  const con1_text = await page.evaluate(async () => {
+    return $("#result1").text;
+  });
+
+  const con2_text = await page.evaluate(async () => {
+    return $("#result2").text;
+  });
+
+  await expect(con1_text).toBe("con1 got: Hello World");
+  await expect(con2_text).toBe("con2 got: Hello World");
+});
