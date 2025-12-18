@@ -41,8 +41,8 @@ app.use(async (ctx, next) => {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Server Render ${originalUrl}</title>
-    <!-- <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.12/dist/ofa.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.12/libs/scsr/dist/scsr.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.13/dist/ofa.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.13/libs/scsr/dist/scsr.min.js"></script> -->
     <script src="http://localhost:3348/dist/ofa.min.js"></script>
     <script src="http://localhost:3348/libs/scsr/dist/scsr.min.js"></script>
   </head>

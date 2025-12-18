@@ -1,5 +1,10 @@
 <template component>
-  <o-consumer name="test1" custom-b watch:custom-a="ca">
+  <o-consumer
+    name="test1"
+    custom-b
+    watch:custom-a="ca"
+    on:custom-event="testFunc"
+  >
     provider in shadow
   </o-consumer>
   <script>
@@ -7,6 +12,11 @@
       tag: "comp-two",
       data: {
         ca: null,
+      },
+      proto: {
+        testFunc(e) {
+          console.log("comp-two received:", e.data);
+        },
       },
     };
   </script>

@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.12 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.13 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -6357,6 +6357,30 @@ const initProvider = async (provider) => {
   updateProvider(provider); // 尝试初次更新 consumer
 };
 
+const providerProto = {
+  dispatch(eventName, options) {
+    const pool = consumers[this.name];
+
+    // 筛选可用的元素
+    if (pool) {
+      const event = new Event(eventName, { bubbles: false, cancelable: true });
+      event.data = options?.data;
+
+      for (let $ele of pool) {
+        if (event.defaultPrevented) {
+          break;
+        }
+        // 确认是当前provider的consumer
+        if ($ele.providers.includes(this)) {
+          event.provider = this.ele;
+
+          $ele.ele.dispatchEvent(event);
+        }
+      }
+    }
+  },
+};
+
 $.register({
   tag: "o-root-provider",
   attrs: {
@@ -6364,6 +6388,9 @@ $.register({
   },
   watch: {
     ...publicWatch,
+  },
+  proto: {
+    ...providerProto,
   },
   attached() {
     initProvider(this);
@@ -6430,6 +6457,9 @@ $.register({
   },
   watch: {
     ...publicWatch,
+  },
+  proto: {
+    ...providerProto,
   },
   attached() {
     initProvider(this);
@@ -7135,7 +7165,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.12";
+const version = "ofa.js@4.6.13";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
