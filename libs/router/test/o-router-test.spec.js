@@ -121,20 +121,21 @@ test("cross domain page in router mode", async ({ page }) => {
   );
 
   await page.getByRole("link", { name: "Page04" }).click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
+  
 
   await expect(page.getByTestId("src4")).toHaveText(
     "self src:http://127.0.0.1:3348/test/pages/subs/sub-page04.html"
   );
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
   await page
     .getByRole("button", { name: "ToSubpage 33482(Cross domain)" })
     .click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(page.getByTestId("src1")).toHaveText(
     "self src:http://127.0.0.1:33482/pages/subs/sub-page01.html"
@@ -151,7 +152,7 @@ test("cross domain page in router mode", async ({ page }) => {
 
   await page.getByRole("link", { name: "Page04" }).click();
 
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(page.getByTestId("src4")).toHaveText(
     "self src:http://127.0.0.1:33482/pages/subs/sub-page04.html"

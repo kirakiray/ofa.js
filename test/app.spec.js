@@ -147,7 +147,7 @@ test("test o-link", async ({ page }) => {
 test("test style url", async ({ page }) => {
   await page.goto("http://localhost:3348/test/test-app.html");
 
-  await new Promise((res) => setTimeout(res, 300));
+  await page.waitForTimeout(300);
 
   const backgroundUrl = await page.$eval("[data-testid='testbg']", (el) => {
     const style = window.getComputedStyle(el);
@@ -191,20 +191,20 @@ test("cross domain page", async ({ page }) => {
   );
 
   await page.getByRole("link", { name: "Page04" }).click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(page.getByTestId("src4")).toHaveText(
     "self src:http://127.0.0.1:3348/test/pages/subs/sub-page04.html"
   );
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
   await page
     .getByRole("button", { name: "ToSubpage 33482(Cross domain)" })
     .click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(page.getByTestId("src1")).toHaveText(
     "self src:http://127.0.0.1:33482/pages/subs/sub-page01.html"
@@ -212,7 +212,7 @@ test("cross domain page", async ({ page }) => {
 
   await page.getByRole("link", { name: "Page04" }).click();
 
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(page.getByTestId("src4")).toHaveText(
     "self src:http://127.0.0.1:33482/pages/subs/sub-page04.html"

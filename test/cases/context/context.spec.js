@@ -132,7 +132,7 @@ test("change provider in shadow", async ({ page }) => {
 test("change name in provider", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/context/change-name.html");
 
-  await new Promise((res) => setTimeout(res, 200));
+  await page.waitForTimeout(200);
 
   await expect(await page.evaluate(() => $("#con6").customA)).toBe("A in One");
   await expect(await page.evaluate(() => $("#con6").customB)).toBe(undefined);
@@ -160,7 +160,7 @@ test("root provider", async ({ page }) => {
     "http://localhost:3348/test/cases/context/root-provider.html"
   );
 
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(await page.evaluate(() => $("#con1").customA)).toBe("I am A");
   await expect(await page.evaluate(() => $("#con1").customB)).toBe(
@@ -239,7 +239,7 @@ test("root provider", async ({ page }) => {
 test("dispatch event from provider", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/context/dispatch.html");
 
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   const con1_text = await page.evaluate(async () => {
     return $("#result1").text;
