@@ -64,9 +64,9 @@ test("hash router page use alias", async ({ page, browserName }) => {
 
   await page.getByText("I am page3").click();
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
   await page.getByRole("button", { name: "Back" }).click();
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
   await page.getByText("I am page2").click();
   await page
     .getByText(

@@ -35,7 +35,7 @@ test("provider and consumer attributes", async ({ page }) => {
   await expect(c2_a_attr).toBe("I am A");
   await expect(c2_b_attr).toBe(null);
 
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   const c3_a = await page.evaluate(async () => {
     return $("#con3").customA;
@@ -69,7 +69,7 @@ test("change provider props", async ({ page }) => {
   await expect(await page.evaluate(() => $("#con1").customB)).toBe("change B");
   await expect(await page.evaluate(() => $("#con2").customB)).toBe("change B");
 
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await expect(await page.evaluate(() => $("#con3").customA)).toBe("change A");
   await expect(await page.evaluate(() => $("#con3").customB)).toBe("change B");
@@ -78,7 +78,7 @@ test("change provider props", async ({ page }) => {
 test("change consumer in shadow", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/context/normal.html");
 
-  await new Promise((res) => setTimeout(res, 10));
+  await page.waitForTimeout(100);
 
   await expect(await page.evaluate(() => $("comp-two").ca)).toBe("I am A");
 
@@ -94,7 +94,7 @@ test("change provider in shadow", async ({ page }) => {
     "http://localhost:3348/test/cases/context/provider-in-shadow.html"
   );
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await expect(await page.evaluate(() => $("#con5").customA)).toBe("A in One");
   await expect(await page.evaluate(() => $("#con5").customB)).toBe("I am B");

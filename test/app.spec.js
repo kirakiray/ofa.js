@@ -7,43 +7,43 @@ test("In-app page jumping", async ({ page }) => {
   );
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"2"}')
   );
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
   );
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"2"}')
   );
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
   );
 
   await page.getByTestId("replacetohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"250"}')
   );
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"2"}')
   );
 
   await page.getByTestId("gotofail").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("error-container")).toHaveText(
     new RegExp("load fail")
   );
@@ -60,7 +60,7 @@ async function getRouters(page) {
 test("app routers", async ({ page }) => {
   await page.goto("http://localhost:3348/test/test-app.html");
 
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await expect(await getRouters(page)).toEqual([
     {
@@ -69,7 +69,7 @@ test("app routers", async ({ page }) => {
   ]);
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await expect(await getRouters(page)).toEqual([
     {
@@ -81,7 +81,7 @@ test("app routers", async ({ page }) => {
   ]);
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await expect(await getRouters(page)).toEqual([
     {
@@ -96,7 +96,7 @@ test("app routers", async ({ page }) => {
   ]);
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await expect(await getRouters(page)).toEqual([
     {
@@ -108,7 +108,7 @@ test("app routers", async ({ page }) => {
   ]);
 
   await page.getByTestId("replacetohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await expect(await getRouters(page)).toEqual([
     {
@@ -120,7 +120,7 @@ test("app routers", async ({ page }) => {
   ]);
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await expect(await getRouters(page)).toEqual([
     {
@@ -132,15 +132,15 @@ test("app routers", async ({ page }) => {
 test("test o-link", async ({ page }) => {
   await page.goto("http://localhost:3348/test/test-app.html");
   await page.getByRole("link", { name: "TO single-page in o-link" }).click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await page.getByText("I am singlePage page 1");
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await page
     .getByRole("link", { name: "In component olink (using relative paths)" })
     .click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await page.getByRole("heading", { name: "I am page1" });
 });
 
@@ -159,7 +159,7 @@ test("test style url", async ({ page }) => {
 
 test("page attached and detached", async ({ page }) => {
   await page.goto("http://localhost:3348/test/test-app.html");
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   const { _preview: _attached_home } = await page.waitForFunction(() => {
     return window._attached_home;
@@ -172,7 +172,7 @@ test("page attached and detached", async ({ page }) => {
   expect(detached_home1).toBe("notok");
 
   await page.getByRole("link", { name: "TO single-page in o-link" }).click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   const { _preview: detached_home2 } = await page.waitForFunction(() => {
     return window._detached_home || "notok";
@@ -182,7 +182,7 @@ test("page attached and detached", async ({ page }) => {
 
 test("cross domain page", async ({ page }) => {
   await page.goto("http://127.0.0.1:3348/test/test-app.html");
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await page.getByRole("button", { name: "Go to sub page" }).click();
 

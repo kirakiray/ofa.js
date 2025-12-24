@@ -40,13 +40,13 @@ test("reload page", async ({ page }) => {
   await page.getByRole("button", { name: "Go to sub page 01" }).click();
   await new Promise((res) => setTimeout(res, 300));
   await page.reload();
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await page.getByRole("heading", { name: "I am Sub Page 1" }).click();
   await page.getByRole("link", { name: "Page03" }).click();
   await new Promise((res) => setTimeout(res, 300));
   await page.reload();
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await page.getByRole("heading", { name: "I am Sub Page 3" }).click();
 });
