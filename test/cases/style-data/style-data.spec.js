@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test("style data", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/style-data/test.html");
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   const data1 = await getData({ page });
 
@@ -13,17 +13,23 @@ test("style data", async ({ page }) => {
 
   await page.getByRole("button", { name: "weight:600" }).click();
 
+  await page.waitForTimeout(10);
+
   const data2 = await getData({ page });
   expect(data2.weight).toBe("400"); // default is 400
   expect(data2.size).toBe("20px");
 
   await page.getByRole("button", { name: "weight:850" }).click();
 
+  await page.waitForTimeout(10);
+
   const data3 = await getData({ page });
   expect(data3.weight).toBe("850");
   expect(data3.size).toBe("20px");
 
   await page.setViewportSize({ width: 540, height: 480 });
+
+  await page.waitForTimeout(10);
 
   const data4 = await getData({ page });
   expect(data4.size).toBe("16px");
