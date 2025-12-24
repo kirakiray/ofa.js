@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.13 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.14 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -1222,6 +1222,13 @@ try{
     isRenderSelf, // 是否将当前target元素也渲染处理
     ...otherOpts
   }) {
+    try {
+      data.watchTick;
+    } catch (e) {
+      // data 已经被回收，不需要继续操作
+      return;
+    }
+
     const content = template && template.innerHTML;
 
     if (content) {
@@ -7172,7 +7179,7 @@ ${scriptContent}`;
     });
   };
 
-  const version = "ofa.js@4.6.13";
+  const version = "ofa.js@4.6.14";
   $.version = version.replace("ofa.js@", "");
 
   let isDebug = false;

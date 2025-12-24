@@ -12,19 +12,26 @@ test("match var", async ({ page }) => {
 
   await page.getByRole("button", { name: "+1" }).click();
 
+  await page.waitForTimeout(100);
+
   expect(await page.$eval("#tips", (el) => el.textContent)).toContain(
     "I am 1 pink"
   );
 
   await page.getByRole("button", { name: "+1" }).click();
 
+  await page.waitForTimeout(100);
+
   expect(await page.$eval("#tips", (el) => el.textContent)).toContain(
     "I am 2 red"
   );
 
   await page.getByRole("button", { name: "-1" }).click();
+  await page.waitForTimeout(10);
   await page.getByRole("button", { name: "-1" }).click();
+  await page.waitForTimeout(10);
   await page.getByRole("button", { name: "-1" }).click();
+  await page.waitForTimeout(10);
 
   expect(await page.$eval("#tips", (el) => el.textContent)).toContain(
     "I am -1 blue"

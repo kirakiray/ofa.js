@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test("empty temp", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/empty-temp/test.html");
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await page.getByText("I m text").click();
 

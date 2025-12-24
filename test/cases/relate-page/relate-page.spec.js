@@ -9,7 +9,7 @@ test("relate page", async ({ page }) => {
 test("relate import", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/relate-page/index.html");
 
-  await new Promise((res) => setTimeout(res, 200));
+  await page.waitForTimeout(200);
 
   expect(await page.$eval("#d1", (el) => el.textContent)).toBe("d1:I am data1");
   expect(await page.$eval("#d2", (el) => el.textContent)).toBe("d2:I am data2");

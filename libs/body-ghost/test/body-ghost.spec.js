@@ -5,7 +5,7 @@ test("body-ghost test", async ({ page }) => {
     "http://localhost:3348/libs/body-ghost/test/test-body-ghost.html"
   );
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await expect(
     await page.evaluate(async () => {
@@ -36,7 +36,7 @@ test("body-ghost test", async ({ page }) => {
   await page.getByRole("button", { name: "count++" }).click();
   await page.getByRole("button", { name: "count++" }).click();
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await expect(
     await page.evaluate(
@@ -46,13 +46,13 @@ test("body-ghost test", async ({ page }) => {
 
   await page.getByRole("button", { name: "count++" }).click();
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await expect(await page.evaluate(() => $("body-ghost-mapping"))).toBe(null);
 
   await page.getByRole("button", { name: "count++" }).click();
 
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await expect(
     await page.evaluate(

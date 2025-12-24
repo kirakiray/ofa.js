@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test("relate img src", async ({ page }) => {
   await page.goto("http://localhost:3348/test/cases/relate-img/demo.html");
 
-  await new Promise((res) => setTimeout(res, 300));
+  await page.waitForTimeout(300);
 
   const img1src = await page.$eval('[data-testid="img1"]', (el) => el.src);
   await expect(img1src).toBe("http://localhost:3348/test/testimg.jpeg");

@@ -29,40 +29,40 @@ test("o-router hash router", async ({ page }) => {
   expect(await getHash(page)).toBe("");
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
 
   await page.getByTestId("replacetohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   expect(await getHash(page)).toBe("#/test/pages/home.html?count=250");
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   expect(await getHash(page)).toBe("");
 
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await page.getByTestId("gotohome").click();
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
 
   await page.goBack();
   expect(await getHash(page)).toBe("#/test/pages/home.html?count=2");
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"2"}')
   );
 
   await page.goForward();
   expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
   );
@@ -73,7 +73,7 @@ test("o-router hash router", async ({ page }) => {
     return true;
   });
   expect(await getHash(page)).toBe("");
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"1"}')
   );
@@ -84,7 +84,7 @@ test("o-router hash router", async ({ page }) => {
     return true;
   });
   expect(await getHash(page)).toBe("#/test/pages/home.html?count=3");
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"3"}')
   );
@@ -95,7 +95,7 @@ test("Direct access", async ({ page }) => {
     "http://localhost:3348/libs/router/test/router-test.html#/test/pages/home.html?count=501"
   );
 
-  await new Promise((res) => setTimeout(res, 500));
+   await page.waitForTimeout(500);
   await expect(page.getByTestId("first-div")).toHaveText(
     new RegExp('{"count":"501"}')
   );
@@ -103,7 +103,7 @@ test("Direct access", async ({ page }) => {
 
 test("cross domain page in router mode", async ({ page }) => {
   await page.goto("http://127.0.0.1:3348/libs/router/test/router-test.html");
-  await new Promise((res) => setTimeout(res, 100));
+  await page.waitForTimeout(100);
 
   await page.getByRole("button", { name: "Go to sub page" }).click();
 
@@ -121,20 +121,21 @@ test("cross domain page in router mode", async ({ page }) => {
   );
 
   await page.getByRole("link", { name: "Page04" }).click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
+  
 
   await expect(page.getByTestId("src4")).toHaveText(
     "self src:http://127.0.0.1:3348/test/pages/subs/sub-page04.html"
   );
 
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
   await page.getByTestId("back").click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
   await page
     .getByRole("button", { name: "ToSubpage 33482(Cross domain)" })
     .click();
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(page.getByTestId("src1")).toHaveText(
     "self src:http://127.0.0.1:33482/pages/subs/sub-page01.html"
@@ -151,7 +152,7 @@ test("cross domain page in router mode", async ({ page }) => {
 
   await page.getByRole("link", { name: "Page04" }).click();
 
-  await new Promise((res) => setTimeout(res, 400));
+  await page.waitForTimeout(400);
 
   await expect(page.getByTestId("src4")).toHaveText(
     "self src:http://127.0.0.1:33482/pages/subs/sub-page04.html"
