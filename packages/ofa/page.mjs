@@ -191,9 +191,19 @@ setTimeout(() => {
         const { src } = this;
 
         if (defaults.data) {
-          // 检查 proto 和 data 上的key，是否和fn上的key冲突
+          // 检查是否有key冲突
           Object.keys(defaults.data).forEach((name) => {
-            if (name in this) {
+            if (
+              [
+                "src",
+                "goto",
+                "replace",
+                "back",
+                "pageAnime",
+                "pageIsReady",
+              ].includes(name) ||
+              name in $.fn
+            ) {
               throw getErr("page_invalid_key", {
                 src,
                 targetName: "data",

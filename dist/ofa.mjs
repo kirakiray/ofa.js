@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.14 https://github.com/kirakiray/ofa.js  (c) 2018-2025 YAO
+//! ofa.js - v4.6.15 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -5359,9 +5359,19 @@ setTimeout(() => {
         const { src } = this;
 
         if (defaults.data) {
-          // 检查 proto 和 data 上的key，是否和fn上的key冲突
+          // 检查是否有key冲突
           Object.keys(defaults.data).forEach((name) => {
-            if (name in this) {
+            if (
+              [
+                "src",
+                "goto",
+                "replace",
+                "back",
+                "pageAnime",
+                "pageIsReady",
+              ].includes(name) ||
+              name in $.fn
+            ) {
               throw getErr("page_invalid_key", {
                 src,
                 targetName: "data",
@@ -7172,7 +7182,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.14";
+const version = "ofa.js@4.6.15";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
