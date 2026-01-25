@@ -1,0 +1,10 @@
+logoImg: ./logo.png
+logoName: ofa.js
+logoUrl: ./index.yaml
+content:
+  - name: 文档
+    url: ./documentation/_config.yaml
+  - name: API
+    url: ./api/_config.yaml
+website:
+  index: ./index.yaml
