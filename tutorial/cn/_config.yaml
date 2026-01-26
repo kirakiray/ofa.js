@@ -1,10 +1,5 @@
-logoImg: ./logo.png
-logoName: ofa.js
-logoUrl: ./index.yaml
-content:
+header: # 会在 headers 上显示的导航地址
   - name: 文档
     url: ./documentation/_config.yaml
   - name: API
     url: ./api/_config.yaml
-website:
-  index: ./index.yaml

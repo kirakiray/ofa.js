@@ -1,1 +1,6 @@
 page: true
+content:
+  - tag: center-block
+    content:
+      title: 基于 Web Components
+      description: ofa.js 基于 Web Components 开发。以下是支持的平台和时间，你可以立即体验

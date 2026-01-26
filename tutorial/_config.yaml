@@ -2,3 +2,5 @@ mainLang: cn
 languages:
   - cn
   - en
+logoImg: ./logo.png
+logoName: ofa.js
