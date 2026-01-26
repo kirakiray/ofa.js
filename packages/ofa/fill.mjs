@@ -245,7 +245,6 @@ export const wrapTemp = (template) => {
     }
 
     const originCode = e.innerHTML;
-    console.log("originCode: ", originCode);
     // 对已有的 inner-code 先进行解套
     e.innerHTML = `<template inner-code>${originCode}</template>`;
     wrapTemp(e.children[0]);
