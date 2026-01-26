@@ -1,0 +1,61 @@
+<template page>
+  <style>
+    :host {
+      display: block;
+    }
+    .item {
+      display: block;
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid orange;
+    }
+  </style>
+
+  <h1>fill in temp case</h1>
+
+  <o-fill :value="arr" name="item"></o-fill>
+
+  <template name="item">
+    <div class="item">
+      <div>{{$data.name}}</div>
+      <o-if :value="$data.arr && $data.arr.length > 0">
+        <div>
+          <o-fill :value="$data.arr" name="item"></o-fill>
+        </div>
+      </o-if>
+    </div>
+  </template>
+
+  <script>
+    export default async () => {
+      return {
+        data: {
+          arr: [
+            {
+              name: "one",
+              arr: [
+                {
+                  name: "one-1",
+                },
+                {
+                  name: "one-2",
+                  arr: [
+                    {
+                      name: "one-2-1",
+                    },
+                  ],
+                },
+                {
+                  name: "one-3",
+                },
+              ],
+            },
+            {
+              name: "two",
+            },
+          ],
+        },
+      };
+    };
+  </script>
+</template>
