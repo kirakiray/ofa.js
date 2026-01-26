@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.15 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
+//! ofa.js - v4.6.16 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -7019,7 +7019,7 @@ ${scriptContent}`;
               targetTemp,
               data.$host || data,
               i,
-              keyName
+              keyName,
             );
 
             frag.appendChild($ele.ele);
@@ -7068,7 +7068,7 @@ ${scriptContent}`;
         let keyVals = [];
         const refreshKeyVals = () => {
           keyVals = Array.from(children).map((e, i) =>
-            getKeyVal(e.__render_data.$data, i)
+            getKeyVal(e.__render_data.$data, i),
           );
         };
         refreshKeyVals();
@@ -7109,7 +7109,7 @@ ${scriptContent}`;
               targetTemp,
               data.$host || data,
               i,
-              keyName
+              keyName,
             );
 
             selfEl.insertBefore($ele.ele, children[i]);
@@ -7176,20 +7176,42 @@ ${scriptContent}`;
 
   const wrapTemp = (template) => {
     const eles = Array.from(
-      template.content.querySelectorAll(needWrapTags.join(","))
+      template.content.querySelectorAll(needWrapTags.join(",")),
     );
 
     // 倒转之后性能好像好点
     // eles.reverse();
 
+    // 对已有的 inner-code 先进行解套，不然导致渲染失败
     eles.forEach((e) => {
+      while (true) {
+        const innerCodeTempEl = e.querySelector("template[inner-code]");
+
+        if (!innerCodeTempEl) {
+          break;
+        }
+
+        const childs = innerCodeTempEl.content.childNodes;
+
+        childs.forEach((child) => {
+          innerCodeTempEl.parentNode.insertBefore(
+            child.cloneNode(true),
+            innerCodeTempEl,
+          );
+        });
+
+        innerCodeTempEl.remove();
+      }
+
       const originCode = e.innerHTML;
+      console.log("originCode: ", originCode);
+      // 对已有的 inner-code 先进行解套
       e.innerHTML = `<template inner-code>${originCode}</template>`;
       wrapTemp(e.children[0]);
     });
   };
 
-  const version = "ofa.js@4.6.15";
+  const version = "ofa.js@4.6.16";
   $.version = version.replace("ofa.js@", "");
 
   let isDebug = false;
