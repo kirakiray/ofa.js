@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.16 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
+//! ofa.js - v4.6.17 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -7204,14 +7204,13 @@ ${scriptContent}`;
       }
 
       const originCode = e.innerHTML;
-      console.log("originCode: ", originCode);
       // 对已有的 inner-code 先进行解套
       e.innerHTML = `<template inner-code>${originCode}</template>`;
       wrapTemp(e.children[0]);
     });
   };
 
-  const version = "ofa.js@4.6.16";
+  const version = "ofa.js@4.6.17";
   $.version = version.replace("ofa.js@", "");
 
   let isDebug = false;
