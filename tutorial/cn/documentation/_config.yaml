@@ -1,4 +1,6 @@
-- name: 基础教程
+- name: 安装
   content:
     - name: 创建第一个应用
       url: ./create-first-app.md
+    - name: 预览应用
+      url: ./preview-app.md
