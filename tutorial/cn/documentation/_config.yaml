@@ -1,3 +1,5 @@
+- name: 介绍
+  url: ./introduction.md
 - name: 安装
   content:
     - name: 创建第一个应用
