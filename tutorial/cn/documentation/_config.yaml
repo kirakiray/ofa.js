@@ -1,7 +1,9 @@
 - name: 介绍
   url: ./introduction.md
-- name: 安装
+- name: 开始
   content:
+    - name: 脚本引用
+      url: ./script-reference.md
     - name: 创建第一个应用
       url: ./create-first-app.md
     - name: 预览应用
