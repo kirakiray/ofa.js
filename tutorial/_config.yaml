@@ -3,5 +3,5 @@ writingLang: cn # 写文章时主要使用的语言
 languages:
   - cn
   # - en
-logoImg: ./logo.png
+logoImg: ./logo.svg
 logoName: ofa.js
