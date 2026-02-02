@@ -1,6 +1,8 @@
 - name: 介绍
   url: ./introduction.md
-- name: 开始
+- name: 快速上手
+  url: ./quick-start.md
+- name: 开始使用
   content:
     - name: 脚本引用
       url: ./script-reference.md
