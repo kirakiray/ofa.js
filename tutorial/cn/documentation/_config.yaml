@@ -6,5 +6,3 @@
       url: ./script-reference.md
     - name: 创建第一个应用
       url: ./create-first-app.md
-    - name: 预览应用
-      url: ./preview-app.md
