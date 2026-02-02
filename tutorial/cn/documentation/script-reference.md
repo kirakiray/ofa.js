@@ -1,21 +1,31 @@
 # 脚本引入
 
-ofa.js 可以通过脚本引入的方式使用。你可以在 HTML 文件中添加如下代码：
+ofa.js 支持通过 script 标签直接引入使用。只需在 HTML 文件的 `<head>` 或 `<body>` 部分添加以下代码：
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.min.js"></script>
 ```
 
-## 使用
+## 基本使用
 
-在引用资源后，ofa.js 将在全局作用域上设置一个 $ 属性，所有的功能都在 $ 上，后面的教程会详细讲解其用法；
+引入脚本后，ofa.js 会在全局作用域创建一个 `$` 变量，所有核心功能都通过该对象提供。您可以通过这个对象访问 ofa.js 的各种方法和属性。后续教程将详细介绍其具体用法。
 
 ## 调试模式
 
-你可以通过在引用 ofa.js 的 script 标签上添加 debug hash 来开启调试模式。在调试模式下，加载的组件模块或页面模块将启用 sourceMap 功能，允许你直接从源文件进行调试。
+在开发过程中，您可以通过在脚本 URL 后添加 `#debug` 参数来启用调试模式：
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.min.js#debug"></script>
 ```
 
-开启调试模式后，你将能够更方便地追踪和调试你的组件代码。这对于开发过程中的错误排查和代码调试非常有帮助。
+调试模式会启用 source map 功能，使您能够在浏览器开发者工具中，直接查看和调试文件的原始源代码，从而大幅提升开发效率。
+
+## ESM 模块
+
+ofa.js 还支持通过 ESM 模块引入。您可以在您的项目中使用 `import` 语句来引入 ofa.js：
+
+```javascript
+import 'https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.min.mjs';
+```
+
+使用 ESM 模块时，您可以直接在代码中使用 `$` 变量，无需通过全局作用域访问。
