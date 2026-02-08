@@ -8,3 +8,7 @@
       url: ./create-first-app.md
 - name: 快速上手
   url: ./quick-start.md
+- name: 模板渲染
+  content:
+    - name: 文本渲染
+      url: ./template-text.md

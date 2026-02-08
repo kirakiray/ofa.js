@@ -67,8 +67,6 @@ ofa.js 自带了一套强大的模板渲染引擎，支持类似于其他现代 
 
 以下是在线编辑器中的实时示例，您可以直接修改代码并查看效果：
 
-<l-m src="https://playground.ofajs.com/comps/o-playground/o-playground.html"></l-m>
-
 <o-playground style="--editor-height: 500px">
   <template page>
       <style>
@@ -76,7 +74,7 @@ ofa.js 自带了一套强大的模板渲染引擎，支持类似于其他现代 
               display: block;
           }
       </style>
-      <p>{{val}}</p>
+      <p on:click="console.log('click')">{{val}}</p>
       <script>
           export default async () => {
               return {
