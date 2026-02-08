@@ -4,7 +4,7 @@
 
 ofa.js 是一款非常易用的 Web 前端框架，用于构建 Web 应用，旨在提高开发效率，降低开发门槛。
 
-如果你对 HTML、CSS 和 JavaScript 已经基本熟悉，那么 ofa.js 是一个非常好的选择。
+>如果你对 HTML、CSS 和 JavaScript **已经基本熟悉**，那么 ofa.js 是一个非常好的选择。
 
 ## 为什么我要开发 ofa.js？
 
