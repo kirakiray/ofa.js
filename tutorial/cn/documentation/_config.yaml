@@ -12,3 +12,13 @@
   content:
     - name: 模版渲染
       url: ./template-rendering.md
+    - name: 事件绑定
+      url: ./event-binding.md
+- name: 组件
+  content:
+    - name: 创建组件
+      url: ./create-component.md
+    - name: 深入理解属性绑定
+      url: ./property-binding.md
+    - name: 深入理解事件绑定
+      url: ./event-binding-deep.md

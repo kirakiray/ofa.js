@@ -60,6 +60,7 @@
 ```
 
 该文件定义了一个简单的页面组件，包含：
+- `<template page>` 标签，定义页面模块
 - CSS 样式（使用 Shadow DOM 的 `:host` 选择器）
 - 数据绑定表达式 `{{val}}`
 - JavaScript 逻辑，返回包含初始数据的对象
