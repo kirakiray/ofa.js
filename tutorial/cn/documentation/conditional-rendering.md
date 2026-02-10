@@ -94,12 +94,12 @@
           padding: 10px;
         }
         .admin-panel {
-          background-color: #ffe6e6;
+          background-color: #813b3bff;
           padding: 10px;
           margin: 10px 0;
         }
         .user-info {
-          background-color: #e6f7ff;
+          background-color: #3f6e86ff;
           padding: 10px;
           margin: 10px 0;
         }
