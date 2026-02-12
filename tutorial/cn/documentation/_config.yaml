@@ -12,8 +12,8 @@
   content:
     - name: 内容渲染
       url: ./content-rendering.md
-    - name: 数据绑定
-      url: ./data-binding.md
+    - name: 属性绑定
+      url: ./property-binding.md
     - name: 事件绑定
       url: ./event-binding.md
     - name: 类和样式绑定
@@ -24,6 +24,8 @@
       url: ./list-rendering.md
     - name: 计算属性
       url: ./computed-properties.md
+    - name: 侦听器
+      url: ./watchers.md
 - name: 组件
   content:
     - name: 创建组件
