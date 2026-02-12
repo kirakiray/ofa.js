@@ -20,6 +20,8 @@
       url: ./conditional-rendering.md
     - name: 列表渲染
       url: ./list-rendering.md
+    - name: 计算属性
+      url: ./computed-properties.md
 - name: 组件
   content:
     - name: 创建组件
