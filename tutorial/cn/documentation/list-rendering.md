@@ -20,21 +20,9 @@
   <code>
     <template page>
       <style>
-        :host {
-          display: block;
-          border: 1px solid red;
-          padding: 10px;
-        }
-        ul {
-          list-style: none;
-          padding: 0;
-        }
-        li {
-          padding: 8px;
-          margin: 5px 0;
-          background-color: rgba(126, 126, 126, 1);
-          border-radius: 4px;
-        }
+        :host { display: block; padding: 10px; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 8px; margin: 5px 0; background: #7e7e7e; border-radius: 4px; }
       </style>
       <h3>水果列表</h3>
       <button on:click="addItem">添加水果</button>
@@ -45,32 +33,30 @@
         </o-fill>
       </ul>
       <script>
-        export default async () => {
-          return {
-            data: {
-              fruits: [
-                { name: "🍎 苹果", price: 5 },
-                { name: "🍊 橙子", price: 6 },
-                { name: "🍌 香蕉", price: 3 },
-              ],
+        export default async () => ({
+          data: { 
+            fruits: [
+              { name: "🍎 苹果", price: 5 },
+              { name: "🍊 橙子", price: 6 },
+              { name: "🍌 香蕉", price: 3 }
+            ],
+            fruitIndex: 0,
+          },
+          proto: {
+            addItem() {
+              const fruitNames = ["🍇 葡萄", "🍓 草莓", "🥝 猕猴桃", "🍑 桃子", "🥭 芒果"];
+              const name = fruitNames[this.fruitIndex % fruitNames.length];
+              this.fruits.push({ 
+                name: name, 
+                price: Math.floor(Math.random() * 10) + 1 
+              });
+              this.fruitIndex++;
             },
-            proto: {
-              addItem() {
-                const names = ["🍇 葡萄", "🍓 草莓", "🥝 猕猴桃", "🍑 桃子", "🥭 芒果"];
-                const randomName = names[Math.floor(Math.random() * names.length)];
-                this.fruits.push({ 
-                  name: randomName, 
-                  price: Math.floor(Math.random() * 10) + 1 
-                });
-              },
-              removeItem() {
-                if (this.fruits.length > 0) {
-                  this.fruits.pop();
-                }
-              }
+            removeItem() {
+              this.fruits.length && this.fruits.pop();
             }
-          };
-        };
+          }
+        });
       </script>
     </template>
   </code>
@@ -89,30 +75,11 @@
   <code>
     <template page>
       <style>
-        :host {
-          display: block;
-          border: 1px solid red;
-          padding: 10px;
-        }
-        .product-card {
-          border: 1px solid #747474ff;
-          border-radius: 8px;
-          padding: 12px;
-          margin: 10px 0;
-        }
-        .product-name {
-          font-weight: bold;
-          font-size: 1.1em;
-        }
-        .product-price {
-          color: rgba(131, 44, 34, 1);
-          font-weight: bold;
-        }
-        .product-desc {
-          color: #929292ff;
-          font-size: 0.9em;
-          margin-top: 5px;
-        }
+        :host { display: block; padding: 10px; }
+        .product-card { border: 1px solid #747474; border-radius: 8px; padding: 12px; margin: 10px 0; }
+        .product-name { font-weight: bold; font-size: 1.1em; }
+        .product-price { color: #832c22; font-weight: bold; }
+        .product-desc { color: #929292; font-size: 0.9em; margin-top: 5px; }
       </style>
       <h3>商品列表</h3>
       <button on:click="addProduct">添加商品</button>
@@ -128,47 +95,30 @@
         </div>
       </template>
       <script>
-        export default async () => {
-          return {
-            data: {
-              products: [
-                {
-                  name: "MacBook Pro",
-                  price: 12999,
-                  description: "高性能笔记本电脑，适合专业工作"
-                },
-                {
-                  name: "iPhone 15",
-                  price: 5999,
-                  description: "最新款智能手机，拍照效果出色"
-                },
-                {
-                  name: "AirPods Pro",
-                  price: 1999,
-                  description: "无线降噪耳机，音质优秀"
-                }
-              ]
-            },
-            proto: {
-              addProduct() {
-                const names = ["iPad Air", "Apple Watch", "Magic Mouse", "Pro Display"];
-                const descriptions = [
-                  "轻薄便携的平板电脑",
-                  "智能手表，健康监测",
-                  "人体工学设计鼠标",
-                  "专业级显示器"
-                ];
-                const randomName = names[Math.floor(Math.random() * names.length)];
-                const randomDesc = descriptions[Math.floor(Math.random() * descriptions.length)];
-                this.products.push({
-                  name: randomName,
-                  price: Math.floor(Math.random() * 5000) + 1000,
-                  description: randomDesc
-                });
-              }
+        export default async () => ({
+          data: {
+            products: [
+              { name: "MacBook Pro", price: 12999, description: "高性能笔记本电脑，适合专业工作" },
+              { name: "iPhone 15", price: 5999, description: "最新款智能手机，拍照效果出色" },
+              { name: "AirPods Pro", price: 1999, description: "无线降噪耳机，音质优秀" }
+            ],
+            productIndex: 0,
+          },
+          proto: {
+            addProduct() {
+              const productNames = ["iPad Air", "Apple Watch", "Magic Mouse", "Pro Display"];
+              const productDescs = ["轻薄便携的平板电脑", "智能手表，健康监测", "人体工学设计鼠标", "专业级显示器"];
+              const name = productNames[this.productIndex % productNames.length];
+              const desc = productDescs[this.productIndex % productDescs.length];
+              this.products.push({
+                name: name,
+                price: Math.floor(Math.random() * 5000) + 1000,
+                description: desc
+              });
+              this.productIndex++;
             }
-          };
-        };
+          }
+        });
       </script>
     </template>
   </code>
