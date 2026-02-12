@@ -10,8 +10,10 @@
   url: ./quick-start.md
 - name: 模板语法
   content:
-    - name: 模版渲染
-      url: ./template-rendering.md
+    - name: 内容渲染
+      url: ./content-rendering.md
+    - name: 数据绑定
+      url: ./data-binding.md
     - name: 事件绑定
       url: ./event-binding.md
     - name: 类和样式绑定
