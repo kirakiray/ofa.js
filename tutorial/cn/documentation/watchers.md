@@ -6,7 +6,7 @@
 
 侦听器定义在组件的 `watch` 对象中，其中键名对应需要监听的数据属性名，值是当数据变化时执行的回调函数。
 
-<o-playground style="--editor-height: 500px">
+<o-playground style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -53,7 +53,7 @@
 
 `watch` 中的函数会在组件初始化完成后立即被调用，用于建立数据监听。可通过判断 `watchers` 是否有长度来区分是否为首次调用。
 
-<o-playground style="--editor-height: 500px">
+<o-playground style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -110,7 +110,7 @@
 
 对于对象或数组类型的嵌套数据，watch 内会自动进行深度监听。
 
-<o-playground style="--editor-height: 600px">
+<o-playground style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -192,7 +192,7 @@
 
 你可以同时监听多个数据的变化，并在回调函数中根据多个数据的变化执行相应的逻辑。
 
-<o-playground style="--editor-height: 500px">
+<o-playground style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -220,104 +220,11 @@
               area: 0,
             },
             watch: {
-              rectWidth() {
-                this.calcArea();
-              },
-              rectHeight() {
-                this.calcArea();
-              },
-            },
-            proto: {
-              calcArea() {
-                this.area = (this.rectWidth || 0) * (this.height || 0);
-              },
-            },
-            ready() {
-              this.calcArea();
-            },
-          };
-        };
-      </script>
-    </template>
-  </code>
-</o-playground>
-
-## 侦听器 vs 计算属性
-
-侦听器和计算属性都可以用于响应数据的变化，但它们有不同的适用场景：
-
-| 特性 | 侦听器 | 计算属性 |
-|------|--------|----------|
-| 适用场景 | 执行副作用操作、异步操作 | 基于响应式数据派生新值 |
-| 返回值 | 无返回值 | 必须返回值 |
-| 缓存 | 无缓存，每次数据变化都会执行 | 有缓存，只在依赖变化时重新计算 |
-| 灵活性 | 更灵活，可执行任意操作 | 更简洁，声明式定义 |
-
-<o-playground style="--editor-height: 600px">
-  <code>
-    <template page>
-      <style>
-        :host {
-          display: block;
-          border: 1px solid red;
-          padding: 10px;
-        }
-        button {
-          margin: 5px;
-          padding: 8px 12px;
-        }
-        .log {
-          margin-top: 10px;
-          padding: 10px;
-          background-color: #f5f5f5;
-        }
-      </style>
-      <p>原价格: {{price}}</p>
-      <p>折扣: {{discount}}</p>
-      <p>计算属性 - 最终价格: {{finalPrice}}</p>
-      <p>侦听器 - 折扣后价格: {{discountedPrice}}</p>
-      <button on:click="changePrice">修改价格</button>
-      <button on:click="changeDiscount">修改折扣</button>
-      <div class="log">
-        <p>计算属性访问次数: {{computedCount}}</p>
-        <p>侦听器执行次数: {{watcherCount}}</p>
-      </div>
-      <script>
-        export default async () => {
-          return {
-            data: {
-              price: 100,
-              discount: 0.8,
-              finalPrice: 0,
-              discountedPrice: 0,
-              computedCount: 0,
-              watcherCount: 0,
-            },
-            proto: {
-              get finalPrice() {
-                this.computedCount++;
-                return this.price * this.discount;
-              },
-              changePrice() {
-                this.price = Math.floor(Math.random() * 200) + 50;
-              },
-              changeDiscount() {
-                this.discount = parseFloat((Math.random() * 0.5 + 0.5).toFixed(2));
-              },
-            },
-            watch: {
-              price() {
-                this.watcherCount++;
-                this.discountedPrice = this.price * this.discount;
-              },
-              discount() {
-                this.watcherCount++;
-                this.discountedPrice = this.price * this.discount;
-              },
-            },
-            ready() {
-              this.discountedPrice = this.price * this.discount;
-            },
+              // "rectWidth,rectHeight"(){
+              ["rectWidth,rectHeight"](){
+                this.area = (this.rectWidth || 0) * (this.rectheight || 0);
+              }
+            }
           };
         };
       </script>
@@ -329,7 +236,7 @@
 
 ### 1. 表单验证
 
-<o-playground style="--editor-height: 500px">
+<o-playground style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -370,7 +277,7 @@
                 }
               },
               email(val) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const emailRegex = /^.+@.+\..+$/;
                 if (!emailRegex.test(val)) {
                   this.emailError = "请输入有效的邮箱地址";
                 } else {
@@ -387,7 +294,7 @@
 
 ### 2. 数据持久化
 
-<o-playground style="--editor-height: 500px">
+<o-playground style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -416,16 +323,13 @@
               saveStatus: "已保存",
             },
             watch: {
-              settings: {
-                handler() {
+              settings(){
                   this.saveStatus = "保存中...";
                   setTimeout(() => {
                     this.saveStatus = "已保存";
                     console.log("设置已保存:", this.settings);
                   }, 500);
-                },
-                deep: true,
-              },
+              }
             },
             proto: {
               setLight() {
@@ -447,7 +351,4 @@
 
 ## 注意事项
 
-1. **避免修改监听的数据**：在侦听器回调中修改被监听的数据可能导致无限循环。如果需要修改数据，请确保有适当的条件判断。
-2. **性能考虑**：深度侦听会遍历整个对象树，对于大型对象可能会有性能开销。请谨慎使用 `{ deep: true }`。
-3. **异步操作**：侦听器支持异步操作，但请注意处理好异步回调中的上下文问题。
-4. **初始值**：`immediate: true` 会立即执行侦听器，此时 `oldValue` 为 `undefined`。
+**避免修改监听的数据**：在侦听器回调中修改被监听的数据可能导致无限循环。如果需要修改数据，请确保有适当的条件判断。
