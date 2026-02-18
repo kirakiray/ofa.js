@@ -4679,8 +4679,18 @@ try{
 
   const resolvePath = path;
 
+  const isInCode = (el) =>
+    $(el)
+      .composedPath()
+      .some((e) => e.tagName && e.tagName.toLowerCase() === "code");
+
   function fixRelate(ele, path) {
     searchEle(ele, "[href],[src]").forEach((el) => {
+      // 排除在code元素内的href和src属性
+      if (isInCode(el)) {
+        return;
+      }
+
       ["href", "src"].forEach((name) => {
         const val = el.getAttribute(name);
 
@@ -4695,6 +4705,11 @@ try{
     });
 
     searchEle(ele, "template").forEach((el) => {
+      // 排除在code元素内的template元素
+      if (isInCode(el)) {
+        return;
+      }
+
       fixRelate(el.content, path);
     });
   }
@@ -4748,7 +4763,7 @@ try{
               before: beforeSrc,
               current: pageSrc,
             },
-            error
+            error,
           );
         } else {
           err = getErr(
@@ -4756,7 +4771,7 @@ try{
             {
               url: pageSrc,
             },
-            error
+            error,
           );
         }
         errorObj = err;

@@ -3,11 +3,22 @@ import { searchEle } from "../xhear/public.mjs";
 import { path } from "../drill.js/config.mjs";
 import { eleX } from "../xhear/util.mjs";
 import { getErr } from "../ofa-error/main.js";
+import $ from "../xhear/base.mjs";
 
 export const resolvePath = path;
 
+const isInCode = (el) =>
+  $(el)
+    .composedPath()
+    .some((e) => e.tagName && e.tagName.toLowerCase() === "code");
+
 export function fixRelate(ele, path) {
   searchEle(ele, "[href],[src]").forEach((el) => {
+    // 排除在code元素内的href和src属性
+    if (isInCode(el)) {
+      return;
+    }
+
     ["href", "src"].forEach((name) => {
       const val = el.getAttribute(name);
 
@@ -22,6 +33,11 @@ export function fixRelate(ele, path) {
   });
 
   searchEle(ele, "template").forEach((el) => {
+    // 排除在code元素内的template元素
+    if (isInCode(el)) {
+      return;
+    }
+
     fixRelate(el.content, path);
   });
 }
@@ -75,7 +91,7 @@ export const getPagesData = async (src) => {
             before: beforeSrc,
             current: pageSrc,
           },
-          error
+          error,
         );
       } else {
         err = getErr(
@@ -83,7 +99,7 @@ export const getPagesData = async (src) => {
           {
             url: pageSrc,
           },
-          error
+          error,
         );
       }
       errorObj = err;
