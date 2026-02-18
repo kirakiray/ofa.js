@@ -30,7 +30,9 @@
   content:
     - name: 创建组件
       url: ./create-component.md
+    - name: 传递特征属性
+      url: ./inherit-attributes.md
     - name: 深入理解属性绑定
-      url: ./property-binding.md
+      url: ./deep-property-binding.md
     - name: 深入理解事件绑定
       url: ./event-binding-deep.md

@@ -1,6 +1,6 @@
 # 属性绑定
 
-属性绑定是将组件中的数据与DOM元素的属性或值进行关联的过程。除了文本插值渲染数据外，ofa.js 还支持将数据绑定到各种HTML元素的属性上，如 input 元素的 value 属性、元素的 class、style 等。
+ofa.js 支持将数据绑定到各种HTML元素的属性（Property）上，如 input 元素的 value 属性、元素的 checked 属性等。
 
 ## 单向属性绑定
 

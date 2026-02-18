@@ -1,8 +1,12 @@
 # 创建组件
 
-## 引用组件
+在 ofa.js 中，组件是实现页面复用和模块化的核心机制。组件本质上是一个自定义的 Web Component，通过定义模板、样式和逻辑，可以创建可复用的 UI 元素。
 
-创建组件模块，和创建 page模块不一样，是使用 `component` 属性标识 template 元素。
+## 组件的基本结构
+
+与页面模块不同，组件模块的 `<template>` 元素改用 `component` 属性，并声明 `tag` 属性指定组件标签名。
+
+在需要使用组件的位置，通过 `l-m` 标签异步加载组件模块，系统会自动完成注册；随后即可像普通 HTML 标签一样直接使用该组件。
 
 <o-playground style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -16,11 +20,13 @@
       <style>
         :host {
           display: block;
+          border: 1px solid green;
+          padding: 10px;
         }
       </style>
       <h3>{{title}}</h3>
       <script>
-        export default async ({ load }) => {
+        export default async () => {
           return {
             tag: "demo-comp",
             data: {
@@ -33,11 +39,23 @@
   </code>
 </o-playground>
 
-其中 "tag" 是组件的标签名，必须和组件的标签名一致。通过 `l-m` 标签引入组件模块，组件模块会自动注册组件，就像使用 `script` 标签引入组件一样。
+## 组件核心概念
 
-`l-m` 引用标签是异步引用。
+### tag - 组件标签名
+
+`tag` 是组件的标签名，**必须和组件的使用标签名一致**。例如，如果你的组件 `tag` 定义为 `"demo-comp"`，那么在 HTML 中使用时就必须写 `<demo-comp></demo-comp>`。
+
+### 组件模块引用
+
+通过 `l-m` 标签引入组件模块，组件模块会自动注册组件。这类似于使用 `script` 标签引入脚本，但 `l-m` 专门用于组件模块的加载和注册。
+
+> 注意：`l-m` 引用标签是**异步引用**，适合在页面加载时按需加载组件。
 
 ## 同步引用组件
+
+在某些场景下，你可能需要同步加载组件（例如确保组件在使用前已经注册完成）。这时可以使用 `load` 方法搭配 `await` 关键字来实现同步引用。
+
+在组件模块和页面模块中，都会自动注入 `load` 函数，供开发者同步加载所需资源。
 
 <o-playground style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -74,6 +92,8 @@
       <style>
         :host {
           display: block;
+          border: 1px solid green;
+          padding: 10px;
         }
       </style>
       <h3>{{title}}</h3>
@@ -91,4 +111,11 @@
   </code>
 </o-playground>
 
-`l-m` 标签引用和 `load` 方法都可以同步引用组件模块，但是 `l-m` 标签引用是异步引用，`load` 方法是同步引用。
+## 异步引用 vs 同步引用
+
+| 引用方式 | 关键词 | 特点 |
+|---------|-------|------|
+| 异步引用 | `l-m` 标签 | 非阻塞加载，适合按需加载组件 |
+| 同步引用 | `load` 方法搭配 `await` 关键字 | 阻塞加载，确保组件在使用前已注册 |
+
+`l-m` 标签引用和 `load` 方法都可以加载组件模块，普遍情况建议使用 `l-m` 标签异步引用组件，以实现非阻塞加载和按需加载。
