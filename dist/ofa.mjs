@@ -4677,48 +4677,45 @@ const isInCode = (el) =>
     .composedPath()
     .some((e) => e.tagName && e.tagName.toLowerCase() === "code");
 
-function fixRelate(ele, path) {
-  searchEle(ele, "[href],[src]").forEach((el) => {
-    // 排除在code元素内的href和src属性
+function fixRelate(element, basePath) {
+  searchEle(element, "[href],[src]").forEach((el) => {
     if (isInCode(el)) {
       return;
     }
 
-    ["href", "src"].forEach((name) => {
-      const val = el.getAttribute(name);
+    ["href", "src"].forEach((attrName) => {
+      const value = el.getAttribute(attrName);
 
-      if (/^#/.test(val)) {
+      if (/^#/.test(value)) {
         return;
       }
 
-      if (val && !/^(https?:)?\/\/\S+/.test(val)) {
-        el.setAttribute(name, resolvePath(val, path));
+      if (value && !/^(https?:)?\/\/\S+/.test(value)) {
+        el.setAttribute(attrName, resolvePath(value, basePath));
       }
     });
   });
 
-  searchEle(ele, "template").forEach((el) => {
-    // 排除在code元素内的template元素
+  searchEle(element, "template").forEach((el) => {
     if (isInCode(el)) {
       return;
     }
 
-    fixRelate(el.content, path);
+    fixRelate(el.content, basePath);
   });
 }
 
-function fixRelatePathContent(content, path) {
+function fixRelatePathContent(content, basePath) {
   const template = document.createElement("template");
   template.innerHTML = content;
 
-  fixRelate(template.content, path);
+  fixRelate(template.content, basePath);
 
-  // fix Resource references within style
   searchEle(template.content, "style").forEach((styleEl) => {
     const html = styleEl.innerHTML;
 
-    styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, adapted) => {
-      return `url(${resolvePath(adapted, path)})`;
+    styleEl.innerHTML = html.replace(/url\((.+)\)/g, (original, urlPath) => {
+      return `url(${resolvePath(urlPath, basePath)})`;
     });
   });
 
@@ -4733,14 +4730,14 @@ const getPagesData = async (src) => {
   });
   const pagesData = [];
   let defaults;
-  let pageSrc = src;
-  let beforeSrc;
+  let currentPageSrc = src;
+  let previousPageSrc;
   let errorObj;
 
   while (true) {
     try {
-      let lastSrc = pageSrc;
-      const [realPageSrc] = pageSrc.split(" ");
+      let lastSrc = currentPageSrc;
+      const [realPageSrc] = currentPageSrc.split(" ");
       const pageSrcObj = new URL(realPageSrc);
       if (/\/$/.test(pageSrcObj.pathname)) {
         lastSrc += " .html";
@@ -4749,12 +4746,12 @@ const getPagesData = async (src) => {
       defaults = await load(lastSrc);
     } catch (error) {
       let err;
-      if (beforeSrc) {
+      if (previousPageSrc) {
         err = getErr(
           "page_wrap_fetch",
           {
-            before: beforeSrc,
-            current: pageSrc,
+            before: previousPageSrc,
+            current: currentPageSrc,
           },
           error,
         );
@@ -4762,7 +4759,7 @@ const getPagesData = async (src) => {
         err = getErr(
           "load_page_module",
           {
-            url: pageSrc,
+            url: currentPageSrc,
           },
           error,
         );
@@ -4782,7 +4779,7 @@ const getPagesData = async (src) => {
     }
 
     pagesData.unshift({
-      src: pageSrc,
+      src: currentPageSrc,
       defaults,
     });
 
@@ -4790,15 +4787,14 @@ const getPagesData = async (src) => {
       break;
     }
 
-    beforeSrc = pageSrc;
-    pageSrc = resolvePath(defaults.parent, pageSrc);
+    previousPageSrc = currentPageSrc;
+    currentPageSrc = resolvePath(defaults.parent, currentPageSrc);
   }
 
   return pagesData;
 };
 
 const createPage = (src, defaults) => {
-  // The $generated elements are not initialized immediately, so they need to be rendered in a normal container.
   const tempCon = document.createElement("div");
 
   tempCon.innerHTML = `<o-page src="${src}" data-pause-init="1"></o-page>`;
@@ -4817,15 +4813,14 @@ const createPage = (src, defaults) => {
   return targetPage;
 };
 
-// In the firefox environment, there will be a problem that the page component is not initialized, but the routing starts to be initialized in advance, resulting in an error. Therefore, wait for the page component to be initialized before continuing with the subsequent operations.
-const waitPageReaded = (page) => {
-  if (page._rendered) {
+const waitPageReaded = (pageElement) => {
+  if (pageElement._rendered) {
     return;
   }
 
   return new Promise((resolve) => {
     const timer = setInterval(() => {
-      if (page._rendered) {
+      if (pageElement._rendered) {
         clearInterval(timer);
         resolve();
       }
