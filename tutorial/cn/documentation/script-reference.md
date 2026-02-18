@@ -3,7 +3,7 @@
 ofa.js 支持通过 script 标签直接引入使用。只需在 HTML 文件的 `<head>` 或 `<body>` 部分添加以下代码：
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.min.mjs" type="module"></script>
 ```
 
 ## 基本使用
@@ -15,7 +15,7 @@ ofa.js 支持通过 script 标签直接引入使用。只需在 HTML 文件的 `
 在开发过程中，您可以通过在脚本 URL 后添加 `#debug` 参数来启用调试模式：
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.min.js#debug"></script>
+<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.min.mjs#debug" type="module"></script>
 ```
 
 调试模式会启用 source map 功能，使您能够在浏览器开发者工具中，直接查看和调试文件的原始源代码，从而大幅提升开发效率。
