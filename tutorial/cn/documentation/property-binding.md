@@ -1,6 +1,6 @@
 # 属性绑定
 
-ofa.js 支持将数据绑定到各种HTML元素的属性（Property）上，如 input 元素的 value 属性、元素的 checked 属性等。
+ofa.js 支持将数据绑定到元素实例化后对象的属性上，如 input 元素的 value 或 checked 属性等。
 
 ## 单向属性绑定
 

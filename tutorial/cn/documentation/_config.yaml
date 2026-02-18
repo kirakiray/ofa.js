@@ -33,6 +33,6 @@
     - name: 传递特征属性
       url: ./inherit-attributes.md
     - name: 深入理解属性绑定
-      url: ./deep-property-binding.md
+      url: ./property-binding-deep.md
     - name: 深入理解事件绑定
       url: ./event-binding-deep.md
