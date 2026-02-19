@@ -30,7 +30,7 @@
           return {
             tag: "demo-comp",
             data: {
-              title: "NoneOS 组件示例",
+              title: "OFAJS 组件示例",
             },
           };
         };
@@ -102,7 +102,7 @@
           return {
             tag: "demo-comp",
             data: {
-              title: "NoneOS 组件示例",
+              title: "OFAJS 组件示例",
             },
           };
         };
