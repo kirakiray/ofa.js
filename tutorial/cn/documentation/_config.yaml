@@ -12,10 +12,12 @@
   content:
     - name: 内容渲染
       url: ./content-rendering.md
-    - name: 属性绑定
-      url: ./property-binding.md
     - name: 事件绑定
       url: ./event-binding.md
+    - name: 属性响应
+      url: ./property-response.md
+    - name: 属性绑定
+      url: ./property-binding.md
     - name: 生命周期
       url: ./lifecycle.md
     - name: 类和样式绑定
