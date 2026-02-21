@@ -36,5 +36,5 @@
       url: ./slots.md
     - name: 领悟属性绑定
       url: ./deep-property-binding.md
-    - name: 事件冒泡
-      url: ./event-bubbling.md
+    - name: 自定义事件
+      url: ./custom-events.md
