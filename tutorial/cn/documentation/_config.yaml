@@ -35,6 +35,6 @@
     - name: 插槽
       url: ./slots.md
     - name: 领悟属性绑定
-      url: ./property-binding-deep.md
+      url: ./deep-property-binding.md
     - name: 事件冒泡
       url: ./event-bubbling.md
