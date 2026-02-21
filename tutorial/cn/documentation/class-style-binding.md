@@ -4,7 +4,9 @@
 
 ## 类绑定
 
-类绑定允许你根据数据状态动态地添加或移除 CSS 类。你可以使用 `class:className` 的语法来绑定特定的类。
+类绑定允许你根据数据状态动态地添加或移除 CSS 类。你可以使用 `class:className="booleanExpression"` 的语法来绑定特定的类。
+
+当 `booleanExpression` 为 `true` 时，类名会被添加到元素上；当为 `false` 时，类名会被移除。
 
 ### 基础类绑定
 

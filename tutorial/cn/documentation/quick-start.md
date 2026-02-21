@@ -45,6 +45,9 @@
       border: 1px solid red;
       padding: 10px;
     }
+    p {
+      color: pink;
+    }
   </style>
   <p>{{val}}</p>
   <script>
