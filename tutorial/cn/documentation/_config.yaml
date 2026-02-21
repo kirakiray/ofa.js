@@ -34,7 +34,7 @@
       url: ./inherit-attributes.md
     - name: 插槽
       url: ./slots.md
-    - name: 深入理解属性绑定
+    - name: 领悟属性绑定
       url: ./property-binding-deep.md
-    - name: 深入理解事件绑定
-      url: ./event-binding-deep.md
+    - name: 事件冒泡
+      url: ./event-bubbling.md

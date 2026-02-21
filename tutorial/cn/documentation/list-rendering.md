@@ -29,7 +29,7 @@
       <button on:click="removeItem">移除最后一个</button>
       <ul>
         <o-fill :value="fruits">
-          <li> {{$index + 1}}. {{$data.name}} - 价格: ¥{{$data.price}} </li>
+          <li> {{$index + 1}}. {{$data.name}} - 价格: ¥{{$data.price}} <button on:click="$host.removeItem($index)">删除</button></li>
         </o-fill>
       </ul>
       <script>
@@ -52,7 +52,11 @@
               });
               this.fruitIndex++;
             },
-            removeItem() {
+            removeItem(index) {
+              if (index >= 0 && index < this.fruits.length) {
+                this.fruits.splice(index, 1);
+                return;
+              }
               this.fruits.length && this.fruits.pop();
             }
           }
@@ -65,6 +69,7 @@
 在这个例子中，我们可以看到：
 - `$index` 代表当前项的索引（从0开始）
 - `$data` 代表当前项的数据对象
+- `$host` 代表当前组件实例，可用于调用组件方法或访问组件数据
 - 当数组发生变化时，列表会自动更新
 
 ## 模板渲染
