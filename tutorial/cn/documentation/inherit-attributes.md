@@ -1,6 +1,6 @@
 # 传递特征属性
 
-在 ofa.js 中，特征属性（Attribute）是组件间传递数据最常用的方式之一。只需在组件的 `attrs` 对象中声明所需属性，即可在使用组件时将外部数据传入组件内部。
+在 ofa.js 中，[特征属性（Attribute）](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/attributes)是组件间传递数据最常用的方式之一。只需在组件的 `attrs` 对象中声明所需属性，即可在使用组件时将外部数据传入组件内部。
 
 ## 基本用法
 
