@@ -38,3 +38,5 @@
       url: ./deep-property-binding.md
     - name: 自定义事件
       url: ./custom-events.md
+    - name: 生命周期
+      url: ./lifecycle.md
