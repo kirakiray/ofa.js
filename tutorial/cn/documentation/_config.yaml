@@ -18,8 +18,6 @@
       url: ./property-response.md
     - name: 属性绑定
       url: ./property-binding.md
-    - name: 生命周期
-      url: ./lifecycle.md
     - name: 类和样式绑定
       url: ./class-style-binding.md
     - name: 条件渲染
@@ -30,6 +28,8 @@
       url: ./computed-properties.md
     - name: 侦听器
       url: ./watchers.md
+    - name: 生命周期
+      url: ./lifecycle.md
 - name: 组件
   content:
     - name: 创建组件
@@ -42,3 +42,32 @@
       url: ./deep-property-binding.md
     - name: 自定义事件
       url: ./custom-events.md
+- name: 应用和规模化
+  content:
+    - name: 微应用
+      url: ./micro-app.md
+    - name: 应用配置
+      url: ./app-configuration.md
+    - name: 路由化
+      url: ./routes.md
+    - name: 嵌套路由
+      url: ./nested-routes.md
+    - name: 服务端渲染
+      url: ./server-side-rendering.md
+- name: 状态管理
+  content:
+    - name: 介绍
+      url: ./state-management.md
+    - name: 共享对象
+      url: ./shared-state.md
+    - name: 上下文状态
+      url: ./context-state.md
+    - name: 样式变量查询
+      url: ./style-variable-query.md
+    - name
+- name: 生产与部署
+  content:
+    - name: 构建应用
+      url: ./build-app.md
+    - name: 部署应用
+      url: ./deploy-app.md
