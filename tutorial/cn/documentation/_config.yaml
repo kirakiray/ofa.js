@@ -58,16 +58,21 @@
   content:
     - name: 介绍
       url: ./state-management.md
-    - name: 共享对象
+    - name: 共享状态
       url: ./shared-state.md
     - name: 上下文状态
       url: ./context-state.md
-    - name: 样式变量查询
-      url: ./style-variable-query.md
-    - name
+    - name: 样式查询
+      url: ./style-query.md
 - name: 生产与部署
   content:
     - name: 构建应用
       url: ./build-app.md
     - name: 部署应用
       url: ./deploy-app.md
+- name: 辅助组件
+  content:
+    - name: 注入宿主样式
+      url: ./inject-host-style.md
+    - name: 非显式组件
+      url: ./non-explicit-component.md
