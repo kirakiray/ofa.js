@@ -52,8 +52,8 @@
       url: ./routes.md
     - name: 嵌套页面/路由
       url: ./nested-routes.md
-    - name: 服务端渲染
-      url: ./server-side-rendering.md
+    - name: SSG/SSR
+      url: ./ssg-ssr.md
 - name: 状态管理
   content:
     - name: 介绍
