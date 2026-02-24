@@ -2,13 +2,27 @@
 
 ## 网页渲染方式概述
 
-现代网页应用有三种主要的渲染方式：CSR（Client Side Rendering，客户端渲染）、SSG（Static Site Generation，静态站点生成）和 SSR（Server Side Rendering，服务器端渲染）。每种方式都有其优势和适用场景。
+现代网页应用主要有四种渲染方式：传统服务端模板引擎渲染、CSR（Client Side Rendering，客户端渲染）、SSG（Static Site Generation，静态站点生成）和 SSR（Server Side Rendering，服务器端渲染）。每种方式都有其优势和适用场景。
 
 > 如果你不清楚什么是SSR，说明你目前还用不到它，可以跳过这章内容，等到将来有需要时再回过头来学习。
 
+### 传统服务端模板引擎渲染
+
+在早期的 Web 开发中，服务端模板引擎是最主要的页面渲染方式。Go、PHP 等后端语言通过内置或第三方模板引擎（如 Go 的 `html/template`、PHP 的 Smarty/Twig/Blade 等），将动态数据注入到 HTML 模板中，直接生成完整的 HTML 页面返回给客户端。
+
+**优点：**
+- SEO 友好，首屏加载快
+- 开发简单，逻辑清晰
+- 服务器端控制，安全性较高
+
+**缺点：**
+- 用户体验较差，每次交互都需要页面刷新
+- 服务端压力大
+- 前后端耦合度高，不利于分工协作
+
 ### CSR（客户端渲染）
 
-传统的 CSR 模式下，页面内容完全由浏览器端 JavaScript 渲染，ofa.js 的[全局路由化](./routes.md)就是典型的 CSR 实现。这种方式提供了流畅的用户体验，无需页面跳转即可完成所有交互。
+在 CSR 模式下，页面内容完全由浏览器端 JavaScript 渲染，ofa.js 的[全局路由化](./routes.md)就是典型的 CSR 实现。这种方式提供了流畅的用户体验，无需页面跳转即可完成所有交互。使用 React 或 Vue 配合其对应的路由库（如 React Router 或 Vue Router）开发的单页应用（SPA），都是典型的 CSR 实现。
 
 **优点：**
 - 用户体验流畅，页面切换无刷新
@@ -44,7 +58,7 @@
 
 ## 同构渲染
 
-为了结合 CSR 的良好用户体验和 SSR/SSG 的 SEO 优势，ofa.js 提供了独特的**同构渲染**模式。
+为了结合 CSR 的良好用户体验和 SSR/SSG 的 SEO 优势，ofa.js 提供了独特的同构渲染（Symphony Client-Server Rendering）模式。
 
 同构渲染的核心理念是：
 - 在服务端渲染初始页面内容，确保 SEO 和首屏加载速度
@@ -136,6 +150,8 @@ ofa.js 的 同构渲染模式基于以下机制：
 </html>
 ```
 
+所以，你可以使用任意的开发语言（Go、Java、PHP、Python 等），任意的后端模板渲染引擎（如 Go 的 `html/template`、PHP 的 Smarty/Twig/Blade 等），将 ofa.js 的同构渲染代码结构嵌入到模板中，就能实现 SSR。
+
 ### 同构渲染模板结构
 
 要实现 同构渲染模式，只需在服务端使用以下通用模板结构：
@@ -177,3 +193,9 @@ ofa.js 的 同构渲染模式基于以下机制：
 **注意：** 服务端返回的 HTML 必须设置正确的 HTTP 头部：`Content-Type: text/html; charset=UTF-8`
 
 `scsr.mjs` 是 ofa.js 提供的 同构渲染运行引擎，它会根据当前页面的运行状态自动判断渲染策略，确保在任何环境下都能提供最佳的用户体验。
+
+同样的，SSG 也可以套用这个结构实现静态站点生成。
+
+## ofa.js 和 SSR 和其他前端框架的差异
+
+ofa.js 的 Symphony Client-Server Rendering 本质上也是 SSR 模式，它和现有 Vue 和 React Angular 可实现SSR对比，有个最大优势，是不需要强制绑定 Node.js。任意的后端模板渲染引擎，都能使用 ofa.js 实现 SSR。
