@@ -46,11 +46,11 @@
   content:
     - name: 微应用
       url: ./micro-app.md
-    - name: 应用配置
+    - name: 应用配置和相关函数
       url: ./app-configuration.md
-    - name: 路由化
+    - name: 全局路由化
       url: ./routes.md
-    - name: 嵌套路由
+    - name: 嵌套页面/路由
       url: ./nested-routes.md
     - name: 服务端渲染
       url: ./server-side-rendering.md
