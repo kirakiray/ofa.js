@@ -48,12 +48,12 @@
       url: ./micro-app.md
     - name: 应用配置和相关函数
       url: ./app-configuration.md
-    - name: 全局路由化
+    - name: 单页面应用
       url: ./routes.md
     - name: 嵌套页面/路由
       url: ./nested-routes.md
-    - name: SSG/SSR
-      url: ./ssg-ssr.md
+    - name: SSR
+      url: ./ssr.md
 - name: 状态管理
   content:
     - name: 为什么需要状态管理
