@@ -58,8 +58,6 @@
   content:
     - name: 什么是状态管理
       url: ./state-management.md
-    - name: 共享状态
-      url: ./shared-state.md
     - name: 上下文状态
       url: ./context-state.md
     - name: 样式查询
