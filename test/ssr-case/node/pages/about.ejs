@@ -7,11 +7,10 @@
       font-family: Arial, sans-serif;
     }
   </style>
-  <h1>Page Not Found</h1>
-  <p>The requested page could not be found.</p>
+  <h1>About Us</h1>
+  <p>This is the about page rendered with SSR using ofa.js</p>
   <nav>
     <a href="/" olink>Home</a> | 
-    <a href="/about" olink>About</a> | 
     <a href="/contact" olink>Contact</a>
   </nav>
   <script>
@@ -19,7 +18,7 @@
       return {
         data: {},
         attached() {
-          console.log('404 page loaded');
+          console.log('About page loaded');
         },
       };
     };

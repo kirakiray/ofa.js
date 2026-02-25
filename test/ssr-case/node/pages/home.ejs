@@ -9,13 +9,15 @@
   </style>
   <h1>Welcome to Home Page</h1>
   <p>This is rendered with SSR using ofa.js</p>
+  <p>Server Random ID: <strong><%= randomId %></strong></p>
+  <p>Timestamp: <%= timestamp %></p>
   <nav>
     <a href="/about" olink>About</a> |
-    <a href="/contact" olink>Contact</a>
+    <a href="/contact" olink>Contact</a> 
   </nav>
   <br>
   <button id="clickBtn" on:click="count++">Click Me</button>
-  <span>Count: {{count}}</div>
+  <span>Count: {{count}}</span>
   <script>
     export default async ({ load, query }) => {
       return {
