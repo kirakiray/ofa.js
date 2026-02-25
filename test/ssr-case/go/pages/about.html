@@ -1,0 +1,26 @@
+<template page>
+  <style>
+    :host {
+      display: block;
+      height: 100%;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+  <h1>About Us</h1>
+  <p>This is the about page rendered with SSR using ofa.js</p>
+  <nav>
+    <a href="/" olink>Home</a> | 
+    <a href="/contact" olink>Contact</a>
+  </nav>
+  <script>
+    export default async ({ load, query }) => {
+      return {
+        data: {},
+        attached() {
+          console.log('About page loaded');
+        },
+      };
+    };
+  </script>
+</template>
