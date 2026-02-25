@@ -109,7 +109,7 @@ ofa.js 的 同构渲染模式基于以下机制：
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page Title</title>
   <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs#debug" type="module"></script>
-  <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/libs/scsr/dist/scsr.mjs" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
     html,
     body {
@@ -166,7 +166,7 @@ ofa.js 的 同构渲染模式基于以下机制：
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page Title</title>
   <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs#debug" type="module"></script>
-  <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/libs/scsr/dist/scsr.mjs" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
     html,
     body {
