@@ -30,14 +30,7 @@ func getPageContent(baseDir, pathname string) string {
 	case "/about":
 		pageFilePath = filepath.Join(baseDir, "pages", "about.html")
 	case "/contact":
-		contactPagePath := filepath.Join(baseDir, "contact.page.html")
-		contactPageInPages := filepath.Join(baseDir, "pages", "contact.html")
-		
-		if fileExists(contactPagePath) {
-			pageFilePath = contactPagePath
-		} else if fileExists(contactPageInPages) {
-			pageFilePath = contactPageInPages
-		}
+		pageFilePath = filepath.Join(baseDir, "pages", "contact.html")
 	default:
 		pageFilePath = filepath.Join(baseDir, "pages", "404.html")
 	}

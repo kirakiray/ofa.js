@@ -30,13 +30,7 @@ function getPageContent($pathname) {
             $pageFilePath = $baseDir . '/pages/about.html';
             break;
         case '/contact':
-            $contactPagePath = $baseDir . '/contact.page.html';
-            $contactPageInPages = $baseDir . '/pages/contact.html';
-            if (file_exists($contactPagePath)) {
-                $pageFilePath = $contactPagePath;
-            } elseif (file_exists($contactPageInPages)) {
-                $pageFilePath = $contactPageInPages;
-            }
+            $pageFilePath = $baseDir . '/pages/contact.html';
             break;
         default:
             $pageFilePath = $baseDir . '/pages/404.html';
