@@ -37,19 +37,7 @@ app.get("*", (req, res) => {
         pageFilePath = path.join(__dirname, "pages", "about.html");
         break;
       case "/contact":
-        // 先尝试从pages目录读取，如果不存在则从根目录读取
-        const contactPagePath = path.join(__dirname, "contact.page.html");
-        const contactPageInPages = path.join(
-          __dirname,
-          "pages",
-          "contact.html",
-        );
-
-        if (fs.existsSync(contactPagePath)) {
-          pageFilePath = contactPagePath;
-        } else if (fs.existsSync(contactPageInPages)) {
-          pageFilePath = contactPageInPages;
-        }
+        pageFilePath = path.join(__dirname, "pages", "contact.html");
         break;
       default:
         pageFilePath = path.join(__dirname, "pages", "404.html");
