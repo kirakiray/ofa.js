@@ -1,62 +1,62 @@
-# ofa.js SSR 示例 (PHP 版本)
+# ofa.js SSR Example (PHP Version)
 
-这是一个使用 PHP 实现 ofa.js 同构渲染（SSR）的示例项目。
+This is a sample project demonstrating ofa.js isomorphic rendering (SSR) implemented in PHP.
 
-## 项目结构
+## Project Structure
 
 ```
 test/ssr-case/php/
-├── index.php             # PHP 应用主文件
-├── contact.page.html     # 页面组件示例
-├── pages/                # 页面模板目录
-│   ├── home.html         # 首页模板
-│   ├── about.html        # 关于页模板
-│   ├── contact.html     # 联系页模板
-│   └── 404.html         # 错误页模板
-├── static/               # 静态文件目录
-│   └── app-config.js    # ofa.js 应用配置
-└── README.md            # 本说明文件
+├── index.php             # PHP application main file
+├── contact.page.html     # Page component example
+├── pages/                # Page template directory
+│   ├── home.html         # Home page template
+│   ├── about.html        # About page template
+│   ├── contact.html     # Contact page template
+│   └── 404.html         # Error page template
+├── static/               # Static file directory
+│   └── app-config.js    # ofa.js application configuration
+└── README.md            # This documentation file
 ```
 
-## 功能特点
+## Features
 
-- **同构渲染**：服务端渲染初始页面内容，确保 SEO 和首屏加载速度
-- **客户端接管**：客户端加载 CSR 运行引擎，保持流畅用户体验
-- **多页面支持**：支持 /home、/about、/contact 等多个页面
-- **动态路由**：根据请求路径动态生成相应页面内容
+- **Isomorphic Rendering**: Server-side rendering of initial page content for SEO and fast first-contentful paint
+- **Client Handover**: Client loads CSR runtime engine for smooth user experience
+- **Multi-page Support**: Supports multiple pages including /home, /about, /contact
+- **Dynamic Routing**: Dynamically generates page content based on request path
 
-## 使用方法
+## Usage
 
-1. 确保已安装 PHP (建议 PHP 7.4+)
+1. Ensure PHP is installed (recommended PHP 7.4+)
 
-2. 启动 PHP 内置服务器：
+2. Start the PHP built-in server:
 ```bash
 php -S localhost:8080
 ```
 
-3. 访问应用：
-- 主页: http://localhost:8080
-- 关于: http://localhost:8080/about
-- 联系: http://localhost:8080/contact
+3. Access the application:
+- Home: http://localhost:8080
+- About: http://localhost:8080/about
+- Contact: http://localhost:8080/contact
 
-## 技术实现
+## Technical Implementation
 
-此示例展示了 ofa.js 的同构渲染（Symphony Client-Server Rendering）模式：
+This example demonstrates ofa.js's isomorphic rendering (Symphony Client-Server Rendering) pattern:
 
-1. 服务端生成带有通用运行结构的完整 HTML 页面
-2. 客户端加载 CSR 运行引擎
-3. 自动识别当前运行环境，决定渲染策略
+1. Server generates complete HTML pages with universal runtime structure
+2. Client loads CSR runtime engine
+3. Automatically detects current runtime environment to determine rendering strategy
 
-参考 [ofa.js SSR 文档](../../../../tutorial/cn/documentation/ssr.md) 了解更多关于同构渲染的信息。
+Refer to [ofa.js SSR Documentation](../../../../tutorial/en/documentation/ssr.md) to learn more about isomorphic rendering.
 
-## 静态资源配置
+## Static Resources Configuration
 
-- 需要将 `static` 目录配置为静态文件目录
-- `app-config.js` 需要通过 `/app-config.js` 访问
+- The `static` directory needs to be configured as the static file directory
+- `app-config.js` needs to be accessed via `/app-config.js`
 
-## Nginx 配置示例
+## Nginx Configuration Example
 
-如果使用 Nginx 作为 Web 服务器，可以参考以下配置：
+If using Nginx as the web server, you can refer to the following configuration:
 
 ```nginx
 server {
@@ -65,12 +65,12 @@ server {
     root /path/to/test/ssr-case/php;
     index index.php index.html;
 
-    # 静态文件目录
+    # Static file directory
     location /app-config.js {
         alias /path/to/test/ssr-case/php/static/app-config.js;
     }
 
-    # PHP 处理
+    # PHP processing
     location ~ \.php$ {
         fastcgi_pass 127.0.0.1:9000;
         fastcgi_index index.php;
@@ -78,7 +78,7 @@ server {
         include fastcgi_params;
     }
 
-    # 所有其他请求都交给 index.php 处理
+    # All other requests are handled by index.php
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }

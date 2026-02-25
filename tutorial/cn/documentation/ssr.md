@@ -153,6 +153,10 @@ ofa.js 的 同构渲染模式基于以下机制：
 
 所以，你可以使用任意的开发语言（Go、Java、PHP、Python 等），任意的后端模板渲染引擎（如 Go 的 `html/template`、PHP 的 Smarty/Twig/Blade 等），将 ofa.js 的同构渲染代码结构嵌入到模板中，就能实现 SSR。
 
+* [Nodejs SSR 案例](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/node)
+* [PHP SSR 案例](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/php)
+* [Go SSR 案例](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/go)
+
 ### 同构渲染模板结构
 
 要实现 同构渲染模式，只需在服务端使用以下通用模板结构：

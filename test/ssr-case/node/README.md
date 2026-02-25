@@ -1,59 +1,59 @@
-# ofa.js SSR 示例
+# ofa.js SSR Example
 
-这是一个使用 Express.js 实现 ofa.js 同构渲染（SSR）的示例项目。
+This is a sample project demonstrating ofa.js isomorphic rendering (SSR) implemented with Express.js.
 
-## 项目结构
+## Project Structure
 
 ```
 test/ssr-case/node/
-├── app.js              # Express.js 应用主文件
-├── contact.page.html   # 页面组件示例
-├── package.json        # 项目依赖配置
-├── pages/              # 页面模板目录
-│   ├── home.html       # 首页模板
-│   ├── about.html      # 关于页模板
-│   ├── contact.html    # 联系页模板
-│   └── 404.html        # 错误页模板
-├── static/             # 静态文件目录
-│   └── app-config.js   # ofa.js 应用配置
-└── README.md           # 本说明文件
+├── app.js              # Express.js application main file
+├── contact.page.html   # Page component example
+├── package.json        # Project dependencies configuration
+├── pages/              # Page template directory
+│   ├── home.html       # Home page template
+│   ├── about.html      # About page template
+│   ├── contact.html    # Contact page template
+│   └── 404.html        # Error page template
+├── static/             # Static file directory
+│   └── app-config.js   # ofa.js application configuration
+└── README.md           # This documentation file
 ```
 
-## 功能特点
+## Features
 
-- **同构渲染**：服务端渲染初始页面内容，确保 SEO 和首屏加载速度
-- **客户端接管**：客户端加载 CSR 运行引擎，保持流畅用户体验
-- **多页面支持**：支持 /home、/about、/contact 等多个页面
-- **动态路由**：根据请求路径动态生成相应页面内容
+- **Isomorphic Rendering**: Server-side rendering of initial page content for SEO and fast first-contentful paint
+- **Client Handover**: Client loads CSR runtime engine for smooth user experience
+- **Multi-page Support**: Supports multiple pages including /home, /about, /contact
+- **Dynamic Routing**: Dynamically generates page content based on request path
 
-## 使用方法
+## Usage
 
-1. 安装依赖：
+1. Install dependencies:
 ```bash
 npm install
 ```
 
-2. 启动服务器：
+2. Start the server:
 ```bash
 npm start
 ```
 
-3. 访问应用：
-- 主页: http://localhost:3000
-- 关于: http://localhost:3000/about
-- 联系: http://localhost:3000/contact
+3. Access the application:
+- Home: http://localhost:3000
+- About: http://localhost:3000/about
+- Contact: http://localhost:3000/contact
 
-## 技术实现
+## Technical Implementation
 
-此示例展示了 ofa.js 的同构渲染（Symphony Client-Server Rendering）模式：
+This example demonstrates ofa.js's isomorphic rendering (Symphony Client-Server Rendering) pattern:
 
-1. 服务端生成带有通用运行结构的完整 HTML 页面
-2. 客户端加载 CSR 运行引擎
-3. 自动识别当前运行环境，决定渲染策略
+1. Server generates complete HTML pages with universal runtime structure
+2. Client loads CSR runtime engine
+3. Automatically detects current runtime environment to determine rendering strategy
 
-参考 [ofa.js SSR 文档](../../../../tutorial/cn/documentation/ssr.md) 了解更多关于同构渲染的信息。
+Refer to [ofa.js SSR Documentation](../../../../tutorial/en/documentation/ssr.md) to learn more about isomorphic rendering.
 
-## 静态资源配置
+## Static Resources Configuration
 
-- 静态文件服务配置在 3000 端口下的 `/static` 目录
-- `app-config.js` 现在位于 `/static` 目录中，可通过 `/app-config.js` 访问
+- Static file service is configured at the `/static` directory under port 3000
+- `app-config.js` is now located in the `/static` directory and can be accessed via `/app-config.js`
