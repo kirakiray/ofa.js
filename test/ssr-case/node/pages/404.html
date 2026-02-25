@@ -1,0 +1,27 @@
+<template page>
+  <style>
+    :host {
+      display: block;
+      height: 100%;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+  <h1>Page Not Found</h1>
+  <p>The requested page could not be found.</p>
+  <nav>
+    <a href="/">Home</a> | 
+    <a href="/about">About</a> | 
+    <a href="/contact">Contact</a>
+  </nav>
+  <script>
+    export default async ({ load, query }) => {
+      return {
+        data: {},
+        attached() {
+          console.log('404 page loaded');
+        },
+      };
+    };
+  </script>
+</template>

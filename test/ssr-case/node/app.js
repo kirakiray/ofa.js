@@ -1,248 +1,83 @@
-const express = require('express');
-const path = require('path');
+const express = require("express");
+const path = require("path");
 
 const app = express();
 const PORT = 3000;
 
-// 设置视图引擎和公共静态文件目录
-app.use(express.static(path.join(__dirname, 'public')));
+// 设置静态文件目录
+app.use(express.static(path.join(__dirname, "static")));
 
 // 路由处理 - 根据ofa.js的同构渲染概念
-app.get('*', (req, res) => {
+app.get("*", (req, res) => {
   // 获取请求路径以确定要渲染的页面
-  const pagePath = req.path === '/' ? '/home' : req.path;
-  
+  const pagePath = req.path === "/" ? "/home" : req.path;
+
   // 读取页面文件内容
-  const fs = require('fs');
-  const path = require('path');
-  
+  const fs = require("fs");
+  const path = require("path");
+
   const getPageContent = (pathname) => {
     // 尝试从文件系统读取页面
     const pageMap = {
-      '/': '/home',
-      '/home': '/home',
-      '/about': '/about',
-      '/contact': '/contact'
+      "/": "/home",
+      "/home": "/home",
+      "/about": "/about",
+      "/contact": "/contact",
     };
-    
+
     const normalizedPath = pageMap[pathname] || pathname;
-    
-    switch(normalizedPath) {
-      case '/home':
-        return `
-<template page>
-  <style>
-    :host {
-      display: block;
-      height: 100%;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-  </style>
-  <h1>Welcome to Home Page</h1>
-  <p>This is rendered with SSR using ofa.js</p>
-  <nav>
-    <a href="/about">About</a> | 
-    <a href="/contact">Contact</a>
-  </nav>
-  <button id="clickBtn">Click Me</button>
-  <div id="counter">Count: 0</div>
-  <script>
-    export default async ({ load, query }) => {
-      let count = 0;
-      
-      return {
-        data: { count },
-        attached() {
-          const btn = document.getElementById('clickBtn');
-          const counter = document.getElementById('counter');
-          
-          btn.addEventListener('click', () => {
-            count++;
-            counter.textContent = 'Count: ' + count;
-          });
-        },
-      };
-    };
-  </script>
-</template>`;
-      case '/about':
-        return `
-<template page>
-  <style>
-    :host {
-      display: block;
-      height: 100%;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-  </style>
-  <h1>About Us</h1>
-  <p>This is the about page rendered with SSR using ofa.js</p>
-  <nav>
-    <a href="/">Home</a> | 
-    <a href="/contact">Contact</a>
-  </nav>
-  <script>
-    export default async ({ load, query }) => {
-      return {
-        data: {},
-        attached() {
-          console.log('About page loaded');
-        },
-      };
-    };
-  </script>
-</template>`;
-      case '/contact':
-        // 读取contact.page.html的内容
-        try {
-          const contactPagePath = path.join(__dirname, 'contact.page.html');
-          if (fs.existsSync(contactPagePath)) {
-            return fs.readFileSync(contactPagePath, 'utf8');
-          }
-        } catch (error) {
-          console.error('Error reading contact page:', error);
+
+    // 构建页面文件路径
+    let pageFilePath;
+    switch (normalizedPath) {
+      case "/home":
+        pageFilePath = path.join(__dirname, "pages", "home.html");
+        break;
+      case "/about":
+        pageFilePath = path.join(__dirname, "pages", "about.html");
+        break;
+      case "/contact":
+        // 先尝试从pages目录读取，如果不存在则从根目录读取
+        const contactPagePath = path.join(__dirname, "contact.page.html");
+        const contactPageInPages = path.join(
+          __dirname,
+          "pages",
+          "contact.html",
+        );
+
+        if (fs.existsSync(contactPagePath)) {
+          pageFilePath = contactPagePath;
+        } else if (fs.existsSync(contactPageInPages)) {
+          pageFilePath = contactPageInPages;
         }
-        
-        // 如果无法读取文件，则返回内联版本
-        return `
-<template page>
-  <style>
-    :host {
-      display: block;
-      height: 100%;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-    }
-    
-    .contact-container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      color: #333;
-      text-align: center;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #555;
-    }
-    
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-    
-    button {
-      background-color: #007bff;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
-  
-  <div class="contact-container">
-    <h1>Contact Us</h1>
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" id="name" placeholder="Enter your name">
-    </div>
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" placeholder="Enter your email">
-    </div>
-    <div class="form-group">
-      <label for="message">Message:</label>
-      <textarea id="message" rows="5" placeholder="Enter your message"></textarea>
-    </div>
-    <button id="submitBtn">Send Message</button>
-    <div id="result" style="margin-top: 15px; color: green; font-weight: bold;"></div>
-  </div>
-  
-  <script>
-    export default async ({ load, query }) => {
-      return {
-        data: {},
-        attached() {
-          const submitBtn = document.getElementById('submitBtn');
-          const resultDiv = document.getElementById('result');
-          
-          submitBtn.addEventListener('click', () => {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            
-            if(name && email && message) {
-              resultDiv.textContent = \`Thank you \${name}! Your message has been sent.\`;
-              resultDiv.style.color = 'green';
-              
-              // Reset form
-              document.getElementById('name').value = '';
-              document.getElementById('email').value = '';
-              document.getElementById('message').value = '';
-            } else {
-              resultDiv.textContent = 'Please fill in all fields.';
-              resultDiv.style.color = 'red';
-            }
-          });
-        },
-      };
-    };
-  </script>
-</template>`;
+        break;
       default:
-        return `
-<template page>
-  <style>
-    :host {
-      display: block;
-      height: 100%;
-      padding: 20px;
-      font-family: Arial, sans-serif;
+        pageFilePath = path.join(__dirname, "pages", "404.html");
+        break;
     }
-  </style>
-  <h1>Page Not Found</h1>
-  <p>The requested page could not be found.</p>
-  <nav>
-    <a href="/">Home</a> | 
-    <a href="/about">About</a> | 
-    <a href="/contact">Contact</a>
-  </nav>
-  <script>
-    export default async ({ load, query }) => {
-      return {
-        data: {},
-        attached() {
-          console.log('404 page loaded');
-        },
-      };
-    };
-  </script>
-</template>`;
+
+    // 尝试读取页面文件
+    try {
+      if (fs.existsSync(pageFilePath)) {
+        return fs.readFileSync(pageFilePath, "utf8");
+      } else {
+        console.warn(`Page file not found: ${pageFilePath}`);
+        // 返回默认的404页面
+        const default404Path = path.join(__dirname, "pages", "404.html");
+        if (fs.existsSync(default404Path)) {
+          return fs.readFileSync(default404Path, "utf8");
+        }
+      }
+    } catch (error) {
+      console.error(`Error reading page file: ${pageFilePath}`, error);
+      // 发生错误时，也返回404页面
+      const errorPagePath = path.join(__dirname, "pages", "404.html");
+      if (fs.existsSync(errorPagePath)) {
+        return fs.readFileSync(errorPagePath, "utf8");
+      } else {
+        // 如果404页面也不存在，则返回简单错误信息
+        return `<template page><h1>Page Not Found</h1><p>The requested page could not be found.</p></template>`;
+      }
     }
   };
 
@@ -278,13 +113,13 @@ app.get('*', (req, res) => {
 </html>`;
 
   // 设置正确的Content-Type头部
-  res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+  res.setHeader("Content-Type", "text/html; charset=UTF-8");
   res.send(html);
 });
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-  console.log('SSR demo with ofa.js is ready!');
+  console.log("SSR demo with ofa.js is ready!");
 });
 
 module.exports = app;
