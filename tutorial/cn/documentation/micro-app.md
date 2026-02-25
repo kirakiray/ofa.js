@@ -62,7 +62,10 @@ export const pageAnime = {
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>Go to About</a>
+      <a href="./about.html?id=10010" olink>Go to About (10010)</a>
+      <br>
+      <br>
+      <a href="./about.html?id=10030" olink>Go to About (10030)</a>
       <script>
         export default async () => {
           return {
@@ -83,12 +86,13 @@ export const pageAnime = {
         }
       </style>
       <div style="padding: 8px;"> <button on:click="back()">Back</button> </div>
+      <p>{{val}}</p>
       <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
-        export default async () => {
+        export default async ({query}) => {
           return {
             data: {
-              val: "Hello ofa.js App Demo",
+              val: `Hello ofa.js App Demo (from ${query.id})`,
             },
           };
         };
@@ -131,6 +135,10 @@ export const pageAnime = {
   },
 };
 ```
+
+## 传参方式
+
+在 `o-app` 中，页面跳转支持通过 URL Query 传递参数，目标页面通过模块函数的 `query` 参数接收。
 
 ## 页面导航
 
