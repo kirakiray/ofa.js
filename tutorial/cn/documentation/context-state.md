@@ -15,8 +15,6 @@
 ```html
 <o-provider name="userInfo" custom-name="张三" custom-age="25">
   ...
-  <!-- 这里是提供者内部的内容 -->
-  ...
 </o-provider>
 ```
 
@@ -26,8 +24,8 @@
 
 ### 特性
 
-1. **自动属性传递**:  provider 上的所有非保留属性都会作为共享数据
-2. **响应式更新**: 当 provider 的数据变化时，所有消费该 provider 内的对应name的 consumer 会自动更新
+1. **自动属性传递**: provider 上的所有非保留属性都会作为共享数据
+2. **响应式更新**: 当 provider 的数据变化时，消费该 provider 的对应 name 的 consumer 会自动更新
 3. **层级查找**: 消费者会从最近的上级 provider 开始查找对应 name 的数据
 
 ## o-consumer 消费者
@@ -35,11 +33,7 @@
 `o-consumer` 组件用于消费（使用）提供者的数据。它通过 `name` 属性指定要消费的提供者名称。
 
 ```html
-<o-provider name="userInfo" custom-name="张三" custom-age="25">
-  ...
-  <o-consumer name="userInfo"></o-consumer>
-  ...
-</o-provider>
+<o-consumer name="userInfo"></o-consumer>
 ```
 
 ### 属性
@@ -52,7 +46,7 @@
 2. **属性合并**: 如果多个同 name 的 provider 都有某个属性，离消费者最近的 provider 的属性优先
 3. **属性监听**: 可以通过 `watch:xxx` 监听特定属性的变化
 
-### 监听数据变化
+## 监听数据变化
 
 通过 `watch:xxx` 可以监听提供者数据的变化：
 
