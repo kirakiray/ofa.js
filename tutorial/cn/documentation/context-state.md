@@ -172,9 +172,8 @@ export default {
 <o-playground style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN">
-        <o-page src="page.html"></o-page>
-      </o-root-provider>
+      <o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN"></o-root-provider>
+      <o-page src="page.html"></o-page>
     </template>
   </code>
   <code path="page.html" active>
