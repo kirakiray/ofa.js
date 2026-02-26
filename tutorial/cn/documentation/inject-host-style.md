@@ -12,18 +12,18 @@
             border: 1px solid #007acc;
             padding: 10px;
         }
-        <!-- 设置直接子一级元素的样式 -->
-        <!-- ::slotted(user-list-item) {
+        /* 设置直接子一级元素的样式 */
+        /* ::slotted(user-list-item) {
             background-color: aqua;
-        } -->
+        } */
     </style>
     <inject-host>
         <style>
             user-list user-list-item {
                 background-color: aqua;
             }
-            <!-- 还可以设置多层级嵌套的样式 -->
-            user-list user-list-item user-list-item-content {
+            /* 还可以设置多层级嵌套的样式 */
+            user-list user-list-item .user-list-item-content {
                 color: red;
             }
         </style>
