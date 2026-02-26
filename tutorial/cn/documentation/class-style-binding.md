@@ -255,3 +255,79 @@
     </template>
   </code>
 </o-playground>
+
+## data() in style
+
+可以在样式中使用 `data(xxx)` 来绑定组件数据。这种非常适合在一些需要根据组件数据动态改变样式的场景。
+
+<o-playground style="--editor-height: 500px">
+  <code>
+    <template page>
+      <style>
+        :host {
+          display: block;
+          border: 1px solid red;
+          padding: 10px;
+        }
+        p:hover{
+          color:red;
+        }
+      </style>
+      <style>
+        p {
+          font-size: data(size);
+          color:green;
+          transition: all data(time)s ease;
+        }
+      </style>
+      FontSize: <input type="number" sync:value="size" placeholder="这是一个双向绑定的输入框" />
+      <br />
+      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="这是一个双向绑定的输入框" />
+      <p>{{val}} - size: {{size}}</p>
+      <script>
+        export default async () => {
+          return {
+            data: {
+              size: 16,
+              time: 0.3,
+              val: "Hello ofa.js Demo Code",
+            }
+          };
+        };
+      </script>
+    </template>
+  </code>
+</o-playground>
+
+## 注意事项
+
+style 内的 `data(xxx)` 原理上是替换整个 style 的内容，所以最好只把data相关的样式写在 style 内，不需data的放到另一个style上，这样性能更好。
+
+```html
+<style>
+  <!-- ❌ 不带有 data(xxx) 也会被重新渲染 -->
+  p {
+    font-size: data(size);
+    color:green;
+    transition: all data(time)s ease;
+  }
+  p:hover{
+    color:red;
+  }
+</style>
+```
+```html
+<style>
+  <!-- ✅ 只带有 data(xxx) 的样式会被重新渲染，和没data的分开 -->
+  p {
+    font-size: data(size);
+    color:green;
+    transition: all data(time)s ease;
+  }
+</style>
+<style>
+  p:hover{
+    color:red;
+  }
+</style>
+```
