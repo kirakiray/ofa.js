@@ -64,7 +64,7 @@
       url: ./match-var.md
 - name: 生产与部署
   url: ./build-app.md
-- name: 辅助组件
+- name: 其他组件
   content:
     - name: 注入宿主样式
       url: ./inject-host-style.md
