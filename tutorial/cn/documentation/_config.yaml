@@ -70,3 +70,5 @@
       url: ./inject-host-style.md
     - name: 非显式组件
       url: ./non-explicit-component.md
+    - name: replace-temp 组件
+      url: ./replace-template.md
