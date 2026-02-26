@@ -40,7 +40,7 @@
     };
   </code>
   <code path="data.js">
-  export const data = $.stanz({
+  export const contacts = $.stanz({
     list: [{
         id: 10010,
         name: "皮特",
@@ -75,7 +75,7 @@
       </ul>
       <script>
         export default async ({load}) => {
-          const { data } = await load("./data.js");
+          const { contacts } = await load("./data.js");
           return {
             data: {
               list:[]
@@ -86,7 +86,10 @@
                 }
             },
             attached(){
-              this.list = data.list;
+              this.list = contacts.list;
+            },
+            detached(){
+              this.list = []; // 组件销毁时，清空挂载的状态数据
             }
           };
         };
@@ -136,14 +139,14 @@
       </div>
       <script>
         export default async ({ load,query }) => {
-          const { data } = await load("./data.js");
+          const { contacts } = await load("./data.js");
           return {
             data: {
               userData:{},
               editorMode:false
             },
             attached(){
-              this.userData = data.list.find(e=>e.id == query.id);
+              this.userData = contacts.list.find(e=>e.id == query.id);
             },
             detached(){
               this.userData = {}; // 组件销毁时，清空挂载的状态数据
@@ -233,12 +236,88 @@ export default {
 - **模块状态**：适用于特定功能模块内部共享的数据
 
 ```javascript
-// 全局状态
+// 全局调用状态
 export const globalStore = $.stanz({ user: null, theme: "light" });
 
-// 模块状态（在特定模块内使用）
-export const cartStore = $.stanz({ items: [], total: 0 });
+// 模块内使用的状态
+const cartStore = $.stanz({ total: 0 });
 ```
+
+## 模块内状态管理
+
+<o-playground style="--editor-height: 500px">
+  <code path="demo.html" preview unimportant>
+    <template>
+      <o-page src="page1.html"></o-page>
+    </template>
+  </code>
+  <code path="page1.html">
+    <template page>
+      <l-m src="./demo-comp.html"></l-m>
+      <style>
+        :host {
+          display: block;
+          padding: 8px;
+        }
+      </style>
+      <button on:click="addItem">Add Item</button>
+      <o-fill :value="list">
+        <div>{{$index}} - <demo-comp :val="$data.val"></demo-comp></div>
+      </o-fill>
+      <script>
+        export default async () => {
+          return {
+            data: {
+                list:[{
+                    val:Math.random().toString(36).slice(2, 6)
+                }]
+            },
+            proto:{
+                addItem(item){
+                    this.list.push({
+                        val:Math.random().toString(36).slice(2, 6)
+                    });
+                }
+            },
+          };
+        };
+      </script>
+    </template>
+  </code>
+  <code path="demo-comp.html" active>
+    <template component>
+      <style>
+        :host{
+            display: inline-block;
+        }
+      </style>
+      {{val}} - {{cartStore.total}} <button on:click="addStoreTotal">Add Store Total</button>
+      <script>
+        const cartStore = $.stanz({ total: 0 });
+        export default async () => {
+          return {
+            tag: "demo-comp",
+            data: {
+                val:"",
+                cartStore:{}
+            },
+            proto:{
+                addStoreTotal(){
+                    this.cartStore.total++;
+                }
+            },
+            attached(){
+                this.cartStore = cartStore;
+            },
+            detached(){
+                this.cartStore = {}; // 组件销毁时，清空挂载的状态数据
+            }
+          };
+        };
+      </script>
+    </template>
+  </code>
+</o-playground>
 
 ## 注意事项
 
