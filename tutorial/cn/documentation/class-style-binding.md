@@ -256,9 +256,9 @@
   </code>
 </o-playground>
 
-## data() in style
+## data in style
 
-可以在样式中使用 `data(xxx)` 来绑定组件数据。这种非常适合在一些需要根据组件数据动态改变样式的场景。
+可以在样式中使用 `data(xxx)` 来绑定组件数据。这非常适合需要根据组件数据动态改变样式的场景。
 
 <o-playground style="--editor-height: 500px">
   <code>
@@ -301,11 +301,11 @@
 
 ## 注意事项
 
-style 内的 `data(xxx)` 原理上是替换整个 style 的内容，所以最好只把data相关的样式写在 style 内，不需data的放到另一个style上，这样性能更好。
+`style` 内的 `data(xxx)` 原理上是替换整个 style 的内容，所以最好只把 data 相关的样式写在 style 内，不需要 data 的放到另一个 style 上，这样性能更好。
 
 ```html
+<!-- ❌ 不带有 data(xxx) 的 p:hover 也会被刷新 -->
 <style>
-  <!-- ❌ 不带有 data(xxx) 也会被重新渲染 -->
   p {
     font-size: data(size);
     color:green;
@@ -317,8 +317,8 @@ style 内的 `data(xxx)` 原理上是替换整个 style 的内容，所以最好
 </style>
 ```
 ```html
+<!-- ✅ 只带有 data(xxx) 的样式会被重新渲染 -->
 <style>
-  <!-- ✅ 只带有 data(xxx) 的样式会被重新渲染，和没data的分开 -->
   p {
     font-size: data(size);
     color:green;
