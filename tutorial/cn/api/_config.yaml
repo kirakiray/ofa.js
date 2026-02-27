@@ -34,3 +34,17 @@
      url: ./instance/host.md
    - name: App
      url: ./instance/app.md
+- name: 节点操作
+  content:
+   - name: 添加或删除子元素
+     url: ./operation/array-like.md
+   - name: before
+     url: ./operation/before.md
+   - name: after
+     url: ./operation/after.md
+   - name: remove
+     url: ./operation/remove.md
+   - name: wrap
+     url: ./operation/wrap.md
+   - name: unwrap
+     url: ./operation/unwrap.md
