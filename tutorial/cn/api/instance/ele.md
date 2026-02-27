@@ -13,7 +13,7 @@
         setTimeout(()=>{
           var ele = $("#target").ele;
           ele.innerHTML = '<b>change target</b>';
-          \$("#logger").text = ele.tagName;
+          \$("#logger").text = ele.clientWidth;
         },500);
       </script>
     </template>
