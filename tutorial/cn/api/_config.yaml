@@ -74,3 +74,27 @@
      url: ./event/emit.md
    - name: off
      url: ./event/off.md
+- name: 其他
+  content:
+   - name: o-app组件
+     url: ./others/app.md
+   - name: o-page组件
+     url: ./others/page.md
+   - name: formData
+     url: ./others/form-data.md
+   - name: tag
+     url: ./others/tag.md
+   - name: index
+     url: ./others/index.md
+   - name: is
+     url: ./others/is.md
+   - name: refresh
+     url: ./others/refresh.md
+   - name: PATH
+     url: ./others/path.md
+   - name: extend
+     url: ./others/extend.md
+   - name: version
+     url: ./others/version.md
+   - name: 实例数据特征
+     url: ./others/stanz.md

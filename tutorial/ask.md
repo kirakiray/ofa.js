@@ -1,6 +1,6 @@
-帮我把旧文档 tutorial/old_api/SUMMARY.md 转换为新文档 tutorial/cn/api/_config.yaml，先只转换 事件相关 的内容
+帮我把旧文档 tutorial/old_api/SUMMARY.md 转换为新文档 tutorial/cn/api/_config.yaml，先只转换 其他 的内容
 
-将 tutorial/old_api/event 目录下的所有文件转换为新文档 tutorial/cn/api/event 目录下的文件，并优化润色相关描述
+将 tutorial/old_api/others 目录下的所有文件转换为新文档 tutorial/cn/api/others 目录下的文件，并优化润色相关描述
 
 其中，将 html-view 组件转为 o-playground 组件，转换格式如下：
 
