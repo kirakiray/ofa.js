@@ -119,6 +119,8 @@
 
 在 `$` 实例中，使用下划线 `_` 开头的属性名表示这些值不会被 `watch` 或 `watchTick` 方法监听。这对于一些临时或私有的属性非常有用，你可以在不触发监听的情况下随意更改它们。
 
+在模板内，这种被称为[非响应式数据](../../documentation/state-management.md)。
+
 下面是一个示例，演示了如何使用下划线开头的属性值来避免被监听：
 
 <o-playground style="--editor-height: 480px">
@@ -176,4 +178,4 @@ data.val = "change val";
 
 这些示例展示了将对象数据设置为 Stanz 实例以进行监听的基本特征。
 
-更多完整的特性请查阅 stanz。
+更多完整的特性请查阅 [stanz](https://github.com/ofajs/stanz)。
