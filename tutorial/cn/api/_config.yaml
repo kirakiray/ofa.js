@@ -1,2 +1,8 @@
 - name: API参考
   url: ./api.html
+- name: 实例相关
+  content:
+   - name: $方法
+     url: ./instance-methods.md
+   - name: All
+     url: ./all.md
