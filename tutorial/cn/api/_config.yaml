@@ -2,7 +2,35 @@
   url: ./api.html
 - name: 实例相关
   content:
-   - name: $方法
-     url: ./instance-methods.md
+   - name: $ 方法
+     url: ./instance/dollar.md
    - name: All
-     url: ./all.md
+     url: ./instance/all.md
+   - name: Shadow
+     url: ./instance/shadow.md
+   - name: Prev
+     url: ./instance/prev.md
+   - name: Prevs
+     url: ./instance/prevs.md
+   - name: Next
+     url: ./instance/next.md
+   - name: Nexts
+     url: ./instance/nexts.md
+   - name: Siblings
+     url: ./instance/siblings.md
+   - name: Parent
+     url: ./instance/parent.md
+   - name: Parents
+     url: ./instance/parents.md
+   - name: Clone
+     url: ./instance/clone.md
+   - name: Ele
+     url: ./instance/ele.md
+   - name: Root
+     url: ./instance/root.md
+   - name: 子元素
+     url: ./instance/children.md
+   - name: Host
+     url: ./instance/host.md
+   - name: App
+     url: ./instance/app.md
