@@ -2,7 +2,7 @@
   url: ./api.html
 - name: 实例相关
   content:
-   - name: $ 方法
+   - name: $(selector)
      url: ./instance/dollar.md
    - name: All
      url: ./instance/all.md

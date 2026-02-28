@@ -1,4 +1,29 @@
-<article>
-  <p>ofa.js 不仅可以用模板语法，还可以用 API 来操作 DOM。就像 jQuery 一样，你可以用 ofa.js 来操作 DOM 元素，而不需要写冗长的 JavaScript 原生代码。</p>
-  <p>你也可以在组件或页面模块的生命周期或方法内，使用 ofa.js 提供的 API 来操作 DOM 元素。</p>
+<l-m src="./_comps/api-list.html"></l-m>
+<article class="markdown-body">
+  <h1>API 文档</h1>
+  <p>
+    ofa.js 不仅支持模板语法，还提供丰富的 API 来直接操作 DOM。就像
+    <a href="https://jquery.com/">jQuery</a>
+    一样，你可以用简洁的 ofa.js 语法替代冗长的原生 JavaScript，轻松完成 DOM
+    操作。
+  </p>
+  <p>
+    在组件或页面模块的生命周期函数及自定义方法中，你都可以随时调用 ofa.js 提供的
+    API，灵活高效地操控 DOM 元素。
+  </p>
+  <div>
+    <api-list>
+      <h3>实例相关</h3>
+      <api-item>
+        <a href="./instance/dollar.md">$(selector)</a>
+        <p>
+          <code>$</code>方法是 ofa.js 中的核心函数，用于获取和操作 DOM 元素实例
+        </p>
+      </api-item>
+      <api-item>
+        <a href="./instance/all.md">All</a>
+        <p><code>All</code>方法用于获取当前元素的所有子元素实例</p>
+      </api-item>
+    </api-list>
+  </div>
 </article>
