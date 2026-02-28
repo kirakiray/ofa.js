@@ -1,4 +1,4 @@
-<l-m src="./_comps/api-list.html"></l-m>
+<l-m src="./_comps/api-container.html"></l-m>
 <article class="markdown-body">
   <h1>API 文档</h1>
   <p>
@@ -11,7 +11,7 @@
     在组件或页面模块的生命周期函数及自定义方法中，你都可以随时调用 ofa.js 提供的
     API，灵活高效地操控 DOM 元素。
   </p>
-  <div style="display: flex; flex-wrap: wrap">
+  <api-container>
     <api-list>
       <h3>实例相关</h3>
       <api-item>
@@ -29,5 +29,32 @@
         <p><code>ele</code>方法用于获取当前元素的子元素实例</p>
       </api-item>
     </api-list>
-  </div>
+    <api-list>
+      <h3>节点操作</h3>
+      <api-item>
+        <a href="./operation/array-like.md">push</a>
+        <p><code>push</code>方法用于添加当前元素的子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md">pop</a>
+        <p><code>pop</code>方法用于删除当前元素的最后一个子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md">shift</a>
+        <p><code>shift</code>方法用于删除当前元素的第一个子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md">unshift</a>
+        <p><code>unshift</code>方法用于添加当前元素的第一个子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md">splice</a>
+        <p><code>splice</code>方法用于添加或删除当前元素的子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/before.md">before</a>
+        <p><code>before</code>方法用于在当前元素之前添加子元素</p>
+      </api-item>
+    </api-list>
+  </api-container>
 </article>

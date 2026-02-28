@@ -1,0 +1,19 @@
+<template component>
+  <l-m src="./api-list.html"></l-m>
+  <style>
+    :host {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+  </style>
+  <slot></slot>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "api-container",
+        data: {},
+      };
+    };
+  </script>
+</template>
