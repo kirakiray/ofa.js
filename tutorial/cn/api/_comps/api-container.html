@@ -2,12 +2,22 @@
   <l-m src="./api-list.html"></l-m>
   <style>
     :host {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
+      display: block;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    ::slotted(api-list) {
+      min-width: 0;
     }
   </style>
-  <slot></slot>
+  <div class="container">
+    <slot></slot>
+  </div>
   <script>
     export default async ({ load }) => {
       return {
