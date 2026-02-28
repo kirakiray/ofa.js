@@ -4,35 +4,35 @@
   content:
    - name: $(selector)
      url: ./instance/dollar.md
-   - name: All
+   - name: all
      url: ./instance/all.md
-   - name: Shadow
+   - name: shadow
      url: ./instance/shadow.md
-   - name: Prev
+   - name: prev
      url: ./instance/prev.md
-   - name: Prevs
+   - name: prevs
      url: ./instance/prevs.md
-   - name: Next
+   - name: next
      url: ./instance/next.md
-   - name: Nexts
+   - name: nexts
      url: ./instance/nexts.md
-   - name: Siblings
+   - name: siblings
      url: ./instance/siblings.md
-   - name: Parent
+   - name: parent
      url: ./instance/parent.md
-   - name: Parents
+   - name: parents
      url: ./instance/parents.md
-   - name: Clone
+   - name: clone
      url: ./instance/clone.md
-   - name: Ele
+   - name: ele
      url: ./instance/ele.md
-   - name: Root
+   - name: root
      url: ./instance/root.md
    - name: 子元素
      url: ./instance/children.md
-   - name: Host
+   - name: host
      url: ./instance/host.md
-   - name: App
+   - name: app
      url: ./instance/app.md
 - name: 节点操作
   content:
