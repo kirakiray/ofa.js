@@ -19,6 +19,7 @@
 
     .tool {
       display: flex;
+      align-items: center;
       justify-content: flex-end;
       padding: 8px 0;
     }
@@ -32,10 +33,19 @@
     </style>
   </inject-host>
   <div class="tool">
+    <p-input
+      sync:value="searchText"
+      size="small"
+      style="width: 200px"
+      placeholder="Keyword"
+    >
+      <n-icon icon="material-symbols:search-rounded" slot="prefix"></n-icon>
+    </p-input>
     <p-button
       on:click="switchDesc"
       icon
       attr:variant="showDesc == 1 ? 'contained' : 'text'"
+      style="margin-left: auto"
     >
       <n-icon icon="pajamas:text-description"></n-icon>
     </p-button>
@@ -49,6 +59,26 @@
         tag: "api-container",
         attrs: {
           showDesc: sessionStorage.getItem("__showDesc"),
+          searchText: "",
+        },
+        watch: {
+          searchText(searchText) {
+            const text = searchText.trim();
+            if (!text) {
+              this.all("api-item").forEach((item) => {
+                item.style.display = "";
+              });
+              return;
+            }
+
+            this.all("api-item").forEach((item) => {
+              if (item.text.includes(text)) {
+                item.style.display = "";
+              } else {
+                item.style.display = "none";
+              }
+            });
+          },
         },
         proto: {
           switchDesc() {
