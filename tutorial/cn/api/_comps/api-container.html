@@ -6,13 +6,14 @@
     }
 
     .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 16px;
+      column-count: auto;
+      column-width: 230px;
+      column-gap: 16px;
     }
 
     ::slotted(api-list) {
-      min-width: 0;
+      break-inside: avoid;
+      margin-bottom: 16px;
     }
   </style>
   <div class="container">
