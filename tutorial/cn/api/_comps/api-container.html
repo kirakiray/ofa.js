@@ -2,7 +2,8 @@
   <l-m src="./api-list.html"></l-m>
   <style>
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
 
     .container {
@@ -15,7 +16,30 @@
       break-inside: avoid;
       margin-bottom: 16px;
     }
+
+    .tool {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 0;
+    }
   </style>
+  <inject-host>
+    <style>
+      api-container[show-desc="1"] api-item p {
+        opacity: 1;
+        line-height: 20px;
+      }
+    </style>
+  </inject-host>
+  <div class="tool">
+    <p-button
+      on:click="switchDesc"
+      icon
+      attr:variant="showDesc == 1 ? 'contained' : 'text'"
+    >
+      <n-icon icon="pajamas:text-description"></n-icon>
+    </p-button>
+  </div>
   <div class="container">
     <slot></slot>
   </div>
@@ -23,7 +47,15 @@
     export default async ({ load }) => {
       return {
         tag: "api-container",
-        data: {},
+        attrs: {
+          showDesc: sessionStorage.getItem("__showDesc"),
+        },
+        proto: {
+          switchDesc() {
+            this.showDesc = this.showDesc == 1 ? 0 : 1;
+            sessionStorage.setItem("__showDesc", this.showDesc);
+          },
+        },
       };
     };
   </script>
