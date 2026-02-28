@@ -2,17 +2,20 @@
   <style>
     :host {
       display: block;
-      padding: 2px 0;
+      padding: 2px 0 8px;
     }
     ::slotted(a) {
       color: var(--md-sys-color-primary);
     }
     ::slotted(p) {
-      margin-top: 4px !important;
-      margin-bottom: 8px !important;
+      margin: 0;
+      margin-top: 4px;
       padding: 0;
       font-size: 14px;
       color: var(--md-sys-color-normal);
+      /* line-height: 0;
+      opacity: 0;
+      font-size: 0px; */
     }
   </style>
   <div>
