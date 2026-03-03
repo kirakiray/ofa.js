@@ -20,7 +20,6 @@
       left: 0;
       top: 50%;
       width: 50px;
-      background-color: red;
       transform: translate(0, -50%);
     }
     .fly-item {
@@ -94,9 +93,15 @@
 
             const flyItems = host.shadow.all(".fly-item");
             flyItems.forEach((item, index) => {
+              const randomY = (Math.random() - 0.5) * 100;
+              const randomRotate = (Math.random() - 0.5) * 60;
               setTimeout(
                 () => {
+                  item.style.transform = `translateY(${randomY}px) rotate(${randomRotate}deg)`;
                   item.classList.add("flying");
+                  setTimeout(() => {
+                    item.style.opacity = 0;
+                  }, 600);
                 },
                 100 + index * 10,
               );
