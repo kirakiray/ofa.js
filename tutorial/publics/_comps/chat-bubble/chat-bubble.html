@@ -1,14 +1,53 @@
 <template component>
   <style>
     :host {
-      display: block;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
     }
     .container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 70%;
+    }
+    .bubble {
+      background-color: #f0f0f0;
+      padding: 8px 12px;
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #333;
+      word-wrap: break-word;
+      position: relative;
+    }
+    ::slotted(img[slot="avatar"]) {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
       display: block;
+      margin-bottom: 0;
+    }
+    ::slotted(*) {
+      margin: 0;
+      padding: 0;
     }
   </style>
+  <slot name="avatar" class="avatar"></slot>
   <div class="container">
-    <slot></slot>
+    <div class="bubble">
+      <slot></slot>
+    </div>
   </div>
   <script>
     export default async ({ load }) => {
