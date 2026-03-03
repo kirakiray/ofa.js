@@ -1,0 +1,108 @@
+<template component>
+  <style>
+    :host {
+      display: inline-block;
+    }
+    .container {
+      display: flex;
+      font-size: 30px;
+      align-items: center;
+      position: relative;
+    }
+    .content {
+      display: flex;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .fly-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 50px;
+      height: 100%;
+    }
+    .fly-item {
+      position: relative;
+      left: 0;
+      width: 50px;
+      /* transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); */
+      transition: all 0.6s ease;
+    }
+    .fly-item.flying {
+      /* opacity: 0; */
+      left: -100px;
+      transform: rotate(30deg);
+    }
+    .content.punching {
+      animation: punchMove 0.5s ease-out forwards;
+    }
+    @keyframes punchMove {
+      0% {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      50% {
+        transform: translateX(-10%);
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    ::slotted(img[logo]) {
+      width: 100px;
+      height: 100px;
+    }
+    ::slotted(*) {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <div class="container">
+    <div class="fly-area"></div>
+    <div class="content">
+      <slot></slot>
+    </div>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "punch-logo",
+        data: {},
+        attached() {
+          const host = this;
+          const slot = host.shadow.$("slot");
+          const flyArea = host.shadow.$(".fly-area");
+
+          if (!slot || !flyArea) return;
+
+          const flyElements = this.all("[slot='fly']");
+
+          flyElements.forEach((el, index) => {
+            const clone = el.clone(true);
+            clone.classList.add("fly-item");
+            clone.attr("slot", null);
+            clone.style.zIndex = "0";
+            clone.style.right = "-150px";
+            flyArea.push(clone);
+          });
+
+          setTimeout(() => {
+            host.shadow.$(".content").classList.add("punching");
+
+            const flyItems = host.shadow.all(".fly-item");
+            flyItems.forEach((item, index) => {
+              setTimeout(
+                () => {
+                  item.classList.add("flying");
+                },
+                100 + index * 10,
+              );
+            });
+          }, 100);
+        },
+      };
+    };
+  </script>
+</template>
