@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flow-container</title>
+    <script
+      src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs#debug"
+      type="module"
+    ></script>
+    <style>
+      .test-block {
+        width: 100px;
+        height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <l-m src="./flow-container.html"></l-m>
+    <div style="text-align: center; padding: 100px">
+      <flow-container
+        style="height: 300px; width: 100%; border: 1px solid gray"
+      >
+        <div class="test-block" style="background-color: green">AAA</div>
+        <div class="test-block" style="background-color: red">BBB</div>
+        <div class="test-block" style="background-color: blue">CCC</div>
+        <div class="test-block" style="background-color: yellow">DDD</div>
+      </flow-container>
+    </div>
+  </body>
+</html>
