@@ -64,7 +64,7 @@
       padding: 0;
     }
   </style>
-  <div class="container">
+  <div class="container" on:click="startAnime">
     <div class="fly-area"></div>
     <div class="content">
       <slot></slot>
@@ -80,12 +80,16 @@
             const host = this;
             const slot = host.shadow.$("slot");
             const flyArea = host.shadow.$(".fly-area");
+            flyArea.html = "";
 
             if (!slot || !flyArea) return;
 
             const flyElements = this.all("[slot='fly']");
+            const shuffled = flyElements
+              .sort(() => Math.random() - 0.5)
+              .slice(0, 3);
 
-            flyElements.forEach((el, index) => {
+            shuffled.forEach((el, index) => {
               const clone = el.clone(true);
               clone.classList.add("fly-item");
               clone.attr("slot", null);
