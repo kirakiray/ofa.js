@@ -52,7 +52,11 @@
       width: 100px;
       height: 100px;
       transform: rotate(-90deg);
-      opacity: 1;
+      transition: all 0.3s ease;
+    }
+    ::slotted(h2) {
+      opacity: 0;
+      transition: all 0.6s ease;
     }
     ::slotted(*) {
       margin: 0;
@@ -106,6 +110,17 @@
                 100 + index * 10,
               );
             });
+
+            setTimeout(() => {
+              const logoImg = this.$("img[logo]");
+              if (logoImg) {
+                logoImg.style.transform = "rotate(0deg)";
+              }
+              const h2 = this.$("h2");
+              if (h2) {
+                h2.style.opacity = 1;
+              }
+            }, 500);
           }, 100);
         },
       };
