@@ -82,6 +82,25 @@
             const flyArea = host.shadow.$(".fly-area");
             flyArea.html = "";
 
+            const content = host.shadow.$(".content");
+            const logoImg = this.$("img[logo]");
+            const h2 = this.$("h2");
+
+            content.classList.remove("punching");
+            content.style.transform = "";
+            content.style.opacity = "";
+            if (logoImg) {
+              logoImg.style.opacity = 0;
+              logoImg.style.transform = "rotate(-90deg)";
+            }
+            if (h2) {
+              h2.style.transitionDuration = "0s";
+              h2.style.opacity = 0;
+              setTimeout(() => {
+                h2.style.transitionDuration = "";
+              }, 0);
+            }
+
             if (!slot || !flyArea) return;
 
             const flyElements = this.all("[slot='fly']");
@@ -97,8 +116,6 @@
               clone.style.right = "-150px";
               flyArea.push(clone);
             });
-
-            const logoImg = this.$("img[logo]");
 
             setTimeout(() => {
               host.shadow.$(".content").classList.add("punching");
