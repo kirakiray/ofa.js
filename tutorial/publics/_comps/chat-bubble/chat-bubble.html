@@ -1,0 +1,21 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+    }
+    .container {
+      display: block;
+    }
+  </style>
+  <div class="container">
+    <slot></slot>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "chat-bubble",
+        data: {},
+      };
+    };
+  </script>
+</template>
