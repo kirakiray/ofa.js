@@ -6,6 +6,7 @@
 
     .mask {
       position: fixed;
+      z-index: 5;
       top: 0;
       left: 0;
       width: 100%;
@@ -25,7 +26,8 @@
     }
 
     .dialog {
-      background: #fff;
+      position: relative;
+      background: var(--md-sys-color-surface);
       border-radius: 8px;
       padding: 20px;
       max-width: 80%;
@@ -35,6 +37,7 @@
       transition: all 0.3s ease-in-out;
       opacity: 0;
       transform: translateY(-50%);
+      text-align: left;
     }
 
     .dialog.show {
