@@ -62,6 +62,7 @@
               return {
                 for: e.attr("for"),
                 content: e.html,
+                ele: e,
               };
             });
           },
@@ -74,8 +75,17 @@
 
               this.articles.forEach((articleData) => {
                 if (target.is(articleData.for)) {
+                  // 符合条件的进行弹窗显示
+                  this.shadow.$(".dialog").attr("style", "");
+
                   // 符合条件，弹窗显示内容
                   this.shadow.$(".dialog").html = articleData.content;
+
+                  // 弹窗显示内容设置完成后，设置弹窗显示状态为 true
+                  articleData.ele.attr("style") &&
+                    this.shadow
+                      .$(".dialog")
+                      .attr("style", articleData.ele.attr("style"));
                   this.showDialog = true;
                 }
               });
