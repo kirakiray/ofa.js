@@ -57,7 +57,7 @@
 
             children.forEach((el, index) => {
               const y = Math.random() * (hostHeight - 50);
-              const delay = index * 0.3 + Math.random() * 0.5;
+              const delay = index === 0 ? 0 : index * 0.3 + Math.random() * 0.5;
 
               el.style.top = `${y}px`;
               el.style.animation = `flow-container-float ${duration}s linear ${delay}s infinite`;
