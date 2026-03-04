@@ -29,6 +29,7 @@
       position: relative;
       white-space: nowrap;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
     }
     ::slotted(img[slot="avatar"]) {
       width: 40px;
@@ -45,15 +46,21 @@
   </style>
   <slot name="avatar" class="avatar"></slot>
   <div class="container">
-    <div class="bubble">
+    <div class="bubble" on:click="clickBubble">
       <slot></slot>
     </div>
+  </div>
+  <div class="dialog">
+    <slot name="article"></slot>
   </div>
   <script>
     export default async ({ load }) => {
       return {
         tag: "chat-bubble",
         data: {},
+        proto: {
+          clickBubble() {},
+        },
       };
     };
   </script>

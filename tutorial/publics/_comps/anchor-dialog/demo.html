@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>chat-bubble</title>
+    <title>anchor-dialog</title>
     <script
       src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs#debug"
       type="module"
     ></script>
   </head>
   <body>
-    <l-m src="./chat-bubble.html"></l-m>
+    <l-m src="./anchor-dialog.html"></l-m>
     <div style="text-align: center; padding: 100px">
-      <chat-bubble>
-        <img src="../../sources/webpack.svg" slot="avatar" alt="webpack" />
-        你好，我是webpack。
-        <article slot="article">
+      <button id="haha">Click Me</button>
+      <anchor-dialog>
+        <article for="#haha">
+          <h2>你好，我是webpack。</h2>
           <p>我是描述性文字。</p>
         </article>
-      </chat-bubble>
+      </anchor-dialog>
     </div>
   </body>
 </html>
