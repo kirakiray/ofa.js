@@ -21,8 +21,8 @@
     }
     .node {
       position: absolute;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
-      border: 2px solid #5b9bd5;
+      background: var(--md-sys-color-surface, #fff);
+      border: 2px solid var(--md-sys-color-primary-container, #5b9bd5);
       border-radius: 6px;
       padding: 10px 16px;
       text-align: center;
@@ -33,24 +33,18 @@
       font-family:
         -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       font-size: 14px;
-      color: #333;
+      color: var(--md-sys-color-on-surface, #333);
       white-space: nowrap;
       display: inline-block;
     }
-    .node:hover {
-      background: linear-gradient(135deg, #e8f0f8 0%, #d0e0f0 100%);
-      border-color: #4a8ac9;
-      box-shadow: 0 4px 10px rgba(91, 155, 213, 0.25);
-      transform: translateY(-1px);
-    }
     .line {
-      stroke: #5b9bd5;
+      stroke: var(--md-sys-color-primary, #5b9bd5);
       stroke-width: 2;
       fill: none;
       opacity: 0.8;
     }
     .arrow {
-      fill: #5b9bd5;
+      fill: var(--md-sys-color-primary, #5b9bd5);
     }
   </style>
   <div class="container">

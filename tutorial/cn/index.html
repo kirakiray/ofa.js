@@ -132,7 +132,7 @@
         href="./documentation/create-first-app.md"
         olink
         style="color: var(--md-sys-color-primary)"
-        >"教程：创建第一个应用</a
+        >教程：创建第一个应用</a
       >
     </article>
     <article
@@ -192,11 +192,16 @@
   </anchor-dialog>
 </center-block>
 
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
 <center-block>
   <h2>最适合AI使用的前端框架</h2>
-  <p>过去，AI生成的前端项目，需要动态服务器编译打包，再从用户端查看效果。</p>
-  <p>现在，只需要静态服务器即可。</p>
   <p>不走编译的流程，直接让代码跑起来。</p>
+  <flow-chart style="width: 100%; height: 200px">
+    <div name="a" to="b">AAA</div>
+    <div name="b" to="c">BBB</div>
+    <div name="c">CCC</div>
+  </flow-chart>
   <p-button size="large">
     <a href="./others/more-suitable-for-ai.md">AI使用ofa.js的优势</a>
   </p-button>
