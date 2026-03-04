@@ -44,28 +44,28 @@
       />
       老子学不动了，不想看你们的文档，能用的上吗？
     </chat-bubble>
-    <chat-bubble>
+    <chat-bubble id="case2-bubble" style="cursor: pointer">
       <img
         src="https://avatars.githubusercontent.com/u/53500371?v=4"
         slot="avatar"
       />
       我想在老旧项目临时加个功能
     </chat-bubble>
-    <chat-bubble>
+    <chat-bubble id="case3-bubble" style="cursor: pointer">
       <img
         src="https://avatars.githubusercontent.com/u/34147999"
         slot="avatar"
       />
       我是开发新手，被Nodejs 和 npm 劝退了
     </chat-bubble>
-    <chat-bubble>
+    <chat-bubble id="case4-bubble" style="cursor: pointer">
       <img
         src="https://avatars.githubusercontent.com/u/1961952"
         slot="avatar"
       />
       开发一个庞大的购物商城系统，你们支撑得了吗？
     </chat-bubble>
-    <chat-bubble>
+    <chat-bubble id="case5-bubble" style="cursor: pointer">
       <img
         src="https://avatars.githubusercontent.com/u/3492426"
         slot="avatar"
@@ -75,8 +75,11 @@
     >
   </flow-container>
   <anchor-dialog>
-    <article for="#case1-bubble" style="max-width: 80vw">
-      <chat-bubble>
+    <article
+      for="#case1-bubble"
+      style="max-width: 80vw; font-size: 18px; padding: 32px"
+    >
+      <chat-bubble style="margin-bottom: 24px">
         <img
           src="https://avatars.githubusercontent.com/u/11347639"
           slot="avatar"
@@ -87,6 +90,20 @@
       <p>
         开源组件作者写完代码后，其他人只需照着示例复制几行，就能瞬间把功能搬进自己的项目。
       </p>
+    </article>
+    <article
+      for="#case2-bubble"
+      style="max-width: 80vw; font-size: 18px; padding: 32px"
+    >
+      <chat-bubble style="margin-bottom: 24px">
+        <img
+          src="https://avatars.githubusercontent.com/u/53500371?v=4"
+          slot="avatar"
+        />
+        我想在老旧项目临时加个功能
+      </chat-bubble>
+      <p>只需在现有项目中通过 script 标签引入 ofa.js，即可立即使用。</p>
+      <p>引入后，各式各样的组件随手可得。</p>
     </article>
   </anchor-dialog>
 </center-block>
