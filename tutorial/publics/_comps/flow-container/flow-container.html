@@ -55,6 +55,9 @@
             const hostHeight = this.offsetHeight || 300;
             const duration = 15 + Math.random() * 5;
 
+            // 打乱顺序
+            children.sort(() => Math.random() - 0.5);
+
             children.forEach((el, index) => {
               const y = Math.random() * (hostHeight - 50);
               const delay = index === 0 ? 0 : index * 2;

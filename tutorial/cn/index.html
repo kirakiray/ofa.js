@@ -19,7 +19,9 @@
     <img src="../publics/sources/lerna.svg" slot="fly" alt="lerna" />
   </punch-logo>
   <h2 style="margin: 32px 0 16px">渐进式微前端框架</h2>
-  <p>无论你想做简单的页面，还是复杂的应用，ofa.js 都能满足你的需求。</p>
+  <p>
+    无论你是要渲染简单页面、打造交互应用，还是构建复杂系统，ofa.js 都能胜任。
+  </p>
   <div style="padding: 16px">
     <p-button size="large">
       <a href="./documentation/create-first-app.md">学习 ofa.js</a>
@@ -30,7 +32,7 @@
 <l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
 <l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
 
-<center-block style="--container-max-width: 100%">
+<center-block style="--container-max-width: 100%; padding: 128px 0">
   <h2>近乎银弹型的前端框架</h2>
   <p>无论是什么应用场景，都适合使用 ofa.js。</p>
   <flow-container style="height: 300px; width: 100%">
@@ -41,10 +43,35 @@
       />
       老子学不动了，不想看你们的文档，能用的上ofa.js吗？
     </chat-bubble>
-    <chat-bubble> 我想在传统旧项目临时加个功能 </chat-bubble>
-    <chat-bubble> 我是开发新手，被Nodejs 和 npm 劝退了 </chat-bubble>
-    <chat-bubble> 开发一个购物商城系统，可以吗？</chat-bubble>
-    <chat-bubble> 我是后端开发，我只想用模板引擎来开发，使用 ofa.js 合适吗？</chat-bubble>
+    <chat-bubble>
+      <img
+        src="https://avatars.githubusercontent.com/u/53500371?v=4"
+        slot="avatar"
+      />
+      我想在传统旧项目临时加个功能
+    </chat-bubble>
+    <chat-bubble>
+      <img
+        src="https://avatars.githubusercontent.com/u/34147999"
+        slot="avatar"
+      />
+      我是开发新手，被Nodejs 和 npm 劝退了
+    </chat-bubble>
+    <chat-bubble>
+      <img
+        src="https://avatars.githubusercontent.com/u/1961952"
+        slot="avatar"
+      />
+      开发一个庞大的购物商城系统，你们支撑得了吗？
+    </chat-bubble>
+    <chat-bubble>
+      <img
+        src="https://avatars.githubusercontent.com/u/3492426"
+        slot="avatar"
+      />
+      我是后端开发，我只想用后端的模板引擎来开发，使用 ofa.js
+      合适吗？</chat-bubble
+    >
   </flow-container>
   <!-- <p>
     无论是临时用用 / 开发页面 / 大型应用 / 后端模版引擎套用 /
