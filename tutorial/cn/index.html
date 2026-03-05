@@ -206,7 +206,7 @@
 <center-block>
   <h2>更适合AI使用的前端框架</h2>
   <p>不走编译的流程，直接让代码跑起来。</p>
-  <div class="w-title">AI使用主流框架生成前端项目的流程</div>
+  <div class="w-title">AI使用主流前端框架生成项目的流程</div>
   <flow-chart style="width: 100%; height: 100px">
     <div name="ai-model" to="cloud-container">AI大模型</div>
     <div name="cloud-container" to="init">创建云端容器</div>
@@ -214,7 +214,10 @@
     <div name="deploy" to="preview">部署和编译代码</div>
     <div name="preview">预览项目</div>
   </flow-chart>
-  <div class="w-title">AI使用 ofa.js 生成前端项目的流程</div>
+  <div class="w-title">
+    AI使用
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b> 生成前端项目的流程
+  </div>
   <flow-chart style="width: 100%; height: 100px">
     <div name="ai-model" to="container">AI大模型</div>
     <div name="container" to="preview">部署代码到静态容器</div>
@@ -222,13 +225,16 @@
   </flow-chart>
 
   <p-button size="large">
-    <a href="./others/more-suitable-for-ai.md">AI使用ofa.js的优势</a>
+    <a href="./others/more-suitable-for-ai.md">查看详情</a>
   </p-button>
 </center-block>
+
+<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
 
 <center-block>
   <h2>基于 Web Components 开发</h2>
   <p>你可以在任何支持 Web Components 的平台上使用 ofa.js。</p>
+  <support-platforms></support-platforms>
 </center-block>
 
 <center-block>

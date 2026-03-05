@@ -1,0 +1,106 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+      margin: 24px 0;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .block {
+      position: relative;
+      margin: 16px 24px;
+      text-align: center;
+    }
+    .block img {
+      position: relative;
+      max-width: 80px;
+      max-height: 80px;
+    }
+    .tips {
+      font-size: 14px;
+      font-weight: bold;
+      white-space: nowrap;
+      text-shadow: var(--active-color) 0 0 1px;
+    }
+    .top {
+      font-size: 13px;
+      white-space: nowrap;
+      font-weight: bold;
+      color: var(--active-color);
+    }
+    .since.top:before {
+      display: inline-block;
+      margin-right: 4px;
+      font-size: 12px;
+      content: "Since";
+      color: rgb(125, 125, 125);
+    }
+  </style>
+  <div class="container">
+    <div class="block">
+      <img src="./support-platforms/chrome.svg" alt="chrome" />
+      <div class="tips">Chrome 67+</div>
+      <div class="top since">2018-05</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/edge.svg" alt="edge" />
+      <div class="tips">Edge 79+</div>
+      <div class="top since">2020-01</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/safari.svg" alt="safari" />
+      <div class="tips">Safari 10.1+</div>
+      <div class="top since">2017-03</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/firefox.svg" alt="firefox" />
+      <div class="tips">Firefox 63+</div>
+      <div class="top since">2018-10</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/opera.svg" alt="Opera" />
+      <div class="tips">Opera 64+</div>
+      <div class="top since">2019-10</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/weixin.svg" alt="wechat" />
+      <div class="tips">WeChat</div>
+      <div class="top">Support</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/uc.svg" alt="UC" />
+      <div class="tips">UC</div>
+      <div class="top">Support</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/andriod.svg" alt="andriod" />
+      <div class="tips">Android</div>
+      <div class="top">Support</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/windows.svg" alt="windows" />
+      <div class="tips">Windows</div>
+      <div class="top">Support</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/ios.svg" alt="ios" />
+      <div class="tips">MacOS / iOS</div>
+      <div class="top">Support</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/linux.svg" alt="Linux" />
+      <div class="tips">Linux</div>
+      <div class="top">Support</div>
+    </div>
+    <div class="block">
+      <img src="./support-platforms/kaios.svg" alt="kaiOS" />
+      <div class="tips">kaiOS 3.0+</div>
+      <div class="top since">2021-09</div>
+    </div>
+  </div>
+</template>
