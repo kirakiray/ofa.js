@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.18 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
+//! ofa.js - v4.6.19 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -6653,11 +6653,27 @@ $.register({
       this.__added = false;
     },
   },
-  attached() {
+  async attached() {
     // 获取style内容后，清除内容
     if (!this._styleOriginText) {
-      this._styleOriginText = this.$("style").text;
+      const styleEl = this.$("style");
+      if (styleEl) {
+        this._styleOriginText = styleEl.text;
+      }
+      const linkEl = this.$("link");
+      if (linkEl) {
+        const href = linkEl.attr("href");
+        this.html = ""; // 必须提前清空，不然会提前载入样式
+        const content = await fetch(href).then((res) => res.text());
+        this._styleOriginText = content;
+      }
       this.html = "";
+    }
+
+    const isConnected = this.ele.isConnected;
+
+    if (!isConnected) {
+      return;
     }
 
     if (supportStyleQueries) {
@@ -7213,7 +7229,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.18";
+const version = "ofa.js@4.6.19";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
