@@ -1,0 +1,177 @@
+<template page>
+  <l-m
+    src="https://playground.ofajs.com/comps/o-playground/o-playground.html"
+  ></l-m>
+  <style>
+    :host {
+      display: block;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .top {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      margin: 4px;
+      padding: 4px 16px;
+      text-decoration: underline;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn.active {
+      text-decoration: none;
+      background-color: var(--md-sys-color-primary-container);
+    }
+  </style>
+  <div class="container">
+    <div class="top">
+      <div class="btn" class:active="active === 0" on:click="active = 0">
+        Render Text
+      </div>
+      <div class="btn" class:active="active === 1" on:click="active = 1">
+        Set Properties
+      </div>
+      <div class="btn" class:active="active === 2" on:click="active = 2">
+        Sync Data
+      </div>
+      <div class="btn" class:active="active === 3" on:click="active = 3">
+        Bind Event
+      </div>
+      <div class="btn" class:active="active === 4" on:click="active = 4">
+        Use If
+      </div>
+      <div class="btn" class:active="active === 5" on:click="active = 5">
+        Use Fill
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 32px; min-height: 400px">
+    <o-if :value="active === 0">
+      <o-playground style="--editor-height: 400px">
+        <code path="render-text.html">
+          <template page>
+            <div>Render Text: {{txt}}</div>
+            <script>
+              export default {
+                data: {
+                  txt: "I am txt",
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-if>
+    <o-else-if :value="active === 1">
+      <o-playground style="--editor-height: 400px">
+        <code>
+          <template page>
+            <div :text="txt1"></div>
+            <div :html="txt2"></div>
+            <script>
+              export default {
+                data: {
+                  txt1: "<b>I am txt1</b>",
+                  txt2: "<b>I am txt2</b>",
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 2">
+      <o-playground style="--editor-height: 400px">
+        <code>
+          <template page>
+            <div>{{txt}}</div>
+            <input type="text" sync:value="txt" />
+            <script>
+              export default {
+                data: {
+                  txt: "I am txt",
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 3">
+      <o-playground style="--editor-height: 400px">
+        <code>
+          <template page>
+            <div>count: {{count}}</div>
+            <button on:click="count++">count++</button>
+            <script>
+              export default {
+                data: {
+                  count: 0,
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 4">
+      <o-playground style="--editor-height: 400px">
+        <code>
+          <template page>
+            <o-if :value="count % 2">
+              <div style="color: red">{{count}}</div>
+            </o-if>
+            <o-else>
+              <div style="color: blue">{{count}}</div>
+            </o-else>
+            <button on:click="count++">count++</button>
+            <script>
+              export default {
+                data: {
+                  count: 0,
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 5">
+      <o-playground style="--editor-height: 400px">
+        <code>
+          <template page>
+            <ul>
+              <o-fill :value="lists">
+                <li>{{$index}} - {{$data.name}}</li>
+              </o-fill>
+            </ul>
+            <script>
+              export default {
+                data: {
+                  lists: [{ name: "One" }, { name: "Two" }, { name: "Three" }],
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        data: {
+          active: 0,
+        },
+      };
+    };
+  </script>
+</template>
