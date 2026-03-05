@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flow-container</title>
+    <!-- <script
+      src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs#debug"
+      type="module"
+    ></script> -->
+    <script
+      src="http://localhost:3348/packages/ofa/main.mjs"
+      type="module"
+    ></script>
+    <style>
+      .test-block {
+        width: 100px;
+        height: 50px;
+      }
+    </style>
+    <link rel="stylesheet" href="../../css/theme.css" pui-colors />
+  </head>
+  <body>
+    <l-m src="./split-code.html"></l-m>
+    <split-code style="height: 300px; width: 100%; border: 1px solid gray">
+      <pre>
+      <code>
+// jQuery Code
+$("#target").html("some html code"); // 设置 html
+$("#target").text("set text"); // 设置 text
+var ele_text = $("#target").text(); // 获取 text
+var parents = $("#target").parents(); // 获取所有父层的数组
+var child = $("#target").children()[0]; // 获取第一个子元素
+      </code>
+    </pre>
+      <pre>
+      <code>
+// ofa.js Code
+$("#target").html = "some html code";  // 设置 html
+$("#target").text = "set text"; // 设置 text
+var ele_text = $("#target").text; // 获取 text
+var parents = $("#target").parents; // 获取所有父层的数组
+var child = $("#target")[0]; // 获取第一个子元素
+      </code>
+      </pre>
+    </split-code>
+  </body>
+</html>
