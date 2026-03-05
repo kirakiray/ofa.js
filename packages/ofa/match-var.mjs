@@ -50,11 +50,27 @@ $.register({
       this.__added = false;
     },
   },
-  attached() {
+  async attached() {
     // 获取style内容后，清除内容
     if (!this._styleOriginText) {
-      this._styleOriginText = this.$("style").text;
+      const styleEl = this.$("style");
+      if (styleEl) {
+        this._styleOriginText = styleEl.text;
+      }
+      const linkEl = this.$("link");
+      if (linkEl) {
+        const href = linkEl.attr("href");
+        this.html = ""; // 必须提前清空，不然会提前载入样式
+        const content = await fetch(href).then((res) => res.text());
+        this._styleOriginText = content;
+      }
       this.html = "";
+    }
+
+    const isConnected = this.ele.isConnected;
+
+    if (!isConnected) {
+      return;
     }
 
     if (supportStyleQueries) {
