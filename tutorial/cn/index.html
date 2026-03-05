@@ -233,22 +233,104 @@
 
 <center-block>
   <h2>基于 Web Components 开发</h2>
-  <p>你可以在任何支持 Web Components 的平台上使用 ofa.js。</p>
+  <p>你可以在任何支持 Web Components 的平台上使用 ofa.js</p>
   <support-platforms></support-platforms>
 </center-block>
 
 <center-block>
   <h2>极低使用门槛</h2>
-  <p>只需要一个静态服务器就好，没有编译和打包流程</p>
+  <p>没有编译和打包流程，只需要静态服务器就能运行</p>
+  <o-playground style="--editor-height: 300px; width: 100%">
+    <code>
+      <template>
+        <!-- 加载开发好的 punch-logo 组件 -->
+        <l-m
+          src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"
+        ></l-m>
+        <!-- 使用 punch-logo 组件 -->
+        <punch-logo style="margin: 50px 0 0 100px">
+          <img
+            src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg"
+            logo
+            height="90"
+          />
+          <h2>不加班了</h2>
+          <p slot="fly">下班给我</p>
+          <p slot="fly">迟点下班</p>
+          <p slot="fly">周末加班</p>
+        </punch-logo>
+      </template>
+    </code>
+  </o-playground>
 </center-block>
 
 <center-block>
   <h2>一步封装组件，摆脱繁琐流程</h2>
   <p>
     过去，你可能得先经历 Node.js ➡️ npm ➡️ Webpack
-    等一系列步骤，才能迈出封装组件的第一步；
+    等一系列步骤，才能迈出封装组件的第一步
   </p>
-  <p>现在，你只需要一个文件。</p>
+  <p>现在，你只需要一个文件</p>
+  <o-playground style="--editor-height: 500px">
+    <code path="demo.html" preview>
+      <template>
+        <l-m src="./my-switch.html"></l-m>
+        <my-switch></my-switch>
+      </template>
+    </code>
+    <code path="my-switch.html" active>
+      <template component>
+        <style>
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            background-color: #ccc;
+            transition: background-color 0.4s;
+            border-radius: 34px;
+            cursor: pointer;
+          }
+
+          .slider {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: transform 0.4s;
+            border-radius: 50%;
+          }
+
+          .switch.checked {
+            background-color: #2196f3;
+          }
+
+          .switch.checked .slider {
+            transform: translateX(26px);
+          }
+        </style>
+        <div
+          class="switch"
+          class:checked="checked"
+          on:click="checked = !checked"
+        >
+          <span class="slider"></span>
+        </div>
+        <script>
+          export default async () => {
+            return {
+              tag: "my-switch",
+              data: {
+                checked: true,
+              },
+            };
+          };
+        </script>
+      </template>
+    </code>
+  </o-playground>
 </center-block>
 
 <center-block>
