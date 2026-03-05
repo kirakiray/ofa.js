@@ -239,7 +239,7 @@
 
 <center-block>
   <h2>极低使用门槛</h2>
-  <p>使用基于 ofa.js 开发的组件，不需要考虑依赖和编译器问题</p>
+  <p>使用基于 ofa.js 开发的组件，不需要考虑依赖和配置问题</p>
   <o-playground style="--editor-height: 300px; width: 100%">
     <code>
       <template>
@@ -267,7 +267,7 @@
 <center-block>
   <h2>一步封装组件，摆脱繁琐流程</h2>
   <p>
-    过去，你可能得先经历 Node.js ➡️ npm ➡️ Webpack
+    过去，你要先经历 Node.js ➡️ npm ➡️ Webpack
     等一系列学习，才能迈入封装组件的第一步
   </p>
   <p>现在，你只需要一个文件</p>
@@ -332,8 +332,30 @@
     </code>
   </o-playground>
 </center-block>
-
+<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
 <center-block>
   <h2>jQuery的精神继承者</h2>
   <p>API 设计与 jQuery 相似，但更加直观</p>
+  <split-code style="width: 100%">
+    <pre>
+      <code>
+// jQuery Code
+$("#target").html("some html code"); // 设置 html
+$("#target").text("set text"); // 设置 text
+var ele_text = $("#target").text(); // 获取 text
+var parents = $("#target").parents(); // 获取所有父层的数组
+var child = $("#target").children()[0]; // 获取第一个子元素
+      </code>
+    </pre>
+    <pre>
+      <code>
+// ofa.js Code
+$("#target").html = "some html code";  // 设置 html
+$("#target").text = "set text"; // 设置 text
+var ele_text = $("#target").text; // 获取 text
+var parents = $("#target").parents; // 获取所有父层的数组
+var child = $("#target")[0]; // 获取第一个子元素
+      </code>
+      </pre>
+  </split-code>
 </center-block>
