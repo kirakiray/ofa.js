@@ -40,16 +40,16 @@
         Set Properties
       </div>
       <div class="btn" class:active="active === 2" on:click="active = 2">
-        Sync Data
+        Two-way Binding
       </div>
       <div class="btn" class:active="active === 3" on:click="active = 3">
-        Bind Event
+        Bind Events
       </div>
       <div class="btn" class:active="active === 4" on:click="active = 4">
-        Use If
+        Conditional Render
       </div>
       <div class="btn" class:active="active === 5" on:click="active = 5">
-        Use Fill
+        List Render
       </div>
     </div>
   </div>
@@ -58,11 +58,14 @@
       <o-playground style="--editor-height: 400px">
         <code path="render-text.html">
           <template page>
-            <div>Render Text: {{txt}}</div>
+            <h1>{{title}}</h1>
+            <p>Hello, {{name}}!</p>
+            <p>1 + 1 = {{1 + 1}}</p>
             <script>
               export default {
                 data: {
-                  txt: "I am txt",
+                  title: "Welcome",
+                  name: "World",
                 },
               };
             </script>
@@ -74,13 +77,13 @@
       <o-playground style="--editor-height: 400px">
         <code>
           <template page>
-            <div :text="txt1"></div>
-            <div :html="txt2"></div>
+            <h1 :text="title"></h1>
+            <p :html="content"></p>
             <script>
               export default {
                 data: {
-                  txt1: "<b>I am txt1</b>",
-                  txt2: "<b>I am txt2</b>",
+                  title: "Set Properties",
+                  content: "<strong>Bold text</strong> and <em>italic</em>",
                 },
               };
             </script>
@@ -92,12 +95,16 @@
       <o-playground style="--editor-height: 400px">
         <code>
           <template page>
-            <div>{{txt}}</div>
-            <input type="text" sync:value="txt" />
+            <p>Your input: {{message}}</p>
+            <input
+              type="text"
+              sync:value="message"
+              placeholder="Type something"
+            />
             <script>
               export default {
                 data: {
-                  txt: "I am txt",
+                  message: "",
                 },
               };
             </script>
@@ -109,8 +116,10 @@
       <o-playground style="--editor-height: 400px">
         <code>
           <template page>
-            <div>count: {{count}}</div>
-            <button on:click="count++">count++</button>
+            <h2>Counter: {{count}}</h2>
+            <button on:click="count++">+</button>
+            <button on:click="count--">-</button>
+            <button on:click="count = 0">Reset</button>
             <script>
               export default {
                 data: {
@@ -126,17 +135,19 @@
       <o-playground style="--editor-height: 400px">
         <code>
           <template page>
-            <o-if :value="count % 2">
-              <div style="color: red">{{count}}</div>
+            <p>{{status}}</p>
+            <o-if :value="count % 2 === 0">
+              <p>Even: {{count}}</p>
             </o-if>
             <o-else>
-              <div style="color: blue">{{count}}</div>
+              <p>Odd: {{count}}</p>
             </o-else>
-            <button on:click="count++">count++</button>
+            <button on:click="count++">Next</button>
             <script>
               export default {
                 data: {
                   count: 0,
+                  status: "Click to test",
                 },
               };
             </script>
@@ -148,15 +159,23 @@
       <o-playground style="--editor-height: 400px">
         <code>
           <template page>
+            <h2>Todo List</h2>
             <ul>
-              <o-fill :value="lists">
-                <li>{{$index}} - {{$data.name}}</li>
+              <o-fill :value="todos">
+                <li>
+                  <input type="checkbox" :checked="$data.done" disabled />
+                  {{$data.text}}
+                </li>
               </o-fill>
             </ul>
             <script>
               export default {
                 data: {
-                  lists: [{ name: "One" }, { name: "Two" }, { name: "Three" }],
+                  todos: [
+                    { text: "Learn ofa.js", done: true },
+                    { text: "Build a project", done: false },
+                    { text: "Deploy to production", done: false },
+                  ],
                 },
               };
             </script>
