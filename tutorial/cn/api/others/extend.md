@@ -4,7 +4,7 @@
 
 > 通常情况下，不建议用户扩展实例的属性或方法，因为这会增加学习成本。除非团队内有特殊场景需要自定义实例的行为，否则不建议这样做。
 
-<o-playground style="--editor-height: 560px">
+<o-playground name="extend - 扩展实例" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -39,7 +39,7 @@
 
 和 jQuery 类似，你也可以通过 fn.extend 扩展底层实例的属性或方法；从 fn 扩展的属性或方法会应用到所有实例上。
 
-<o-playground style="--editor-height: 560px">
+<o-playground name="extend - 扩展底层" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -88,7 +88,7 @@ $.fn.extend({
 });
 ```
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="extend - 扩展属性" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-one.html"></l-m>
@@ -152,7 +152,7 @@ $.fn.extend({
 $.fn.color.always = true;
 ```
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="extend - 扩展方法" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-two.html"></l-m>
@@ -202,7 +202,7 @@ $.fn.color.always = true;
 
 你可以查看下面的示例来更好地理解 ofa.js 的模板渲染原理：
 
-<o-playground style="--editor-height: 480px">
+<o-playground name="extend - 模板语法原理" style="--editor-height: 480px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./temp-three.html"></l-m>

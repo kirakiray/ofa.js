@@ -10,7 +10,7 @@
 
 下面是一个示例，演示如何使用 `$` 实例和 `watch` 方法：
 
-<o-playground style="--editor-height: 480px">
+<o-playground name="stanz - watch" style="--editor-height: 480px">
   <code path="demo.html">
     <template>
       <div id="target"></div>
@@ -48,7 +48,7 @@
 
 下面是一个示例，演示如何使用 `$` 实例的 `watchTick` 方法：
 
-<o-playground style="--editor-height: 480px">
+<o-playground name="stanz - watchTick" style="--editor-height: 480px">
   <code path="demo.html">
     <template>
       <div id="target"></div>
@@ -85,7 +85,7 @@
 
 下面是一个示例，演示如何使用 `$` 实例的 `unwatch` 方法：
 
-<o-playground style="--editor-height: 480px">
+<o-playground name="stanz - unwatch" style="--editor-height: 480px">
   <code path="demo.html">
     <template>
       <div id="target"></div>
@@ -123,7 +123,7 @@
 
 下面是一个示例，演示了如何使用下划线开头的属性值来避免被监听：
 
-<o-playground style="--editor-height: 480px">
+<o-playground name="stanz - 非响应式数据" style="--editor-height: 480px">
   <code path="demo.html">
     <template>
       <div id="target"></div>

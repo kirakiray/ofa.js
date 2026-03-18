@@ -2,7 +2,7 @@
 
 使用 `shadow` 属性，你可以获取元素的影子根节点实例。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="shadow - 影子节点" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./test-shadow.html"></l-m>
@@ -40,7 +40,7 @@
 $("test-shadow").shadow.$('selector').method(xxx);
 ```
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="shadow - 外部访问" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./test-shadow.html"></l-m>

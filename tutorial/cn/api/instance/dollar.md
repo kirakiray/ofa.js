@@ -6,7 +6,7 @@
 
 通过 `$` 方法，你可以获取页面上符合 [CSS 选择器](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/Selectors/Selector_list) 的第一个元素实例，并对其进行操作。以下是一个示例：
 
-<o-playground>
+<o-playground name="$ - 获取元素">
   <code path="demo.html">
     <template>
       <div id="target1">target 1 text</div>
@@ -25,7 +25,7 @@
 
 实例也拥有 `$` 方法，可以通过实例上的 `$` 方法获取元素实例的第一个符合条件的子元素实例。
 
-<o-playground>
+<o-playground name="$ - 查找子元素">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -40,11 +40,9 @@
   </code>
 </o-playground>
 
-## 元素实例特性
-
 请不要将获取的元素实例直接插入到其他地方，这样的操作会导致原来的元素受到影响。如果需要创建一份副本，可以使用 [clone](./clone.md) 方法。
 
-<o-playground style="--editor-height: 360px">
+<o-playground name="$ - 实例特性" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="pos1" style="border:red solid 1px;">
@@ -57,7 +55,7 @@
       <script>
         setTimeout(()=>{
           const tar = $("#target1");
-          $("#pos2").push(tar);
+          \$("#pos2").push(tar);
         },500);
       </script>
     </template>
@@ -96,7 +94,7 @@ const $ele = $(ele);
 
 你可以使用 `$` 函数通过字符串创建新元素实例，如下所示：
 
-<o-playground style="--editor-height: 260px">
+<o-playground name="$ - 字符串生成" style="--editor-height: 260px">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -116,7 +114,7 @@ const $ele = $(ele);
 
 你还可以使用 `$` 函数通过对象的方式生成新元素实例，如下所示：
 
-<o-playground style="--editor-height: 360px">
+<o-playground name="$ - 对象生成" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">

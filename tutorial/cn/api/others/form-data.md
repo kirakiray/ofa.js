@@ -4,7 +4,7 @@
 
 在下面的示例中，我们演示了如何使用 `formData` 方法生成与表单元素绑定的对象数据：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="formData - 基本使用" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <form id="myForm">
@@ -43,7 +43,7 @@
 
 在下面的示例中，我们演示了如何使用 `formData` 方法生成的对象数据，以及如何进行反向数据绑定：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="formData - 反向绑定" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <form id="myForm">
@@ -83,7 +83,7 @@
 
 在下面的示例中，我们演示了如何通过传递 CSS 选择器来监听特定的表单元素：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="formData - 特定表单" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <form id="myForm">
@@ -120,7 +120,7 @@
 
 自定义表单组件的使用非常简单，只需要为自定义组件添加一个 **value 属性** 并设置 **name 特性**。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="formData - 自定义表单" style="--editor-height: 500px">
   <code path="demo.html" preview active>
     <template>
       <div id="myForm">
@@ -187,7 +187,7 @@
 
 有时，你可能需要在组件或页面内使用表单数据，并且需要在 `attached` 周期生命周期时生成数据并将其绑定到组件上。
 
-<o-playground style="--editor-height: 600px">
+<o-playground name="formData - 组件内使用" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./form-data-demo.html"></l-m>

@@ -4,7 +4,7 @@
 
 下面是一个示例，演示如何使用 `host` 属性获取宿主组件的实例：
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="host - 获取宿主" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -65,7 +65,7 @@
 
 如果元素不在组件或页面模块内，`host` 的值将为 `null`。例如：
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="host - 无宿主情况" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
