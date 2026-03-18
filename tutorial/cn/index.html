@@ -209,14 +209,6 @@
 <center-block>
   <h2>🤖 更适合AI使用的前端框架 🤖</h2>
   <p>不走编译的流程，直接让代码跑起来。</p>
-  <div class="w-title">AI使用主流前端框架生成项目的流程</div>
-  <flow-chart style="width: 100%; height: 100px">
-    <div name="ai-model" to="cloud-container">AI大模型</div>
-    <div name="cloud-container" to="init">创建云端容器</div>
-    <div name="init" to="deploy">安装依赖</div>
-    <div name="deploy" to="preview">部署和编译代码</div>
-    <div name="preview">预览项目</div>
-  </flow-chart>
   <div class="w-title">
     AI使用
     <b style="color: var(--md-sys-color-primary)">ofa.js</b> 生成前端项目的流程
@@ -224,6 +216,14 @@
   <flow-chart style="width: 100%; height: 100px">
     <div name="ai-model" to="container">AI大模型</div>
     <div name="container" to="preview">部署代码到静态容器</div>
+    <div name="preview">预览项目</div>
+  </flow-chart>
+  <div class="w-title">AI使用当前主流前端框架生成项目的流程</div>
+  <flow-chart style="width: 100%; height: 100px">
+    <div name="ai-model" to="cloud-container">AI大模型</div>
+    <div name="cloud-container" to="init">创建云端容器</div>
+    <div name="init" to="deploy">安装依赖</div>
+    <div name="deploy" to="preview">部署和编译代码</div>
     <div name="preview">预览项目</div>
   </flow-chart>
 
@@ -243,7 +243,7 @@
 <center-block>
   <h2>极低使用门槛</h2>
   <p>使用基于 ofa.js 开发的组件，不需要考虑依赖和配置问题</p>
-  <o-playground style="--editor-height: 300px; width: 100%">
+  <o-playground name="Punch Demo" style="--editor-height: 300px; width: 100%">
     <code>
       <template>
         <!-- 加载开发好的 punch-logo 组件 -->
@@ -274,7 +274,7 @@
     等一系列学习，才能迈入封装组件的第一步
   </p>
   <p>现在，你只需要一个文件</p>
-  <o-playground style="--editor-height: 500px">
+  <o-playground name="My Switch" style="--editor-height: 500px">
     <code path="demo.html" preview>
       <template>
         <l-m src="./my-switch.html"></l-m>
