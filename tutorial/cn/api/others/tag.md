@@ -4,7 +4,7 @@
 
 在下面的示例中，我们演示了如何使用 `tag` 方法来获取一个元素的标签：
 
-<o-playground>
+<o-playground name="tag - 获取标签">
   <code path="demo.html">
     <template>
       <div id="logger">logger</div>

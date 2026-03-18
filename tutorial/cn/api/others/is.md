@@ -2,7 +2,7 @@
 
 `is` 方法用于检测元素是否符合表达式。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="is - 检测元素" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <ul>

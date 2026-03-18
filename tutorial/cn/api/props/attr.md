@@ -6,7 +6,7 @@
 
 你可以直接使用 `attr` 方法获取或设置元素的属性。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="attr - 直接使用" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <style>
@@ -35,7 +35,7 @@
 
 你还可以使用 `attr:aaa="bbb"` 方式，将目标元素的 **aaa** 属性设置为组件 **bbb** 的值。这种方法对于组件渲染特别有用。
 
-<o-playground style="--editor-height: 600px">
+<o-playground name="attr - 模板语法" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./attr-demo.html"></l-m>

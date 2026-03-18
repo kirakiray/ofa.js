@@ -2,7 +2,7 @@
 
 使用 `prevs` 属性，您可以轻松获取当前元素之前的所有相邻元素实例，这些元素将以数组的形式返回。
 
-<o-playground style="--editor-height: 320px">
+<o-playground name="prevs - 前置元素" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

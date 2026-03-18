@@ -4,7 +4,7 @@
 
 **请注意，不要在 o-fill 或 o-if 等模板组件内操作。**
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="after - 后面添加" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

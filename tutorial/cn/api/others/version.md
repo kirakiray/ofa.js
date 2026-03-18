@@ -4,7 +4,7 @@
 
 > **要求 ofa.js 版本 ≥ 4.3.40**
 
-<o-playground>
+<o-playground name="version - 获取版本">
   <code path="demo.html">
     <template>
       <div id="logger"></div>

@@ -2,7 +2,7 @@
 
 `html` 方法用于获取或设置目标元素内部的 HTML 代码。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="html - 直接使用" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -30,7 +30,7 @@
 
 你还可以使用 `:html` 属性来向目标元素设置对应的 HTML 值。这在组件的渲染中特别有用。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="html - 模板语法" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./html-demo.html"></l-m>

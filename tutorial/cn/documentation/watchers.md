@@ -6,7 +6,7 @@
 
 侦听器定义在组件的 `watch` 对象中，其中键名对应需要监听的数据属性名，值是当数据变化时执行的回调函数。
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="watchers - 基本用法" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -53,7 +53,7 @@
 
 `watch` 中的函数会在组件初始化完成后立即被调用，用于建立数据监听。可通过判断 `watchers` 是否有长度来区分是否为首次调用。
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="watchers - 回调参数" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -110,7 +110,7 @@
 
 对于对象或数组类型的嵌套数据，watch 内会自动进行深度监听。
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="watchers - 深度侦听" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -192,7 +192,7 @@
 
 你可以同时监听多个数据的变化，并在回调函数中根据多个数据的变化执行相应的逻辑。
 
-<o-playground style="--editor-height: 600px">
+<o-playground name="watchers - 多数据源" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -236,7 +236,7 @@
 
 ### 1. 表单验证
 
-<o-playground style="--editor-height: 800px">
+<o-playground name="watchers - 表单验证" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -294,7 +294,7 @@
 
 ### 2. 设置主题
 
-<o-playground style="--editor-height: 800px">
+<o-playground name="watchers - 设置主题" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -352,4 +352,3 @@
 ## 注意事项
 - **避免修改监听的数据**：在侦听器回调中修改被监听的数据可能导致无限循环。如需修改，请确保有适当的条件判断。
 - **可改用计算属性**：如需根据多个数据的变化计算新值，建议使用[计算属性](./computed-properties.md)而非侦听器。
-

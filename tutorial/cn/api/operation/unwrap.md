@@ -2,7 +2,7 @@
 
 `unwrap` 方法用于移除目标元素的外部包裹层元素。
 
-<o-playground style="--editor-height: 440px">
+<o-playground name="unwrap - 移除包裹" style="--editor-height: 440px">
   <code path="demo.html">
     <template>
       <style> div{border: #aaa solid 1px; margin:8px; padding:8px;} </style>

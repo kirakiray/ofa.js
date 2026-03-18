@@ -4,7 +4,7 @@
 
 下面是一个示例，演示了如何使用 `classList`：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="classList - 使用示例" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <style>

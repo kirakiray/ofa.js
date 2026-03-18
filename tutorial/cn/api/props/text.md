@@ -6,7 +6,7 @@
 
 你可以直接获取或设置元素的文本内容。
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="text - 直接使用" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <div id="target1">target 1</div>
@@ -27,7 +27,7 @@
 
 你还可以使用 `:text` 属性来向目标元素设置对应的文本值。这在组件的渲染中特别有用。
 
-<o-playground style="--editor-height: 450px">
+<o-playground name="text - 模板语法" style="--editor-height: 450px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./text-demo.html"></l-m>

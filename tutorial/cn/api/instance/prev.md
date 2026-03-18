@@ -2,7 +2,7 @@
 
 使用 `prev` 属性，你可以获取元素的前一个相邻元素实例。
 
-<o-playground style="--editor-height: 320px">
+<o-playground name="prev - 前一个元素" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

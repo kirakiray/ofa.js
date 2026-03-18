@@ -6,7 +6,7 @@
 
 你可以直接使用 `css` 方法来获取或设置元素的样式。
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="css - 直接使用" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <div id="target">origin text</div>
@@ -28,7 +28,7 @@
 
 通过获取的 `css` 对象，你可以直接设置在元素上的 style 值。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="css - 全量设置" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <div id="target" style="color:red">origin text</div>
@@ -55,7 +55,7 @@
 
 你还可以通过模板语法来设置目标元素的样式。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="css - 模板语法" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./css-demo.html"></l-m>

@@ -4,7 +4,7 @@
 
 下面是一个示例，演示如何使用 `one` 方法为按钮元素注册点击事件处理程序：
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="one - click 一次性事件" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>
@@ -27,7 +27,7 @@
 
 你还可以使用模板语法来为目标元素绑定一次性事件处理程序。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="one - 模板语法" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./one-demo.html"></l-m>

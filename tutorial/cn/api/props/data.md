@@ -2,7 +2,7 @@
 
 获取元素的 `dataset`，使用 `data` 属性和原生 [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) 保持一致。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="data - 使用示例" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <style>

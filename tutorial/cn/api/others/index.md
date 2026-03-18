@@ -4,7 +4,7 @@
 
 在下面的示例中，我们演示了如何使用 `index` 属性来获取一个元素在其父元素下的位置：
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="index - 获取位置" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

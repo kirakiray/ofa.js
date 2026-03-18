@@ -4,7 +4,7 @@
 
 下面是一个示例，演示如何使用 `off` 方法取消事件监听：
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="off - 移除事件监听" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>

@@ -4,7 +4,7 @@
 
 在页面上，普通元素的根节点都是 `document` 实例。
 
-<o-playground style="--editor-height: 320px">
+<o-playground name="root - 根节点" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>
@@ -25,7 +25,7 @@
 由于组件内元素与外部环境是隔离的，影子节点内的元素的 `root` 属性就是影子根节点。
 
 
-<o-playground style="--editor-height: 600px">
+<o-playground name="root - 影子节点" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./test-root.html"></l-m>

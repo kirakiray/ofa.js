@@ -2,7 +2,7 @@
 
 使用 `next` 属性，你可以获取元素的后一个相邻元素实例。
 
-<o-playground style="--editor-height: 320px">
+<o-playground name="next - 后一个元素" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

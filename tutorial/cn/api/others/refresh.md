@@ -4,7 +4,7 @@
 
 适用于需要手动刷新 [非响应式数据](../../documentation/property-response.md) 的场景。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="refresh - 刷新视图" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./refresh-demo.html"></l-m>

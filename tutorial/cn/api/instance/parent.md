@@ -2,7 +2,7 @@
 
 使用 `parent` 属性，您可以获得实例的父元素实例。
 
-<o-playground style="--editor-height: 320px">
+<o-playground name="parent - 父元素" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

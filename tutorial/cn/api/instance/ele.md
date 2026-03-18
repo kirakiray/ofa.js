@@ -2,7 +2,7 @@
 
 通过 `ele` 属性，你可以获取实例的实际 [Element 元素](https://developer.mozilla.org/zh-CN/docs/Web/API/Element)，从而使用原生的属性或方法。
 
-<o-playground style="--editor-height: 320px">
+<o-playground name="ele - 获取元素" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

@@ -4,7 +4,7 @@
 
 下面是一个示例，演示如何使用 `on` 方法为按钮元素注册点击事件处理程序：
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="on - click 事件" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>
@@ -27,7 +27,7 @@
 
 你还可以使用模板语法来为目标元素绑定方法。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="on - 模板语法" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./on-demo.html"></l-m>
@@ -61,7 +61,7 @@
 
 在注册事件后，触发的函数会被带上 event，和原生保持一致：
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="on - event 参数" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>

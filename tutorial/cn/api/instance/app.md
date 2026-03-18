@@ -5,7 +5,7 @@
 以下是一个示例，演示了如何在 `o-app` 内的元素中访问 `app` 属性：
 
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="app - 获取应用实例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>

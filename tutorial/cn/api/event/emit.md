@@ -4,7 +4,7 @@
 
 下面是一个示例，演示如何使用 `emit` 方法触发自定义事件并利用冒泡机制传递事件到外部元素：
 
-<o-playground style="--editor-height: 560px">
+<o-playground name="emit - 触发事件" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -40,7 +40,7 @@
 
 通过带上 `data` 参数，你可以传递自定义数据给事件处理程序：
 
-<o-playground style="--editor-height: 560px">
+<o-playground name="emit - 自定义数据" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -73,7 +73,7 @@
 
 如果你不希望事件冒泡，你可以在触发事件时带上 `bubbles: false` 参数：
 
-<o-playground style="--editor-height: 560px">
+<o-playground name="emit - 不冒泡" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -106,7 +106,7 @@
 
 默认情况下，事件不会穿透自定义组件的影子 DOM。但你可以通过设置 `composed: true` 让自定义事件穿透根节点，触发根节点之外的元素。
 
-<o-playground style="--editor-height: 560px">
+<o-playground name="emit - 穿透根节点" style="--editor-height: 560px">
   <code path="demo.html" preview>
     <template>
       <div id="outer-logger"></div>

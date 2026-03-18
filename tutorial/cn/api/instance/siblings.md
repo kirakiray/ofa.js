@@ -2,7 +2,7 @@
 
 使用 `siblings` 属性，您可以轻松获取当前元素的所有相邻元素实例，这些元素将以数组的形式返回。
 
-<o-playground style="--editor-height: 360px">
+<o-playground name="siblings - 相邻元素" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <ul>

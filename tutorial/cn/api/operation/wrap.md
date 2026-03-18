@@ -2,7 +2,7 @@
 
 `wrap` 方法用于在目标元素的外部包裹一层元素。在执行 `wrap` 操作之前，会自动执行 [$ 方法](../instance/dollar.md) 的初始化操作，因此可以直接填写具体的元素字符串或对象。
 
-<o-playground style="--editor-height: 440px">
+<o-playground name="wrap - 包裹元素" style="--editor-height: 440px">
   <code path="demo.html">
     <template>
       <style> div{border: #aaa solid 1px; margin:8px; padding:8px;} </style>

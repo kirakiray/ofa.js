@@ -2,7 +2,7 @@
 
 获取子元素实例非常简单，你只需要将实例当作数组，通过数字索引获取它的子元素实例。
 
-<o-playground style="--editor-height: 380px">
+<o-playground name="children - 子元素" style="--editor-height: 380px">
   <code path="demo.html">
     <template>
       <ul>

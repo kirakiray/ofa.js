@@ -10,7 +10,7 @@
 
 从末尾添加子元素。
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="array-like - push" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
@@ -31,7 +31,7 @@
 
 在数组的开头添加子元素。
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="array-like - unshift" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
@@ -52,7 +52,7 @@
 
 从末尾删除子元素。
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="array-like - pop" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
@@ -73,7 +73,7 @@
 
 在数组的开头删除子元素。
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="array-like - shift" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
@@ -94,7 +94,7 @@
 
 可以删除或替换现有子元素，也可以添加新子元素。其使用方式与数组的 `splice` 方法相似。
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="array-like - splice" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

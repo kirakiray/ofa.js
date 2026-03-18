@@ -6,7 +6,7 @@
 
 下面是一个示例，演示了如何使用 `style`：
 
-<o-playground style="--editor-height: 300px">
+<o-playground name="style - 直接使用" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <div id="target">origin text</div>
@@ -30,7 +30,7 @@
 
 你还可以通过模板语法来设置目标元素的样式。
 
-<o-playground style="--editor-height: 400px">
+<o-playground name="style - 模板语法" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./style-demo.html"></l-m>
