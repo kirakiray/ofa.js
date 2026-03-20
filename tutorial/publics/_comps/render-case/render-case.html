@@ -55,7 +55,7 @@
   </div>
   <div style="margin-top: 32px; min-height: 400px">
     <o-if :value="active === 0">
-      <o-playground style="--editor-height: 400px">
+      <o-playground name="Text Rendering" style="--editor-height: 400px">
         <code path="render-text.html">
           <template page>
             <h1>{{title}}</h1>
@@ -74,7 +74,7 @@
       </o-playground>
     </o-if>
     <o-else-if :value="active === 1">
-      <o-playground style="--editor-height: 400px">
+      <o-playground name="Property Binding" style="--editor-height: 400px">
         <code>
           <template page>
             <h1 :text="title"></h1>
@@ -92,7 +92,7 @@
       </o-playground>
     </o-else-if>
     <o-else-if :value="active === 2">
-      <o-playground style="--editor-height: 400px">
+      <o-playground name="Two-way Binding" style="--editor-height: 400px">
         <code>
           <template page>
             <p>Your input: {{message}}</p>
@@ -113,7 +113,7 @@
       </o-playground>
     </o-else-if>
     <o-else-if :value="active === 3">
-      <o-playground style="--editor-height: 400px">
+      <o-playground name="Counter" style="--editor-height: 400px">
         <code>
           <template page>
             <h2>Counter: {{count}}</h2>
@@ -132,7 +132,7 @@
       </o-playground>
     </o-else-if>
     <o-else-if :value="active === 4">
-      <o-playground style="--editor-height: 400px">
+      <o-playground name="Conditional Render" style="--editor-height: 400px">
         <code>
           <template page>
             <p>{{status}}</p>
@@ -156,7 +156,7 @@
       </o-playground>
     </o-else-if>
     <o-else-if :value="active === 5">
-      <o-playground style="--editor-height: 400px">
+      <o-playground name="List Render" style="--editor-height: 400px">
         <code>
           <template page>
             <h2>Todo List</h2>
