@@ -17,7 +17,7 @@
 
 直接渲染是最简单的使用方式，将模板内容直接写在 `o-fill` 标签内部。当数组变化时，`o-fill` 会自动为每项数据创建对应的元素。
 
-<o-playground style="--editor-height: 600px">
+<o-playground name="o-fill - 直接渲染" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -77,7 +77,7 @@
 
 对于更复杂的列表项结构，可以使用命名模板的方式。将模板定义在 `template` 标签中，然后在 `o-fill` 中通过 `name` 属性引用。
 
-<o-playground style="--editor-height: 600px">
+<o-playground name="o-fill - 模板渲染" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -134,7 +134,7 @@
 
 `o-fill` 支持嵌套使用，可以处理复杂的层次数据结构，如树形菜单、分类列表等。
 
-<o-playground style="--editor-height: 800px">
+<o-playground name="o-fill - 嵌套列表渲染" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
