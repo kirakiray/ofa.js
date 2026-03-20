@@ -4,7 +4,7 @@
 
 ## 默认插槽
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="默认插槽示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -41,7 +41,7 @@
 
 当父组件没有提供插槽内容时，`<slot></slot>` 内部的元素将作为默认内容显示。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="插槽默认内容示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -83,7 +83,7 @@
 
 当组件需要多个插槽位置时，可以使用命名插槽来区分不同的插槽。通过 `<slot name="xxx">` 定义具名插槽，在使用时通过 `slot="xxx"` 属性指定内容放入哪个插槽。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="命名插槽示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -125,7 +125,7 @@
 
 插槽内容可以跨越多层组件进行传递。当父组件向子组件传递插槽内容后，子组件可以继续将这个插槽内容传递给自己的子组件，实现插槽的多层透传。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="多层级插槽传递示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>

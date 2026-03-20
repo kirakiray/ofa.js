@@ -73,7 +73,7 @@
 
 以下是在线编辑器中的实时示例，您可以直接修改代码并查看效果：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="在线演示" style="--editor-height: 500px">
   <code>
     <template page>
       <style>

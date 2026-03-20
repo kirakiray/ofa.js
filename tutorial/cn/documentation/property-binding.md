@@ -6,7 +6,7 @@ ofa.js 支持将数据绑定到元素实例化后对象的属性上，如 input 
 
 单向属性绑定使用 `:toKey="fromKey"` 语法，将组件数据“单向”同步到 DOM 元素的属性。组件数据变动时，元素属性即时更新；但元素自身的变动（如用户输入）不会反向写回组件，保持数据流的单一与可控。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="单向属性绑定" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -40,7 +40,7 @@ ofa.js 支持将数据绑定到元素实例化后对象的属性上，如 input 
 
 双向属性绑定采用 `sync:xxx` 语法，实现了组件数据与DOM元素之间的双向同步。当组件数据变化时，DOM 元素的属性会更新；当 DOM 元素的属性发生变化时（如用户输入），也会同步更新组件数据。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="双向属性绑定" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -79,7 +79,7 @@ ofa.js 支持将数据绑定到元素实例化后对象的属性上，如 input 
 
 ### 常见的双向绑定场景
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="表单双向绑定示例" style="--editor-height: 700px">
   <code>
     <template page>
       <style>

@@ -44,7 +44,7 @@
 
 ## 示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="单页面应用示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/libs/router/dist/router.min.mjs"></l-m>

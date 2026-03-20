@@ -10,7 +10,7 @@
 
 ### 基础类绑定
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="基础类绑定" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -43,7 +43,7 @@
 
 你还可以同时绑定多个类，使元素根据不同的条件拥有不同的外观状态。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="多个类绑定" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -99,7 +99,7 @@
 
 使用 `:style.propertyName` 语法来绑定特定的样式属性。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="单一样式属性绑定" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -129,7 +129,7 @@
 
 你也可以一次性绑定多个样式属性：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="多样式属性绑定" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -171,7 +171,7 @@
 
 ### 基础属性绑定
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="基础属性绑定" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -213,7 +213,7 @@
 
 对于布尔类型的属性（如 `disabled`, `hidden`），ofa.js 会根据绑定值的真假性来决定是否添加该属性。
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="布尔属性处理" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -260,7 +260,7 @@
 
 可以在样式中使用 `data(xxx)` 来绑定组件数据。这非常适合需要根据组件数据动态改变样式的场景。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="data in style" style="--editor-height: 500px">
   <code>
     <template page>
       <style>

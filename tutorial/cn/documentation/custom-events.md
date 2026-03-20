@@ -37,7 +37,7 @@ this.emit('data-changed', {
 
 ### emit 使用示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="emit 使用示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -114,7 +114,7 @@ this.emit('data-changed', {
 
 ### 冒泡示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="自定义事件示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -209,7 +209,7 @@ this.emit('data-changed', {
 
 ### 穿透示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="自定义事件带数据示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>

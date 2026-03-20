@@ -27,7 +27,7 @@ ofa.js 内置包含两种非显式组件：
 </div>
 ```
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="非显式组件" style="--editor-height: 500px">
   <code>
     <template page>
         <style>

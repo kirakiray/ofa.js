@@ -64,7 +64,7 @@ export default {
 
 ## 基础示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="基础示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="userInfo" user-id="9527">
@@ -169,7 +169,7 @@ export default {
 
 ## root-provider 示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="root-provider 示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN"></o-root-provider>
@@ -272,7 +272,7 @@ export default {
 
 ### 优先级示例演示
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="优先级示例演示" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-root-provider name="test" custom-value="root"></o-root-provider>
@@ -343,7 +343,7 @@ proto:{
 
 ## getProvider 示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="getProvider 示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="userInfo" custom-name="张三" custom-age="25">
@@ -431,7 +431,7 @@ $("#myProvider").dispatch("custom-event", {
 
 ## 事件派发示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="事件派发示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="chat" custom-messages='["欢迎来到聊天室"]' id="chatProvider">

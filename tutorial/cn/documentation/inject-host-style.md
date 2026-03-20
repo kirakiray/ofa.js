@@ -45,7 +45,7 @@
 
 下面的示例展示了如何使用 `<inject-host>` 设置插槽内嵌套元素的样式。我们创建两个组件：`user-list` 组件作为列表容器，`user-list-item` 组件作为列表项。通过 `<inject-host>`，我们可以在 `user-list` 组件中设置 `user-list-item` 及其内部元素的样式。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="注入宿主样式" style="--editor-height: 500px">
   <code path="index.html" preview>
     <template>
       <l-m src="./user-list.html"></l-m>

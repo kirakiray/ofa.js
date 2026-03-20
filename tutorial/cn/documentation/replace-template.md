@@ -4,7 +4,7 @@
 
 使用方法是：在 `<template>` 标签上设置 `is="replace-temp"`，并将其放在浏览器会自动修正的元素内部。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="replace-temp 组件" style="--editor-height: 500px">
   <code>
     <template page>
       <style>

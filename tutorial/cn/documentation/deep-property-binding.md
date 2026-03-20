@@ -8,7 +8,7 @@
 
 以下示例展示了如何通过属性绑定向自定义组件传递数据：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="领悟属性绑定" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -97,7 +97,7 @@
 
 ## 案例对比差异
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="案例对比差异" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -173,7 +173,7 @@
 
 以下示例展示了如何在父组件和子组件之间建立双向数据绑定：
 
-<o-playground style="--editor-height: 600px">
+<o-playground name="双向绑定示例" style="--editor-height: 600px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>

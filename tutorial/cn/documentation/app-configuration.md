@@ -23,7 +23,7 @@ export const proto = {
 };
 ```
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="应用配置示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-app src="./app-config.js"></o-app>

@@ -61,7 +61,7 @@
 
 下面是一个完整的嵌套路由示例，包含根布局、父页面和子页面：
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="嵌套页面示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
@@ -293,7 +293,7 @@
 ## 多级嵌套示例
 
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="嵌套路由完整示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>

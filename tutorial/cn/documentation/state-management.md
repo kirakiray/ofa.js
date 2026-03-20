@@ -14,7 +14,7 @@
 
 ### 基本用法
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="状态管理示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>
@@ -245,7 +245,7 @@ const cartStore = $.stanz({ total: 0 });
 
 ## 模块内状态管理
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="模块内状态管理示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>

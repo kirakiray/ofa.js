@@ -6,7 +6,7 @@
 
 `o-if` 组件用于根据表达式的真假值决定是否渲染其内容。当绑定的 `value` 属性为真值时，组件内的内容会被渲染；否则内容不会出现在 DOM 中。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="o-if 工作原理示例" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -46,7 +46,7 @@
 - `o-else-if`：可选的中间条件组件，可以有多个
 - `o-else`：可选的默认条件组件，放在最后
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="多分支条件渲染示例" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -84,7 +84,7 @@
 
 ### 用户权限控制
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="用户权限控制示例" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -153,7 +153,7 @@
 
 ### 表单验证状态显示
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="表单验证状态显示示例" style="--editor-height: 500px">
   <code>
     <template page>
       <style>

@@ -8,7 +8,7 @@
 
 在需要使用组件的位置，通过 `l-m` 标签异步加载组件模块，系统会自动完成注册；随后即可像普通 HTML 标签一样直接使用该组件。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="组件基本示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -57,7 +57,7 @@
 
 在组件模块和页面模块中，都会自动注入 `load` 函数，供开发者同步加载所需资源。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="同步引用组件示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>

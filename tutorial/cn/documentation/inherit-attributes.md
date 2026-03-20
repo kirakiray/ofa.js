@@ -8,7 +8,7 @@
 
 在使用组件之前，需要先在组件的 `attrs` 对象中声明需要接收的属性。属性可以设置默认值。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="基本用法示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -52,7 +52,7 @@
 
 3. **必须定义**：如果组件未在 `attrs` 对象中定义对应属性，则无法接收该 attribute。设置的值为默认值，如果不想要默认值则设置为 `null`。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="重要规则示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -90,7 +90,7 @@
 
 在组件的模板中，可以使用 `attr:toKey="fromKey"` 语法，将当前组件的 `fromKey` 数据传递到子组件的 `toKey` 属性上。
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="属性传递示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -151,7 +151,7 @@
 
 如果组件需要依赖其他组件，需要在组件中引入其他组件的模块。
 
-<o-playground style="--editor-height: 700px">
+<o-playground name="多层级传递示例" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>

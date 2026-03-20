@@ -35,7 +35,7 @@
 
 ## 基础示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="基础示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -143,7 +143,7 @@
 
 ## 多条件匹配示例
 
-<o-playground style="--editor-height: 500px">
+<o-playground name="属性匹配示例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="./page1.html"></o-page>
