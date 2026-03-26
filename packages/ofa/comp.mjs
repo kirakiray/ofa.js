@@ -33,7 +33,7 @@ lm.use(["html", "htm"], async (ctx, next) => {
         {
           url: ctx.url,
         },
-        err
+        err,
       );
     }
     ctx.resultContent = content;
@@ -81,7 +81,7 @@ lm.use(["js", "mjs"], async (ctx, next) => {
   if (cacheUrl) {
     if (path !== cacheUrl) {
       throw getErr("comp_registered", {
-        name: tagName,
+        tag: tagName,
       });
     }
 

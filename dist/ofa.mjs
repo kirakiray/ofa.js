@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.19 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
+//! ofa.js - v4.6.20 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -5633,7 +5633,7 @@ lm$1.use(["html", "htm"], async (ctx, next) => {
         {
           url: ctx.url,
         },
-        err
+        err,
       );
     }
     ctx.resultContent = content;
@@ -5681,7 +5681,7 @@ lm$1.use(["js", "mjs"], async (ctx, next) => {
   if (cacheUrl) {
     if (path !== cacheUrl) {
       throw getErr("comp_registered", {
-        name: tagName,
+        tag: tagName,
       });
     }
 
@@ -7229,7 +7229,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.19";
+const version = "ofa.js@4.6.20";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;
