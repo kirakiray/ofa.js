@@ -1,0 +1,221 @@
+<l-m src="./_comps/api-container.html"></l-m>
+<style>
+  article a {
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    align-items: center !important;
+  }
+</style>
+<article><h1>API Documentation</h1><p>
+  ofa.js not only supports template syntax but also provides a rich API for direct DOM manipulation. Just like <a href="https://jquery.com/">jQuery</a>, you can replace verbose native JavaScript with concise ofa.js syntax to handle DOM operations effortlessly.
+</p><p>
+    In the lifecycle functions and custom methods of a component or page module, you can call the APIs provided by ofa.js at any time to manipulate DOM elements flexibly and efficiently.
+</p><api-container>
+    <api-list>
+      <h3>Instance Related</h3>
+      <api-item>
+        <a href="./instance/dollar.md">$(selector)</a>
+        <p>The core function in ofa.js, used to obtain and manipulate DOM element instances.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/all.md">all</a>
+        <p>Get all child element instances of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/shadow.md">shadow</a>
+        <p>Get the shadow root of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/prev.md">prev</a>
+        <p>Get the previous sibling element of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/prevs.md">prevs</a>
+        <p>Get all sibling elements before the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/next.md">next</a>
+        <p>Get the next sibling element of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/nexts.md">nexts</a>
+        <p>Get all sibling elements after the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/siblings.md">siblings</a>
+        <p>Get all sibling elements of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/parent.md">parent</a>
+        <p>Get the parent element of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/parents.md">parents</a>
+        <p>Get all ancestor elements of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/clone.md">clone</a>
+        <p>Clone the current element and its child elements.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/ele.md">ele</a>
+        <p>Get the child element instance of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/root.md">root</a>
+        <p>Get the root instance to which the current element belongs.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/children.md">Children</a>
+        <p>Get all child elements of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/host.md">host</a>
+        <p>Get the web component host element to which the current element belongs.</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/app.md">app</a>
+        <p>Get the o-app component instance to which the current element belongs.</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Node Operations</h3>
+      <api-item>
+        <a href="./operation/array-like.md">push</a>
+        <p>Add a child element to the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=11">pop</a>
+        <p>Remove the last child element of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=14">shift</a>
+        <p>Remove the first child element of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=8">unshift</a>
+        <p>Add the first child element to the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=17">splice</a>
+        <p>Add or remove child elements of the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/before.md">before</a>
+        <p>Add a child element before the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/after.md">after</a>
+        <p>Add a child element after the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/remove.md">remove</a>
+        <p>Remove the current element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/wrap.md">wrap</a>
+        <p>Wrap the current element inside a specified element.</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/unwrap.md">unwrap</a>
+        <p>Remove the parent element wrapping the current element.</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Attribute Operations</h3>
+      <api-item>
+        <a href="./props/text.md">text</a>
+        <p>Get or set the text content of an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./props/html.md">html</a>
+        <p>Get or set the HTML content of an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./props/attr.md">attr</a>
+        <p>Get or set the attributes of an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./props/css.md">css</a>
+        <p>Get or set the styles of an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./props/style.md">style</a>
+        <p>Get the style object of an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./props/class-list.md">classList</a>
+        <p>Get the class list of an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./props/data.md">data</a>
+        <p>Get or set the data attributes of an element.</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Event Related</h3>
+      <api-item>
+        <a href="./event/on.md">on</a>
+        <p>Add an event listener to an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./event/one.md">one</a>
+        <p>Add a one-time event listener to an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./event/emit.md">emit</a>
+        <p>Trigger a custom event on an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./event/off.md">off</a>
+        <p>Remove an event listener from an element.</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Others</h3>
+      <api-item>
+        <a href="./others/app.md">o-app Component</a>
+        <p>The root component of an ofa.js application, used to manage application state and routing.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/page.md">o-page Component</a>
+        <p>The page component of ofa.js, used to create single-page application pages.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/form-data.md">formData</a>
+        <p>Get form data.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/tag.md">tag</a>
+        <p>Get the tag name of an element.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/index.md">index</a>
+        <p>Get the index of an element within its parent element.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/is.md">is</a>
+        <p>Check if an element matches a specified selector.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/refresh.md">refresh</a>
+        <p>Refresh the current component or page.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/path.md">PATH</a>
+        <p>Get the path of the current page.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/extend.md">extend</a>
+        <p>Extend the functionality of ofa.js.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/version.md">version</a>
+        <p>Get the version number of ofa.js.</p>
+      </api-item>
+      <api-item>
+        <a href="./others/stanz.md">Instance Data Feature</a>
+        <p>Stanz is the reactive data feature of ofa.js, supporting automatic data updates.</p>
+      </api-item>
+    </api-list>
+  </api-container></article>

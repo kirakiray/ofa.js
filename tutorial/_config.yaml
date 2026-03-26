@@ -1,7 +1,9 @@
 name: ofa.js Tutorial
-writingLang: cn # 写文章时主要使用的语言
-primaryLang: cn # 网站默认使用的语言
+writingLang: cn
+primaryLang: en
 languages:
   - cn
+  - en
+  - ja
 logoImg: ./logo.svg
 logoName: ofa.js
