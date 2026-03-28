@@ -17,7 +17,9 @@ With the `$` method, you can retrieve the first element instance on the page tha
       </script>
     </template>
   </code>
-</o-playground>In the example above, we used the `$` symbol to select the element instance with `id` "target1" and modified its text content by setting the `text` property.
+</o-playground>
+
+In the example above, we used the `$` symbol to select the element instance with `id` "target1" and modified its text content by setting the `text` property.
 
 ## Find Child Element Instance
 
@@ -36,7 +38,9 @@ Instances also have the `$` method, which can be used to retrieve the first chil
       </script>
     </template>
   </code>
-</o-playground>Do not insert the obtained element instance directly elsewhere, as this will affect the original element. If you need to create a copy, use the [clone](./clone.md) method.
+</o-playground>
+
+Do not insert the obtained element instance directly elsewhere, as this will affect the original element. If you need to create a copy, use the [clone](./clone.md) method.
 
 <o-playground name="$ - Instance Features" style="--editor-height: 360px">
   <code path="demo.html">
@@ -56,7 +60,9 @@ Instances also have the `$` method, which can be used to retrieve the first chil
       </script>
     </template>
   </code>
-</o-playground>## Get child elements within the shadow node
+</o-playground>
+
+## Get child elements within the shadow node
 
 After obtaining the instance through the [shadow](./shadow.md) attribute, you can use the `$` method to get the desired element:
 
@@ -100,7 +106,9 @@ You can create a new element instance from a string using the `$` function, as s
       </script>
     </template>
   </code>
-</o-playground>In this example, we use the `$` function to create a new element instance with specified styles and text content, and add it inside an existing element instance with the `id` "target1".
+</o-playground>
+
+In this example, we use the `$` function to create a new element instance with specified styles and text content, and add it inside an existing element instance with the `id` "target1".
 
 ### Generate via object
 
@@ -124,4 +132,6 @@ You can also use the `$` function to generate new element instances in an object
       </script>
     </template>
   </code>
-</o-playground>In this example, we use the `$` function to define a new element instance in an object-oriented way, including the tag type, text content, and style attributes, and add it inside an existing element instance with an `id` of "target1".
+</o-playground>
+
+In this example, we use the `$` function to define a new element instance in an object-oriented way, including the tag type, text content, and style attributes, and add it inside an existing element instance with an `id` of "target1".

@@ -1,0 +1,74 @@
+- name: Introducción
+  url: ./introduction.md
+- name: Comenzar a usar
+  content:
+    - name: Referencia de scripts
+      url: ./script-reference.md
+    - name: Crear la primera aplicación
+      url: ./create-first-app.md
+- name: Inicio rápido
+  url: ./quick-start.md
+- name: Sintaxis de plantillas
+  content:
+    - name: Renderizado de contenido
+      url: ./content-rendering.md
+    - name: Enlace de eventos
+      url: ./event-binding.md
+    - name: Respuesta de propiedades
+      url: ./property-response.md
+    - name: Enlace de propiedades
+      url: ./property-binding.md
+    - name: Enlace de clases y estilos
+      url: ./class-style-binding.md
+    - name: Renderizado condicional
+      url: ./conditional-rendering.md
+    - name: Renderizado de listas
+      url: ./list-rendering.md
+    - name: Propiedades computadas
+      url: ./computed-properties.md
+    - name: Observadores
+      url: ./watchers.md
+    - name: Ciclo de vida
+      url: ./lifecycle.md
+- name: Componentes
+  content:
+    - name: Crear componente
+      url: ./create-component.md
+    - name: Pasar atributos característicos
+      url: ./inherit-attributes.md
+    - name: Slots
+      url: ./slots.md
+    - name: Comprender el enlace de propiedades profundo
+      url: ./deep-property-binding.md
+    - name: Eventos personalizados
+      url: ./custom-events.md
+- name: Aplicación y escalado
+  content:
+    - name: Micro-aplicación
+      url: ./micro-app.md
+    - name: Configuración de aplicación y funciones relacionadas
+      url: ./app-configuration.md
+    - name: Aplicación de página única
+      url: ./routes.md
+    - name: Páginas/rutas anidadas
+      url: ./nested-routes.md
+    - name: SSR
+      url: ./ssr.md
+- name: Gestión de estado
+  content:
+    - name: Qué es la gestión de estado
+      url: ./state-management.md
+    - name: Estado de contexto
+      url: ./context-state.md
+    - name: Consulta de estilos
+      url: ./match-var.md
+- name: Producción y despliegue
+  url: ./build-app.md
+- name: Otros componentes
+  content:
+    - name: Inyectar estilos del host
+      url: ./inject-host-style.md
+    - name: Componente no explícito
+      url: ./non-explicit-component.md
+    - name: Componente replace-temp
+      url: ./replace-template.md

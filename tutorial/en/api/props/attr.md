@@ -29,7 +29,9 @@ You can directly use the `attr` method to get or set an element's attributes.
       </script>
     </template>
   </code>
-</o-playground>## Template Syntax Usage
+</o-playground>
+
+## Template Syntax Usage
 
 You can also use `attr:aaa="bbb"` to set the target element's **aaa** attribute to the value of component **bbb**. This approach is particularly useful for component rendering.
 
@@ -72,3 +74,4 @@ You can also use `attr:aaa="bbb"` to set the target element's **aaa** attribute 
     </template>
   </code>
 </o-playground>
+

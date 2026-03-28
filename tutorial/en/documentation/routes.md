@@ -144,7 +144,9 @@ This is particularly useful in the following scenarios:- `o-app` needs to fill t
       </script>
     </template>
   </code>
-</o-playground>## How It Works
+</o-playground>
+
+## How It Works
 
 Single-page application implemented using browser-based Hash mode:
 

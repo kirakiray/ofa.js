@@ -64,7 +64,9 @@ For example:
         </script>
     </template>
   </code>
-</o-playground>## x-if Conditional Rendering Component
+</o-playground>
+
+## x-if Conditional Rendering Component
 
 `x-if` has the same functionality as [o-if](./conditional-rendering.md), used to determine whether to render content based on the truthiness of a conditional expression. The difference is that `x-if` itself will not exist as a DOM element, and its internal content will be directly rendered into the parent container.
 

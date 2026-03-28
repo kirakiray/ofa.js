@@ -1,0 +1,92 @@
+<template component>
+  <l-m src="./api-list.html"></l-m>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      column-count: auto;
+      column-width: 230px;
+      column-gap: 16px;
+    }
+
+    ::slotted(api-list) {
+      break-inside: avoid;
+      margin-bottom: 16px;
+    }
+
+    .tool {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 8px 0;
+    }
+  </style>
+  <inject-host>
+    <style>
+      api-container[show-desc="1"] api-item p {
+        opacity: 1;
+        line-height: 20px;
+      }
+    </style>
+  </inject-host>
+  <div class="tool">
+    <p-input
+      sync:value="searchText"
+      size="small"
+      style="width: 200px"
+      placeholder="検索"
+    >
+      <n-icon icon="material-symbols:search-rounded" slot="prefix"></n-icon>
+    </p-input>
+    <p-button
+      on:click="switchDesc"
+      icon
+      attr:variant="showDesc == 1 ? 'contained' : 'text'"
+      style="margin-left: auto"
+    >
+      <n-icon icon="wordpress:term-description" style="font-size: 28px;"></n-icon>
+    </p-button>
+  </div>
+  <div class="container">
+    <slot></slot>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "api-container",
+        attrs: {
+          showDesc: sessionStorage.getItem("__showDesc"),
+          searchText: "",
+        },
+        watch: {
+          searchText(searchText) {
+            const text = searchText.trim();
+            if (!text) {
+              this.all("api-item").forEach((item) => {
+                item.style.display = "";
+              });
+              return;
+            }
+
+            this.all("api-item").forEach((item) => {
+              if (item.text.includes(text)) {
+                item.style.display = "";
+              } else {
+                item.style.display = "none";
+              }
+            });
+          },
+        },
+        proto: {
+          switchDesc() {
+            this.showDesc = this.showDesc == 1 ? 0 : 1;
+            sessionStorage.setItem("__showDesc", this.showDesc);
+          },
+        },
+      };
+    };
+  </script>
+</template>

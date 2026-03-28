@@ -19,7 +19,9 @@ Using the `all` method, you can get all elements on the page that match the CSS 
       </script>
     </template>
   </code>
-</o-playground>## Get Child Elements
+</o-playground>
+
+## Get Child Elements
 
 Instances also have an `all` method, which can be used to select and retrieve child elements via the instance's `all` method.
 
@@ -44,3 +46,4 @@ Instances also have an `all` method, which can be used to select and retrieve ch
     </template>
   </code>
 </o-playground>
+

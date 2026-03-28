@@ -118,7 +118,9 @@ The example below shows how to use lifecycle hooks in a component:
       </script>
     </template>
   </code>
-</o-playground>In this example, you can observe the execution order and timing of different lifecycle hooks. When you click the "Remove Component" button, you will see the `detached` hook being triggered.
+</o-playground>
+
+In this example, you can observe the execution order and timing of different lifecycle hooks. When you click the "Remove Component" button, you will see the `detached` hook being triggered.
 
 ## Real-World Application Scenarios
 

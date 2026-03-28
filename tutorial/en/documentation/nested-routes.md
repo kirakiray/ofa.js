@@ -211,7 +211,9 @@ Below is a complete nested-routing example that includes a root layout, a parent
       </script>
     </template>
   </code>
-</o-playground>## Parent Page Route Listener
+</o-playground>
+
+## Parent Page Route Listener
 
 The parent page can listen for route changes via the `routerChange` lifecycle hook, which is useful when you need to update navigation state based on the current route.
 
@@ -465,3 +467,4 @@ A parent page can also have its own parent page, forming a multi-level nested st
     </template>
   </code>
 </o-playground>
+

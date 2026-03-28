@@ -18,7 +18,9 @@ On the page, the root node of ordinary elements is always a `document` instance.
       </script>
     </template>
   </code>
-</o-playground>## Elements within the shadow node
+</o-playground>
+
+## Elements within the shadow node
 
 Since elements inside a component are isolated from the external environment, the `root` property of elements within the shadow node is the shadow root.
 
@@ -62,3 +64,4 @@ Since elements inside a component are isolated from the external environment, th
     </template>
   </code>
 </o-playground>
+

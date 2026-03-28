@@ -99,7 +99,9 @@ export const pageAnime = {
       </script>
     </template>
   </code>
-</o-playground>## home - Homepage address
+</o-playground>
+
+## home - Homepage address
 
 Specifies the path to the home page module loaded when the app starts; both relative and absolute paths are supported.
 

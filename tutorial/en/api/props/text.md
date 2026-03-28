@@ -21,7 +21,9 @@ You can directly get or set the text content of an element.
       </script>
     </template>
   </code>
-</o-playground>## Template Syntax Usage
+</o-playground>
+
+## Template Syntax Usage
 
 You can also use the `:text` attribute to set the corresponding text value for the target element. This is particularly useful in component rendering.
 
@@ -58,3 +60,4 @@ You can also use the `:text` attribute to set the corresponding text value for t
     </template>
   </code>
 </o-playground>
+

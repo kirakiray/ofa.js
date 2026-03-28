@@ -13,4 +13,6 @@ You can get the version number of the currently imported ofa.js through the `ofa
       </script>
     </template>
   </code>
-</o-playground>This way, you can display the currently used version of ofa.js on the page.
+</o-playground>
+
+This way, you can display the currently used version of ofa.js on the page.

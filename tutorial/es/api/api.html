@@ -1,0 +1,231 @@
+<l-m src="./_comps/api-container.html"></l-m>
+<style>
+  article a {
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    align-items: center !important;
+  }
+</style>
+<article><h1>Documentación de la API</h1>
+
+<p>
+    ofa.js no solo admite sintaxis de plantilla, sino que también proporciona una rica API para manipular directamente el DOM. Al igual que
+    <a href="https://jquery.com/">jQuery</a>,
+    puedes utilizar la sintaxis concisa de ofa.js en lugar del prolijo JavaScript nativo para realizar operaciones DOM fácilmente.
+  </p>
+
+<p>
+    En las funciones del ciclo de vida de componentes o módulos de página y en los métodos personalizados, puedes invocar en cualquier momento las API proporcionadas por ofa.js para manipular elementos DOM de manera flexible y eficiente.
+  </p>
+
+<api-container>
+    <api-list>
+      <h3>Relacionado con instancias</h3>
+      <api-item>
+        <a href="./instance/dollar.md">$(selector)</a>
+        <p>Función central en ofa.js, utilizada para obtener y manipular instancias de elementos DOM</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/all.md">all</a>
+        <p>Obtiene todas las instancias de elementos secundarios del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/shadow.md">shadow</a>
+        <p>Obtiene el shadow root del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/prev.md">prev</a>
+        <p>Obtiene el elemento hermano anterior del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/prevs.md">prevs</a>
+        <p>Obtiene todos los elementos hermanos anteriores del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/next.md">next</a>
+        <p>Obtiene el siguiente elemento hermano del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/nexts.md">nexts</a>
+        <p>Obtiene todos los elementos hermanos posteriores del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/siblings.md">siblings</a>
+        <p>Obtiene todos los elementos hermanos del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/parent.md">parent</a>
+        <p>Obtiene el elemento padre del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/parents.md">parents</a>
+        <p>Obtiene todos los elementos ancestros del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/clone.md">clone</a>
+        <p>Copia el elemento actual y sus elementos secundarios</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/ele.md">ele</a>
+        <p>Obtiene la instancia de elemento secundario del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/root.md">root</a>
+        <p>Obtiene la instancia raíz a la que pertenece el elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/children.md">Elementos secundarios</a>
+        <p>Obtiene todos los elementos secundarios del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/host.md">host</a>
+        <p>Obtiene el elemento host del web component al que pertenece el elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/app.md">app</a>
+        <p>Obtiene la instancia del componente o-app al que pertenece el elemento actual</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Operaciones de nodos</h3>
+      <api-item>
+        <a href="./operation/array-like.md">push</a>
+        <p>Añade elementos secundarios al elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=11">pop</a>
+        <p>Elimina el último elemento secundario del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=14">shift</a>
+        <p>Elimina el primer elemento secundario del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=8">unshift</a>
+        <p>Añade el primer elemento secundario al elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=17">splice</a>
+        <p>Añade o elimina elementos secundarios del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/before.md">before</a>
+        <p>Añade elementos secundarios antes del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/after.md">after</a>
+        <p>Añade elementos secundarios después del elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/remove.md">remove</a>
+        <p>Elimina el elemento actual</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/wrap.md">wrap</a>
+        <p>Envuelve el elemento actual dentro de un elemento especificado</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/unwrap.md">unwrap</a>
+        <p>Elimina el elemento padre que envuelve al elemento actual</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Operaciones de atributos</h3>
+      <api-item>
+        <a href="./props/text.md">text</a>
+        <p>Obtiene o establece el contenido de texto del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./props/html.md">html</a>
+        <p>Obtiene o establece el contenido HTML del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./props/attr.md">attr</a>
+        <p>Obtiene o establece los atributos del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./props/css.md">css</a>
+        <p>Obtiene o establece los estilos del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./props/style.md">style</a>
+        <p>Obtiene el objeto style del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./props/class-list.md">classList</a>
+        <p>Obtiene la lista de clases del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./props/data.md">data</a>
+        <p>Obtiene o establece los atributos data del elemento</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Relacionado con eventos</h3>
+      <api-item>
+        <a href="./event/on.md">on</a>
+        <p>Añade un listener de eventos al elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./event/one.md">one</a>
+        <p>Añade un listener de eventos que se ejecuta solo una vez al elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./event/emit.md">emit</a>
+        <p>Dispara un evento personalizado del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./event/off.md">off</a>
+        <p>Elimina el listener de eventos del elemento</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>Otros</h3>
+      <api-item>
+        <a href="./others/app.md">Componente o-app</a>
+        <p>Componente raíz de la aplicación ofa.js, utilizado para gestionar el estado y el enrutamiento de la aplicación</p>
+      </api-item>
+      <api-item>
+        <a href="./others/page.md">Componente o-page</a>
+        <p>Componente de página de ofa.js, utilizado para crear páginas de aplicación de una sola página</p>
+      </api-item>
+      <api-item>
+        <a href="./others/form-data.md">formData</a>
+        <p>Obtiene los datos del formulario</p>
+      </api-item>
+      <api-item>
+        <a href="./others/tag.md">tag</a>
+        <p>Obtiene el nombre de la etiqueta del elemento</p>
+      </api-item>
+      <api-item>
+        <a href="./others/index.md">index</a>
+        <p>Obtiene el índice del elemento en su elemento padre</p>
+      </api-item>
+      <api-item>
+        <a href="./others/is.md">is</a>
+        <p>Determina si el elemento coincide con un selector especificado</p>
+      </api-item>
+      <api-item>
+        <a href="./others/refresh.md">refresh</a>
+        <p>Actualiza el componente o página actual</p>
+      </api-item>
+      <api-item>
+        <a href="./others/path.md">PATH</a>
+        <p>Obtiene la ruta de la página actual</p>
+      </api-item>
+      <api-item>
+        <a href="./others/extend.md">extend</a>
+        <p>Extiende la funcionalidad de ofa.js</p>
+      </api-item>
+      <api-item>
+        <a href="./others/version.md">version</a>
+        <p>Obtiene el número de versión de ofa.js</p>
+      </api-item>
+      <api-item>
+        <a href="./others/stanz.md">Características de datos de instancia</a>
+        <p>Stanz es la característica de datos reactivos de ofa.js, que soporta la actualización automática de datos</p>
+      </api-item>
+    </api-list>
+  </api-container>
+
+</article>

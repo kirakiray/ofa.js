@@ -19,7 +19,9 @@ Below is an example demonstrating how to use the `one` method to register a clic
       </script>
     </template>
   </code>
-</o-playground>In this example, we use the `one` method to add a click event handler to the button element. When the user clicks the button, the event handler triggers but will not fire again afterward because it has been unbound.
+</o-playground>
+
+In this example, we use the `one` method to add a click event handler to the button element. When the user clicks the button, the event handler triggers but will not fire again afterward because it has been unbound.
 
 ## Template Syntax Usage
 
@@ -51,4 +53,6 @@ You can also use template syntax to bind a one-time event handler to the target 
       </script>
     </template>
   </code>
-</o-playground>In this example, we bind a method named `addCount` to the button element using `one:click`. When the user clicks the button, this method will be called, but it will not trigger again afterward because it is a one-time event handler.
+</o-playground>
+
+In this example, we bind a method named `addCount` to the button element using `one:click`. When the user clicks the button, this method will be called, but it will not trigger again afterward because it is a one-time event handler.

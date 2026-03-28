@@ -37,7 +37,9 @@ ofa.js not only supports reactivity to basic property values, but also supports 
       </script>
     </template>
   </code>
-</o-playground>All data bound to an ofa.js instance object is automatically converted to reactive data. Reactive data supports only basic data types such as strings, numbers, booleans, arrays, and objects. Complex data types such as functions and class instances must be stored as **non-reactive properties**; changes to these properties will not trigger a re-render of the component.
+</o-playground>
+
+All data bound to an ofa.js instance object is automatically converted to reactive data. Reactive data supports only basic data types such as strings, numbers, booleans, arrays, and objects. Complex data types such as functions and class instances must be stored as **non-reactive properties**; changes to these properties will not trigger a re-render of the component.
 
 ## Non-reactive Data
 
@@ -71,7 +73,9 @@ Non-reactive properties are typically prefixed with an underscore `_` to disting
       </script>
     </template>
   </code>
-</o-playground>When clicking the "Green Increase" button, although the `_count2` value has actually increased, since it is a non-reactive property, it does not trigger a view update, so the display on the interface remains unchanged. When clicking the "Blue Increase" button, since `count` is a reactive property, it triggers a re-render of the entire component, and only then does the Green display content get synchronized and updated.
+</o-playground>
+
+When clicking the "Green Increase" button, although the `_count2` value has actually increased, since it is a non-reactive property, it does not trigger a view update, so the display on the interface remains unchanged. When clicking the "Blue Increase" button, since `count` is a reactive property, it triggers a re-render of the entire component, and only then does the Green display content get synchronized and updated.
 
 Non-reactive object data performs better than reactive data because it does not trigger component re-renders.
 

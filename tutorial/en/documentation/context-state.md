@@ -147,7 +147,9 @@ export default {
       </script>
     </template>
   </code>
-</o-playground>## o-root-provider Root Provider
+</o-playground>
+
+## o-root-provider Root Provider
 
 `o-root-provider` is a root-level global provider whose scope covers the entire document. Consumers can access the root provider’s data even when no parent provider exists.
 
@@ -249,7 +251,9 @@ export default {
       </script>
     </template>
   </code>
-</o-playground>### Priority Example
+</o-playground>
+
+### Priority Example
 
 ```html
 <o-root-provider name="test" custom-value="root"></o-root-provider>
@@ -315,7 +319,9 @@ export default {
       </script>
     </template>
   </code>
-</o-playground>## getProvider(name) Method
+</o-playground>
+
+## getProvider(name) Method
 
 `getProvider(name)` is an instance method that retrieves the provider element matching the given name. It walks up the DOM to find the closest ancestor provider; if none is found, it returns the root-provider.
 
@@ -381,7 +387,9 @@ proto:{
       </script>
     </template>
   </code>
-</o-playground>### Obtaining the Provider from an Element
+</o-playground>
+
+### Obtaining the Provider from an Element
 
 ```javascript
 // Get the provider from the parent of the current element
@@ -527,7 +535,9 @@ $("#myProvider").dispatch("custom-event", {
       </script>
     </template>
   </code>
-</o-playground>## Best Practices
+</o-playground>
+
+## Best Practices
 
 1. **Reasonable Naming**: Use meaningful names for providers and consumers to facilitate tracking and maintenance
 2. **Avoid Overuse**: Context state is suitable for sharing data across components; props are recommended for regular parent-child components

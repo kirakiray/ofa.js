@@ -38,7 +38,9 @@ Here is an example demonstrating how to use the `$` instance and the `watch` met
       </script>
     </template>
   </code>
-</o-playground>In this example, we first create a `$` instance named `target`, then use the `watch` method to observe its changes. Even when we modify a nested property such as `target.bbb.child.val`, the `watch` method detects the change and updates the content of the `logger` element. This demonstrates the powerful feature of the `$` instance, allowing you to effortlessly monitor object mutations.
+</o-playground>
+
+In this example, we first create a `$` instance named `target`, then use the `watch` method to observe its changes. Even when we modify a nested property such as `target.bbb.child.val`, the `watch` method detects the change and updates the content of the `logger` element. This demonstrates the powerful feature of the `$` instance, allowing you to effortlessly monitor object mutations.
 
 ## Watch Tick
 
@@ -73,7 +75,9 @@ Here is an example demonstrating how to use the `watchTick` method on a `$` inst
       </script>
     </template>
   </code>
-</o-playground>In this example, we first create a `$` instance named `target`. Then we use the `watch` and `watchTick` methods to observe changes to the object. `watch` runs immediately when data changes, whereas `watchTick` executes once per tick under a single thread, thus throttling the frequency of observation. You can choose either `watch` or `watchTick` according to your needs.
+</o-playground>
+
+In this example, we first create a `$` instance named `target`. Then we use the `watch` and `watchTick` methods to observe changes to the object. `watch` runs immediately when data changes, whereas `watchTick` executes once per tick under a single thread, thus throttling the frequency of observation. You can choose either `watch` or `watchTick` according to your needs.
 
 ## unwatch
 
@@ -107,7 +111,9 @@ Below is an example demonstrating how to use the `unwatch` method on a `$` insta
       </script>
     </template>
   </code>
-</o-playground>In this example, we first create a `$` instance object named `target`, then register two listeners using the `watch` and `watchTick` methods. Later, we revoke these two listeners by passing the previously saved listener return values `tid1` and `tid2` to the `unwatch` method. This means that the property change in the first `setTimeout` will not trigger any listener, because the listeners have been revoked.
+</o-playground>
+
+In this example, we first create a `$` instance object named `target`, then register two listeners using the `watch` and `watchTick` methods. Later, we revoke these two listeners by passing the previously saved listener return values `tid1` and `tid2` to the `unwatch` method. This means that the property change in the first `setTimeout` will not trigger any listener, because the listeners have been revoked.
 
 ## unmonitored values
 
@@ -138,7 +144,9 @@ Here's an example showing how to use underscore-prefixed property values to avoi
       </script>
     </template>
   </code>
-</o-playground>In this example, we create a `$` instance object named `target` and use the `watch` method to listen for changes in property values. Inside `setTimeout`, we attempt to modify the `_aaa` property, but this change does not trigger the listener. This is useful when you need to update a property without triggering the watch.
+</o-playground>
+
+In this example, we create a `$` instance object named `target` and use the `watch` method to listen for changes in property values. Inside `setTimeout`, we attempt to modify the `_aaa` property, but this change does not trigger the listener. This is useful when you need to update a property without triggering the watch.
 
 ## Basic Features
 

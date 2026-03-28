@@ -25,7 +25,9 @@ Add child element at the end
       </script>
     </template>
   </code>
-</o-playground>## unshift
+</o-playground>
+
+## unshift
 
 Add a child element to the beginning of the array.
 
@@ -44,7 +46,9 @@ Add a child element to the beginning of the array.
       </script>
     </template>
   </code>
-</o-playground>## pop
+</o-playground>
+
+## pop
 
 Delete child elements from the end.
 
@@ -63,7 +67,9 @@ Delete child elements from the end.
       </script>
     </template>
   </code>
-</o-playground>## shift
+</o-playground>
+
+## shift
 
 Remove sub-elements from the beginning of the array.
 
@@ -82,7 +88,9 @@ Remove sub-elements from the beginning of the array.
       </script>
     </template>
   </code>
-</o-playground>## splice
+</o-playground>
+
+## splice
 
 You can delete or replace existing child elements, or add new child elements. Its usage is similar to the `splice` method of arrays.
 
@@ -102,3 +110,4 @@ You can delete or replace existing child elements, or add new child elements. It
     </template>
   </code>
 </o-playground>
+

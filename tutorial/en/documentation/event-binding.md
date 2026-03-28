@@ -33,7 +33,9 @@ This is the recommended way to bind events, suitable for complex event handling 
       </script>
     </template>
   </code>
-</o-playground>## Run the function directly
+</o-playground>
+
+## Run the function directly
 
 For simple operations—such as incrementing a counter or toggling a state—you can write short expressions directly in the event attribute. This approach is concise and clear, ideal for handling straightforward logic.
 
@@ -59,7 +61,9 @@ For simple operations—such as incrementing a counter or toggling a state—you
       </script>
     </template>
   </code>
-</o-playground>## Supported Event Types
+</o-playground>
+
+## Supported Event Types
 
 ofa.js supports all standard DOM events, including but not limited to:
 
@@ -102,7 +106,9 @@ You can also pass parameters to the event handler:
       </script>
     </template>
   </code>
-</o-playground>## Accessing the Event Object
+</o-playground>
+
+## Accessing the Event Object
 
 In the event handler, you can access the native event object via the `event` parameter:
 
@@ -144,7 +150,9 @@ In the event handler, you can access the native event object via the `event` par
       </script>
     </template>
   </code>
-</o-playground>You can also access the native event object using the `$event` parameter in expressions, for example to get the mouse click coordinates:
+</o-playground>
+
+You can also access the native event object using the `$event` parameter in expressions, for example to get the mouse click coordinates:
 
 ```html
 <div class="container" on:click="handleClick($event)">Click anywhere to see coordinates</div>

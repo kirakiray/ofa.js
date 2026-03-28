@@ -60,7 +60,9 @@ The following example demonstrates how to pass data to a custom component throug
       </script>
     </template>
   </code>
-</o-playground>In this example:- The `val` data in the parent component is bound to the `fullName` prop of the child component `<demo-comp>`.
+</o-playground>
+
+In this example:- The `val` data in the parent component is bound to the `fullName` prop of the child component `<demo-comp>`.
 - The parent's `val` is passed to the child's `fullName` prop using the syntax `:full-name="val"`.
 - After receiving the value, the child component displays it in the template via `{{fullName}}`.
 
@@ -157,7 +159,9 @@ It is worth noting that property binding (`:`) and attribute inheritance (`attr:
       </script>
     </template>
   </code>
-</o-playground>`vone` is a property of the component instance, while `vtwo` is an HTML attribute; the attribute’s value is matched by the `[vtwo]` selector and receives the corresponding styles, whereas `vone`, being a component-instance property, is not matched by the `[vone]` selector.
+</o-playground>
+
+`vone` is a property of the component instance, while `vtwo` is an HTML attribute; the attribute’s value is matched by the `[vtwo]` selector and receives the corresponding styles, whereas `vone`, being a component-instance property, is not matched by the `[vone]` selector.
 
 ## Two-way Data Binding
 
@@ -225,7 +229,9 @@ The example below shows how to set up two-way data binding between a parent and 
       </script>
     </template>
   </code>
-</o-playground>In this example:- The parent's `val` and the child's `fullName` are two-way bound via `sync:full-name="val"`
+</o-playground>
+
+In this example:- The parent's `val` and the child's `fullName` are two-way bound via `sync:full-name="val"`
 - When text is entered in the parent's input, the child instantly reflects the new value
 - When text is entered in the child's input, the parent is immediately updated
 

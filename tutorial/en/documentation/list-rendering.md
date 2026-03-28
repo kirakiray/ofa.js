@@ -66,7 +66,9 @@ Direct rendering is the simplest way to use it: place the template content direc
       </script>
     </template>
   </code>
-</o-playground>In this example, we can see that:- `$index` represents the index of the current item (starting from 0)
+</o-playground>
+
+In this example, we can see that:- `$index` represents the index of the current item (starting from 0)
 - `$data` represents the data object of the current item
 - `$host` represents the current component instance, which can be used to call component methods or access component data
 - The list automatically updates when the array changes
@@ -126,7 +128,9 @@ For more complex list-item structures, use named templates: define the template 
       </script>
     </template>
   </code>
-</o-playground>## Nested List Rendering
+</o-playground>
+
+## Nested List Rendering
 
 `o-fill` supports nested usage and can handle complex hierarchical data structures, such as tree menus and category lists.
 
@@ -228,7 +232,9 @@ For more complex list-item structures, use named templates: define the template 
       </script>
     </template>
   </code>
-</o-playground>## Performance Optimization and Key-Value Management
+</o-playground>
+
+## Performance Optimization and Key-Value Management
 
 For lists that require frequent updates, you can specify a unique identifier through the `fill-key` attribute to improve rendering performance.
 

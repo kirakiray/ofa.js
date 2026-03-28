@@ -32,7 +32,9 @@ Text rendering is the most basic rendering method. You can use the `{{variableNa
       </script>
     </template>
   </code>
-</o-playground>## Rendering HTML Content
+</o-playground>
+
+## Rendering HTML Content
 
 By adding the `:html` directive to an element, the HTML string in the corresponding variable is parsed and safely inserted into the element, enabling effortless dynamic rich-text rendering or embedding of external HTML fragments.
 
@@ -59,3 +61,4 @@ By adding the `:html` directive to an element, the HTML string in the correspond
     </template>
   </code>
 </o-playground>
+

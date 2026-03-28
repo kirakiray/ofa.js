@@ -44,7 +44,9 @@ The get computed property is used to derive new values from reactive data. It do
       </script>
     </template>
   </code>
-</o-playground>### Practical Application Scenario Examples
+</o-playground>
+
+### Practical Application Scenario Examples
 
 Computed properties are commonly used to handle complex data transformation logic, such as filtering arrays or formatting display text.
 
@@ -94,7 +96,9 @@ Computed properties are commonly used to handle complex data transformation logi
       </script>
     </template>
   </code>
-</o-playground>## Computed Properties for Sets
+</o-playground>
+
+## Computed Properties for Sets
 
 Setter computed properties allow you to modify the underlying data state through assignment operations. It accepts a parameter and is typically used to inversely update the original data that depends on it.
 
@@ -147,7 +151,9 @@ Setter computed properties allow you to modify the underlying data state through
       </script>
     </template>
   </code>
-</o-playground>## Computed Properties vs Methods
+</o-playground>
+
+## Computed Properties vs Methods
 
 Although methods can achieve similar functionality, computed properties are cached and only re-evaluate when their dependencies change, resulting in better performance.
 
@@ -226,3 +232,4 @@ Here is a simple form validation example demonstrating the utility of computed p
     </template>
   </code>
 </o-playground>
+

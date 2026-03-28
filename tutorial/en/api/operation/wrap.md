@@ -18,7 +18,9 @@ The `wrap` method wraps the target element with another element. Before performi
       </script>
     </template>
   </code>
-</o-playground>## Notes
+</o-playground>
+
+## Notes
 
 The target element **must have a parent node**, otherwise the wrapping operation will fail.
 

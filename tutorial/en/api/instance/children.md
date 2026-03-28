@@ -20,7 +20,9 @@ Getting a child element instance is very simple: just treat the instance as an a
       </script>
     </template>
   </code>
-</o-playground>## length
+</o-playground>
+
+## length
 
 Get the number of child elements of the target element, as shown in the example above:
 

@@ -33,7 +33,9 @@
       </script>
     </template>
   </code>
-</o-playground>## Extending the $ Bottom Layer
+</o-playground>
+
+## Extending the $ Bottom Layer
 
 Similar to jQuery, you can also use fn.extend to extend the properties or methods of the underlying instance; properties or methods extended from fn will be applied to all instances.
 
@@ -64,7 +66,9 @@ Similar to jQuery, you can also use fn.extend to extend the properties or method
       </script>
     </template>
   </code>
-</o-playground>## Extended Template Syntax
+</o-playground>
+
+## Extended Template Syntax
 
 Using `extend` to add attributes or functions can enhance template syntax functionality and even provide component-specific syntactic sugar. However, avoid unofficial template syntaxes, as they impose learning costs and degrade the development experience when overused.
 
@@ -121,7 +125,9 @@ $.fn.extend({
       </script>
     </template>
   </code>
-</o-playground>In this example, we added a `red` attribute to the template syntax. When `count % 3` is not 0, the font color will change to red.
+</o-playground>
+
+In this example, we added a `red` attribute to the template syntax. When `count % 3` is not 0, the font color will change to red.
 
 ### Extension Methods
 
@@ -185,7 +191,9 @@ $.fn.color.always = true;
       </script>
     </template>
   </code>
-</o-playground>## Template Syntax Principles
+</o-playground>
+
+## Template Syntax Principles
 
 So far, you should have realized that many template syntax features on ofa.js are actually extended through `extend`:
 
@@ -224,3 +232,4 @@ You can refer to the example below to better understand the template rendering p
     </template>
   </code>
 </o-playground>
+

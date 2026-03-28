@@ -37,7 +37,9 @@ At the location where a component needs to be used, asynchronously load the comp
       </script>
     </template>
   </code>
-</o-playground>## Component Core Concepts
+</o-playground>
+
+## Component Core Concepts
 
 ### tag - Component tag name
 
@@ -107,7 +109,9 @@ In both component modules and page modules, the `load` function is automatically
       </script>
     </template>
   </code>
-</o-playground>## Asynchronous Reference vs Synchronous Reference
+</o-playground>
+
+## Asynchronous Reference vs Synchronous Reference
 
 | Quotation Method | Keywords | Characteristics |
 |------------------|----------|-----------------|

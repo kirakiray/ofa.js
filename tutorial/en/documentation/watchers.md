@@ -41,7 +41,9 @@ Listeners are defined in the component’s `watch` object, where the key names c
       </script>
     </template>
   </code>
-</o-playground>## Callback Function Parameters
+</o-playground>
+
+## Callback Function Parameters
 
 The listener callback function receives two parameters:- `newValue`: the new value after the change  
 - `{watchers}`: all watcher objects of the current component
@@ -101,7 +103,9 @@ The function in `watch` will be called immediately after the component is initia
       </script>
     </template>
   </code>
-</o-playground>## Deep Watching
+</o-playground>
+
+## Deep Watching
 
 For nested data of object or array type, deep watching is automatically enabled inside watch.
 
@@ -181,7 +185,9 @@ For nested data of object or array type, deep watching is automatically enabled 
       </script>
     </template>
   </code>
-</o-playground>## Listening to Multiple Data Sources
+</o-playground>
+
+## Listening to Multiple Data Sources
 
 You can listen for changes to multiple pieces of data simultaneously and execute corresponding logic in the callback function based on those changes.
 
@@ -223,7 +229,9 @@ You can listen for changes to multiple pieces of data simultaneously and execute
       </script>
     </template>
   </code>
-</o-playground>## Real-World Application Scenarios
+</o-playground>
+
+## Real-World Application Scenarios
 
 ### 1. Form Validation
 
@@ -281,7 +289,9 @@ You can listen for changes to multiple pieces of data simultaneously and execute
       </script>
     </template>
   </code>
-</o-playground>### 2. Set Theme
+</o-playground>
+
+### 2. Set Theme
 
 <o-playground name="watchers - Setting Theme" style="--editor-height: 800px">
   <code>
@@ -336,7 +346,9 @@ You can listen for changes to multiple pieces of data simultaneously and execute
       </script>
     </template>
   </code>
-</o-playground>## Notes
+</o-playground>
+
+## Notes
 
 - **Avoid modifying the watched data**: Modifying the watched data within a watcher callback may cause an infinite loop. If modification is necessary, ensure proper conditional checks.
 - **Consider using computed properties**: If you need to compute a new value based on changes in multiple data sources, it is recommended to use [computed properties](./computed-properties.md) instead of watchers.

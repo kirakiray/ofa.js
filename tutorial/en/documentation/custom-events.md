@@ -100,7 +100,9 @@ Then the parent element can use the `on` method [(event binding)](./event-bindin
       </script>
     </template>
   </code>
-</o-playground>## bubbles - Event Bubbling Mechanism
+</o-playground>
+
+## bubbles - Event Bubbling Mechanism
 
 The `bubbles` property controls whether an event bubbles up to parent elements. When set to `true`, the event propagates up the DOM tree. The default value is `true`. If set to `false`, the event will not bubble.
 
@@ -193,7 +195,9 @@ The `bubbles` property controls whether an event bubbles up to parent elements. 
       </script>
     </template>
   </code>
-</o-playground>## composed - Penetrates Shadow DOM boundaries
+</o-playground>
+
+## composed - Penetrates Shadow DOM boundaries
 
 The `composed` property controls whether events can cross the Shadow DOM boundary. This is particularly important for Web Components development, with a default value of `false`.
 
@@ -313,3 +317,4 @@ The `composed` property controls whether events can cross the Shadow DOM boundar
     </template>
   </code>
 </o-playground>
+

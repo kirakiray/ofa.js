@@ -59,7 +59,9 @@ Below is an example demonstrating how to use the `host` property to get an insta
       </script>
     </template>
   </code>
-</o-playground>In this example, we create a custom component `user-card`, and access the host component's (page's) method `sayHi` from within the component via `this.host`, achieving interaction between the component and the host.
+</o-playground>
+
+In this example, we create a custom component `user-card`, and access the host component's (page's) method `sayHi` from within the component via `this.host`, achieving interaction between the component and the host.
 
 If the element is not within a component or page module, the value of `host` will be `null`. For example:
 
@@ -79,4 +81,6 @@ If the element is not within a component or page module, the value of `host` wil
       </script>
     </template>
   </code>
-</o-playground>In this example, the `#target` element is under the body and not inside any component or page, so the value of `$("#target").host` is `null`.
+</o-playground>
+
+In this example, the `#target` element is under the body and not inside any component or page, so the value of `$("#target").host` is `null`.

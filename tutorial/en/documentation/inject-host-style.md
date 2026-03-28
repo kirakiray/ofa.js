@@ -115,7 +115,9 @@ The example below demonstrates how to use `<inject-host>` to style nested elemen
       </script>
     </template>
   </code>
-</o-playground>As can be seen in the running results:- The background color of the `user-list-item` component is aqua (set via `<inject-host>` of the `user-list` component)
+</o-playground>
+
+As can be seen in the running results:- The background color of the `user-list-item` component is aqua (set via `<inject-host>` of the `user-list` component)
 - The text color of the name is red (set via `<inject-host>` of the `user-list` component to style `user-list-item .item-name`)
 
 ## How It Works

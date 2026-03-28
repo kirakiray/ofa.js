@@ -22,7 +22,9 @@ Here is an example demonstrating how to use `style`:
       </script>
     </template>
   </code>
-</o-playground>Please remember that the `style` method only gets and sets values on the `style` attribute, not the actual computed styles.
+</o-playground>
+
+Please remember that the `style` method only gets and sets values on the `style` attribute, not the actual computed styles.
 
 ## Template Syntax Usage
 
@@ -59,3 +61,4 @@ You can also use template syntax to set the style of the target element.
     </template>
   </code>
 </o-playground>
+

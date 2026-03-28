@@ -96,7 +96,9 @@ Below is a real-time example in the online editor, you can directly modify the c
       </script>
     </template>
   </code>
-</o-playground>We define styles using the `<style>` tag inside the component; these internal styles only affect the component itself, offering good encapsulation and leaving other elements on the page unaffected.
+</o-playground>
+
+We define styles using the `<style>` tag inside the component; these internal styles only affect the component itself, offering good encapsulation and leaving other elements on the page unaffected.
 
 The `:host` selector is used to define styles for the component's host element; here we set the component to be a block-level element with a red border and 10px of padding.
 

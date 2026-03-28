@@ -121,7 +121,9 @@ export const proto = {
       </script>
     </template>
   </code>
-</o-playground>## loading - Loading State
+</o-playground>
+
+## loading - Loading State
 
 A component displayed during page loading; can be a string template or a function that returns a template.
 

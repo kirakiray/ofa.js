@@ -29,4 +29,6 @@ Here is an example demonstrating how to use `classList`:
       </script>
     </template>
   </code>
-</o-playground>The `classList` property lets you easily add, remove, and toggle class names to dynamically change an element’s style.
+</o-playground>
+
+The `classList` property lets you easily add, remove, and toggle class names to dynamically change an element’s style.

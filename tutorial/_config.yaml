@@ -4,5 +4,8 @@ primaryLang: en
 languages:
   - cn
   - en
+  - ja
+  - ko
+  - es
 logoImg: ./logo.svg
 logoName: ofa.js

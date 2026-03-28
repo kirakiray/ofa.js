@@ -1,0 +1,100 @@
+- name: Referencia de API
+  url: ./api.html
+- name: Relacionado con instancias
+  content:
+   - name: $(selector)
+     url: ./instance/dollar.md
+   - name: all
+     url: ./instance/all.md
+   - name: shadow
+     url: ./instance/shadow.md
+   - name: prev
+     url: ./instance/prev.md
+   - name: prevs
+     url: ./instance/prevs.md
+   - name: next
+     url: ./instance/next.md
+   - name: nexts
+     url: ./instance/nexts.md
+   - name: siblings
+     url: ./instance/siblings.md
+   - name: parent
+     url: ./instance/parent.md
+   - name: parents
+     url: ./instance/parents.md
+   - name: clone
+     url: ./instance/clone.md
+   - name: ele
+     url: ./instance/ele.md
+   - name: root
+     url: ./instance/root.md
+   - name: Elementos hijos
+     url: ./instance/children.md
+   - name: host
+     url: ./instance/host.md
+   - name: app
+     url: ./instance/app.md
+- name: Operaciones de nodos
+  content:
+   - name: Agregar o eliminar elementos hijos
+     url: ./operation/array-like.md
+   - name: before
+     url: ./operation/before.md
+   - name: after
+     url: ./operation/after.md
+   - name: remove
+     url: ./operation/remove.md
+   - name: wrap
+     url: ./operation/wrap.md
+   - name: unwrap
+     url: ./operation/unwrap.md
+- name: Operaciones de atributos
+  content:
+   - name: text
+     url: ./props/text.md
+   - name: html
+     url: ./props/html.md
+   - name: attr
+     url: ./props/attr.md
+   - name: css
+     url: ./props/css.md
+   - name: style
+     url: ./props/style.md
+   - name: classList
+     url: ./props/class-list.md
+   - name: data
+     url: ./props/data.md
+- name: Relacionado con eventos
+  content:
+   - name: on
+     url: ./event/on.md
+   - name: one
+     url: ./event/one.md
+   - name: emit
+     url: ./event/emit.md
+   - name: off
+     url: ./event/off.md
+- name: Otros
+  content:
+   - name: Componente o-app
+     url: ./others/app.md
+   - name: Componente o-page
+     url: ./others/page.md
+   - name: formData
+     url: ./others/form-data.md
+   - name: tag
+     url: ./others/tag.md
+   - name: index
+     url: ./others/index.md
+   - name: is
+     url: ./others/is.md
+   - name: refresh
+     url: ./others/refresh.md
+   - name: PATH
+     url: ./others/path.md
+   - name: extend
+     url: ./others/extend.md
+   - name: version
+     url: ./others/version.md
+   - name: Características de datos de instancia
+     url: ./others/stanz.md

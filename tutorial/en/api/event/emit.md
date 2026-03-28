@@ -32,7 +32,9 @@ Here is an example demonstrating how to use the `emit` method to trigger a custo
       </script>
     </template>
   </code>
-</o-playground>In this example, we registered the same custom event handler `custom-event` for both the `<ul>` element and the `<li>` element. When we trigger the event using the `emit` method, the event bubbles from the `<li>` element to the `<ul>` element, activating both event handlers.
+</o-playground>
+
+In this example, we registered the same custom event handler `custom-event` for both the `<ul>` element and the `<li>` element. When we trigger the event using the `emit` method, the event bubbles from the `<li>` element to the `<ul>` element, activating both event handlers.
 
 ## Custom Data
 
@@ -63,7 +65,9 @@ By including the `data` parameter, you can pass custom data to the event handler
       </script>
     </template>
   </code>
-</o-playground>In this example, we pass custom data to the event handler via the `data` parameter. The event handler can retrieve the passed data through `event.data`.
+</o-playground>
+
+In this example, we pass custom data to the event handler via the `data` parameter. The event handler can retrieve the passed data through `event.data`.
 
 ## Fire an event without bubbling
 
@@ -94,7 +98,9 @@ If you don’t want the event to bubble, you can pass `bubbles: false` when disp
       </script>
     </template>
   </code>
-</o-playground>In this example, we triggered a custom event using the `bubbles: false` parameter. This event will not bubble up to parent elements, so only the event handler of the `<li>` element is triggered.
+</o-playground>
+
+In this example, we triggered a custom event using the `bubbles: false` parameter. This event will not bubble up to parent elements, so only the event handler of the `<li>` element is triggered.
 
 ## Penetrating the Root Node
 
@@ -139,4 +145,6 @@ By default, events do not penetrate the shadow DOM of a custom component. Howeve
       </script>
     </template>
   </code>
-</o-playground>In this example, we create a custom element `composed-test` that contains an element inside its shadow DOM and a button that dispatches an event. By default, the event does not cross the shadow boundary to the root node. However, by setting `composed: true` when dispatching the event, we allow it to propagate through the shadow DOM and trigger elements outside the root node.
+</o-playground>
+
+In this example, we create a custom element `composed-test` that contains an element inside its shadow DOM and a button that dispatches an event. By default, the event does not cross the shadow boundary to the root node. However, by setting `composed: true` when dispatching the event, we allow it to propagate through the shadow DOM and trigger elements outside the root node.

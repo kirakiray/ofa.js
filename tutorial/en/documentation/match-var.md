@@ -124,7 +124,9 @@ The `match-var` component uses arbitrary attributes to define matching rules for
       </script>
     </template>
   </code>
-</o-playground>## Multi-condition matching
+</o-playground>
+
+## Multi-condition matching
 
 Multiple attributes can be used simultaneously to define more complex matching conditions, and the styles will only be applied when all CSS variables match.
 
@@ -240,7 +242,9 @@ Multiple attributes can be used simultaneously to define more complex matching c
       </script>
     </template>
   </code>
-</o-playground>## checkMatch Manual Refresh
+</o-playground>
+
+## checkMatch Manual Refresh
 
 In some cases, changes to CSS variables may not be automatically detected; you can manually call the `$.checkMatch()` method to trigger style detection.
 

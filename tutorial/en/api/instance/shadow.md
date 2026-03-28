@@ -28,7 +28,9 @@ Using the `shadow` property, you can obtain the shadow root instance of an eleme
       </script>
     </template>
   </code>
-</o-playground>Note that you should avoid directly modifying elements inside the shadow DOM of elements with template syntax to ensure consistency and maintainability.
+</o-playground>
+
+Note that you should avoid directly modifying elements inside the shadow DOM of elements with template syntax to ensure consistency and maintainability.
 
 ## Obtaining an element instance inside a component's shadow DOM from outside
 
@@ -70,3 +72,4 @@ $("test-shadow").shadow.$('selector').method(xxx);
     </template>
   </code>
 </o-playground>
+

@@ -22,7 +22,9 @@ You can directly use the `css` method to get or set the style of an element.
       </script>
     </template>
   </code>
-</o-playground>## Full Settings
+</o-playground>
+
+## Full Settings
 
 With the obtained `css` object, you can directly set style values on the element.
 
@@ -45,7 +47,9 @@ With the obtained `css` object, you can directly set style values on the element
       </script>
     </template>
   </code>
-</o-playground>Using the `css` object feature, you can quickly adjust the styles of the target element.
+</o-playground>
+
+Using the `css` object feature, you can quickly adjust the styles of the target element.
 
 ## Template Syntax Usage
 
@@ -81,7 +85,9 @@ You can also use template syntax to set the style of the target element.
       </script>
     </template>
   </code>
-</o-playground>## CSS Setup Tips
+</o-playground>
+
+## CSS Setup Tips
 
 You can use `$ele.css = {...$ele.css, color:'red'}` to modify a specific style property of an element without affecting other style properties. This approach allows you to modify only one property without rewriting the entire style.
 

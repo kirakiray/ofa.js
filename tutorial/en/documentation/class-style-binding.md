@@ -37,7 +37,9 @@ When `booleanExpression` is `true`, the class name is added to the element; when
       </script>
     </template>
   </code>
-</o-playground>### Multiple Class Bindings
+</o-playground>
+
+### Multiple Class Bindings
 
 You can also bind multiple classes at once, allowing the element to have different visual states based on different conditions.
 
@@ -87,7 +89,9 @@ You can also bind multiple classes at once, allowing the element to have differe
       </script>
     </template>
   </code>
-</o-playground>## Style Binding
+</o-playground>
+
+## Style Binding
 
 Style binding lets you set inline style values directly and supports dynamic updates. ofa.js offers two ways to bind styles:
 
@@ -119,7 +123,9 @@ Use the `:style.propertyName` syntax to bind a specific style property.
       </script>
     </template>
   </code>
-</o-playground>### Multi-style Attribute Binding
+</o-playground>
+
+### Multi-style Attribute Binding
 
 You can also bind multiple style attributes at once:
 
@@ -157,7 +163,9 @@ You can also bind multiple style attributes at once:
       </script>
     </template>
   </code>
-</o-playground>## Property Binding
+</o-playground>
+
+## Property Binding
 
 In addition to class and style bindings, you can also dynamically bind other HTML attributes. ofa.js uses the `attr:attributeName` syntax to achieve attribute binding.
 
@@ -199,7 +207,9 @@ In addition to class and style bindings, you can also dynamically bind other HTM
       </script>
     </template>
   </code>
-</o-playground>### Handling Boolean Attributes
+</o-playground>
+
+### Handling Boolean Attributes
 
 For Boolean attributes (such as `disabled`, `hidden`), ofa.js decides whether to add the attribute based on the truthiness of the bound value.
 
@@ -244,7 +254,9 @@ For Boolean attributes (such as `disabled`, `hidden`), ofa.js decides whether to
       </script>
     </template>
   </code>
-</o-playground>## 数据风格化
+</o-playground>
+
+## 数据风格化
 
 You can use `data(xxx)` in styles to bind component data. This is particularly suitable for scenarios where styles need to be dynamically changed based on component data.
 
@@ -285,7 +297,9 @@ You can use `data(xxx)` in styles to bind component data. This is particularly s
       </script>
     </template>
   </code>
-</o-playground>## Notes
+</o-playground>
+
+## Notes
 
 The `data(xxx)` inside `style` essentially replaces the entire content of the style, so it's better to only write data-related styles inside the style and place non-data styles in another style for better performance.
 

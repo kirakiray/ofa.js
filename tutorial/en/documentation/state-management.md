@@ -156,7 +156,9 @@ Create a reactive state object via `$.stanz({})`. This method takes a plain obje
       </script>
     </template>
   </code>
-</o-playground>## Characteristics of State Objects
+</o-playground>
+
+## Characteristics of State Objects
 
 ### 1. Responsive Updates
 
@@ -315,7 +317,9 @@ const cartStore = $.stanz({ total: 0 });
       </script>
     </template>
   </code>
-</o-playground>## Notes
+</o-playground>
+
+## Notes
 
 1. **State Cleanup**: In the `detached` lifecycle of a component, promptly clean up references to state data to avoid memory leaks.
 

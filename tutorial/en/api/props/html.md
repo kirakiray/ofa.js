@@ -20,7 +20,9 @@ The `html` method is used to get or set the HTML code inside the target element.
       </script>
     </template>
   </code>
-</o-playground>## Notes
+</o-playground>
+
+## Notes
 
 `html` is a relatively dangerous method; if a `script` tag is injected, it will automatically execute the JavaScript code inside. Pay attention to preventing XSS when using it.
 
@@ -61,3 +63,4 @@ You can also use the `:html` attribute to set the corresponding HTML value for t
     </template>
   </code>
 </o-playground>
+

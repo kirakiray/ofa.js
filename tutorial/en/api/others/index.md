@@ -20,4 +20,6 @@ In the following example, we demonstrate how to use the `index` property to get 
       </script>
     </template>
   </code>
-</o-playground>In this example, we first select an `<li>` element with the `id` "target". Then, we use the `index` property to get its position under its parent element `<ul>`, which is the second element, so the value of `index` is 1. We then display this value in the `<div>` element with the `id` "logger".
+</o-playground>
+
+In this example, we first select an `<li>` element with the `id` "target". Then, we use the `index` property to get its position under its parent element `<ul>`, which is the second element, so the value of `index` is 1. We then display this value in the `<div>` element with the `id` "logger".

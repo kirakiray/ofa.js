@@ -32,7 +32,9 @@ The `o-if` component is used to conditionally render its content based on the tr
       </script>
     </template>
   </code>
-</o-playground>### How o-if Works
+</o-playground>
+
+### How o-if Works
 
 `o-if` renders content into the DOM only when the condition is true. When the condition is false, the DOM elements inside `o-if` are completely removed. This implementation is suitable for situations where conditions do not change frequently, as it involves the creation and destruction of DOM elements.
 
@@ -76,7 +78,9 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
       </script>
     </template>
   </code>
-</o-playground>## Real-world Application Scenarios
+</o-playground>
+
+## Real-world Application Scenarios
 
 ### User Permission Control
 
@@ -145,7 +149,9 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
       </script>
     </template>
   </code>
-</o-playground>### Form Validation Status Display
+</o-playground>
+
+### Form Validation Status Display
 
 <o-playground name="Form Validation Status Display Example" style="--editor-height: 500px">
   <code>
@@ -191,7 +197,9 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
       </script>
     </template>
   </code>
-</o-playground>## Best Practices for Conditional Rendering
+</o-playground>
+
+## Best Practices for Conditional Rendering
 
 1. **Use case**: Use `o-if` when an element rarely changes under different conditions, as it completely removes unnecessary elements and saves memory.
 

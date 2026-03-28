@@ -34,7 +34,9 @@ One-way property binding uses the `:toKey="fromKey"` syntax to synchronize compo
       </script>
     </template>
   </code>
-</o-playground>## Two-way Property Binding
+</o-playground>
+
+## Two-way Property Binding
 
 Two-way property binding uses the `sync:xxx` syntax to synchronize component data with DOM element attributes bidirectionally. When the component data changes, the DOM element’s attribute is updated; when the attribute changes (e.g., through user input), the component data is updated in sync.
 
@@ -66,7 +68,9 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
       </script>
     </template>
   </code>
-</o-playground>### Features of Two-way Binding
+</o-playground>
+
+### Features of Two-way Binding
 
 - Data Flow: Component ↔ DOM Element (Two-way)
 - Component data changes → DOM element updates
@@ -144,7 +148,9 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
       </script>
     </template>
   </code>
-</o-playground>## Notes
+</o-playground>
+
+## Notes
 
 1. **Performance**: Two-way binding creates data watchers; heavy use can impact performance.  
 2. **Data Consistency**: It keeps data and view in sync, but guard against infinite update loops.  

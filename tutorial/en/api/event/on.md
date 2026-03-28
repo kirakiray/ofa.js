@@ -19,7 +19,9 @@ Here is an example demonstrating how to use the `on` method to register a click 
       </script>
     </template>
   </code>
-</o-playground>In this example, we use the `on` method to attach a click event handler to the button element. When the user clicks the button, the handler is triggered, the counter increments, and the result is displayed on the page.
+</o-playground>
+
+In this example, we use the `on` method to attach a click event handler to the button element. When the user clicks the button, the handler is triggered, the counter increments, and the result is displayed on the page.
 
 ## Template Syntax Usage
 
@@ -51,7 +53,9 @@ You can also use template syntax to bind methods to target elements.
       </script>
     </template>
   </code>
-</o-playground>In this example, we bind a method called `addCount` to the button element using `on:click`. When the user clicks the button, this method will be called, the counter's value will increment and be displayed on the page. This approach allows you to associate event handlers with component methods to implement more complex interactions.
+</o-playground>
+
+In this example, we bind a method called `addCount` to the button element using `on:click`. When the user clicks the button, this method will be called, the counter's value will increment and be displayed on the page. This approach allows you to associate event handlers with component methods to implement more complex interactions.
 
 ## event
 
@@ -73,3 +77,4 @@ After registering the event, the triggered function will receive the event argum
     </template>
   </code>
 </o-playground>
+

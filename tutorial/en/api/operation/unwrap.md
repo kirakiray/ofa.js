@@ -16,7 +16,9 @@ The `unwrap` method is used to remove the outer wrapper element of the target el
       </script>
     </template>
   </code>
-</o-playground>## Notes
+</o-playground>
+
+## Notes
 
 The target element **must have a parent node**, otherwise the unwrap operation cannot be performed.
 

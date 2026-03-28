@@ -41,7 +41,9 @@ Before using a component, you need to declare the attributes you want to receive
       </script>
     </template>
   </code>
-</o-playground>### Important Rules
+</o-playground>
+
+### Important Rules
 
 1. **Type restriction**: The passed attribute value must be a string; other types are automatically converted to strings.
 
@@ -82,7 +84,9 @@ Before using a component, you need to declare the attributes you want to receive
       </script>
     </template>
   </code>
-</o-playground>## Passing Attributes via Template Syntax
+</o-playground>
+
+## Passing Attributes via Template Syntax
 
 In a component's template, you can use the `attr:toKey="fromKey"` syntax to pass the current component's `fromKey` data to the child component's `toKey` property.
 
@@ -139,7 +143,9 @@ In a component's template, you can use the `attr:toKey="fromKey"` syntax to pass
       </script>
     </template>
   </code>
-</o-playground>## Multi-level Transfer
+</o-playground>
+
+## Multi-level Transfer
 
 Attributes can be passed through multiple levels of nested components.
 
@@ -201,3 +207,4 @@ If a component depends on other components, it needs to import the modules of th
     </template>
   </code>
 </o-playground>
+
