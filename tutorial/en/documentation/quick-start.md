@@ -20,7 +20,7 @@ To get started quickly with ofa.js, you only need to create a **page module** al
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ofa.js Example</title>
     <script
-      src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs"
+      src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs"
       type="module"
     ></script>
   </head>

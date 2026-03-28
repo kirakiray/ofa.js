@@ -17,10 +17,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>라우터 테스트</title>
-    <script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
   </head>
   <body>
-    <l-m src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/libs/router/dist/router.min.mjs"></l-m>
+    <l-m src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/router/dist/router.min.mjs"></l-m>
     <o-router>
       <o-app src="./app-config.js"></o-app>
     </o-router>
@@ -46,7 +46,7 @@
 <o-playground name="싱글 페이지 애플리케이션 예제" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <l-m src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/libs/router/dist/router.min.mjs"></l-m>
+      <l-m src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/router/dist/router.min.mjs"></l-m>
       <o-router fix-body>
         <o-app src="./app-config.js"></o-app>
       </o-router>

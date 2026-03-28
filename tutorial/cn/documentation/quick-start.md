@@ -20,7 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ofa.js 示例</title>
     <script
-      src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js/dist/ofa.mjs"
+      src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs"
       type="module"
     ></script>
   </head>
