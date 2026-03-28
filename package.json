@@ -15,8 +15,7 @@
   },
   "author": {
     "name": "YAO",
-    "email": "kirayao@hotmail.com",
-    "url": "https://kirakiray.com/"
+    "email": "kirayao@hotmail.com"
   },
   "exports": {
     "require": "./dist/ofa.min.js",

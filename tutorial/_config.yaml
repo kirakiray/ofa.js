@@ -1,6 +1,7 @@
 name: ofa.js Tutorial
 writingLang: cn
 primaryLang: en
+github: https://github.com/ofajs/ofa.js
 languages:
   - cn
   - en
