@@ -256,11 +256,11 @@
   </code>
 </o-playground>
 
-## data in style
+## 样式标签内的数据函数
 
 可以在样式中使用 `data(xxx)` 来绑定组件数据。这非常适合需要根据组件数据动态改变样式的场景。
 
-<o-playground name="data in style" style="--editor-height: 500px">
+<o-playground name="样式标签内的数据函数" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
