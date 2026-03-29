@@ -53,7 +53,7 @@ This is particularly useful in the following scenarios:- `o-app` needs to fill t
     </template>
   </code>
   <code path="app-config.js">
-    // Application home page address
+    // Application home page URL
     export const home = "./home.html";
     // Page transition animation configuration
     export const pageAnime = {

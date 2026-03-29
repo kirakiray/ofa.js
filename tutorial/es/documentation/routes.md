@@ -12,11 +12,11 @@ Una aplicación de una sola página vincula el componente `o-app` con la barra d
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>prueba de router</title>
+    <title>prueba de enrutador</title>
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
   </head>
   <body>
@@ -43,7 +43,7 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
 
 ## Ejemplo
 
-<o-playground name="Ejemplo de aplicación de una sola página" style="--editor-height: 500px">
+<o-playground name="Ejemplo de Aplicación de Página Única" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/router/dist/router.min.mjs"></l-m>
@@ -111,7 +111,7 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
         export default async () => {
           return {
             data: {
-              val: "Hola Demo de Aplicación de ofa.js",
+              val: "Hola dea.js Demo de Aplicación",
             },
             proto:{
                 gotoAbout(){
@@ -131,13 +131,13 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">Atrás</button> </div>
+      <div style="padding: 8px;"> <button on:click="back()">Volver</button> </div>
       <p> Acerca de <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Hola Demo de Aplicación de ofa.js",
+              val: "Hola dea.js Demo de Aplicación",
             },
           };
         };

@@ -16,7 +16,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>라우터 테스트</title>
+    <title>router test</title>
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
   </head>
   <body>
@@ -103,10 +103,10 @@
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>Go to About</a>
+      <a href="./about.html" olink>About으로 이동</a>
       <br>
       <br>
-      <button on:click="gotoAbout">Go to About Button</button>
+      <button on:click="gotoAbout">About으로 이동 버튼</button>
       <script>
         export default async () => {
           return {

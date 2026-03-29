@@ -14,11 +14,11 @@ Para empezar rápidamente con ofa.js, simplemente cree un **módulo de página**
 ```html
 <!-- index.html -->
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ejemplo de ofa.js</title>
+    <title>ofa.js Ejemplo</title>
     <script
       src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs"
       type="module"

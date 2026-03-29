@@ -73,7 +73,7 @@ The isomorphic rendering mode of ofa.js is based on the following mechanisms:
 
 <body>
   <o-app src="/app-config.js">
-    <!-- Insertion point for page module content ⬇️ -->
+    <!-- Page module content insertion location ⬇️ -->
     <template page>
       <style>
         :host {

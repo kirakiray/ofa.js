@@ -48,7 +48,7 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
@@ -109,12 +109,12 @@ Para implementar el modo de renderizado isomórfico, solo necesitas usar la sigu
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Page Title</title>
+  <title>Título de la página</title>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs#debug" type="module"></script>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
