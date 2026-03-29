@@ -99,9 +99,9 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
 
 Por lo tanto, puedes utilizar cualquier lenguaje de desarrollo (Go, Java, PHP, Nodejs, Python, etc.) y cualquier motor de renderizado de plantillas backend (como `html/template` de Go, Smarty/Twig/Blade de PHP, etc.) para incrustar la estructura de código de renderizado isomórfico de ofa.js en la plantilla y así lograr SSR.
 
-* [Caso de SSR con Nodejs](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/node)
-* [Caso de SSR con PHP](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/php)
-* [Caso de SSR con Go](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/go)
+* [Caso de SSR con Nodejs](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
+* [Caso de SSR con PHP](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
+* [Caso de SSR con Go](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
 
 ### Estructura de la plantilla de renderizado isomórfico
 

@@ -42,12 +42,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kirakiray/ofa.js.git"
+    "url": "git+https://github.com/ofajs/ofa.js.git"
   },
   "bugs": {
-    "url": "https://github.com/kirakiray/ofa.js/issues"
+    "url": "https://github.com/ofajs/ofa.js/issues"
   },
-  "homepage": "https://github.com/kirakiray/ofa.js",
+  "homepage": "https://github.com/ofajs/ofa.js",
   "startyear": "2018",
   "keywords": [
     "ofa.js",

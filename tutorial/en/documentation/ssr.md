@@ -99,9 +99,9 @@ The isomorphic rendering mode of ofa.js is based on the following mechanisms:
 
 So, you can use any development language (Go, Java, PHP, Node.js, Python, etc.) and any backend template rendering engine (such as Go's `html/template`, PHP's Smarty/Twig/Blade, etc.) to embed the isomorphic rendering code structure of ofa.js into the template, thereby achieving SSR.
 
-* [Nodejs SSR Case](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/node)
-* [PHP SSR Case](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/php)
-* [Go SSR Case](https://github.com/kirakiray/ofa.js/tree/main/test/ssr-case/go)
+* [Nodejs SSR Case](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
+* [PHP SSR Case](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
+* [Go SSR Case](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
 
 ### Isomorphic Rendering Template Structure
 

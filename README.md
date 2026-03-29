@@ -1,5 +1,5 @@
 # ofa.js 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakiray/ofa.js/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ofajs/ofa.js/blob/main/LICENSE)
 [![GitHub license](https://img.shields.io/badge/Discussions-F7CB53)](https://github.com/ofajs/discussion/discussions)
 
 [Official Documentation](https://ofajs.com/en/index.html) / [官方文档](https://ofajs.com/cn/index.html) / [官方文檔](https://ofajs.com/t-cn/index.html) / [Sitio oficial de documentación](https://ofajs.com/es/index.html) / [公式ドキュメントサイト](https://ofajs.com/ja/index.html) / [공식 문서 사이트](https://ofajs.com/ko/index.html)
@@ -69,4 +69,4 @@ ofa.js is also a natural micro front-end framework, and you will understand this
 
 ## License
 
-ofa.js is licensed under the [MIT License](https://github.com/kirakiray/ofa.js/blob/main/LICENSE).
+ofa.js is licensed under the [MIT License](https://github.com/ofajs/ofa.js/blob/main/LICENSE).
