@@ -1,0 +1,233 @@
+<l-m src="./_comps/api-container.html"></l-m>
+<style>
+  article a {
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    align-items: center !important;
+  }
+</style>
+<article><h1>API 文檔</h1>
+
+<p>
+    ofa.js 不僅支持模闆語法，還提供豐富的 API 來直接操作 DOM。就像
+    <a href="https://jquery.com/">jQuery</a>
+    一樣，妳可以用簡潔的 ofa.js 語法替代冗長的原生 JavaScript，輕鬆完成 DOM
+    操作。
+  </p>
+
+<p>
+    在組件或頁面模塊的生命周期函數及自定義方法中，妳都可以隨時調用 ofa.js 提供的
+    API，靈活高效地操控 DOM 元素。
+  </p>
+
+<api-container>
+    <api-list>
+      <h3>實例相關</h3>
+      <api-item>
+        <a href="./instance/dollar.md">$(selector)</a>
+        <p>ofa.js 中的覈心函數，用於獲取和操作 DOM 元素實例</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/all.md">all</a>
+        <p>獲取當前元素的所有子元素實例</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/shadow.md">shadow</a>
+        <p>獲取當前元素的 shadow root</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/prev.md">prev</a>
+        <p>獲取當前元素的前一個兄弟元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/prevs.md">prevs</a>
+        <p>獲取當前元素之前的所有兄弟元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/next.md">next</a>
+        <p>獲取當前元素的下一個兄弟元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/nexts.md">nexts</a>
+        <p>獲取當前元素之後的所有兄弟元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/siblings.md">siblings</a>
+        <p>獲取當前元素的所有兄弟元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/parent.md">parent</a>
+        <p>獲取當前元素的父元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/parents.md">parents</a>
+        <p>獲取當前元素的所有祖先元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/clone.md">clone</a>
+        <p>復製當前元素及其子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/ele.md">ele</a>
+        <p>獲取當前元素的子元素實例</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/root.md">root</a>
+        <p>獲取當前元素所屬的根實例</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/children.md">子元素</a>
+        <p>獲取當前元素的所有子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/host.md">host</a>
+        <p>獲取當前元素所屬的 web component 宿主元素</p>
+      </api-item>
+      <api-item>
+        <a href="./instance/app.md">app</a>
+        <p>獲取當前元素所屬的 o-app 組件實例</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>節點操作</h3>
+      <api-item>
+        <a href="./operation/array-like.md">push</a>
+        <p>添加當前元素的子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=11">pop</a>
+        <p>刪除當前元素的最後一個子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=14">shift</a>
+        <p>刪除當前元素的第一個子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=8">unshift</a>
+        <p>添加當前元素的第一個子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/array-like.md?L=17">splice</a>
+        <p>添加或刪除當前元素的子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/before.md">before</a>
+        <p>在當前元素之前添加子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/after.md">after</a>
+        <p>在當前元素之後添加子元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/remove.md">remove</a>
+        <p>移除當前元素</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/wrap.md">wrap</a>
+        <p>將當前元素包裹在指定元素中</p>
+      </api-item>
+      <api-item>
+        <a href="./operation/unwrap.md">unwrap</a>
+        <p>移除當前元素的父元素包裹</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>屬性操作</h3>
+      <api-item>
+        <a href="./props/text.md">text</a>
+        <p>獲取或設置元素的文本內容</p>
+      </api-item>
+      <api-item>
+        <a href="./props/html.md">html</a>
+        <p>獲取或設置元素的 HTML 內容</p>
+      </api-item>
+      <api-item>
+        <a href="./props/attr.md">attr</a>
+        <p>獲取或設置元素的屬性</p>
+      </api-item>
+      <api-item>
+        <a href="./props/css.md">css</a>
+        <p>獲取或設置元素的樣式</p>
+      </api-item>
+      <api-item>
+        <a href="./props/style.md">style</a>
+        <p>獲取元素的 style 對象</p>
+      </api-item>
+      <api-item>
+        <a href="./props/class-list.md">classList</a>
+        <p>獲取元素的類名列錶</p>
+      </api-item>
+      <api-item>
+        <a href="./props/data.md">data</a>
+        <p>獲取或設置元素的 data 屬性</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>事件相關</h3>
+      <api-item>
+        <a href="./event/on.md">on</a>
+        <p>爲元素添加事件監聽器</p>
+      </api-item>
+      <api-item>
+        <a href="./event/one.md">one</a>
+        <p>爲元素添加隻執行一次的事件監聽器</p>
+      </api-item>
+      <api-item>
+        <a href="./event/emit.md">emit</a>
+        <p>觸發元素的自定義事件</p>
+      </api-item>
+      <api-item>
+        <a href="./event/off.md">off</a>
+        <p>移除元素的事件監聽器</p>
+      </api-item>
+    </api-list>
+    <api-list>
+      <h3>其他</h3>
+      <api-item>
+        <a href="./others/app.md">o-app組件</a>
+        <p>ofa.js 應用的根組件，用於管理應用狀態和路由</p>
+      </api-item>
+      <api-item>
+        <a href="./others/page.md">o-page組件</a>
+        <p>ofa.js 的頁面組件，用於創建單頁應用頁面</p>
+      </api-item>
+      <api-item>
+        <a href="./others/form-data.md">formData</a>
+        <p>獲取錶單數據</p>
+      </api-item>
+      <api-item>
+        <a href="./others/tag.md">tag</a>
+        <p>獲取元素的標籤名</p>
+      </api-item>
+      <api-item>
+        <a href="./others/index.md">index</a>
+        <p>獲取元素在其父元素中的索引</p>
+      </api-item>
+      <api-item>
+        <a href="./others/is.md">is</a>
+        <p>判斷元素是否匹配指定選擇器</p>
+      </api-item>
+      <api-item>
+        <a href="./others/refresh.md">refresh</a>
+        <p>刷新當前組件或頁面</p>
+      </api-item>
+      <api-item>
+        <a href="./others/path.md">PATH</a>
+        <p>獲取當前頁面的路徑</p>
+      </api-item>
+      <api-item>
+        <a href="./others/extend.md">extend</a>
+        <p>擴展 ofa.js 的功能</p>
+      </api-item>
+      <api-item>
+        <a href="./others/version.md">version</a>
+        <p>獲取 ofa.js 的版本號</p>
+      </api-item>
+      <api-item>
+        <a href="./others/stanz.md">實例數據特徵</a>
+        <p>Stanz 是 ofa.js 的響應式數據特徵，支持數據的自動更新</p>
+      </api-item>
+    </api-list>
+  </api-container>
+
+</article>

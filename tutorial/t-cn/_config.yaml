@@ -1,0 +1,10 @@
+index: ./index.html
+header: # 會在 headers 上顯示的導航地址
+  - name: 敎程
+    url: ./documentation/_config.yaml
+  - name: API
+    url: ./api/_config.yaml
+  - name: 其他
+    content:
+      - name: 場景問答
+        url: ./scenarios/_config.yaml
