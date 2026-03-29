@@ -1,0 +1,84 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      border: rgba(170, 170, 170, 0.253) solid 1px;
+      border-radius: 5px;
+      overflow: hidden;
+      line-height: 1.6em;
+    }
+
+    .outer {
+      container-type: inline-size;
+      height: 100%;
+    }
+
+    .container {
+      display: flex;
+      text-align: left;
+      font-size: 16px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .container pre {
+      display: block;
+      flex: 1;
+      flex-shrink: 0;
+      margin: 0;
+      height: 100%;
+      overflow: auto;
+    }
+    .container pre:first-child {
+      border-right: rgba(170, 170, 170, 0.253) solid 1px;
+    }
+
+    @container (max-width: 700px) {
+      .container {
+        flex-direction: column;
+      }
+      ::slotted(*:first-child) {
+        border-right: none;
+        border-bottom: rgba(170, 170, 170, 0.253) solid 1px;
+      }
+    }
+
+    @container (max-width: 1100px) {
+      .container {
+        font-size: 14px;
+      }
+    }
+  </style>
+
+  <match-var pui-real-theme="dark">
+    <link rel="stylesheet" href="./hljs-dark.css" />
+  </match-var>
+  <match-var pui-real-theme="light">
+    <link rel="stylesheet" href="./hljs-light.css" />
+  </match-var>
+
+  <div class="outer">
+    <div class="container"></div>
+  </div>
+  <script>
+    import hljs from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.8.0/build/es/highlight.min.js";
+
+    export default async ({ load }) => {
+      return {
+        data: {},
+        attached() {
+          // 将内容拷贝到 container
+          this.forEach((e) => {
+            this.shadow.$(".container").push(`<pre>${e.html.trim()}</pre>`);
+          });
+
+          this.shadow.all("code").forEach((e) => {
+            hljs.highlightElement(e.ele);
+          });
+        },
+        detached() {},
+      };
+    };
+  </script>
+</template>

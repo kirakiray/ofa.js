@@ -1,0 +1,304 @@
+<title>ofa.js - 점진적 마이크로 프론트엔드 프레임워크</title>
+
+<l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
+
+<center-block>
+  <punch-logo>
+    <img logo="" src="../img/logo.svg" alt="">
+    <h2>ofa.js</h2>
+    <img src="../publics/sources/webpack.svg" slot="fly" alt="webpack">
+    <img src="../publics/sources/npm.svg" slot="fly" alt="npm">
+    <img src="../publics/sources/nodejs.svg" slot="fly" alt="nodejs">
+    <img src="../publics/sources/esbuild.svg" slot="fly" alt="esbuild">
+    <img src="../publics/sources/pnpm.svg" slot="fly" alt="pnpm">
+    <img src="../publics/sources/yarn.svg" slot="fly" alt="yarn">
+    <img src="../publics/sources/bun.svg" slot="fly" alt="bun">
+    <img src="../publics/sources/deno.svg" slot="fly" alt="deno">
+    <img src="../publics/sources/rollup.svg" slot="fly" alt="rollup">
+    <img src="../publics/sources/typescript.svg" slot="fly" alt="typescript">
+    <img src="../publics/sources/lerna.svg" slot="fly" alt="lerna">
+  </punch-logo>
+  <h2 style="margin: 32px 0 16px">점진적 마이크로 프론트엔드 프레임워크</h2>
+  <p>
+    간단한 페이지 구축, 인터랙티브 애플리케이션 제작, 복잡한 시스템 구성에 이르기까지 ofa.js는 능숙하게 대응합니다.
+  </p>
+  <div style="padding: 16px">
+    <p-button size="large">
+      <a href="./documentation/create-first-app.md">ofa.js 배우기</a>
+    </p-button>
+  </div>
+</center-block>
+
+<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
+
+<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
+
+<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
+
+<center-block style="--container-max-width: 100%; padding: 128px 0">
+  <h2>거의 은탄환 수준의 프론트엔드 프레임워크</h2>
+  <p>어떤 응용 시나리오든 ofa.js를 사용하기에 적합합니다.</p>
+  <flow-container style="height: 300px; width: 100%">
+    <chat-bubble id="case1-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
+      나는 더 이상 배울 수 없어, 너희 문서를 보고 싶지 않아, 그래도 쓸 수 있어?
+    </chat-bubble>
+    <chat-bubble id="case2-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
+      오래된 프로젝트에 임시로 기능 하나만 추가하고 싶어
+    </chat-bubble>
+    <chat-bubble id="case3-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
+      나는 개발 초보자고, Nodejs와 npm에 발길이 끊겼어
+    </chat-bubble>
+    <chat-bubble id="case4-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
+      거대한 쇼핑몰 시스템을 개발하려는데, 너희가 감당할 수 있어?
+    </chat-bubble>
+    <chat-bubble id="case5-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
+      나는 백엔드 개발자고, 백엔드 템플릿 엔진만으로 개발하고 싶어. ofa.js를
+      사용하는 게 적절할까?</chat-bubble>
+  </flow-container>
+  <p-button style="margin-top: 16px" size="large" variant="outlined">
+    <a href="https://github.com/ofajs/discussion/discussions"> 우리에게 메시지 남기기 </a>
+  </p-button>
+  <anchor-dialog>
+    <article for="#case1-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
+        나는 더 이상 배울 수 없어, 너희 문서를 보고 싶지 않아, 그래도 쓸 수 있어?
+      </chat-bubble>
+      <p>ofa.js를 먼저 배울 필요 없이, 이를 기반으로 개발된 컴포넌트를 바로 재사용할 수 있습니다.</p>
+      <p>
+        오픈소스 컴포넌트 작성자가 코드를 작성한 뒤, 다른 사람들은 예제를 보고 몇 줄만 복사하면 순식간에 기능을 자신의 프로젝트로 옮길 수 있습니다.
+      </p>
+    </article>
+    <article for="#case2-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
+        오래된 프로젝트에 임시로 기능 하나만 추가하고 싶어
+      </chat-bubble>
+      <p>기존 프로젝트에 script 태그로 ofa.js를 불러오기만 하면 즉시 사용할 수 있습니다.</p>
+      <p>불러온 후, 다양한 컴포넌트를 손쉽게 사용할 수 있습니다.</p>
+    </article>
+    <article for="#case3-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
+        나는 개발 초보자고, Nodejs와 npm에 발길이 끊겼어
+      </chat-bubble>
+      <p>ofa.js는 초보자에게 매우 친화적이며, Node.js, npm 같은 도구를 배울 필요가 없습니다.</p>
+      <p>브라우저 하나와 아무 정적 서버만 있으면 개발을 시작할 수 있습니다.</p>
+      <p>
+        Chrome 브라우저를 사용한다면
+        <a href="https://core.noneos.com/?redirect=studio" target="_blank" style="color: var(--md-sys-color-primary)">OFA Studio</a>
+        이 온라인 도구를 열면 정적 서버를 준비할 필요조차 없이 바로 시작할 수 있습니다.
+      </p>
+      <a href="./documentation/create-first-app.md" olink="" style="color: var(--md-sys-color-primary)">튜토리얼: 첫 앱 만들기</a>
+    </article>
+    <article for="#case4-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
+        거대한 쇼핑몰 시스템을 개발하려는데, 너희가 감당할 수 있어?
+      </chat-bubble>
+      <p>ofa.js는 마이크로 프론트엔드 아키텍처 패턴을 채택하고 있어 대형 프로젝트에 매우 적합합니다.</p>
+      <p>
+        쇼핑몰 시스템을 충분히 세분화된 요구사항으로 나누어, 컴포넌트 단위로 개발한 뒤 독립적인 폴더에 배치하면 정적 서버만으로도 바로 컴포넌트 효과를 미리 볼 수 있습니다.
+      </p>
+      <p>
+        마지막으로 하나씩 조립해 거대한 시스템을 완성합니다. ofa.js의
+        마이크로 프론트엔드 방식은 바로 거대 애플리케이션을 해결하는 묘약입니다.
+      </p>
+      <p>
+        사례를 참고하세요.
+        <a href="https://os.noneos.com/" target="_blank" style="color: var(--md-sys-color-primary)">NoneOS</a>, 이는 ofa.js로 개발한 운영체제로 규모가 매우 큽니다
+      </p>
+    </article>
+    <article for="#case5-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
+        나는 백엔드 개발자고, 백엔드 템플릿 엔진만으로 개발하고 싶어. ofa.js를 사용하는 게 적절할까?
+      </chat-bubble>
+      <p>
+        ofa.js의 SSR은 Node.js에 종속되지 않으며, SCSR
+        규칙만 지킨다면 어떤 백엔드 언어로도 템플릿 엔진 개발이 가능합니다.
+      </p>
+      <p>
+        자세한 내용은
+        <a href="./documentation/ssr.md" style="color: var(--md-sys-color-primary)" olink="">ofa.js SSR</a>
+        을 참고하세요
+      </p>
+    </article>
+  </anchor-dialog>
+</center-block>
+
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
+<style>
+  .w-title {
+    padding: 24px 0 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--md-sys-color-normal);
+  }
+</style>
+
+<center-block>
+  <h2>🤖 더 적합한 AI 사용 프론트엔드 프레임워크 🤖</h2>
+  <p>컴파일 과정 없이, 바로 코드를 실행하세요.</p>
+  <div class="w-title">
+    AI 사용
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b>로 프론트엔드 프로젝트를 생성하는流程
+  </div>
+  <flow-chart style="width: 100%; height: 100px">
+    <div name="ai-model" to="container">AI 대모델</div>
+    <div name="container" to="preview">코드를 정적 컨테이너에 배포</div>
+    <div name="preview">프로젝트 미리보기</div>
+  </flow-chart>
+  <div class="w-title">AI가 현재 주요 프론트엔드 프레임워크로 프로젝트를 생성하는流程</div>
+  <flow-chart style="width: 100%; height: 100px">
+    <div name="ai-model" to="cloud-container">AI 대모델</div>
+    <div name="cloud-container" to="init">클라우드 컨테이너 생성</div>
+    <div name="init" to="deploy">의존성 설치</div>
+    <div name="deploy" to="preview">코드 배포 및 컴파일</div>
+    <div name="preview">프로젝트 미리보기</div>
+  </flow-chart>
+
+  <p-button size="large">
+    <a href="./scenarios/more-suitable-for-ai.md">자세히 보기</a>
+  </p-button>
+</center-block>
+
+<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
+
+<center-block>
+  <h2>Web Components 기반 개발</h2>
+  <p>Web Components를 지원하는 모든 플랫폼에서 ofa.js를 사용할 수 있습니다</p>
+  <support-platforms></support-platforms>
+</center-block>
+
+<center-block>
+  <h2>매우 낮은 사용 문턱</h2>
+  <p>ofa.js 기반 컴포넌트를 사용하면 의존성과 설정 문제를 고려할 필요가 없습니다</p>
+  <o-playground name="Punch Demo" style="--editor-height: 300px; width: 100%">
+    <code>
+      <template>
+        <!-- 개발 완료된 punch-logo 컴포넌트 로드 -->
+        <l-m src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"></l-m>
+        <!-- punch-logo 컴포넌트 사용 -->
+        <punch-logo style="margin: 50px 0 0 100px">
+          <img src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg" logo="" height="90">
+          <h2>야근 안 해</h2>
+          <p slot="fly">퇴근해 줘</p>
+          <p slot="fly">조금만 늦게 퇴근</p>
+          <p slot="fly">주말 야근</p>
+        </punch-logo>
+      </template>
+    </code>
+  </o-playground>
+</center-block>
+
+<center-block>
+  <h2>한 번의 컴포넌트 캡슐화로 번거로운 과정을 벗어나세요</h2>
+  <p>
+    과거에는 Node.js ➡️ npm ➡️ Webpack
+    등 일련의 학습 과정을 거쳐야만 컴포넌트 캡슐화의 첫걸음을 내딛을 수 있었습니다
+  </p>
+  <p>지금은 단 하나의 파일만 필요합니다</p>
+  <o-playground name="My Switch" style="--editor-height: 500px">
+    <code path="demo.html" preview="">
+      <template>
+        <l-m src="./my-switch.html"></l-m>
+        <my-switch></my-switch>
+      </template>
+    </code>
+    <code path="my-switch.html" active="">
+      <template component="">
+        <style>
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            background-color: #ccc;
+            transition: background-color 0.4s;
+            border-radius: 34px;
+            cursor: pointer;
+          }
+
+          .slider {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: transform 0.4s;
+            border-radius: 50%;
+          }
+
+          .switch.checked {
+            background-color: #2196f3;
+          }
+
+          .switch.checked .slider {
+            transform: translateX(26px);
+          }
+        </style>
+        <div class="switch" class:checked="checked" on:click="checked = !checked">
+          <span class="slider"></span>
+        </div>
+        <script>
+          export default async () => {
+            return {
+              tag: "my-switch",
+              data: {
+                checked: true,
+              },
+            };
+          };
+        </script>
+      </template>
+    </code>
+  </o-playground>
+</center-block>
+
+<center-block>
+  <h2>다양한 템플릿 문법 지원</h2>
+  <o-page src="../publics/_comps/render-case/render-case.html"></o-page>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./documentation/content-rendering.md">더 많은 템플릿 문법 알아보기</a>
+  </p-button>
+</center-block>
+
+<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
+
+<center-block>
+  <h2>jQuery의 정신적 계승자</h2>
+  <p>템플릿 문법을 지원하면서도 노드를 직접 조작할 수 있어 유연하고 효율적입니다</p>
+  <p>API 디자인은 jQuery와 유사하지만 더 직관적입니다</p>
+  <split-code style="width: 100%">
+    <pre>      <code>
+// jQuery Code
+$("#target").html("some html code"); // 设置 html
+$("#target").text("set text"); // 设置 text
+var ele_text = $("#target").text(); // 获取 text
+var parents = $("#target").parents(); // 获取所有父层的数组
+var child = $("#target").children()[0]; // 获取第一个子元素
+      </code>
+    </pre>
+    <pre>      <code>
+// ofa.js Code
+$("#target").html = "some html code";  // 设置 html
+$("#target").text = "set text"; // 设置 text
+var ele_text = $("#target").text; // 获取 text
+var parents = $("#target").parents; // 获取所有父层的数组
+var child = $("#target")[0]; // 获取第一个子元素
+      </code>
+      </pre>
+  </split-code>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./api/api.html">API 문서 보기</a>
+  </p-button>
+</center-block>
+

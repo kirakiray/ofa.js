@@ -1,5 +1,5 @@
 # ofa.js 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/kirakiray/ofa.js/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ofajs/ofa.js/blob/main/LICENSE)
 [![GitHub license](https://img.shields.io/badge/Discussions-F7CB53)](https://github.com/ofajs/discussion/discussions)
 
 [Official Documentation](https://ofajs.com/en/index.html) / [官方文档](https://ofajs.com/cn/index.html) / [官方文檔](https://ofajs.com/t-cn/index.html) / [Sitio oficial de documentación](https://ofajs.com/es/index.html) / [公式ドキュメントサイト](https://ofajs.com/ja/index.html) / [공식 문서 사이트](https://ofajs.com/ko/index.html)
@@ -17,7 +17,7 @@ ofa.js can be used as a library like jQuery, and it can also be used to develop 
 To start using ofa.js, simply add a reference to ofa.js in your HTML file.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.20/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js@4.6.21/dist/ofa.min.js"></script>
 ```
 
 ### Debug Mode
@@ -25,7 +25,7 @@ To start using ofa.js, simply add a reference to ofa.js in your HTML file.
 To better facilitate development and debugging, ofa.js provides a debug mode feature. In debug mode, component templates will enable the sourcemap feature, allowing you to more easily locate and solve problems. Enabling debug mode is very simple; just add the `#debug` parameter to the ofa.js reference URL:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.20/dist/ofa.js#debug"></script>
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js@4.6.21/dist/ofa.js#debug"></script>
 ```
 
 ## Usage Experience
@@ -46,7 +46,7 @@ However, with ofa.js, you can quickly create a component by simply creating an H
 
 ```html
 <!-- Using the encapsulated component -->
-<script src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@4.6.20/dist/ofa.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js@4.6.21/dist/ofa.min.js"></script>
 <l-m src="./my-component.html"></l-m>
 <my-component>
     ...
@@ -69,4 +69,4 @@ ofa.js is also a natural micro front-end framework, and you will understand this
 
 ## License
 
-ofa.js is licensed under the [MIT License](https://github.com/kirakiray/ofa.js/blob/main/LICENSE).
+ofa.js is licensed under the [MIT License](https://github.com/ofajs/ofa.js/blob/main/LICENSE).

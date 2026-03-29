@@ -1,0 +1,32 @@
+<template component>
+  <style>
+    :host {
+      display: block;
+      padding: 2px 0 8px;
+    }
+    ::slotted(a) {
+      color: var(--md-sys-color-primary);
+    }
+    ::slotted(p) {
+      margin: 0;
+      margin-top: 4px;
+      padding: 0;
+      font-size: 14px;
+      color: var(--md-sys-color-normal);
+      line-height: 0px;
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+  </style>
+  <div>
+    <slot></slot>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "api-item",
+        data: {},
+      };
+    };
+  </script>
+</template>

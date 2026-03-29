@@ -1,0 +1,66 @@
+<template component>
+  <style>
+    :host {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 8px;
+      font-size: 18px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bubble {
+      background-color: #f0f0f0;
+      padding: 8px 12px;
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      line-height: 1.4;
+      color: #333;
+      position: relative;
+      white-space: nowrap;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    ::slotted(img[slot="avatar"]) {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin-bottom: 0;
+    }
+    ::slotted(*) {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <slot name="avatar" class="avatar"></slot>
+  <div class="container">
+    <div class="bubble" on:click="clickBubble">
+      <slot></slot>
+    </div>
+  </div>
+  <div class="dialog">
+    <slot name="article"></slot>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "chat-bubble",
+        data: {},
+        proto: {
+          clickBubble() {},
+        },
+      };
+    };
+  </script>
+</template>

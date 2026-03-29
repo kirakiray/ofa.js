@@ -1,0 +1,10 @@
+index: ./index.html
+header: # 会在 headers 上显示的导航地址
+  - name: Tutoriales
+    url: ./documentation/_config.yaml
+  - name: API
+    url: ./api/_config.yaml
+  - name: Otros
+    content:
+      - name: Preguntas y respuestas de escenarios
+        url: ./scenarios/_config.yaml

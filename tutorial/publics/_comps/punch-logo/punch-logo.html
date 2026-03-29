@@ -1,0 +1,163 @@
+<template component>
+  <style>
+    :host {
+      display: inline-block;
+      cursor: pointer;
+    }
+    .container {
+      display: flex;
+      font-size: 30px;
+      align-items: center;
+      position: relative;
+    }
+    .content {
+      display: flex;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .fly-area {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 50px;
+      transform: translate(0, -50%);
+    }
+    .fly-item {
+      position: relative;
+      left: 0;
+      width: 50px;
+      transition: all 0.6s ease;
+    }
+    .fly-item.flying {
+      left: -160px;
+      transform: rotate(30deg);
+    }
+    .content.punching {
+      animation: punchMove 0.5s ease-out forwards;
+    }
+    @keyframes punchMove {
+      0% {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      50% {
+        transform: translateX(-10%);
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    ::slotted(img[logo]) {
+      width: 100px;
+      height: 100px;
+      transform: rotate(-90deg);
+      opacity: 0;
+      transition: transform 0.3s ease;
+    }
+    ::slotted(h2) {
+      opacity: 0;
+      transition: all 0.6s ease;
+    }
+    ::slotted(*) {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <div class="container" on:click="startAnime">
+    <div class="fly-area"></div>
+    <div class="content">
+      <slot></slot>
+    </div>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "punch-logo",
+        data: {},
+        proto: {
+          startAnime() {
+            const host = this;
+            const slot = host.shadow.$("slot");
+            const flyArea = host.shadow.$(".fly-area");
+            flyArea.html = "";
+
+            const content = host.shadow.$(".content");
+            const logoImg = this.$("img[logo]");
+            const h2 = this.$("h2");
+
+            content.classList.remove("punching");
+            content.style.transform = "";
+            content.style.opacity = "";
+            if (logoImg) {
+              logoImg.style.opacity = 0;
+              logoImg.style.transform = "rotate(-90deg)";
+            }
+            if (h2) {
+              h2.style.transitionDuration = "0s";
+              h2.style.opacity = 0;
+              setTimeout(() => {
+                h2.style.transitionDuration = "";
+              }, 0);
+            }
+
+            if (!slot || !flyArea) return;
+
+            const flyElements = this.all("[slot='fly']");
+            const shuffled = flyElements
+              .sort(() => Math.random() - 0.5)
+              .slice(0, 3);
+
+            shuffled.forEach((el, index) => {
+              const clone = el.clone(true);
+              clone.classList.add("fly-item");
+              clone.attr("slot", null);
+              clone.style.zIndex = "0";
+              clone.style.right = "-150px";
+              flyArea.push(clone);
+            });
+
+            setTimeout(() => {
+              host.shadow.$(".content").classList.add("punching");
+              if (logoImg) {
+                logoImg.style.opacity = 1;
+              }
+
+              const flyItems = host.shadow.all(".fly-item");
+              flyItems.forEach((item, index) => {
+                const randomY = (Math.random() - 0.5) * 100;
+                const randomRotate = (Math.random() - 0.5) * 60;
+                setTimeout(
+                  () => {
+                    item.style.transform = `translateY(${randomY}px) rotate(${randomRotate}deg)`;
+                    item.classList.add("flying");
+                    setTimeout(() => {
+                      item.style.opacity = 0;
+                    }, 600);
+                  },
+                  100 + index * 10,
+                );
+              });
+
+              setTimeout(() => {
+                if (logoImg) {
+                  logoImg.style.transform = "rotate(0deg)";
+                }
+                const h2 = this.$("h2");
+                if (h2) {
+                  h2.style.opacity = 1;
+                }
+              }, 500);
+            }, 100);
+          },
+        },
+        attached() {
+          setTimeout(() => {
+            this.startAnime();
+          }, 800);
+        },
+      };
+    };
+  </script>
+</template>

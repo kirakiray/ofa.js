@@ -1,0 +1,31 @@
+<template component>
+  <l-m src="./api-item.html"></l-m>
+  <style>
+    :host {
+      box-sizing: border-box;
+      display: block;
+      background-color: var(--md-sys-color-on-normal);
+      padding: 8px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    ::slotted(h3) {
+      margin: 0;
+      padding: 8px 0 8px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--md-sys-color-normal);
+    }
+  </style>
+  <div>
+    <slot></slot>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "api-list",
+        data: {},
+      };
+    };
+  </script>
+</template>

@@ -1,4 +1,4 @@
-//! ofa.js - v4.6.20 https://github.com/kirakiray/ofa.js  (c) 2018-2026 YAO
+//! ofa.js - v4.6.21 https://github.com/ofajs/ofa.js  (c) 2018-2026 YAO
 // const error_origin = "http://127.0.0.1:5793/errors";
 const error_origin = "https://ofajs.github.io/ofa-errors/errors";
 
@@ -7229,7 +7229,7 @@ const wrapTemp = (template) => {
   });
 };
 
-const version = "ofa.js@4.6.20";
+const version = "ofa.js@4.6.21";
 $.version = version.replace("ofa.js@", "");
 
 let isDebug = false;

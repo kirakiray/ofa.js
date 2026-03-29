@@ -1,0 +1,25 @@
+{
+  "name": "ofa-js-ssr-demo",
+  "version": "1.0.0",
+  "description": "SSR demo using ofa.js with Express.js",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "ofa.js",
+    "ssr",
+    "express",
+    "isomorphic-rendering"
+  ],
+  "author": "ofa.js team",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^4.0.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "ofa.js",
-  "version": "4.6.20",
+  "version": "4.6.21",
   "description": "pure web front-end componentized framework that does not require the use of nodejs",
   "scripts": {
     "bump": "node scripts/bump-version.js && npm i && npm run build",
@@ -15,8 +15,7 @@
   },
   "author": {
     "name": "YAO",
-    "email": "kirayao@hotmail.com",
-    "url": "https://kirakiray.com/"
+    "email": "kirayao@hotmail.com"
   },
   "exports": {
     "require": "./dist/ofa.min.js",
@@ -43,12 +42,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kirakiray/ofa.js.git"
+    "url": "git+https://github.com/ofajs/ofa.js.git"
   },
   "bugs": {
-    "url": "https://github.com/kirakiray/ofa.js/issues"
+    "url": "https://github.com/ofajs/ofa.js/issues"
   },
-  "homepage": "https://github.com/kirakiray/ofa.js",
+  "homepage": "https://github.com/ofajs/ofa.js",
   "startyear": "2018",
   "keywords": [
     "ofa.js",

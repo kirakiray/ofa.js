@@ -1,0 +1,324 @@
+<template component>
+  <style>
+    :host {
+      position: relative;
+      display: block;
+      overflow: hidden;
+    }
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .node {
+      position: absolute;
+      background: var(--md-sys-color-surface, #fff);
+      border: 2px solid var(--md-sys-color-primary, #5b9bd5);
+      border-radius: 6px;
+      padding: 10px 16px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      z-index: 2;
+      transition: all 0.2s;
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 18px;
+      color: var(--md-sys-color-on-surface, #333);
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .line {
+      stroke: var(--md-sys-color-primary, #5b9bd5);
+      stroke-width: 2;
+      fill: none;
+      opacity: 0.8;
+    }
+    .arrow {
+      fill: var(--md-sys-color-primary, #5b9bd5);
+    }
+  </style>
+  <div class="container">
+    <svg id="svg"></svg>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "flow-chart",
+        data: {
+          nodes: [],
+          lines: [],
+        },
+        proto: {
+          initResizeObserver() {
+            if (this.resizeObserver) {
+              this.resizeObserver.disconnect();
+            }
+
+            this.resizeObserver = new ResizeObserver(() => {
+              this.renderChart();
+            });
+
+            this.resizeObserver.observe(this.ele);
+          },
+
+          async renderChart() {
+            this.clear();
+
+            const children = Array.from(this.ele.querySelectorAll("[name]"));
+            const nodeMap = new Map();
+            const nodes = [];
+            const lines = [];
+
+            children.forEach((child, index) => {
+              const name = child.getAttribute("name");
+              const to = child.getAttribute("to");
+              const content = child.innerHTML || name;
+
+              nodeMap.set(name, {
+                element: child,
+                to,
+                index,
+              });
+
+              nodes.push({
+                name,
+                content,
+                x: 0,
+                y: 0,
+                row: 0,
+              });
+
+              if (to) {
+                lines.push({
+                  from: name,
+                  to,
+                });
+              }
+            });
+
+            const containerRect = this.ele.getBoundingClientRect();
+            const horizontalGap = 40;
+            const verticalGap = 60;
+
+            const tempNodes = [];
+            nodes.forEach((node) => {
+              const nodeEl = document.createElement("div");
+              nodeEl.className = "node";
+              nodeEl.innerHTML = node.content;
+              nodeEl.style.visibility = "hidden";
+              nodeEl.style.position = "absolute";
+              this.shadow.ele.querySelector(".container").appendChild(nodeEl);
+              const rect = nodeEl.getBoundingClientRect();
+              node.width = rect.width;
+              node.height = rect.height;
+              tempNodes.push(nodeEl);
+            });
+
+            tempNodes.forEach((el) => el.remove());
+
+            let currentX = 0;
+            let currentY = 16;
+            let rowStartIndex = 0;
+            let maxRowHeight = 0;
+            const rowWidths = [];
+
+            nodes.forEach((node, index) => {
+              if (currentX + node.width > containerRect.width && index > 0) {
+                rowWidths.push(currentX - horizontalGap);
+                for (let i = rowStartIndex; i < index; i++) {
+                  nodes[i].y = currentY + (maxRowHeight - nodes[i].height) / 2;
+                }
+                currentY += maxRowHeight + verticalGap;
+                currentX = 0;
+                maxRowHeight = 0;
+                rowStartIndex = index;
+              }
+
+              node.x = currentX;
+              node.row = rowWidths.length;
+              currentX += node.width + horizontalGap;
+              maxRowHeight = Math.max(maxRowHeight, node.height);
+            });
+
+            rowWidths.push(currentX - horizontalGap);
+            for (let i = rowStartIndex; i < nodes.length; i++) {
+              nodes[i].y = currentY + (maxRowHeight - nodes[i].height) / 2;
+            }
+
+            const totalHeight = currentY + maxRowHeight + 16;
+            const startY = Math.max(
+              16,
+              (containerRect.height - totalHeight) / 2,
+            );
+
+            for (let row = 0; row <= rowWidths.length; row++) {
+              const rowNodes = nodes.filter((n) => n.row === row);
+              if (rowNodes.length === 0) continue;
+
+              const rowWidth = rowWidths[row] || 0;
+              const startX = (containerRect.width - rowWidth) / 2;
+
+              rowNodes.forEach((node) => {
+                node.x += startX;
+                node.y += startY;
+              });
+            }
+
+            this.renderNodes(nodes);
+            const extraHeight = this.renderLines(nodes, lines, nodeMap);
+
+            if (extraHeight > 0) {
+              const minHeight = totalHeight + startY + extraHeight;
+              this.ele.style.minHeight = `${minHeight}px`;
+            }
+          },
+
+          clear() {
+            const container = this.shadow.ele.querySelector(".container");
+            const nodes = container.querySelectorAll(".node");
+            nodes.forEach((node) => node.remove());
+
+            const svg = this.shadow.ele.querySelector("#svg");
+            svg.innerHTML = "";
+
+            this.ele.style.minHeight = "";
+          },
+
+          renderNodes(nodes) {
+            const container = this.shadow.ele.querySelector(".container");
+
+            nodes.forEach((node) => {
+              const nodeEl = document.createElement("div");
+              nodeEl.className = "node";
+              nodeEl.setAttribute("data-name", node.name);
+              nodeEl.style.left = `${node.x}px`;
+              nodeEl.style.top = `${node.y}px`;
+              nodeEl.innerHTML = node.content;
+              container.appendChild(nodeEl);
+            });
+          },
+
+          renderLines(nodes, lines, nodeMap) {
+            const svg = this.shadow.ele.querySelector("#svg");
+            svg.innerHTML = "";
+
+            let maxExtraHeight = 0;
+
+            lines.forEach((line) => {
+              const fromNode = nodes.find((n) => n.name === line.from);
+              const toNode = nodes.find((n) => n.name === line.to);
+
+              if (!fromNode || !toNode) return;
+
+              const path = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "path",
+              );
+
+              let d;
+              let isVerticalArrow = false;
+
+              if (fromNode.row === toNode.row) {
+                const x1 = fromNode.x + fromNode.width;
+                const y1 = fromNode.y + fromNode.height / 2;
+                const x2 = toNode.x;
+                const y2 = toNode.y + toNode.height / 2;
+                const midX = (x1 + x2) / 2;
+                d = `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+              } else {
+                isVerticalArrow = true;
+                const x1 = fromNode.x + fromNode.width / 2;
+                const y1 = fromNode.y + fromNode.height;
+                const x2 = toNode.x + toNode.width / 2;
+                const y2 = toNode.y;
+
+                const midY = (y1 + y2) / 2;
+                d = `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
+
+                const lineEndY = y2;
+                const extraHeight =
+                  lineEndY - (fromNode.y + fromNode.height) + 20;
+                maxExtraHeight = Math.max(maxExtraHeight, extraHeight);
+              }
+
+              path.setAttribute("d", d);
+              path.setAttribute("class", "line");
+
+              const markerId = `arrow-${line.from}-${line.to}`;
+              path.setAttribute("marker-end", `url(#${markerId})`);
+
+              let marker = svg.querySelector(`#${markerId}`);
+              if (!marker) {
+                marker = document.createElementNS(
+                  "http://www.w3.org/2000/svg",
+                  "marker",
+                );
+                marker.setAttribute("id", markerId);
+                marker.setAttribute("markerWidth", "10");
+                marker.setAttribute("markerHeight", "10");
+                marker.setAttribute("refX", "9");
+                marker.setAttribute("refY", "3");
+                marker.setAttribute("orient", "auto");
+                marker.setAttribute("markerUnits", "strokeWidth");
+
+                const arrowPath = document.createElementNS(
+                  "http://www.w3.org/2000/svg",
+                  "path",
+                );
+                arrowPath.setAttribute("d", "M0,0 L0,6 L9,3 z");
+                arrowPath.setAttribute("class", "arrow");
+                marker.appendChild(arrowPath);
+
+                const defs =
+                  svg.querySelector("defs") ||
+                  document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "defs",
+                  );
+                if (!svg.querySelector("defs")) {
+                  svg.insertBefore(defs, svg.firstChild);
+                }
+                defs.appendChild(marker);
+              }
+
+              svg.appendChild(path);
+            });
+
+            return maxExtraHeight;
+          },
+        },
+        async attached() {
+          await this.renderChart();
+          this.initResizeObserver();
+        },
+      };
+
+      function assignLevel(nodeName, level, nodeMap, nodeLevelMap, levels) {
+        if (nodeLevelMap.has(nodeName)) {
+          return;
+        }
+
+        nodeLevelMap.set(nodeName, level);
+
+        if (!levels[level]) {
+          levels[level] = [];
+        }
+        levels[level].push(nodeName);
+
+        const info = nodeMap.get(nodeName);
+        if (info && info.to) {
+          assignLevel(info.to, level + 1, nodeMap, nodeLevelMap, levels);
+        }
+      }
+    };
+  </script>
+</template>

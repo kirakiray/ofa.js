@@ -1,0 +1,196 @@
+<template page>
+  <l-m
+    src="https://playground.ofajs.com/comps/o-playground/o-playground.html"
+  ></l-m>
+  <style>
+    :host {
+      display: block;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .top {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      margin: 4px;
+      padding: 4px 16px;
+      text-decoration: underline;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn.active {
+      text-decoration: none;
+      background-color: var(--md-sys-color-primary-container);
+    }
+  </style>
+  <div class="container">
+    <div class="top">
+      <div class="btn" class:active="active === 0" on:click="active = 0">
+        Render Text
+      </div>
+      <div class="btn" class:active="active === 1" on:click="active = 1">
+        Set Properties
+      </div>
+      <div class="btn" class:active="active === 2" on:click="active = 2">
+        Two-way Binding
+      </div>
+      <div class="btn" class:active="active === 3" on:click="active = 3">
+        Bind Events
+      </div>
+      <div class="btn" class:active="active === 4" on:click="active = 4">
+        Conditional Render
+      </div>
+      <div class="btn" class:active="active === 5" on:click="active = 5">
+        List Render
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 32px; min-height: 400px">
+    <o-if :value="active === 0">
+      <o-playground name="Text Rendering" style="--editor-height: 400px">
+        <code path="render-text.html">
+          <template page>
+            <h1>{{title}}</h1>
+            <p>Hello, {{name}}!</p>
+            <p>1 + 1 = {{1 + 1}}</p>
+            <script>
+              export default {
+                data: {
+                  title: "Welcome",
+                  name: "World",
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-if>
+    <o-else-if :value="active === 1">
+      <o-playground name="Property Binding" style="--editor-height: 400px">
+        <code>
+          <template page>
+            <h1 :text="title"></h1>
+            <p :html="content"></p>
+            <script>
+              export default {
+                data: {
+                  title: "Set Properties",
+                  content: "<strong>Bold text</strong> and <em>italic</em>",
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 2">
+      <o-playground name="Two-way Binding" style="--editor-height: 400px">
+        <code>
+          <template page>
+            <p>Your input: {{message}}</p>
+            <input
+              type="text"
+              sync:value="message"
+              placeholder="Type something"
+            />
+            <script>
+              export default {
+                data: {
+                  message: "",
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 3">
+      <o-playground name="Counter" style="--editor-height: 400px">
+        <code>
+          <template page>
+            <h2>Counter: {{count}}</h2>
+            <button on:click="count++">+</button>
+            <button on:click="count--">-</button>
+            <button on:click="count = 0">Reset</button>
+            <script>
+              export default {
+                data: {
+                  count: 0,
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 4">
+      <o-playground name="Conditional Render" style="--editor-height: 400px">
+        <code>
+          <template page>
+            <p>{{status}}</p>
+            <o-if :value="count % 2 === 0">
+              <p>Even: {{count}}</p>
+            </o-if>
+            <o-else>
+              <p>Odd: {{count}}</p>
+            </o-else>
+            <button on:click="count++">Next</button>
+            <script>
+              export default {
+                data: {
+                  count: 0,
+                  status: "Click to test",
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+    <o-else-if :value="active === 5">
+      <o-playground name="List Render" style="--editor-height: 400px">
+        <code>
+          <template page>
+            <h2>Todo List</h2>
+            <ul>
+              <o-fill :value="todos">
+                <li>
+                  <input type="checkbox" :checked="$data.done" disabled />
+                  {{$data.text}}
+                </li>
+              </o-fill>
+            </ul>
+            <script>
+              export default {
+                data: {
+                  todos: [
+                    { text: "Learn ofa.js", done: true },
+                    { text: "Build a project", done: false },
+                    { text: "Deploy to production", done: false },
+                  ],
+                },
+              };
+            </script>
+          </template>
+        </code>
+      </o-playground>
+    </o-else-if>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        data: {
+          active: 0,
+        },
+      };
+    };
+  </script>
+</template>

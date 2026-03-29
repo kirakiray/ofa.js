@@ -1,0 +1,10 @@
+index: ./index.html
+header: # headersに表示されるナビゲーションアドレス
+  - name: チュートリアル
+    url: ./documentation/_config.yaml
+  - name: API
+    url: ./api/_config.yaml
+  - name: その他
+    content:
+      - name: シナリオQ&A
+        url: ./scenarios/_config.yaml
