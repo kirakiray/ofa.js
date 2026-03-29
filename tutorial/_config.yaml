@@ -5,9 +5,12 @@ github: https://github.com/ofajs/ofa.js
 languages:
   - cn
   - en
+  - t-cn
   - ja
   - ko
   - es
+  - fr
+  - de
 logoImg: ./logo.svg
 logoName: ofa.js
 googleAnalytics: >-

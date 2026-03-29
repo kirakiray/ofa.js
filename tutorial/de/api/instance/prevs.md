@@ -1,0 +1,24 @@
+# prevs
+
+
+
+Mit der Eigenschaft `prevs` können Sie problemlos alle vorherigen benachbarten Elementinstanzen des aktuellen Elements abrufen, die als Array zurückgegeben werden.
+
+<o-playground name="prevs - Vorige Elemente" style="--editor-height: 320px">
+  <code path="demo.html">
+    <template>
+      <ul>
+        <li>I am 0</li>
+        <li>I am 1</li>
+        <li id="target">I am target</li>
+        <li>I am 3</li>
+      </ul>
+      <script>
+        setTimeout(()=>{
+          \$('#target').prevs.forEach(e => e.text = 'change text');
+        },500);
+      </script>
+    </template>
+  </code>
+</o-playground>
+

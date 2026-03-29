@@ -1,0 +1,74 @@
+- name: Einführung
+  url: ./introduction.md
+- name: Erste Schritte
+  content:
+    - name: Skript-Referenz
+      url: ./script-reference.md
+    - name: Erste App erstellen
+      url: ./create-first-app.md
+- name: Schnellstart
+  url: ./quick-start.md
+- name: Template-Syntax
+  content:
+    - name: Inhalts-Rendering
+      url: ./content-rendering.md
+    - name: Event-Bindung
+      url: ./event-binding.md
+    - name: Reaktion auf Eigenschaften
+      url: ./property-response.md
+    - name: Eigenschaftsbindung
+      url: ./property-binding.md
+    - name: Klassen- und Stilbindung
+      url: ./class-style-binding.md
+    - name: Bedingtes Rendering
+      url: ./conditional-rendering.md
+    - name: Listen-Rendering
+      url: ./list-rendering.md
+    - name: Berechnete Eigenschaften
+      url: ./computed-properties.md
+    - name: Beobachter
+      url: ./watchers.md
+    - name: Lebenszyklus
+      url: ./lifecycle.md
+- name: Komponenten
+  content:
+    - name: Komponente erstellen
+      url: ./create-component.md
+    - name: Feature-Attribute übergeben
+      url: ./inherit-attributes.md
+    - name: Slots
+      url: ./slots.md
+    - name: Tiefes Eigenschafts-Binding verstehen
+      url: ./deep-property-binding.md
+    - name: Benutzerdefinierte Events
+      url: ./custom-events.md
+- name: App & Skalierung
+  content:
+    - name: Mikro-App
+      url: ./micro-app.md
+    - name: App-Konfiguration und zugehörige Funktionen
+      url: ./app-configuration.md
+    - name: Single-Page-Anwendung
+      url: ./routes.md
+    - name: Verschachtelte Seiten/Routen
+      url: ./nested-routes.md
+    - name: SSR
+      url: ./ssr.md
+- name: State-Management
+  content:
+    - name: Was ist State-Management?
+      url: ./state-management.md
+    - name: Kontext-State
+      url: ./context-state.md
+    - name: Stil-Abfrage
+      url: ./match-var.md
+- name: Produktion & Deployment
+  url: ./build-app.md
+- name: Weitere Komponenten
+  content:
+    - name: Host-Stile injizieren
+      url: ./inject-host-style.md
+    - name: Nicht-explizite Komponente
+      url: ./non-explicit-component.md
+    - name: replace-temp-Komponente
+      url: ./replace-template.md

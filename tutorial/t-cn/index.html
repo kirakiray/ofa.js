@@ -1,0 +1,303 @@
+<title>ofa.js - 漸進式微前端框架</title>
+
+<l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
+
+<center-block>
+  <punch-logo>
+    <img logo="" src="../img/logo.svg" alt="">
+    <h2>ofa.js</h2>
+    <img src="../publics/sources/webpack.svg" slot="fly" alt="webpack">
+    <img src="../publics/sources/npm.svg" slot="fly" alt="npm">
+    <img src="../publics/sources/nodejs.svg" slot="fly" alt="nodejs">
+    <img src="../publics/sources/esbuild.svg" slot="fly" alt="esbuild">
+    <img src="../publics/sources/pnpm.svg" slot="fly" alt="pnpm">
+    <img src="../publics/sources/yarn.svg" slot="fly" alt="yarn">
+    <img src="../publics/sources/bun.svg" slot="fly" alt="bun">
+    <img src="../publics/sources/deno.svg" slot="fly" alt="deno">
+    <img src="../publics/sources/rollup.svg" slot="fly" alt="rollup">
+    <img src="../publics/sources/typescript.svg" slot="fly" alt="typescript">
+    <img src="../publics/sources/lerna.svg" slot="fly" alt="lerna">
+  </punch-logo>
+  <h2 style="margin: 32px 0 16px">漸進式微前端框架</h2>
+  <p>
+    無論是搭建簡單頁面、打造交互式應用，還是構建復雜系統，ofa.js 都能遊刃有餘。
+  </p>
+  <div style="padding: 16px">
+    <p-button size="large">
+      <a href="./documentation/create-first-app.md">學習 ofa.js</a>
+    </p-button>
+  </div>
+</center-block>
+
+<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
+
+<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
+
+<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
+
+<center-block style="--container-max-width: 100%; padding: 128px 0">
+  <h2>近乎銀彈型的前端框架</h2>
+  <p>無論是什麼應用場景，都適閤使用 ofa.js。</p>
+  <flow-container style="height: 300px; width: 100%">
+    <chat-bubble id="case1-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
+      老子學不動瞭，不想看妳們的文檔，能用的上嗎？
+    </chat-bubble>
+    <chat-bubble id="case2-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
+      我想在老舊項目臨時加個功能
+    </chat-bubble>
+    <chat-bubble id="case3-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
+      我是開發新手，被Nodejs 和 npm 勸退瞭
+    </chat-bubble>
+    <chat-bubble id="case4-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
+      開發一個龐大的購物商城系統，妳們支撐得瞭嗎？
+    </chat-bubble>
+    <chat-bubble id="case5-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
+      我是後端開發，我隻想用後端的模闆引擎來開發，使用 ofa.js
+      閤適嗎？</chat-bubble>
+  </flow-container>
+  <p-button style="margin-top: 16px" size="large" variant="outlined">
+    <a href="https://github.com/ofajs/discussion/discussions"> 給我們留言 </a>
+  </p-button>
+  <anchor-dialog>
+    <article for="#case1-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
+        老子學不動瞭，不想看妳們的文檔，能用的上嗎？
+      </chat-bubble>
+      <p>無需先學 ofa.js，卽可直接復用基於牠開發的組件。</p>
+      <p>
+        開源組件作者寫完代碼後，其他人隻需照著示例復製幾行，就能瞬間把功能搬進自己的項目。
+      </p>
+    </article>
+    <article for="#case2-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
+        我想在老舊項目臨時加個功能
+      </chat-bubble>
+      <p>隻需在現有項目中通過 script 標籤引入 ofa.js，卽可立卽使用。</p>
+      <p>引入後，各式各樣的組件隨手可得。</p>
+    </article>
+    <article for="#case3-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
+        我是開發新手，被Nodejs 和 npm 勸退瞭
+      </chat-bubble>
+      <p>ofa.js 對新人非常友好，不需要學習 Node.js、npm 等工具。</p>
+      <p>隻需要一個瀏覽器，加上一個任意的靜態服務器，就能開始開發。</p>
+      <p>
+        如菓妳用Chrome瀏覽器，打開
+        <a href="https://core.noneos.com/?redirect=studio" target="_blank" style="color: var(--md-sys-color-primary)">OFA Studio</a>
+        這個在綫工具，就不需要準備靜態服務器瞭，直接開始。
+      </p>
+      <a href="./documentation/create-first-app.md" olink="" style="color: var(--md-sys-color-primary)">敎程：創建第一個應用</a>
+    </article>
+    <article for="#case4-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
+        開發一個龐大的購物商城系統，妳們支撐得瞭嗎？
+      </chat-bubble>
+      <p>ofa.js 非常適閤大型項目，因爲牠采用微前端的架構模式。</p>
+      <p>
+        妳可以將商城系統拆分成足夠細的需求，逐個組件開發，放到獨立的文件夾上，通過靜態服務器就能直接預覽組件效菓。
+      </p>
+      <p>
+        最後逐個組裝成一個龐大的系統。ofa.js
+        的微前端模式，正是解決鉅石應用的良藥。
+      </p>
+      <p>
+        可以參考案例
+        <a href="https://os.noneos.com/" target="_blank" style="color: var(--md-sys-color-primary)">NoneOS</a>，這是使用 ofa.js 開發的操作系統，規模非常龐大
+      </p>
+    </article>
+    <article for="#case5-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
+        我是後端開發，我隻想用後端的模闆引擎來開發，使用 ofa.js 閤適嗎？
+      </chat-bubble>
+      <p>
+        ofa.js 的 SSR 不需要和 Node.js 綁定，隻要妳遵守 SCSR
+        規則，就能使用任意後端語言進行模闆引擎開發。
+      </p>
+      <p>
+        詳細參考
+        <a href="./documentation/ssr.md" style="color: var(--md-sys-color-primary)" olink="">ofa.js SSR</a>
+      </p>
+    </article>
+  </anchor-dialog>
+</center-block>
+
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
+<style>
+  .w-title {
+    padding: 24px 0 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--md-sys-color-normal);
+  }
+</style>
+
+<center-block>
+  <h2>🤖 更適閤AI使用的前端框架 🤖</h2>
+  <p>不走編譯的流程，直接讓代碼跑起來。</p>
+  <div class="w-title">
+    AI使用
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b> 生成前端項目的流程
+  </div>
+  <flow-chart style="width: 100%; height: 100px">
+    <div name="ai-model" to="container">AI大模型</div>
+    <div name="container" to="preview">部署代碼到靜態容器</div>
+    <div name="preview">預覽項目</div>
+  </flow-chart>
+  <div class="w-title">AI使用當前主流前端框架生成項目的流程</div>
+  <flow-chart style="width: 100%; height: 100px">
+    <div name="ai-model" to="cloud-container">AI大模型</div>
+    <div name="cloud-container" to="init">創建雲端容器</div>
+    <div name="init" to="deploy">安裝依賴</div>
+    <div name="deploy" to="preview">部署和編譯代碼</div>
+    <div name="preview">預覽項目</div>
+  </flow-chart>
+
+  <p-button size="large">
+    <a href="./scenarios/more-suitable-for-ai.md">査看詳情</a>
+  </p-button>
+</center-block>
+
+<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
+
+<center-block>
+  <h2>基於 Web Components 開發</h2>
+  <p>妳可以在任何支持 Web Components 的平台上使用 ofa.js</p>
+  <support-platforms></support-platforms>
+</center-block>
+
+<center-block>
+  <h2>極低使用門檻</h2>
+  <p>使用基於 ofa.js 開發的組件，不需要考慮依賴和配置問題</p>
+  <o-playground name="Punch Demo" style="--editor-height: 300px; width: 100%">
+    <code>
+      <template>
+        <!-- 加載開發好的 punch-logo 組件 -->
+        <l-m src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"></l-m>
+        <!-- 使用 punch-logo 組件 -->
+        <punch-logo style="margin: 50px 0 0 100px">
+          <img src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg" logo="" height="90">
+          <h2>不加班瞭</h2>
+          <p slot="fly">下班給我</p>
+          <p slot="fly">遲點下班</p>
+          <p slot="fly">周末加班</p>
+        </punch-logo>
+      </template>
+    </code>
+  </o-playground>
+</center-block>
+
+<center-block>
+  <h2>一步封裝組件，擺脫繁瑣流程</h2>
+  <p>
+    過去，妳要先經歷 Node.js ➡️ npm ➡️ Webpack
+    等一系列學習，纔能邁入封裝組件的第一步
+  </p>
+  <p>現在，妳隻需要一個文件</p>
+  <o-playground name="My Switch" style="--editor-height: 500px">
+    <code path="demo.html" preview="">
+      <template>
+        <l-m src="./my-switch.html"></l-m>
+        <my-switch></my-switch>
+      </template>
+    </code>
+    <code path="my-switch.html" active="">
+      <template component="">
+        <style>
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            background-color: #ccc;
+            transition: background-color 0.4s;
+            border-radius: 34px;
+            cursor: pointer;
+          }
+
+          .slider {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: transform 0.4s;
+            border-radius: 50%;
+          }
+
+          .switch.checked {
+            background-color: #2196f3;
+          }
+
+          .switch.checked .slider {
+            transform: translateX(26px);
+          }
+        </style>
+        <div class="switch" class:checked="checked" on:click="checked = !checked">
+          <span class="slider"></span>
+        </div>
+        <script>
+          export default async () => {
+            return {
+              tag: "my-switch",
+              data: {
+                checked: true,
+              },
+            };
+          };
+        </script>
+      </template>
+    </code>
+  </o-playground>
+</center-block>
+
+<center-block>
+  <h2>支持多種模闆語法</h2>
+  <o-page src="../publics/_comps/render-case/render-case.html"></o-page>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./documentation/content-rendering.md">學習更多模闆語法</a>
+  </p-button>
+</center-block>
+
+<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
+
+<center-block>
+  <h2>jQuery的精神繼承者</h2>
+  <p>旣支持模闆語法，又能直接操作節點，靈活高效兩不誤</p>
+  <p>API 設計與 jQuery 相似，但更加直觀</p>
+  <split-code style="width: 100%">
+    <pre>      <code>
+// jQuery Code
+$("#target").html("some html code"); // 設置 html
+$("#target").text("set text"); // 設置 text
+var ele_text = $("#target").text(); // 獲取 text
+var parents = $("#target").parents(); // 獲取所有父層的數組
+var child = $("#target").children()[0]; // 獲取第一個子元素
+      </code>
+    </pre>
+    <pre>      <code>
+// ofa.js Code
+$("#target").html = "some html code";  // 設置 html
+$("#target").text = "set text"; // 設置 text
+var ele_text = $("#target").text; // 獲取 text
+var parents = $("#target").parents; // 獲取所有父層的數組
+var child = $("#target")[0]; // 獲取第一個子元素
+      </code>
+      </pre>
+  </split-code>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./api/api.html">査閱API文檔</a>
+  </p-button>
+</center-block>
+
