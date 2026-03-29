@@ -9,6 +9,8 @@ languages:
   - ja
   - ko
   - es
+  - fr
+  - de
 logoImg: ./logo.svg
 logoName: ofa.js
 googleAnalytics: >-

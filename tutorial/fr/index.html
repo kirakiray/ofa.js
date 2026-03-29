@@ -1,0 +1,300 @@
+<title>ofa.js - Cadre micro-frontend progressif</title>
+
+<l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
+
+<center-block>
+  <punch-logo>
+    <img logo="" src="../img/logo.svg" alt="">
+    <h2>ofa.js</h2>
+    <img src="../publics/sources/webpack.svg" slot="fly" alt="webpack">
+    <img src="../publics/sources/npm.svg" slot="fly" alt="npm">
+    <img src="../publics/sources/nodejs.svg" slot="fly" alt="nodejs">
+    <img src="../publics/sources/esbuild.svg" slot="fly" alt="esbuild">
+    <img src="../publics/sources/pnpm.svg" slot="fly" alt="pnpm">
+    <img src="../publics/sources/yarn.svg" slot="fly" alt="yarn">
+    <img src="../publics/sources/bun.svg" slot="fly" alt="bun">
+    <img src="../publics/sources/deno.svg" slot="fly" alt="deno">
+    <img src="../publics/sources/rollup.svg" slot="fly" alt="rollup">
+    <img src="../publics/sources/typescript.svg" slot="fly" alt="typescript">
+    <img src="../publics/sources/lerna.svg" slot="fly" alt="lerna">
+  </punch-logo>
+  <h2 style="margin: 32px 0 16px">Cadre micro-frontend progressif</h2>
+  <p>
+    Que ce soit pour créer une page simple, une application interactive ou un système complexe, ofa.js saura s’en sortir avec brio.
+  </p>
+  <div style="padding: 16px">
+    <p-button size="large">
+      <a href="./documentation/create-first-app.md">Apprendre ofa.js</a>
+    </p-button>
+  </div>
+</center-block>
+
+<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
+
+<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
+
+<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
+
+<center-block style="--container-max-width: 100%; padding: 128px 0">
+  <h2>Un framework frontend presque magique</h2>
+  <p>Quel que soit le scénario d'application, ofa.js est adapté.</p>
+  <flow-container style="height: 300px; width: 100%">
+    <chat-bubble id="case1-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
+      J'en ai marre d'apprendre, je ne veux pas lire votre documentation, est-ce que je peux l'utiliser ?
+    </chat-bubble>
+    <chat-bubble id="case2-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
+      Je veux ajouter une fonctionnalité temporaire à un vieux projet
+    </chat-bubble>
+    <chat-bubble id="case3-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
+      Je suis un débutant en développement, Node.js et npm m'ont découragé
+    </chat-bubble>
+    <chat-bubble id="case4-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
+      Développer un système de centre commercial énorme, est-ce que vous pouvez le supporter ?
+    </chat-bubble>
+    <chat-bubble id="case5-bubble" style="cursor: pointer">
+      <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
+      Je suis un développeur backend, je veux juste utiliser un moteur de templates backend pour développer, est-ce que ofa.js est adapté ?</chat-bubble>
+  </flow-container>
+  <p-button style="margin-top: 16px" size="large" variant="outlined">
+    <a href="https://github.com/ofajs/discussion/discussions"> Laissez-nous un message </a>
+  </p-button>
+  <anchor-dialog>
+    <article for="#case1-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
+        J'en ai marre d'apprendre, je ne veux pas lire votre documentation, est-ce que je peux l'utiliser ?
+      </chat-bubble>
+      <p>Pas besoin d'apprendre ofa.js d'abord, vous pouvez réutiliser directement les composants développés avec.</p>
+      <p>
+        Après que l'auteur du composant open source a écrit le code, les autres n'ont qu'à copier quelques lignes selon l'exemple pour instantanément intégrer la fonctionnalité dans leur projet.
+      </p>
+    </article>
+    <article for="#case2-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
+        Je veux ajouter une fonctionnalité temporaire à un vieux projet
+      </chat-bubble>
+      <p>Il suffit d'introduire ofa.js via une balise script dans le projet existant pour l'utiliser immédiatement.</p>
+      <p>Après l'introduction, une variété de composants est à portée de main.</p>
+    </article>
+    <article for="#case3-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
+        Je suis un débutant en développement, Node.js et npm m'ont découragé
+      </chat-bubble>
+      <p>ofa.js est très convivial pour les débutants, pas besoin d'apprendre Node.js, npm et autres outils.</p>
+      <p>Il suffit d'un navigateur, plus n'importe quel serveur statique, pour commencer à développer.</p>
+      <p>
+        Si vous utilisez Chrome, ouvrez
+        <a href="https://core.noneos.com/?redirect=studio" target="_blank" style="color: var(--md-sys-color-primary)">OFA Studio</a>
+        cet outil en ligne, vous n'aurez pas besoin de préparer un serveur statique, commencez directement.
+      </p>
+      <a href="./documentation/create-first-app.md" olink="" style="color: var(--md-sys-color-primary)">Tutoriel : Créer la première application</a>
+    </article>
+    <article for="#case4-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
+        Développer un système de centre commercial énorme, est-ce que vous pouvez le supporter ?
+      </chat-bubble>
+      <p>ofa.js est très adapté aux grands projets, car il adopte un modèle d'architecture micro-frontend.</p>
+      <p>
+        Vous pouvez décomposer le système de centre commercial en besoins suffisamment fins, développer composant par composant, les placer dans des dossiers indépendants, et prévisualiser l'effet des composants directement via un serveur statique.
+      </p>
+      <p>
+        Enfin, assemblez-les un par un en un système énorme. Le mode micro-frontend d'ofa.js est justement le remède aux applications monolithiques.
+      </p>
+      <p>
+        Vous pouvez vous référer au cas
+        <a href="https://os.noneos.com/" target="_blank" style="color: var(--md-sys-color-primary)">NoneOS</a>, un système d'exploitation développé avec ofa.js, d'une échelle très vaste.
+      </p>
+    </article>
+    <article for="#case5-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
+      <chat-bubble style="margin-bottom: 24px">
+        <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
+        Je suis un développeur backend, je veux juste utiliser un moteur de templates backend pour développer, est-ce que ofa.js est adapté ?
+      </chat-bubble>
+      <p>
+        Le SSR d'ofa.js n'a pas besoin d'être lié à Node.js, tant que vous suivez les règles SCSR, vous pouvez utiliser n'importe quel langage backend pour le développement avec moteur de templates.
+      </p>
+      <p>
+        Référence détaillée
+        <a href="./documentation/ssr.md" style="color: var(--md-sys-color-primary)" olink="">ofa.js SSR</a>
+      </p>
+    </article>
+  </anchor-dialog>
+</center-block>
+
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
+<style>
+  .w-title {
+    padding: 24px 0 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--md-sys-color-normal);
+  }
+</style>
+
+<center-block>
+  <h2>🤖 Framework front-end plus adapté à l’IA 🤖</h2>
+  <p>Pas de compilation : le code s’exécute directement.</p>
+  <div class="w-title">
+    Flux de génération d’un projet front-end par l’IA avec
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b>
+  </div>
+  <flow-chart style="width: 100%; height: 100px">
+    <div name="ai-model" to="container">Grand modèle IA</div>
+    <div name="container" to="preview">Déployer le code dans un conteneur statique</div>
+    <div name="preview">Prévisualiser le projet</div>
+  </flow-chart>
+  <div class="w-title">Flux de génération d’un projet par l’IA avec les frameworks front-end actuels</div>
+  <flow-chart style="width: 100%; height: 100px">
+    <div name="ai-model" to="cloud-container">Grand modèle IA</div>
+    <div name="cloud-container" to="init">Créer un conteneur cloud</div>
+    <div name="init" to="deploy">Installer les dépendances</div>
+    <div name="deploy" to="preview">Déployer et compiler le code</div>
+    <div name="preview">Prévisualiser le projet</div>
+  </flow-chart>
+
+  <p-button size="large">
+    <a href="./scenarios/more-suitable-for-ai.md">Voir les détails</a>
+  </p-button>
+</center-block>
+
+<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
+
+<center-block>
+  <h2>Développement basé sur Web Components</h2>
+  <p>Vous pouvez utiliser ofa.js sur n'importe quelle plateforme supportant Web Components</p>
+  <support-platforms></support-platforms>
+</center-block>
+
+<center-block>
+  <h2>Très faible seuil d'utilisation</h2>
+  <p>Utiliser des composants développés avec ofa.js ne nécessite pas de se soucier des dépendances et des problèmes de configuration</p>
+  <o-playground name="Punch Demo" style="--editor-height: 300px; width: 100%">
+    <code>
+      <template>
+        <!-- Charger le composant punch-logo déjà développé -->
+        <l-m src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"></l-m>
+        <!-- Utiliser le composant punch-logo -->
+        <punch-logo style="margin: 50px 0 0 100px">
+          <img src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg" logo="" height="90">
+          <h2>Plus d'heures supplémentaires</h2>
+          <p slot="fly">Fin du travail pour moi</p>
+          <p slot="fly">Fin du travail plus tard</p>
+          <p slot="fly">Travail le week-end</p>
+        </punch-logo>
+      </template>
+    </code>
+  </o-playground>
+</center-block>
+
+<center-block>
+  <h2>En une seule étape, encapsulez vos composants et débarrassez-vous du processus fastidieux</h2>
+  <p>
+    Autrefois, vous deviez d'abord passer par toute une série d'apprentissages comme Node.js ➡️ npm ➡️ Webpack
+    avant de pouvoir faire le premier pas vers l'encapsulation d'un composant
+  </p>
+  <p>Maintenant, vous n'avez besoin que d'un seul fichier</p>
+  <o-playground name="Mon Interrupteur" style="--editor-height: 500px">
+    <code path="demo.html" preview="">
+      <template>
+        <l-m src="./my-switch.html"></l-m>
+        <my-switch></my-switch>
+      </template>
+    </code>
+    <code path="my-switch.html" active="">
+      <template component="">
+        <style>
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            background-color: #ccc;
+            transition: background-color 0.4s;
+            border-radius: 34px;
+            cursor: pointer;
+          }
+
+          .slider {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: transform 0.4s;
+            border-radius: 50%;
+          }
+
+          .switch.checked {
+            background-color: #2196f3;
+          }
+
+          .switch.checked .slider {
+            transform: translateX(26px);
+          }
+        </style>
+        <div class="switch" class:checked="checked" on:click="checked = !checked">
+          <span class="slider"></span>
+        </div>
+        <script>
+          export default async () => {
+            return {
+              tag: "my-switch",
+              data: {
+                checked: true,
+              },
+            };
+          };
+        </script>
+      </template>
+    </code>
+  </o-playground>
+</center-block>
+
+<center-block>
+  <h2>Prise en charge de plusieurs syntaxes de modèle</h2>
+  <o-page src="../publics/_comps/render-case/render-case.html"></o-page>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./documentation/content-rendering.md">En savoir plus sur la syntaxe de modèle</a>
+  </p-button>
+</center-block>
+
+<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
+
+<center-block>
+  <h2>Héritier spirituel de jQuery</h2>
+  <p>Prend en charge la syntaxe des templates tout en permettant la manipulation directe des nœuds, combinant flexibilité et efficacité</p>
+  <p>La conception de l'API est similaire à celle de jQuery, mais plus intuitive</p>
+  <split-code style="width: 100%">
+    <pre>      <code>
+// Code jQuery
+$("#target").html("some html code"); // Définir le html
+$("#target").text("set text"); // Définir le texte
+var ele_text = $("#target").text(); // Obtenir le texte
+var parents = $("#target").parents(); // Obtenir un tableau de tous les parents
+var child = $("#target").children()[0]; // Obtenir le premier élément enfant
+      </code>
+    </pre>
+    <pre>      <code>
+// Code ofa.js
+$("#target").html = "some html code";  // Définir le html
+$("#target").text = "set text"; // Définir le texte
+var ele_text = $("#target").text; // Obtenir le texte
+var parents = $("#target").parents; // Obtenir un tableau de tous les parents
+var child = $("#target")[0]; // Obtenir le premier élément enfant
+      </code>
+      </pre>
+  </split-code>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./api/api.html">Consulter la documentation API</a>
+  </p-button>
+</center-block>
+
