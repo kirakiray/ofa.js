@@ -2,7 +2,7 @@
 
 Getting a child element instance is very simple: just treat the instance as an array and access its child element instances by numeric index.
 
-<o-playground name="children - 子元素" style="--editor-height: 380px">
+<o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">
     <template>
       <ul>

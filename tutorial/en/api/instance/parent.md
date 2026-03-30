@@ -1,4 +1,4 @@
-# 父级
+# parent
 
 Using the `parent` property, you can obtain the parent element instance of the instance.
 

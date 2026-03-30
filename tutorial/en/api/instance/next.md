@@ -1,4 +1,4 @@
-# 下一个
+# next
 
 Using the `next` property, you can obtain the instance of the next adjacent element.
 

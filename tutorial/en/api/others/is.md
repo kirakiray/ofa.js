@@ -1,4 +1,4 @@
-# 是
+# is
 
 The `is` method is used to check whether an element matches the expression.
 

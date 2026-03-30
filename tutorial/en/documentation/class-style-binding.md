@@ -260,7 +260,7 @@ For Boolean attributes (such as `disabled`, `hidden`), ofa.js decides whether to
 
 You can use `data(xxx)` in styles to bind component data. This is particularly suitable for scenarios where styles need to be dynamically changed based on component data.
 
-<o-playground name="Data Function in Style Tag" style="--editor-height: 500px">
+<o-playground name="Data Functions within Style Tags" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -280,9 +280,9 @@ You can use `data(xxx)` in styles to bind component data. This is particularly s
           transition: all data(time)s ease;
         }
       </style>
-      FontSize: <input type="number" sync:value="size" placeholder="这是一个双向绑定的输入框" />
+      FontSize: <input type="number" sync:value="size" placeholder="This is a two-way bound input box" />
       <br />
-      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="这是一个双向绑定的输入框" />
+      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="This is a two-way bound input box" />
       <p>{{val}} - size: {{size}}</p>
       <script>
         export default async () => {
