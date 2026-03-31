@@ -42,7 +42,7 @@ Vous pouvez également obtenir une instance d'élément personnalisé depuis l'e
 $("test-shadow").shadow.$('selector').method(xxx);
 ```
 
-<o-playground name="shadow - 外部访问" style="--editor-height: 400px">
+<o-playground name="ombre - accès externe" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./test-shadow.html"></l-m>

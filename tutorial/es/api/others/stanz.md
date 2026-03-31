@@ -42,7 +42,7 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar la instancia 
   </code>
 </o-playground>
 
-在这个示例中，我们首先创建了一个 `$` 实例对象 `target`，然后使用 `watch` 方法来监听它的变动。即使我们改动了对象的子对象的值，例如 `target.bbb.child.val` 的值，在 `watch` 方法中都能监听到这些变动并更新 `logger` 元素的内容。这展示了 `$` 实例对象的强大特性，使你能够轻松监控对象的变化。
+En este ejemplo, primero creamos una instancia de objeto `$` llamada `target`, y luego utilizamos el método `watch` para monitorear sus cambios. Incluso si modificamos el valor de un subobjeto, como `target.bbb.child.val`, el método `watch` puede detectar estos cambios y actualizar el contenido del elemento `logger`. Esto demuestra la poderosa característica de la instancia de objeto `$`, permitiéndote monitorear fácilmente los cambios en los objetos.
 
 ## watchTick
 
@@ -129,7 +129,7 @@ Dentro de la plantilla, esto se conoce como [datos no reactivos](../../documenta
 
 A continuación se presenta un ejemplo que demuestra cómo usar valores de atributos que comienzan con un guión bajo para evitar ser monitoreados：
 
-<o-playground name="stanz - 非响应式数据" style="--editor-height: 480px">
+<o-playground name="stanz - Datos no reactivos" style="--editor-height: 480px">
   <code path="demo.html">
     <template>
       <div id="target"></div>
@@ -142,10 +142,10 @@ A continuación se presenta un ejemplo que demuestra cómo usar valores de atrib
           \$("#logger").text = target;
         });
         setTimeout(() => {
-          target._aaa = "I am aaa";
+          target._aaa = "Soy aaa";
         }, 600);
         setTimeout(() => {
-          target._aaa = "change aaa";
+          target._aaa = "cambiar aaa";
         }, 1200);
       </script>
     </template>
@@ -156,7 +156,7 @@ En este ejemplo, creamos una instancia del objeto `$` llamada `target`, y luego 
 
 ## Características básicas
 
-设置在实例上的对象数据将被转换为 Stanz 实例，这种 Stanz 实例允许进行监听。
+Los datos del objeto establecidos en la instancia se convertirán en una instancia de Stanz, y esta instancia de Stanz permite la escucha.
 
 ```javascript
 const obj = {

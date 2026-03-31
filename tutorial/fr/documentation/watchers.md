@@ -52,7 +52,7 @@ Après un changement de données, un traitement anti-rebond est effectué avant 
 
 Les fonctions dans `watch` sont appelées immédiatement après l'initialisation du composant, afin d'établir l'écoute des données. On peut distinguer s'il s'agit du premier appel en vérifiant si `watchers` possède une longueur.
 
-<o-playground name="watchers - 回调参数" style="--editor-height: 700px">
+<o-playground name="watchers - paramètres de rappel" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -69,10 +69,10 @@ Les fonctions dans `watch` sont appelées immédiatement après l'initialisation
           white-space: pre-wrap;
         }
       </style>
-      <p>Prénom : {{name}}</p>
+      <p>Nom : {{name}}</p>
       <p>Âge : {{age}}</p>
-      <input sync:value="name" placeholder="Entrez le prénom" />
-      <input sync:value="age" type="number" placeholder="Entrez l’âge" />
+      <input sync:value="name" placeholder="Entrez un nom" />
+      <input sync:value="age" type="number" placeholder="Entrez un âge" />
       <div class="log">{{log}}</div>
       <script>
         export default async () => {
@@ -87,15 +87,15 @@ Les fonctions dans `watch` sont appelées immédiatement après l'initialisation
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // 获取其中一个
-                this.log += `Propriété « ${watcher.name} » passée de « ${watcher.oldValue} » à « ${watcher.value} »\n`;
+                const watcher = watchers[0]; // Obtenir l'un d'entre eux
+                this.log += `La propriété "${watcher.name}" est passée de "${watcher.oldValue}" à "${watcher.value}"\n`;
               },
               age(newVal,{watchers}) {
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // 获取其中一个
-                this.log += `Propriété « ${watcher.name} » passée de « ${watcher.oldValue} » à « ${watcher.value} »\n`;
+                const watcher = watchers[0]; // Obtenir l'un d'entre eux
+                this.log += `La propriété "${watcher.name}" est passée de "${watcher.oldValue}" à "${watcher.value}"\n`;
               },
             },
           };

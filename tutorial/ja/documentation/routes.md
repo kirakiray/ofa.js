@@ -16,7 +16,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>router test</title>
+    <title>ルーター テスト</title>
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
   </head>
   <body>
@@ -53,9 +53,9 @@
     </template>
   </code>
   <code path="app-config.js">
-    // アプリケーションのホームページアドレス
+    // アプリケーションのホームアドレス
     export const home = "./home.html";
-    // ページ切り替えアニメーション設定
+    // ページ切り替えアニメーションの設定
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -103,15 +103,15 @@
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>Go to About</a>
+      <a href="./about.html" olink>Aboutへ移動</a>
       <br>
       <br>
-      <button on:click="gotoAbout">Go to About Button</button>
+      <button on:click="gotoAbout">Aboutボタンへ移動</button>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Hello ofa.js App Demo",
+              val: "こんにちは ofa.js アプリデモ",
             },
             proto:{
                 gotoAbout(){
@@ -131,13 +131,13 @@
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">Back</button> </div>
+      <div style="padding: 8px;"> <button on:click="back()">戻る</button> </div>
       <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Hello ofa.js App Demo",
+              val: "こんにちは ofa.js アプリデモ",
             },
           };
         };

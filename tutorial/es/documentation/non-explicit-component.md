@@ -7,7 +7,7 @@ ofa.js incluye dos tipos de componentes no explícitos de forma nativa:
 
 Estos dos componentes tienen funciones idénticas a los componentes `o-if` y `o-fill`, pero ellos mismos no se renderizan realmente en el DOM, sino que renderizan sus elementos internos directamente en las áreas correspondientes.
 
-例如：
+Por ejemplo:
 
 ```html
 <style>
@@ -122,7 +122,7 @@ Ejemplo de uso de plantillas con nombre:
 
 ## Descripción del rendimiento
 
-除了功能上的区别外，非显式组件的渲染性能会比显式组件（`o-if`、`o-fill`）**差很多**。这是因为非显式组件不会真实渲染到 DOM 中，需要额外的模拟渲染逻辑来处理内部元素的定位和更新。
+Además de las diferencias funcionales, el rendimiento de renderizado de los componentes no explícitos es **mucho peor** que el de los componentes explícitos (`o-if`, `o-fill`). Esto se debe a que los componentes no explícitos no se renderizan realmente en el DOM, requiriendo lógica de renderizado simulada adicional para manejar el posicionamiento y la actualización de los elementos internos.
 
 Además, los componentes no explícitos pueden provocar errores difíciles de detectar: dado que no se integran realmente en el DOM, las operaciones que dependen de la estructura del DOM (como la vinculación de eventos, el cálculo de estilos o las consultas de bibliotecas de terceros) pueden fallar o comportarse de manera anómala.
 

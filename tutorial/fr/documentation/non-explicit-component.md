@@ -96,7 +96,7 @@ Par exemple :
 
 ## Composant de remplissage x-fill
 
-`x-fill` 与 [o-fill](./list-rendering.md) 的功能完全相同，用于将数组数据渲染为多个 DOM 元素。与 `x-if` 类似，`x-fill` 本身不会渲染到 DOM 中，其内部模板会直接渲染到父级容器。
+`x-fill` a exactement la même fonction que [o-fill](./list-rendering.md) : il sert à rendre des données de tableau sous forme de multiples éléments DOM. Comme `x-if`, `x-fill` ne se rend pas lui-même dans le DOM ; son modèle interne est rendu directement dans le conteneur parent.
 
 ```html
 <ul>

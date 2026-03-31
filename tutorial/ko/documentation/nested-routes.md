@@ -44,7 +44,7 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
   </style>
   <p>{{val}}</p>
   <script>
-    export const parent = 'layout.html'; // ⚠️ 关键代码
+    export const parent = 'layout.html'; // ⚠️ 핵심 코드
 
     export default async () => {
       return {

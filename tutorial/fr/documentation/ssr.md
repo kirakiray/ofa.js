@@ -14,7 +14,7 @@ Le concept central du rendu isomorphe est :- Rendu initial du contenu côté ser
 
 ### Principe de mise en œuvre du rendu isomorphe
 
-ofa.js 的 同构渲染模式基于以下机制：
+Le mode de rendu isomorphe d'ofa.js repose sur les mécanismes suivants :
 
 1. Le serveur génère une page HTML complète avec une structure d'exécution universelle
 2. Le client charge le moteur d'exécution CSR
@@ -48,12 +48,12 @@ ofa.js 的 同构渲染模式基于以下机制：
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Titre de la page</title>
+  <title>Titre de la Page</title>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs#debug" type="module"></script>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
@@ -73,7 +73,7 @@ ofa.js 的 同构渲染模式基于以下机制：
 
 <body>
   <o-app src="/app-config.js">
-    <!-- 页面模块内容插入位置 ⬇️ -->
+    <!-- Emplacement d'insertion du contenu du module de page ⬇️ -->
     <template page>
       <style>
         :host {

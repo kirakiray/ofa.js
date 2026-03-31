@@ -271,7 +271,7 @@ Sie können auf Routenänderungen reagieren, indem Sie auf das `router-change`-E
 ```javascript
 app.on("router-change", (e) => {
   const { data } = e;
-  console.log("路由变化:", data.name); // goto, replace, forward, back
-  console.log("页面地址:", data.src);
+  console.log("Routing-Änderung:", data.name); // goto, replace, forward, back
+  console.log("Seitenadresse:", data.src);
 });
 ```

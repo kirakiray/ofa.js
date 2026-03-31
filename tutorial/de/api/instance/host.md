@@ -65,7 +65,7 @@ Hier ist ein Beispiel, das zeigt, wie Sie mit dem `host`-Attribut eine Instanz d
 
 In diesem Beispiel haben wir eine benutzerdefinierte Komponente `user-card` erstellt und innerhalb der Komponente über `this.host` auf die Methode `sayHi` der Host-Komponente (Seite) zugegriffen, um die Interaktion zwischen Komponente und Host zu realisieren.
 
-Wenn das Element nicht in einer Komponente oder einem Seitenmodul ist, wird der Wert von `host` `null` sein. 例如：
+Wenn sich das Element nicht innerhalb einer Komponente oder Seitenmoduls befindet, ist der Wert von `host` `null`. Beispiel:
 
 <o-playground name="host - Kein Host-Fall" style="--editor-height: 300px">
   <code path="demo.html">

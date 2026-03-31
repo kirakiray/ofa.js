@@ -37,4 +37,4 @@ $el.wrap("<div>new div</div>"); // erreur, pas d’élément parent, impossible 
 $el.$('#target').wrap("<div>new div</div>"); // correct, il y a un élément parent
 ```
 
-Veuillez noter qu'il ne faut pas操作 à l'intérieur de composants de modèle tels que o-fill ou o-if.
+**Veuillez noter de ne pas manipuler à l’intérieur des composants de modèle tels que o-fill ou o-if.**

@@ -57,7 +57,7 @@ Bevor Sie eine Komponente verwenden, müssen Sie die gewünschten Eigenschaften 
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp></demo-comp>
-      <demo-comp user-name="张三" age="25"></demo-comp>
+      <demo-comp user-name="Zhang San" age="25"></demo-comp>
     </template>
   </code>
   <code path="demo-comp.html" active>
@@ -69,8 +69,8 @@ Bevor Sie eine Komponente verwenden, müssen Sie die gewünschten Eigenschaften 
           padding: 8px;
         }
       </style>
-      <p>Benutzername: {{userName}}</p>
-      <p>Alter: {{age}}</p>
+      <p>User Name: {{userName}}</p>
+      <p>Age: {{age}}</p>
       <script>
         export default async ({ load }) => {
           return {
@@ -147,7 +147,7 @@ In der Komponentenvorlage kann mit der Syntax `attr:toKey="fromKey"` das `fromKe
 
 ## Mehrstufige Weitergabe
 
-可以通过多层嵌套组件逐层传递 attribute。
+Attribute können durch mehrschichtige verschachtelte Komponenten weitergegeben werden.
 
 Wenn eine Komponente von anderen Komponenten abhängig ist, muss das Modul der anderen Komponenten in der Komponente importiert werden.
 

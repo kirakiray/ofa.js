@@ -237,12 +237,12 @@ Dans cet exemple :- Le `val` du composant parent et le `fullName` du composant e
 
 ### Différence entre la liaison bidirectionnelle et la liaison de propriété normale
 
-| 特性 | 普通属性绑定 (`:)`) | 双向绑定 (`sync:`) |
+| Caractéristique | Liaison d’attribut normale (`:`) | Liaison bidirectionnelle (`sync:`) |
 |------|-------------------|-------------------|
-| 数据流向 | 单向：父 → 子 | 双向：父 ↔ 子 |
-| 语法 | `:prop="value"` | `sync:prop="value"` |
-| 子组件修改 | 不影响父组件 | 影响父组件 |
-| 适用场景 | 父组件向子组件传递配置 | 需要父子组件同步数据 |### Remarques
+| Flux de données | Unidirectionnel : parent → enfant | Bidirectionnel : parent ↔ enfant |
+| Syntaxe | `:prop="value"` | `sync:prop="value"` |
+| Modification du composant enfant | N’affecte pas le composant parent | Affecte le composant parent |
+| Scénarios applicables | Le composant parent transmet la configuration au composant enfant | Synchronisation des données entre parent et enfant requise |### Remarques
 
 1. **Considérations de performance** : La liaison bidirectionnelle déclenche un nouveau rendu lors des changements de données, elle doit être utilisée avec prudence dans des scénarios complexes.
 2. **Contrôle du flux de données** : Un excès de liaisons bidirectionnelles peut rendre le flux de données difficile à suivre, il est recommandé de concevoir judicieusement les modes de communication entre les composants.

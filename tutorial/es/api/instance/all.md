@@ -4,18 +4,18 @@
 
 Usando el método `all`, puedes obtener todos los elementos de la página que coincidan con el selector CSS y devolver un array que contenga las instancias de estos elementos.
 
-<o-playground name="all - 获取所有元素" style="--editor-height: 360px">
+<o-playground name="all - Obtener todos los elementos" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>I am 1</li>
-        <li>I am 2</li>
-        <li>I am 3</li>
+        <li>Soy 1</li>
+        <li>Soy 2</li>
+        <li>Soy 3</li>
       </ul>
       <script>
         setTimeout(()=>{
           \$.all("li").forEach((item,index)=>{
-            item.text = `change item ${index}`;
+            item.text = `cambiar elemento ${index}`;
           });
         },500);
       </script>
@@ -27,7 +27,7 @@ Usando el método `all`, puedes obtener todos los elementos de la página que co
 
 La instancia también tiene el método `all`, a través del cual se pueden seleccionar y obtener los elementos secundarios.
 
-<o-playground name="all - 获取子元素" style="--editor-height: 360px">
+<o-playground name="all - Obtener elementos hijo" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">

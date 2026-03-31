@@ -6,13 +6,13 @@
 
 Mediante el método `$`, puedes obtener la primera instancia de elemento en la página que coincida con un [selector CSS](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/Selectors/Selector_list) y realizar operaciones sobre él. Aquí tienes un ejemplo:
 
-<o-playground name="$ - 获取元素">
+<o-playground name="$ - Obtener elemento">
   <code path="demo.html">
     <template>
-      <div id="target1">target 1 text</div>
+      <div id="target1">texto objetivo 1</div>
       <script>
         setTimeout(()=>{
-          \$("#target1").text = 'change target 1';
+          \$("#target1").text = 'cambiar objetivo 1';
         },500);
       </script>
     </template>
@@ -42,7 +42,7 @@ La instancia también tiene el método `$`, que puede obtener la primera instanc
 
 No insertes directamente la instancia de un elemento obtenida en otro lugar, ya que esta operación afectará al elemento original. Si necesitas crear una copia, puedes utilizar el método [clone](./clone.md).
 
-<o-playground name="$ - 实例特性" style="--editor-height: 360px">
+<o-playground name="$ - Características de instancia" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="pos1" style="border:red solid 1px;">

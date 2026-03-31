@@ -153,7 +153,7 @@ ofa.js에서 조건부 렌더링은 중요한 기능으로, 데이터 상태에 
 
 ### 폼 검증 상태 표시
 
-<o-playground name="表单验证状态显示示例" style="--editor-height: 500px">
+<o-playground name="폼 검증 상태 표시 예제" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -168,7 +168,7 @@ ofa.js에서 조건부 렌더링은 중요한 기능으로, 데이터 상태에 
         }
       </style>
       <div>
-        <h3>이메일 검증 예시</h3>
+        <h3>이메일 검증 예제</h3>
         <input type="email" :value="email" on:input="email = $event.target.value" placeholder="이메일 주소 입력">
         <o-if :value="email && isValidEmail(email)">
           <p style="color:green;">✓ 이메일 형식이 올바릅니다</p>
@@ -177,7 +177,7 @@ ofa.js에서 조건부 렌더링은 중요한 기능으로, 데이터 상태에 
           <p style="color:red;">✗ 이메일 형식이 올바르지 않습니다</p>
         </o-else-if>
         <o-else>
-          <p style="color:orange;">검증하려면 이메일 주소를 입력해 주세요</p>
+          <p style="color:orange;">이메일 주소를 입력하여 검증해주세요</p>
         </o-else>
       </div>
       <script>

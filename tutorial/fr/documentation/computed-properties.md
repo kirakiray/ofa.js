@@ -79,7 +79,7 @@ Les propriétés calculées sont souvent utilisées pour gérer des logiques de 
           return {
             data: {
               filterText: '',
-              names: ['张3', '李4', '王54']
+              names: ['Zhang3', 'Li4', 'Wang54']
             },
             proto: {
               get filteredNames() {

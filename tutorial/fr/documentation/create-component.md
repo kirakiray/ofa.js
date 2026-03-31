@@ -1,6 +1,6 @@
 # Créer un composant
 
-Dans ofa.js, les composants constituent le mécanisme central pour 实现页面复用和模块化。Un composant est essentiellement un Web Component personnalisé qui, en définissant des templates, des styles et de la logique, permet de créer des éléments d'interface utilisateur réutilisables.
+Dans ofa.js, les composants sont le mécanisme central pour la réutilisation de pages et la modularisation. Un composant est essentiellement un Web Component personnalisé ; en définissant un modèle, des styles et une logique, on peut créer des éléments d’interface réutilisables.
 
 ## Structure de base d'un composant
 

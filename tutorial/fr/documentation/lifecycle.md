@@ -161,13 +161,13 @@ export default async () => {
       timer: null
     },
     attached() {
-      // 启动定时器
+      // Démarrer le minuteur
       this.timer = setInterval(() => {
-        console.log('定时任务执行');
+        console.log('Tâche planifiée exécutée');
       }, 1000);
     },
     detached() {
-      // 清理定时器
+      // Nettoyer le minuteur
       if(this.timer) {
         clearInterval(this.timer);
         this.timer = null;

@@ -116,7 +116,7 @@ In dem folgenden Beispiel demonstrieren wir, wie man durch die Übergabe von CSS
   </code>
 </o-playground>
 
-在此示例中，我们只希望监听具有 `class` 为 "use-it" 的表单元素，因此我们传递了 `".use-it"` 作为参数给 `formData()` 方法。这样，只有带有该类名的表单元素会被监听和包括在生成的数据对象中。这对于选择性地监听表单元素非常有用，以便更精确地管理你的表单数据。
+In diesem Beispiel möchten wir nur Formularelemente mit der Klasse "use-it" überwachen, daher übergeben wir `".use-it"` als Parameter an die Methode `formData()`. Auf diese Weise werden nur Formularelemente mit diesem Klassennamen überwacht und in das generierte Datenobjekt aufgenommen. Dies ist nützlich, um Formularelemente selektiv zu überwachen und so Ihre Formulardaten präziser zu verwalten.
 
 ## Benutzerdefiniertes Formular
 

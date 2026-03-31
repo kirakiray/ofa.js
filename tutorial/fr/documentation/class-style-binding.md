@@ -10,7 +10,7 @@ Lorsque `booleanExpression` est `true`, le nom de classe est ajouté à l'élém
 
 ### Liaison de classe de base
 
-<o-playground name="基础类绑定" style="--editor-height: 500px">
+<o-playground name="Liaison de classe de base" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -23,7 +23,7 @@ Lorsque `booleanExpression` est `true`, le nom de classe est ajouté à l'élém
           display: none;
         }
       </style>
-      <button on:click="isHide = !isHide">Toggle Display</button>
+      <button on:click="isHide = !isHide">Basculer l'affichage</button>
       <p class="green" class:hide="isHide">{{val}}</p>
       <script>
         export default async () => {
@@ -43,7 +43,7 @@ Lorsque `booleanExpression` est `true`, le nom de classe est ajouté à l'élém
 
 Vous pouvez également lier plusieurs classes simultanément, permettant à l'élément d'avoir différents états visuels selon diverses conditions.
 
-<o-playground name="多个类绑定" style="--editor-height: 500px">
+<o-playground name="Liaisons de plusieurs classes" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -65,9 +65,9 @@ Vous pouvez également lier plusieurs classes simultanément, permettant à l'é
           color: #52c41a;
         }
       </style>
-      <button on:click="toggleStates">Basculer les états</button>
+      <button on:click="toggleStates">Inverser les états</button>
       <p class:active="isActive" class:disabled="isDisabled" class:highlight="isHighlighted">
-        État actuel - Actif : {{isActive}}, Désactivé : {{isDisabled}}, Mis en évidence : {{isHighlighted}}
+        État actuel - Actif : {{isActive}}, Désactivé : {{isDisabled}}, Surligné : {{isHighlighted}}
       </p>
       <script>
         export default async () => {
@@ -301,7 +301,7 @@ Vous pouvez utiliser `data(xxx)` dans les styles pour lier les données du compo
 
 ## Remarques
 
-`style` 内的 `data(xxx)` 原理上是替换整个 style 的内容，所以最好只把 data 相关的样式写在 style 内，不需要 data 的放到另一个 style 上，这样性能更好。
+Le principe de `data(xxx)` dans `style` est de remplacer l'intégralité du contenu du style. Il est donc préférable de ne placer que les styles liés aux données dans ce style, et de mettre les styles qui n'en ont pas besoin dans un autre style, ce qui améliore les performances.
 
 ```html
 <!-- ❌ Les p:hover sans data(xxx) seront également rafraîchis -->

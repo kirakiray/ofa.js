@@ -28,16 +28,16 @@ export const pageAnime = {
 };
 ```
 
-<o-playground name="Mini-App-Beispiel" style="--editor-height: 500px">
+<o-playground name="Mikro-App-Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-app src="./app-config.js"></o-app>
     </template>
   </code>
   <code path="app-config.js">
-    // 应用首页地址
+    // Startseiten-URL der App
     export const home = "./home.html";
-    // 页面切换动画配置
+    // Konfiguration für Seitenwechselanimationen
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -62,10 +62,10 @@ export const pageAnime = {
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html?id=10010" olink>Go to About (10010)</a>
+      <a href="./about.html?id=10010" olink>Zu About (10010)</a>
       <br>
       <br>
-      <a href="./about.html?id=10030" olink>Go to About (10030)</a>
+      <a href="./about.html?id=10030" olink>Zu About (10030)</a>
       <script>
         export default async () => {
           return {
@@ -85,14 +85,14 @@ export const pageAnime = {
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">Back</button> </div>
+      <div style="padding: 8px;"> <button on:click="back()">Zurück</button> </div>
       <p>{{val}}</p>
-      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
+      <p> Über <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async ({query}) => {
           return {
             data: {
-              val: `Hello ofa.js App Demo (from ${query.id})`,
+              val: `Hello ofa.js App Demo (von ${query.id})`,
             },
           };
         };

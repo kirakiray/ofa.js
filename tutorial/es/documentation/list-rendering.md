@@ -8,11 +8,11 @@ En ofa.js, el componente `o-fill` proporciona una potente función de renderizad
 
 ### Características principales：
 
-- **高效更新**：通过键值跟踪数组变化，仅更新需要变更的部分
-- **索引访问**：通过 `$index` 访问当前项的索引
-- **数据访问**：通过 `$data` 访问当前项的数据
-- **宿主访问**：通过 `$host` 访问当前组件实例，可调用组件方法或访问组件数据
-- **模板复用**：支持使用命名模板进行复杂列表渲染
+- **Actualización eficiente**: rastrea los cambios en el array mediante pares clave-valor y actualiza solo las partes necesarias
+- **Acceso por índice**: accede al índice del elemento actual mediante `$index`
+- **Acceso a datos**: accede a los datos del elemento actual mediante `$data`
+- **Acceso al host**: accede a la instancia del componente actual mediante `$host`, pudiendo invocar métodos o acceder a datos del componente
+- **Reutilización de plantillas**: admite el uso de plantillas con nombre para renderizar listas complejas
 
 ## Renderizado directo
 

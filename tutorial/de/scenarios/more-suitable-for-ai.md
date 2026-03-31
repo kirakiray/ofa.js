@@ -27,7 +27,7 @@ Der gesamte Prozess umfasst **6 Schritte**, erfordert Unterstützung durch einen
 
 ## Vereinfachter Ablauf von ofa.js
 
-使用 ofa.js，流程简化为 **3 个步骤**：
+Mit ofa.js wird der Prozess auf **3 Schritte** reduziert:
 
 ### 1. Umgebung vorbereiten
 

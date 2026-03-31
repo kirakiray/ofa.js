@@ -7,14 +7,14 @@ Dans les éléments à l’intérieur de `o-app`, y compris ceux dans les nœuds
 Voici un exemple montrant comment accéder à l'attribut `app` dans un élément à l'intérieur de `o-app` :
 
 
-<o-playground name="app - 获取应用实例" style="--editor-height: 500px">
+<o-playground name="app - obtenir l'instance de l'application" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>
     </template>
   </code>
   <code path="app-config.js">
-    // URL de la page d'accueil de l'application
+    // Adresse de la page d'accueil de l'application
     export const home = "./home.html";
     // Méthodes disponibles sur l'application
     export const proto = {

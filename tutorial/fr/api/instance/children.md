@@ -2,13 +2,13 @@
 
 Obtenir une instance d'élément enfant est très simple : il vous suffit de traiter l'instance comme un tableau et d'accéder à l'instance de l'élément enfant via un index numérique.
 
-<o-playground name="children - éléments enfants" style="--editor-height: 380px">
+<o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Je suis 1</li>
-        <li>Je suis 2</li>
-        <li>Je suis 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <div id="logger1" style="color:red;"></div>
       <div id="logger2" style="color:blue;"></div>

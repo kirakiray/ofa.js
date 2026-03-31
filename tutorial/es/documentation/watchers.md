@@ -52,7 +52,7 @@ Después de que los datos cambien, primero se procesará con debounce y luego se
 
 Las funciones en `watch` se invocan inmediatamente después de que el componente se inicializa, para establecer la escucha de datos. Puede distinguirse si es la primera invocación comprobando si `watchers` tiene longitud.
 
-<o-playground name="watchers - 回调参数" style="--editor-height: 700px">
+<o-playground name="watchers - parámetros de devolución de llamada" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -71,14 +71,14 @@ Las funciones en `watch` se invocan inmediatamente después de que el componente
       </style>
       <p>Nombre: {{name}}</p>
       <p>Edad: {{age}}</p>
-      <input sync:value="name" placeholder="Ingresa el nombre" />
-      <input sync:value="age" type="number" placeholder="Ingresa la edad" />
+      <input sync:value="name" placeholder="Ingresa nombre" />
+      <input sync:value="age" type="number" placeholder="Ingresa edad" />
       <div class="log">{{log}}</div>
       <script>
         export default async () => {
           return {
             data: {
-              name: "张三",
+              name: "Zhang San",
               age: 25,
               log: "",
             },
@@ -87,15 +87,15 @@ Las funciones en `watch` se invocan inmediatamente después de que el componente
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // 获取其中一个
-                this.log += `属性 "${watcher.name}" 从 "${watcher.oldValue}" 变为 "${watcher.value}"\n`;
+                const watcher = watchers[0]; // Obtener uno de ellos
+                this.log += `La propiedad "${watcher.name}" cambió de "${watcher.oldValue}" a "${watcher.value}"\n`;
               },
               age(newVal,{watchers}) {
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // 获取其中一个
-                this.log += `属性 "${watcher.name}" 从 "${watcher.oldValue}" 变为 "${watcher.value}"\n`;
+                const watcher = watchers[0]; // Obtener uno de ellos
+                this.log += `La propiedad "${watcher.name}" cambió de "${watcher.oldValue}" a "${watcher.value}"\n`;
               },
             },
           };
@@ -109,7 +109,7 @@ Las funciones en `watch` se invocan inmediatamente después de que el componente
 
 Para datos anidados de tipo objeto o array, watch realizará automáticamente una escucha profunda.
 
-<o-playground name="watchers - 深度侦听" style="--editor-height: 700px">
+<o-playground name="watchers - Escucha profunda" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -135,8 +135,8 @@ Para datos anidados de tipo objeto o array, watch realizará automáticamente un
         <p>Pasatiempos: {{user.hobbies.join(', ')}}</p>
       </div>
       <div>
-        <button on:click="updateName">Modificar nombre</button>
-        <button on:click="updateAge">Modificar edad</button>
+        <button on:click="updateName">Cambiar nombre</button>
+        <button on:click="updateAge">Cambiar edad</button>
         <button on:click="addHobby">Agregar pasatiempo</button>
         <button on:click="updateHobby">Modificar pasatiempo</button>
       </div>
@@ -146,9 +146,9 @@ Para datos anidados de tipo objeto o array, watch realizará automáticamente un
           return {
             data: {
               user: {
-                name: "张三",
+                name: "Zhang San",
                 age: 25,
-                hobbies: ["baloncesto", "fútbol"],
+                hobbies: ["Baloncesto", "Fútbol"],
               },
               log: "",
             },
@@ -158,26 +158,26 @@ Para datos anidados de tipo objeto o array, watch realizará automáticamente un
                   return;
                 }
                 const watcher = watchers[0]; // Obtener uno de ellos
-                console.log("Modificado: ",watcher.target);
+                console.log("Modificar: ",watcher.target);
                 if(watcher.type === 'set'){
-                  this.log += `Valor modificado-> propiedad "${watcher.name}" de "${watcher.oldValue}" a "${watcher.value}" <br>`;
+                  this.log += `Modificar valor -> Propiedad "${watcher.name}" de "${watcher.oldValue}" a "${watcher.value}" <br>`;
                 }else{
-                  this.log += `Ejecutar método ${watcher.type}-> nombre de función "${watcher.name}"  argumentos "${watcher.args}" <br>`;
+                  this.log += `Ejecutar método ${watcher.type} -> Nombre de función "${watcher.name}" Parámetros "${watcher.args}" <br>`;
                 }
               },
             },
             proto: {
               updateName() {
-                this.user.name = "李四";
+                this.user.name = "Li Si";
               },
               updateAge() {
                 this.user.age = 30;
               },
               addHobby() {
-                this.user.hobbies.push("natación");
+                this.user.hobbies.push("Natación");
               },
               updateHobby() {
-                this.user.hobbies[0] = "bádminton";
+                this.user.hobbies[0] = "Bádminton";
               },
             },
           };

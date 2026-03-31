@@ -13,7 +13,7 @@ L'état de contexte est le mécanisme dans ofa.js permettant le partage de donn�
 Le composant `o-provider` sert à définir un fournisseur de données partagées. Il s’identifie par l’attribut `name` et définit les données à partager via des attributs (comme `custom-a="value"`).
 
 ```html
-<o-provider name="userInfo" custom-name="张三" custom-age="25">
+<o-provider name="userInfo" custom-name="Zhang San" custom-age="25">
   ...
 </o-provider>
 ```
@@ -260,12 +260,12 @@ export default {
 
 <o-provider name="test" custom-value="parent">
  ...
- <!-- 这里👇获取到的custom-value是 "parent" -->
+ <!-- Ici 👇 la custom-value obtenue est "parent" -->
  <o-consumer name="test"></o-consumer>
  ...
 </o-provider>
 
-<!-- 这里👇获取到的custom-value是 "root" -->
+<!-- Ici 👇 la custom-value obtenue est "root" -->
 <o-consumer name="test"></o-consumer>
 
 ```
@@ -343,10 +343,10 @@ proto:{
 
 ## Exemple de getProvider
 
-<o-playground name="Exemple getProvider" style="--editor-height: 500px">
+<o-playground name="Exemple de getProvider" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-provider name="userInfo" custom-name="张三" custom-age="25">
+      <o-provider name="userInfo" custom-name="Zhang San" custom-age="25">
         <o-page src="page.html"></o-page>
       </o-provider>
     </template>
@@ -354,8 +354,8 @@ proto:{
   <code path="page.html" active>
     <template page>
       <button on:click="getProviderData">Obtenir les données du Provider</button>
-      <div>Nom actuel : {{currentName}}</div>
-      <div>Âge actuel : {{currentAge}}</div>
+      <div>Nom actuel: {{currentName}}</div>
+      <div>Âge actuel: {{currentAge}}</div>
       <div style="margin-top: 10px;">
         <button on:click="updateProvider">Modifier les données du Provider</button>
       </div>
@@ -370,16 +370,16 @@ proto:{
             getProviderData() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                console.log("Provider trouvé :", provider);
-                console.log("Nom :", provider.customName);
-                console.log("Âge :", provider.customAge);
+                console.log("Provider trouvé:", provider);
+                console.log("Nom:", provider.customName);
+                console.log("Âge:", provider.customAge);
                 alert(`Données du Provider : ${provider.customName}, ${provider.customAge} ans`);
               }
             },
             updateProvider() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                provider.customName = "李四";
+                provider.customName = "Li Si";
                 provider.customAge = 30;
               }
             },
@@ -389,7 +389,6 @@ proto:{
     </template>
   </code>
 </o-playground>
-
 ### Obtenir le fournisseur à partir de l'élément
 
 ```javascript

@@ -8,12 +8,12 @@ Veuillez noter que l'attribut `style` ne peut pas obtenir la valeur réelle du s
 
 Voici un exemple montrant comment utiliser `style` :
 
-<o-playground name="style - 直接使用" style="--editor-height: 300px">
+<o-playground name="style - utilisation directe" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <div id="target">texte d'origine</div>
       <br>
-      <h4>logger</h4>
+      <h4>journal</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = $("#target").style.color;

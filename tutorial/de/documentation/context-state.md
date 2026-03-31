@@ -163,9 +163,9 @@ export default {
 
 ### Eigenschaften
 
-1. **全局作用域**: 根提供者的数据在整个页面都可用
-2. **优先级**: 当同时存在同 name 的 provider 和 root-provider 时，离消费者最近的 provider 优先
-3. **可移除**: 移除 root-provider 后，消费者会回退到查找其他 provider
+1. **Globaler Geltungsbereich**: Die Daten des Root-Providers sind auf der gesamten Seite verfügbar.
+2. **Priorität**: Wenn sowohl ein Provider als auch ein Root-Provider mit demselben Namen existieren, hat der dem Consumer nächstgelegene Provider Vorrang.
+3. **Entfernbar**: Nach dem Entfernen des Root-Providers greift der Consumer auf die Suche nach anderen Providern zurück.
 
 ## root-provider Beispiel
 
@@ -341,12 +341,12 @@ proto:{
 </script>
 ```
 
-## getProvider 示例
+## getProvider Beispiel
 
 <o-playground name="getProvider Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-provider name="userInfo" custom-name="张三" custom-age="25">
+      <o-provider name="userInfo" custom-name="ZhangSan" custom-age="25">
         <o-page src="page.html"></o-page>
       </o-provider>
     </template>
@@ -357,7 +357,7 @@ proto:{
       <div>Aktueller Name: {{currentName}}</div>
       <div>Aktuelles Alter: {{currentAge}}</div>
       <div style="margin-top: 10px;">
-        <button on:click="updateProvider">Provider-Daten aktualisieren</button>
+        <button on:click="updateProvider">Provider-Daten ändern</button>
       </div>
       <o-consumer name="userInfo" watch:custom-name="currentName" watch:custom-age="currentAge"></o-consumer>
       <script>
@@ -373,13 +373,13 @@ proto:{
                 console.log("Provider gefunden:", provider);
                 console.log("Name:", provider.customName);
                 console.log("Alter:", provider.customAge);
-                alert(`Provider-Daten: ${provider.customName}, ${provider.customAge} Jahre alt`);
+                alert(`Provider-Daten: ${provider.customName}, ${provider.customAge} Jahre`);
               }
             },
             updateProvider() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                provider.customName = "李四";
+                provider.customName = "LiSi";
                 provider.customAge = 30;
               }
             },
@@ -410,7 +410,7 @@ const globalProvider = $.getRootProvider("globalConfig");
 2. **Über Shadow DOM hinweg**: Sucht im Inneren des Shadow DOM nach dem übergeordneten Provider
 3. **Ereignisverarbeitung**: Erhalten des entsprechenden Anbieters im Ereignis-Rückruf
 
-## dispatch 事件派发
+## dispatch Ereignisverteilung
 
 Der Provider kann Ereignisse an alle Consumer verteilen, die ihn nutzen:
 

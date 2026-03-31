@@ -52,7 +52,7 @@ Nach einer Datenänderung wird zunächst eine Debouncing-Verarbeitung durchgefü
 
 Die Funktion in "watch" wird unmittelbar nach der Initialisierung der Komponente aufgerufen, um die Datenüberwachung einzurichten. Man kann durch die Überprüfung, ob die watchers eine Länge haben, unterscheiden, ob es sich um den ersten Aufruf handelt.
 
-<o-playground name="watchers - 回调参数" style="--editor-height: 700px">
+<o-playground name="Watchers - Rückrufparameter" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -69,16 +69,16 @@ Die Funktion in "watch" wird unmittelbar nach der Initialisierung der Komponente
           white-space: pre-wrap;
         }
       </style>
-      <p>名字: {{name}}</p>
-      <p>年龄: {{age}}</p>
-      <input sync:value="name" placeholder="输入名字" />
-      <input sync:value="age" type="number" placeholder="输入年龄" />
+      <p>Name: {{name}}</p>
+      <p>Alter: {{age}}</p>
+      <input sync:value="name" placeholder="Name eingeben" />
+      <input sync:value="age" type="number" placeholder="Alter eingeben" />
       <div class="log">{{log}}</div>
       <script>
         export default async () => {
           return {
             data: {
-              name: "张三",
+              name: "Zhang San",
               age: 25,
               log: "",
             },
@@ -87,15 +87,15 @@ Die Funktion in "watch" wird unmittelbar nach der Initialisierung der Komponente
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // 获取其中一个
-                this.log += `属性 "${watcher.name}" 从 "${watcher.oldValue}" 变为 "${watcher.value}"\n`;
+                const watcher = watchers[0]; // Einen davon abrufen
+                this.log += `Eigenschaft "${watcher.name}" hat sich von "${watcher.oldValue}" zu "${watcher.value}" geändert\n`;
               },
               age(newVal,{watchers}) {
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // 获取其中一个
-                this.log += `属性 "${watcher.name}" 从 "${watcher.oldValue}" 变为 "${watcher.value}"\n`;
+                const watcher = watchers[0]; // Einen davon abrufen
+                this.log += `Eigenschaft "${watcher.name}" hat sich von "${watcher.oldValue}" zu "${watcher.value}" geändert\n`;
               },
             },
           };

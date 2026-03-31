@@ -122,7 +122,7 @@ En este ejemplo, solo queremos escuchar los elementos de formulario que tengan `
 
 El uso de componentes de formulario personalizados es muy sencillo, solo necesita agregar un **atributo value** al componente personalizado y establecer el **atributo name**.
 
-<o-playground name="formData - 自定义表单" style="--editor-height: 500px">
+<o-playground name="formData - Formulario personalizado" style="--editor-height: 500px">
   <code path="demo.html" preview active>
     <template>
       <div id="myForm">
@@ -170,7 +170,7 @@ El uso de componentes de formulario personalizados es muy sencillo, solo necesit
             name: "",
           },
           data: {
-            value: "Texto predeterminado",
+            value: "Texto por defecto",
           },
           proto: {
             changeText(e) {

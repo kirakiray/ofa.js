@@ -75,12 +75,12 @@ Dans cet exemple, nous passons des données personnalisées au gestionnaire d'é
 
 Si vous ne souhaitez pas que l'événement se propage, vous pouvez ajouter le paramètre `bubbles: false` lors du déclenchement de l'événement :
 
-<o-playground name="emit - 不冒泡" style="--editor-height: 560px">
+<o-playground name="emit - sans bulles" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
         <li id="target">
-          I am target
+          Je suis la cible
         </li>
       </ul>
       <div id="logger1" style="border:red solid 1px;padding:8px;">-</div>
@@ -90,7 +90,7 @@ Si vous ne souhaitez pas que l'événement se propage, vous pouvez ajouter le pa
           \$("#logger1").text = 'ul est déclenché';
         });
         \$('#target').on('custom-event',()=>{
-          \$("#logger2").text = 'target est déclenché';
+          \$("#logger2").text = 'la cible est déclenchée';
         });
         setTimeout(()=>{
           \$("#target").emit("custom-event",{

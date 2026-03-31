@@ -100,7 +100,7 @@ Aquí hay un ejemplo en vivo en el editor en línea, puedes modificar el código
 
 Definimos estilos a través de la etiqueta `<style>` dentro del componente. Estos estilos internos solo afectan al interior del componente, ofreciciendo una buena encapsulación y sin influir en otros elementos de la página.
 
-其中 `:host` 选择器用于定义组件宿主元素的样式，这里我们将组件设置为块级元素，并添加红色边框和 10px 的内边距。
+El selector `:host` se utiliza para definir los estilos del elemento host del componente; aquí configuramos el componente como un elemento de bloque y añadimos un borde rojo y un relleno de 10 px.
 
 Mediante la expresión `{{key}}`, se puede renderizar en la página el valor correspondiente en los datos del componente.
 

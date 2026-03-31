@@ -1,6 +1,6 @@
 # Microaplicación
 
-使用 `o-app` 进行应用化，这个标签就代表着一个微应用，它会加载 `app-config.js` 配置文件，该文件定义了应用的首页地址和页面切换动画配置。
+Usando `o-app` para la aplicación, esta etiqueta representa una microaplicación que cargará el archivo de configuración `app-config.js`, el cual define la dirección de la página de inicio de la aplicación y la configuración de la animación de cambio de página.
 
 ```html
 <o-app src="./app-config.js"></o-app>
@@ -28,16 +28,16 @@ export const pageAnime = {
 };
 ```
 
-<o-playground name="微应用示例" style="--editor-height: 500px">
+<o-playground name="Ejemplo de Micro Aplicación" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-app src="./app-config.js"></o-app>
     </template>
   </code>
   <code path="app-config.js">
-    // 应用首页地址
+    // Dirección de la página de inicio de la aplicación
     export const home = "./home.html";
-    // 页面切换动画配置
+    // Configuración de animación de cambio de página
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -62,10 +62,10 @@ export const pageAnime = {
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html?id=10010" olink>Ir a Acerca de (10010)</a>
+      <a href="./about.html?id=10010" olink>Ir a About (10010)</a>
       <br>
       <br>
-      <a href="./about.html?id=10030" olink>Ir a Acerca de (10030)</a>
+      <a href="./about.html?id=10030" olink>Ir a About (10030)</a>
       <script>
         export default async () => {
           return {
@@ -87,7 +87,7 @@ export const pageAnime = {
       </style>
       <div style="padding: 8px;"> <button on:click="back()">Volver</button> </div>
       <p>{{val}}</p>
-      <p> Acerca de <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
+      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async ({query}) => {
           return {

@@ -12,7 +12,7 @@ Berechnete Eigenschaften sind eine Methode, um neue Daten aus reaktiven Daten ab
 
 get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzuleiten; sie nehmen keine Parameter entgegen und geben lediglich einen Wert zurück, der auf anderen Daten basiert.
 
-<o-playground name="get 计算属性示例" style="--editor-height: 600px">
+<o-playground name="get Berechnete Eigenschaft Beispiel" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -22,7 +22,7 @@ get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzulei
           padding: 10px;
         }
       </style>
-      <button on:click="clickMe">Click Me - {{count}} - {{countDouble}}</button>
+      <button on:click="clickMe">Klick Mich - {{count}} - {{countDouble}}</button>
       <p>Der Wert der berechneten Eigenschaft countDouble ist: {{countDouble}}</p>
       <script>
         export default async () => {
@@ -32,7 +32,7 @@ get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzulei
             },
             proto: {
               get countDouble() {
-                console.log('countDouble wurde abgerufen');
+                console.log('countDouble wird aufgerufen');
                 return this.count * 2;
               },
               clickMe() {
@@ -50,7 +50,7 @@ get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzulei
 
 Computed Properties werden häufig zur Verarbeitung komplexer Datenumwandlungslogik verwendet, zum Beispiel zum Filtern von Arrays, zum Formatieren von Anzeigetext usw.:
 
-<o-playground name="Beispiel für berechnete Eigenschaften" style="--editor-height: 500px">
+<o-playground name="Berechnete Eigenschaften Beispiel" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -79,7 +79,7 @@ Computed Properties werden häufig zur Verarbeitung komplexer Datenumwandlungslo
           return {
             data: {
               filterText: '',
-              names: ['张3', '李4', '王54']
+              names: ['Zhang3', 'Li4', 'Wang54']
             },
             proto: {
               get filteredNames() {
@@ -102,7 +102,7 @@ Computed Properties werden häufig zur Verarbeitung komplexer Datenumwandlungslo
 
 setter ermöglichen es Ihnen, den zugrunde liegenden Datenzustand durch Zuweisungsoperationen zu ändern. Sie empfangen einen Parameter, der typischerweise verwendet wird, um die ursprünglichen Daten, von denen sie abhängen, rückwirkend zu aktualisieren.
 
-<o-playground name="set 计算属性示例" style="--editor-height: 700px">
+<o-playground name="Set-Berechnete Eigenschaft Beispiel" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -117,9 +117,9 @@ setter ermöglichen es Ihnen, den zugrunde liegenden Datenzustand durch Zuweisun
         }
       </style>
       <div>
-        <p>基础数值: {{count}}</p>
-        <p>双倍数值: {{countDouble}}</p>
-        <button on:click="resetCount">Zurücksetzen</button>
+        <p>Basiswert: {{count}}</p>
+        <p>Doppelter Wert: {{countDouble}}</p>
+        <button on:click="resetCount">Zähler zurücksetzen</button>
         <button on:click="setCountDouble">Doppelten Wert auf 10 setzen</button>
         <button on:click="incrementCount">Basiswert erhöhen</button>
       </div>
@@ -134,7 +134,7 @@ setter ermöglichen es Ihnen, den zugrunde liegenden Datenzustand durch Zuweisun
                 return this.count * 2;
               },
               set countDouble(val) {
-                this.count = Math.max(0, val / 2); // 确保 count 不为负数
+                this.count = Math.max(0, val / 2); // Sicherstellen, dass count nicht negativ ist
               },
               resetCount() {
                 this.count = 0;

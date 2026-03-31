@@ -57,7 +57,7 @@ Avant d'utiliser un composant, il est nécessaire de déclarer les attributs à 
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp></demo-comp>
-      <demo-comp user-name="张三" age="25"></demo-comp>
+      <demo-comp user-name="Zhang San" age="25"></demo-comp>
     </template>
   </code>
   <code path="demo-comp.html" active>
@@ -69,8 +69,8 @@ Avant d'utiliser un composant, il est nécessaire de déclarer les attributs à 
           padding: 8px;
         }
       </style>
-      <p>Nom d'utilisateur : {{userName}}</p>
-      <p>Âge : {{age}}</p>
+      <p>User Name: {{userName}}</p>
+      <p>Age: {{age}}</p>
       <script>
         export default async ({ load }) => {
           return {

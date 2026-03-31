@@ -6,13 +6,13 @@ El método `before` se utiliza para añadir elementos delante del elemento desti
 
 **Por favor, tenga en cuenta que no se deben realizar operaciones dentro de los componentes de plantilla como o-fill o o-if.**
 
-<o-playground name="before - 前面添加" style="--editor-height: 300px">
+<o-playground name="before - agregar antes" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>I am 1</li>
-        <li id="target">I am 2</li>
-        <li>I am 3</li>
+        <li>Yo soy 1</li>
+        <li id="target">Yo soy 2</li>
+        <li>Yo soy 3</li>
       </ul>
       <script>
         setTimeout(()=>{

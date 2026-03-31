@@ -2,7 +2,7 @@
 
 Dans les Web Components, en raison des limitations des `slot`, il est impossible de définir directement les styles des éléments multi-niveaux à l’intérieur d’un slot. Pour résoudre ce problème, ofa.js fournit le composant `<inject-host>`, qui permet d’injecter des styles dans l’élément hôte depuis l’intérieur du composant, afin de contrôler les styles des éléments multi-niveaux dans le contenu du slot.
 
-> 注意，建议优先使用 [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) 选择器来设置插槽内容的样式。只有在无法满足需求时，才使用 `<inject-host>` 组件。
+> Attention, il est recommandé d’utiliser en priorité le sélecteur [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) pour styliser le contenu des slots. N’utilisez le composant `<inject-host>` que si ce dernier ne répond pas à vos besoins.
 
 ## Utilisation de base
 
@@ -138,8 +138,7 @@ De cette façon, vous pouvez :- Appliquer des styles aux éléments à n'importe
 4. **Réfléchir à la conception du composant** : envisagez d’optimiser la conception du composant pour éviter l’utilisation de `<inject-host>`. Par exemple, combiner sur le composant enfant le sélecteur [::slotted()](https://developer.mozilla.org/fr/docs/Web/CSS/Reference/Selectors/::slotted) est souvent plus élégant.
 
 ```html
-<!-- 推荐 ✅：使用具体的选择器 -->
-<!-- Recommandé ✅：utiliser des sélecteurs spécifiques -->
+<!-- Recommandé ✅ : Utiliser des sélecteurs spécifiques -->
 <inject-host>
     <style>
         user-list .list-item-content {
@@ -148,12 +147,10 @@ De cette façon, vous pouvez :- Appliquer des styles aux éléments à n'importe
     </style>
 </inject-host>
 
-<!-- 不推荐 ❌：使用过于通用的选择器 -->
-<!-- Non recommandé ❌：utiliser des sélecteurs trop génériques -->
+<!-- Non recommandé ❌ : Utiliser des sélecteurs trop génériques -->
 <inject-host>
     <style>
-        .content {  /* 容易与其他组件冲突 */
-            .content {  /* susceptible d'entrer en conflit avec d'autres composants */
+        .content {  /* Risque de conflit avec d'autres composants */
             color: red;
         }
     </style>

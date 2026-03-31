@@ -1,6 +1,6 @@
 # Agregar o eliminar elementos secundarios
 
-元素实例拥有类似数组的特性，添加或删除节点只需要使用数组那几个操作方法即可。其中使用 `push`、`unshift`、`pop`、`shift`、`splice` 方法时，内部会自动执行 [$ 方法](../instance/dollar.md) 的初始化操作，所以可以直接填写具体的元素字符串或对象。
+Las instancias de elementos tienen características similares a las de un array; añadir o eliminar nodos solo requiere utilizar los métodos habituales de array. Al emplear los métodos `push`, `unshift`, `pop`, `shift` y `splice`, internamente se ejecuta automáticamente la inicialización del método [$$](../instance/dollar.md), por lo que se puede indicar directamente la cadena de elemento o el objeto concreto.
 
 Del mismo modo, también puede utilizar otros métodos de array, como `forEach`, `map`, `some`, etc.
 
