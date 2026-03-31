@@ -75,7 +75,7 @@ Die Benennung nicht-reaktiver Eigenschaften erfolgt in der Regel durch das Voran
   </code>
 </o-playground>
 
-Beim Klicken der Schaltfläche `Green增加` ist der Wert von `_count2` zwar tatsächlich erhöht worden, da es sich jedoch um eine nicht-reaktive Eigenschaft handelt, wird keine Aktualisierung der Ansicht ausgelöst, und die Anzeige in der Benutzeroberfläche bleibt daher unverändert. Beim Klicken der Schaltfläche `Blue增加` hingegen handelt es sich bei `count` um eine reaktive Eigenschaft, wodurch eine vollständige Neurenderung der Komponente ausgelöst wird und erst dann der Inhalt von Green synchron aktualisiert wird.
+Beim Klicken der Schaltfläche `Green increments` ist der Wert von `_count2` zwar tatsächlich erhöht worden, da es sich jedoch um eine nicht-reaktive Eigenschaft handelt, wird keine Aktualisierung der Ansicht ausgelöst, und die Anzeige in der Benutzeroberfläche bleibt daher unverändert. Beim Klicken der Schaltfläche `Blue increases` hingegen handelt es sich bei `count` um eine reaktive Eigenschaft, wodurch eine vollständige Neurenderung der Komponente ausgelöst wird und erst dann der Inhalt von Green synchron aktualisiert wird.
 
 Nicht-reaktive Objektdaten haben eine bessere Leistung als reaktive Objektdaten, da nicht-reaktive Daten keine erneute Renderung der Komponente auslösen.
 

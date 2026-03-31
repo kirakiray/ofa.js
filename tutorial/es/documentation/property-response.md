@@ -75,7 +75,7 @@ Los nombres de las propiedades no reactivas suelen llevar un guion bajo `_` como
   </code>
 </o-playground>
 
-Al hacer clic en el botón `Green增加`, aunque el valor de `_count2` de hecho ya se ha incrementado, dado que es una propiedad no reactiva, no se activa la actualización de la vista y, por lo tanto, la visualización en la interfaz no cambia. Al hacer clic en el botón `Blue增加`, como `count` es una propiedad reactiva, se activa el re-renderizado del componente entero, momento en el que se sincroniza y actualiza el contenido mostrado de Green.
+Al hacer clic en el botón `Green increments`, aunque el valor de `_count2` de hecho ya se ha incrementado, dado que es una propiedad no reactiva, no se activa la actualización de la vista y, por lo tanto, la visualización en la interfaz no cambia. Al hacer clic en el botón `Blue increases`, como `count` es una propiedad reactiva, se activa el re-renderizado del componente entero, momento en el que se sincroniza y actualiza el contenido mostrado de Green.
 
 Los datos de objetos no reactivos tienen un mejor rendimiento que los datos de objetos reactivos porque los datos no reactivos no desencadenan la re-renderización de componentes.
 

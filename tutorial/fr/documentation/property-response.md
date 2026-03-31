@@ -75,7 +75,7 @@ Les propriétés non réactives sont généralement préfixées d’un underscor
   </code>
 </o-playground>
 
-Lorsque vous cliquez sur le bouton `Green增加`, bien que la valeur de `_count2` ait effectivement augmenté, comme il s'agit d'une propriété non réactive, elle ne déclenche pas la mise à jour de la vue ; l'affichage à l'écran reste donc inchangé. Lorsque vous cliquez sur le bouton `Blue增加`, comme `count` est une propriété réactive, elle déclenche le re-rendu complet du composant, ce qui synchronise alors l'affichage de Green.
+Lorsque vous cliquez sur le bouton `Green increments`, bien que la valeur de `_count2` ait effectivement augmenté, comme il s'agit d'une propriété non réactive, elle ne déclenche pas la mise à jour de la vue ; l'affichage à l'écran reste donc inchangé. Lorsque vous cliquez sur le bouton `Blue increases`, comme `count` est une propriété réactive, elle déclenche le re-rendu complet du composant, ce qui synchronise alors l'affichage de Green.
 
 Les données d’objet non réactives offrent de meilleures performances que les données d’objet réactives, car elles ne déclenchent pas de nouveau rendu du composant.
 
