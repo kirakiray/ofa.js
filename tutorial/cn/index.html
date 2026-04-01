@@ -248,19 +248,21 @@
       <template>
         <!-- 加载开发好的 punch-logo 组件 -->
         <l-m
-          src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"
+          src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"
         ></l-m>
+        <style>
+          p{
+            white-space: nowrap;
+            font-size: 18px;
+          }
+        </style>
         <!-- 使用 punch-logo 组件 -->
-        <punch-logo style="margin: 50px 0 0 100px">
-          <img
-            src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg"
-            logo
-            height="90"
-          />
+        <punch-logo style="margin: 50px 0 0 150px">
+          <img src="https://ofajs.com/img/logo.svg" logo="" height="90" />
           <h2>不加班了</h2>
-          <p slot="fly">下班给我</p>
-          <p slot="fly">迟点下班</p>
-          <p slot="fly">周末加班</p>
+          <p slot="fly" style="font-size: 18px;white-space: nowrap;">下班给我</p>
+          <p slot="fly" style="font-size: 18px;white-space: nowrap;">迟点下班</p>
+          <p slot="fly" style="font-size: 18px;white-space: nowrap;">周末加班</p>
         </punch-logo>
       </template>
     </code>
