@@ -641,6 +641,8 @@ ofa.js 提供了完整的生命周期钩子函数：
 <template component>
   <div :html="htmlContent"></div>
   <script>
+    // import { marked } from "https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js";
+
     export default async ({ load, url }) => {
       const { marked } = await load("https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js");
 

@@ -108,6 +108,32 @@
 <demo-switch label="通知" on:change="handleChange"></demo-switch>
 ```
 
+## 加载模块与第三方库
+
+`export default` 函数可接收 `{ load, url }` 参数：
+
+```html
+<template component>
+  <div :html="content"></div>
+  <script>
+    export default async ({ load, url }) => {
+      const { marked } = await load("https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js");
+      return {
+        tag: "md-view",
+        attrs: { src: null },
+        data: { content: "" },
+        watch: { src() { this.loadMd(); } },
+        proto: { async loadMd() { this.content = marked.parse(await (await fetch(this.src)).text()); } }
+      };
+    };
+  </script>
+</template>
+```
+
+**参数说明**：
+- `url`：当前模块完整 URL
+- `load`：加载模块/资源，支持 JSON、第三方 ES Module，与 `<l-m>` 功能一致且共享缓存
+
 ## 模板语法速查
 
 ### 常用渲染
