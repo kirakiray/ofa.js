@@ -762,6 +762,68 @@ export const store = $.stanz({ count: 0, user: { name: "张三" } });
 </template>
 ```
 
+## API 使用案例
+
+ofa.js 提供了强大的 API 用于操作 DOM 元素。以下是两个简单的使用示例：
+
+### 在普通网页上使用
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
+  </head>
+  <body>
+    <ul id="list">
+      <li>Item 1</li>
+      <li>Item 2</li>
+    </ul>
+    <button id="btn">Add Item</button>
+
+    <script>
+      // 获取元素并绑定事件
+      $("#btn").on("click", () => {
+        const count = $("#list").length + 1;
+        $("#list").push(`<li>Item ${count}</li>`);
+      });
+
+      // 修改元素样式
+      $("#list").css.color = "blue";
+    </script>
+  </body>
+</html>
+```
+
+### 在页面模块内使用
+
+```html
+<template page>
+  <ul id="list">
+    <li>Item 1</li>
+    <li>Item 2</li>
+  </ul>
+  <button id="btn">Add Item</button>
+
+  <script>
+    export default async () => {
+      return {
+        data: {},
+        attached() {
+          // 绑定点击事件
+          this.shadow.$("#btn").on("click", () => {
+            const count = this.shadow.$("#list").length + 1;
+            this.shadow.$("#list").push(`<li>Item ${count}</li>`);
+          });
+        }
+      };
+    };
+  </script>
+</template>
+```
+
+**完整的 API 文档请参考：[api.md](./api.md)**
+
 ## SSR 同构渲染
 
 ofa.js 支持同构渲染，适用于任何服务端环境：
