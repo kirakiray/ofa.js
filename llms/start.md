@@ -789,34 +789,13 @@ export const store = $.stanz({ count: 0, user: { name: "张三" } });
 
 ### replace-temp 组件
 
-用于解决在 select 或 table 等特殊元素内进行列表渲染的问题：
+用于解决在 select 或 table 等特殊元素内进行列表渲染的问题，详见 [官方组件文档](./official-components.md#replace-temp-组件)。
 
-```html
-<select>
-  <template is="replace-temp">
-    <x-fill :value="items">
-      <option>{{$data}}</option>
-    </x-fill>
-  </template>
-</select>
-```
 
 ### 注入宿主样式
 
-使用 `<inject-host>` 向宿主元素注入样式：
+使用 `<inject-host>` 向宿主元素注入样式，详见 [官方组件文档](./official-components.md#注入宿主样式)。
 
-```html
-<template component>
-  <inject-host>
-    <style>
-      user-list user-list-item {
-        background-color: blue;
-      }
-    </style>
-  </inject-host>
-  <slot></slot>
-</template>
-```
 
 ## API 使用案例
 
