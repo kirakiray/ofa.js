@@ -671,68 +671,37 @@ export const pageAnime = {
 
 ## 状态管理
 
-### 创建状态对象
+ofa.js 提供了多种状态管理机制，包括响应式数据、状态共享和上下文状态传递。
 
-通过 `$.stanz({})` 来创建一个响应式的状态对象：
+**详细的状态管理教程请参考：[state.md](./state.md)**
+
+快速概览：
 
 ```javascript
-// data.js
-export const store = $.stanz({
-  count: 0,
-  user: { name: "张三", age: 25 }
-});
+// 创建共享状态
+export const store = $.stanz({ count: 0, user: { name: "张三" } });
 ```
 
-### 在组件中使用状态
-
 ```html
+<!-- 在组件中使用状态 -->
 <script>
   export default async ({ load }) => {
     const { store } = await load("./data.js");
     return {
       data: { localStore: {} },
-      attached() {
-        this.localStore = store;
-      },
-      detached() {
-        this.localStore = {}; // 清理引用
-      }
+      attached() { this.localStore = store; },
+      detached() { this.localStore = {}; }
     };
   };
 </script>
 ```
 
-### 上下文状态（Provider/Consumer）
-
-使用 `o-provider` 和 `o-consumer` 实现跨组件数据共享：
-
 ```html
-<!-- 定义提供者 -->
-<o-provider name="userInfo" user-name="张三" user-age="25">
+<!-- 上下文状态传递 -->
+<o-provider name="userInfo" user-name="张三">
   <my-component></my-component>
 </o-provider>
-
-<!-- 消费数据 -->
-<o-consumer name="userInfo" watch:user-name="userName" watch:user-age="userAge"></o-consumer>
-```
-
-全局根提供者：
-
-```html
-<o-root-provider name="globalConfig" theme="dark" language="zh-CN"></o-root-provider>
-```
-
-获取 Provider 并修改数据：
-
-```javascript
-proto: {
-  updateData() {
-    const provider = this.getProvider("userInfo");
-    if (provider) {
-      provider.userName = "李四";
-    }
-  }
-}
+<o-consumer name="userInfo" watch:user-name="userName"></o-consumer>
 ```
 
 ## 其他重要功能
@@ -789,24 +758,6 @@ proto: {
       }
     </style>
   </inject-host>
-  <slot></slot>
-</template>
-```
-
-### 样式查询
-
-使用 `match-var` 根据 CSS 变量进行样式匹配：
-
-```html
-<template component>
-  <match-var theme="dark">
-    <style>
-      :host {
-        background-color: #333;
-        color: white;
-      }
-    </style>
-  </match-var>
   <slot></slot>
 </template>
 ```
