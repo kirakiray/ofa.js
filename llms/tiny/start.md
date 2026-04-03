@@ -116,6 +116,7 @@
 <template component>
   <div :html="content"></div>
   <script>
+    // import { marked } from "https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js";
     export default async ({ load, url }) => {
       const { marked } = await load("https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js");
       return {
