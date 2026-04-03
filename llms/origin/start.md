@@ -633,6 +633,163 @@ ofa.js 提供了完整的生命周期钩子函数：
 <my-component on:button-clicked="handleButtonClick"></my-component>
 ```
 
+### 引用第三方 ES Module
+
+在组件开发中，经常需要使用第三方库。ofa.js 提供了 `load` 函数来加载第三方 ES Module。
+
+#### 使用 load 加载第三方库
+
+```html
+<!-- markdown-render.html -->
+<template component>
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <div :html="htmlContent"></div>
+  <script>
+    export default async ({ load, url }) => {
+      // 加载第三方 marked.js 库
+      const { marked } = await load(
+        "https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js"
+      );
+
+      return {
+        tag: "markdown-render",
+        attrs: {
+          src: null,
+        },
+        data: {
+          htmlContent: "",
+        },
+        watch: {
+          src(newVal) {
+            if (newVal) {
+              this.loadMarkdown();
+            }
+          },
+        },
+        ready() {
+          if (this.src) {
+            this.loadMarkdown();
+          }
+        },
+        proto: {
+          async loadMarkdown() {
+            try {
+              const response = await fetch(this.src);
+              const markdownText = await response.text();
+              this.htmlContent = await marked.parse(markdownText);
+            } catch (error) {
+              this.htmlContent = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+          },
+        },
+      };
+    };
+  </script>
+</template>
+```
+
+使用该组件：
+
+```html
+<l-m src="./markdown-render.html"></l-m>
+<markdown-render src="./README.md"></markdown-render>
+```
+
+#### load 和 url 参数说明
+
+在组件的 `export default` 函数中，可以接收一个参数对象，包含 `load` 和 `url` 两个属性：
+
+```html
+<script>
+  export default async ({ load, url }) => {
+    // url: 当前模块的 URL 地址
+    console.log("当前模块路径:", url);
+
+    // load: 用于加载其他模块或资源
+    const { someFunction } = await load("./utils.js");
+
+    return {
+      tag: "my-component",
+      data: {},
+    };
+  };
+</script>
+```
+
+**url 参数**：
+- 类型：`string`
+- 说明：当前模块文件的完整 URL 地址
+- 用途：可以用于解析相对路径、获取模块位置等
+
+**load 函数**：
+- 类型：`function`
+- 说明：用于加载其他模块或资源
+- 特点：
+  - 功能类似于异步 `import()`，但更强大
+  - 支持 JSON 文件加载
+  - 与 `<l-m>` 标签功能一致
+  - 支持第三方 ES Module URL
+- 返回值：Promise，解析为模块的导出对象
+
+**load 与 import 的区别**：
+
+| 特性 | load | import() |
+|------|------|-----------|
+| JSON 文件 | ✅ 支持 | ❌ 不支持 |
+| 第三方 URL | ✅ 支持 | ✅ 支持 |
+| 本地模块 | ✅ 支持 | ✅ 支持 |
+| 缓存机制 | ✅ 与 l-m 共享 | 浏览器原生管理 |
+
+**加载不同类型的资源**：
+
+```html
+<script>
+  export default async ({ load }) => {
+    // 加载本地组件模块
+    const { default: myComponent } = await load("./my-component.html");
+
+    // 加载 JSON 数据
+    const config = await load("./config.json");
+
+    // 加载第三方库
+    const { marked } = await load(
+      "https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js"
+    );
+
+    // 加载其他 JS 模块
+    const utils = await load("./utils.js");
+
+    return {
+      tag: "my-component",
+      data: { config },
+    };
+  };
+</script>
+```
+
+**使用 url 解析相对路径**：
+
+```html
+<script>
+  export default async ({ load, url }) => {
+    // 获取当前模块所在目录
+    const currentDir = new URL('.', url).href;
+
+    // 基于当前模块位置加载资源
+    const data = await load(new URL('./data.json', url).href);
+
+    return {
+      tag: "my-component",
+      data: {},
+    };
+  };
+</script>
+```
+
 ## 微应用与路由
 
 ### 微应用
