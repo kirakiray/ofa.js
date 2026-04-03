@@ -471,106 +471,58 @@ ofa.js 提供了完整的生命周期钩子函数：
 
 注意：HTML 属性不区分大小写，传递包含大写字母的属性时，需要使用 `-` 分割命名（kebab-case 格式），如 `fullName` → `full-name`。
 
-注意：HTML 属性不区分大小写，传递包含大写字母的属性时，需要使用 `-` 分割命名（kebab-case 格式），如 `fullName` → `full-name`。
-
 ### attrs 与 data 的正确使用
 
-**重要提示**：`attrs` 和 `data` 的 key 不能重复。理解两者的区别非常重要：
+**核心规则**：`attrs` 和 `data` 的 key 不能重复。
 
 | 特性 | attrs | data |
 |------|-------|------|
-| 用途 | 接收外部传入的 HTML 属性 | 组件内部状态 |
+| 用途 | 接收外部 HTML 属性 | 组件内部状态 |
 | 数据类型 | 会转为字符串 | 保持原始类型 |
 | 默认值 | 建议用 `null` | 根据需求设置 |
 
-**attrs 使用规则**：
+**使用规则**：
 
-1. **布尔属性（如 disabled）**：使用 `null` 初始化，通过 `!== null` 判断属性是否存在
-   ```html
-   <ofa-switch disabled></ofa-switch>  <!-- disabled 存在，this.disabled !== null -->
-   <ofa-switch></ofa-switch>          <!-- disabled 不存在，this.disabled === null -->
-   ```
-
-2. **字符串属性（如 label）**：使用 `null` 初始化，可区分"未设置"和"空字符串"
-
-3. **内部状态属性（如 checked）**：不要放在 `attrs` 中，应放在 `data` 中，通过 `sync:` 双向绑定同步
-
-**完整的 Switch 组件示例**：
+1. **布尔属性（disabled）**：用 `null` 初始化，`!== null` 判断是否存在
+2. **字符串属性（label）**：用 `null` 初始化，可区分"未设置"和"空字符串"
+3. **内部状态（checked）**：放 `data` 中，通过 `sync:` 双向绑定
+4. **emit 事件**：使用 `data` 而不是 `detail`，如 `this.emit("change", { data: { checked } })`
 
 ```html
 <!-- switch.html -->
 <template component>
-  <style>
-    .switch { width: 44px; height: 22px; /* ... */ }
-    .switch.checked { /* 选中样式 */ }
-    .switch.disabled { opacity: 0.5; cursor: not-allowed; }
-  </style>
-
-  <div class="switch" 
-       class:checked="checked" 
-       class:disabled="disabled !== null" 
-       on:click="toggle">
+  <div class="switch" class:checked="checked" class:disabled="disabled !== null" on:click="toggle">
     <span class="slider"></span>
   </div>
   <o-if :value="label !== null">
     <span class="label">{{label}}</span>
   </o-if>
-
   <script>
-    export default async () => {
-      return {
-        tag: "ofa-switch",
-        attrs: {
-          disabled: null,  // 布尔属性用 null
-          label: null,     // 字符串属性也用 null
+    export default async () => ({
+      tag: "ofa-switch",
+      attrs: { disabled: null, label: null },  // 外部属性
+      data: { checked: false },                 // 内部状态
+      proto: {
+        toggle() {
+          if (this.disabled !== null) return;  // 布尔属性判断
+          this.checked = this.checked ? null : true;
+          this.emit("change", { data: { checked: this.checked } });
         },
-        data: {
-          checked: false,  // 内部状态放在 data 中
-        },
-        proto: {
-          toggle() {
-            // disabled 存在时禁止切换
-            if (this.disabled !== null) {
-              return;
-            }
-            // 切换选中状态
-            this.checked = this.checked ? null : true;
-            // 触发事件，注意使用 data 而不是 detail
-            this.emit("change", {
-              data: { checked: this.checked },
-              bubbles: true,
-              composed: true,
-            });
-          },
-        },
-      };
-    };
+      },
+    });
   </script>
 </template>
-```
 
-**使用组件**：
-
-```html
-<!-- 基础使用 -->
-<ofa-switch></ofa-switch>                    <!-- 默认关闭 -->
-<ofa-switch disabled></ofa-switch>           <!-- 禁用状态 -->
-<ofa-switch label="启用通知"></ofa-switch>    <!-- 带标签 -->
-
-<!-- 双向绑定 -->
-<ofa-switch sync:checked="switchState"></ofa-switch>
-
-<!-- 事件监听 -->
+<!-- 使用 -->
+<ofa-switch></ofa-switch>                         <!-- 默认关闭 -->
+<ofa-switch disabled></ofa-switch>                <!-- 禁用，用 !== null 判断 -->
+<ofa-switch label="通知"></ofa-switch>            <!-- 带标签 -->
+<ofa-switch sync:checked="state"></ofa-switch>    <!-- 双向绑定 -->
 <ofa-switch on:change="handleChange"></ofa-switch>
 <script>
   export default async () => ({
-    data: { switchState: false },
-    proto: {
-      handleChange(e) {
-        // 注意：事件数据在 e.data 中
-        console.log("checked:", e.data.checked);
-      },
-    },
+    data: { state: false },
+    proto: { handleChange(e) { console.log(e.data.checked); } },
   });
 </script>
 ```
