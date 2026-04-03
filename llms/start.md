@@ -101,3 +101,37 @@ ofa.js 是一个Web前端框架；它是：
 其中 **data** 用于定义当前页面的数据。
 
 通过在节点使用 `{{key}}` 来直接渲染 `data` 数据到为文本到节点上。
+
+### 绑定事件
+
+通过在 `proto` 上设置模块的方法，然后在模板节点上，使用 `on:xxx` 方法进行绑定。
+
+例如：
+
+```html
+<!-- page3.html -->
+<template page>
+  <style>
+    :host {
+      display: block;
+      color: Green;
+    }
+  </style>
+  <h2>{{val}}</h2>
+  <button on:click="handleButtonClick">Click me</button>
+  <script>
+    export default async () => {
+      return {
+        data: {
+          val: "Hello World",
+        },
+        proto:{
+          handleButtonClick(){
+            this.val = "Hello ofa.js App Demo";
+          }
+        }
+      };
+    };
+  </script>
+</template>
+```
