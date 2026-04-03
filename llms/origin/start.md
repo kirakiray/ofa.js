@@ -62,6 +62,35 @@ ofa.js 是一个Web前端框架；它是：
 
 所以上面的案例，你可以得到一个蓝色的 Hello World 展示。
 
+### 页面参数传递
+
+如果 `o-page` 的 `src` 带有 query 参数，会自动传入到页面模块的 `query` 参数上：
+
+```html
+<!-- demo.html -->
+<o-page src="./page1.html?name=ofa&version=2"></o-page>
+```
+
+```html
+<!-- page1.html -->
+<template page>
+  <h2>Name: {{name}}</h2>
+  <p>Version: {{version}}</p>
+  <script>
+    export default async ({ query }) => {
+      return {
+        data: {
+          name: query.name || "Default",
+          version: query.version || "1.0",
+        },
+      };
+    };
+  </script>
+</template>
+```
+
+`query` 参数是一个对象，包含 URL 中的所有查询参数。
+
 ## 模板语法
 
 在**页面模块**内，可以使用各种各样的模板语法糖来开发，让你像使用Vue和React一样，降低难度，开发各种需求。
