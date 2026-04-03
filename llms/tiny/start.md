@@ -50,9 +50,9 @@
   <button on:click="changeTitle">Change</button>
 
   <script>
-    export default async () => ({
+    export default async ({ query }) => ({
       data: {
-        title: "Hello ofa.js",
+        title: query.name || "Hello ofa.js",
       },
       proto: {
         changeTitle() {
@@ -62,6 +62,12 @@
     });
   </script>
 </template>
+```
+
+`o-page` 的 `src` 带 query 参数会传入页面模块的 `query` 参数：
+
+```html
+<o-page src="./page.html?name=ofa&version=2"></o-page>
 ```
 
 ## 组件模块骨架
