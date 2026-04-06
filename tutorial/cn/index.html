@@ -251,7 +251,7 @@
           src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"
         ></l-m>
         <style>
-          p{
+          p {
             white-space: nowrap;
             font-size: 18px;
           }
@@ -260,9 +260,15 @@
         <punch-logo style="margin: 50px 0 0 150px">
           <img src="https://ofajs.com/img/logo.svg" logo="" height="90" />
           <h2>不加班了</h2>
-          <p slot="fly" style="font-size: 18px;white-space: nowrap;">下班给我</p>
-          <p slot="fly" style="font-size: 18px;white-space: nowrap;">迟点下班</p>
-          <p slot="fly" style="font-size: 18px;white-space: nowrap;">周末加班</p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            下班给我
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            迟点下班
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            周末加班
+          </p>
         </punch-logo>
       </template>
     </code>
@@ -338,9 +344,75 @@
   </o-playground>
 </center-block>
 
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+<style>
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .comp-card {
+    border: 2px solid var(--md-sys-color-normal);
+    border-radius: 16px;
+    padding: 24px;
+    background: var(--md-sys-color-surface);
+    transition: all 0.2s ease;
+  }
+  .comp-card:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  .comp-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--md-sys-color-primary);
+  }
+  .comp-card p {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+</style>
 <center-block>
-  <h2>标准的微前端示范</h2>
-  <p>你可以直接使用和查看当前网站用到的所有组件，都是独立的，独立查看独立引用，不依赖环境。</p>
+  <h2>微前端最佳实践</h2>
+  <p>
+    当前网站的所有组件均可独立使用、独立查看、独立引用，无需依赖特定环境，真正做到即拿即用。
+  </p>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <h3>anchor-dialog</h3>
+      <p>锚点对话框组件，点击特定元素时弹出对话框显示自定义内容</p>
+      <p-button>
+        <a href="../publics/_comps/anchor-dialog/README-cn.md">查看文档</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>chat-bubble</h3>
+      <p>聊天气泡组件，用于显示聊天消息，支持头像和内容自定义</p>
+      <p-button>
+        <a href="../publics/_comps/chat-bubble/README-cn.md">查看文档</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>flow-chart</h3>
+      <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
+        <div name="a" to="b">开始</div>
+        <div name="b" to="c">处理</div>
+        <div name="c">结束</div>
+      </flow-chart>
+      <p-button>
+        <a href="../publics/_comps/flow-chart/README-cn.md">查看文档</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>punch-logo</h3>
+      <p>冲击动画 Logo 组件，点击时播放飞散动画效果</p>
+      <p-button>
+        <a href="../publics/_comps/punch-logo/README-cn.md">查看文档</a>
+      </p-button>
+    </div>
+  </div>
 </center-block>
 
 <center-block>
