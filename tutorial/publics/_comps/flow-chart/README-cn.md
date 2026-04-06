@@ -2,6 +2,14 @@
 
 流程图组件，自动布局并渲染节点之间的连接关系。
 
+## 前置条件
+
+本组件依赖 [ofa.js](https://github.com/ofajs/ofa.js)，请先在页面中引入 ofa.js：
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
+```
+
 ## 使用方法
 
 ### 1. 引入组件
@@ -38,7 +46,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>flow-chart</title>
-    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
   </head>
   <body>
     <l-m src="./flow-chart.html"></l-m>

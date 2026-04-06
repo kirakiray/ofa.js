@@ -2,6 +2,14 @@
 
 Anchor dialog component that displays a dialog with custom content when clicking on specific elements.
 
+## Prerequisites
+
+This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please include ofa.js in your page first:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
+```
+
 ## Usage
 
 ### 1. Import Component
@@ -41,7 +49,7 @@ Anchor dialog component that displays a dialog with custom content when clicking
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>anchor-dialog</title>
-    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
   </head>
   <body>
     <l-m src="./anchor-dialog.html"></l-m>

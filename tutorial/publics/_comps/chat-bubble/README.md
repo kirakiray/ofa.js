@@ -2,6 +2,14 @@
 
 Chat bubble component for displaying chat messages with customizable avatar and content.
 
+## Prerequisites
+
+This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please include ofa.js in your page first:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
+```
+
 ## Usage
 
 ### 1. Import Component
@@ -39,7 +47,7 @@ Chat bubble component for displaying chat messages with customizable avatar and 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>chat-bubble</title>
-    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
   </head>
   <body>
     <l-m src="./chat-bubble.html"></l-m>

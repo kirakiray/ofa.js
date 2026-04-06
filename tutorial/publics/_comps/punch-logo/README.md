@@ -2,6 +2,14 @@
 
 Logo component with punch animation effect, plays flying animation and logo display effect on click.
 
+## Prerequisites
+
+This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please include ofa.js in your page first:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
+```
+
 ## Usage
 
 ### 1. Import Component
@@ -44,7 +52,7 @@ Logo component with punch animation effect, plays flying animation and logo disp
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>punch-logo</title>
-    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
   </head>
   <body>
     <l-m src="./punch-logo.html"></l-m>
