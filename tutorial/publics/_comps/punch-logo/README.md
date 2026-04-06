@@ -1,0 +1,78 @@
+# punch-logo
+
+Logo component with punch animation effect, plays flying animation and logo display effect on click.
+
+## Usage
+
+### 1. Import Component
+
+```html
+<l-m src="./punch-logo.html"></l-m>
+```
+
+### 2. Basic Usage
+
+```html
+<punch-logo>
+  <img logo src="logo.svg" alt="" />
+  <h2>Title</h2>
+  <img src="icon1.svg" slot="fly" alt="" />
+  <img src="icon2.svg" slot="fly" alt="" />
+</punch-logo>
+```
+
+## Properties and Slots
+
+### logo Attribute
+
+| Attribute | Description |
+|-----------|-------------|
+| `logo` | Added to img element to identify it as the main logo image |
+
+### Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `fly` | Flying animation elements, randomly selected and animated during playback |
+
+## Example
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>punch-logo</title>
+    <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
+  </head>
+  <body>
+    <l-m src="./punch-logo.html"></l-m>
+    <div style="text-align: center; padding: 100px">
+      <punch-logo>
+        <img logo src="../../../logo.svg" alt="" />
+        <h2>ofa.js</h2>
+        <img src="../../sources/webpack.svg" slot="fly" alt="webpack" />
+        <img src="../../sources/npm.svg" slot="fly" alt="npm" />
+        <img src="../../sources/nodejs.svg" slot="fly" alt="nodejs" />
+        <img src="../../sources/esbuild.svg" slot="fly" alt="esbuild" />
+        <img src="../../sources/pnpm.svg" slot="fly" alt="pnpm" />
+        <img src="../../sources/yarn.svg" slot="fly" alt="yarn" />
+        <img src="../../sources/bun.svg" slot="fly" alt="bun" />
+        <img src="../../sources/deno.svg" slot="fly" alt="deno" />
+        <img src="../../sources/rollup.svg" slot="fly" alt="rollup" />
+        <img src="../../sources/typescript.svg" slot="fly" alt="typescript" />
+        <img src="../../sources/lerna.svg" slot="fly" alt="lerna" />
+      </punch-logo>
+    </div>
+  </body>
+</html>
+```
+
+## Features
+
+- Automatically plays animation after component loads
+- Click to replay animation
+- Logo rotation display effect
+- Random selection of flying elements with random angles
+- Title fade-in display effect
