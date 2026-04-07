@@ -2,6 +2,8 @@
 
 <l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
 
+<l-m src="https://book.ofajs.com/o-md/o-md.html"></l-m>
+
 <center-block>
   <punch-logo>
     <img logo="" src="../img/logo.svg" alt="">
@@ -36,97 +38,95 @@
 <l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
 
 <center-block style="--container-max-width: 100%; padding: 128px 0">
-  <h2>거의 은탄환 수준의 프론트엔드 프레임워크</h2>
-  <p>어떤 응용 시나리오든 ofa.js를 사용하기에 적합합니다.</p>
+  <h2>거의 만능에 가까운 프론트엔드 프레임워크</h2>
+  <p>어떤 애플리케이션 시나리오든 ofa.js를 사용하기에 적합합니다.</p>
   <flow-container style="height: 300px; width: 100%">
     <chat-bubble id="case1-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
-      나는 더 이상 배울 수 없어, 너희 문서를 보고 싶지 않아, 그래도 쓸 수 있어?
+      더 이상 배울 힘이 없어요, 문서 보고 싶지도 않은데, 쓸 수 있을까요?
     </chat-bubble>
     <chat-bubble id="case2-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
-      오래된 프로젝트에 임시로 기능 하나만 추가하고 싶어
+      오래된 프로젝트에 임시로 기능 하나 추가하고 싶어요
     </chat-bubble>
     <chat-bubble id="case3-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
-      나는 개발 초보자고, Nodejs와 npm에 발길이 끊겼어
+      개발 초보인데, Nodejs랑 npm 때문에 포기했어요
     </chat-bubble>
     <chat-bubble id="case4-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
-      거대한 쇼핑몰 시스템을 개발하려는데, 너희가 감당할 수 있어?
+      거대한 쇼핑몰 시스템을 개발하는데, 여러분이 감당할 수 있나요?
     </chat-bubble>
     <chat-bubble id="case5-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
-      나는 백엔드 개발자고, 백엔드 템플릿 엔진만으로 개발하고 싶어. ofa.js를
-      사용하는 게 적절할까?</chat-bubble>
+      저는 백엔드 개발자인데, 그냥 백엔드 템플릿 엔진으로 개발하고 싶어요, ofa.js를 사용해도 괜찮을까요?
+    </chat-bubble>
   </flow-container>
   <p-button style="margin-top: 16px" size="large" variant="outlined">
-    <a href="https://github.com/ofajs/discussion/discussions"> 우리에게 메시지 남기기 </a>
+    <a href="https://github.com/ofajs/discussion/discussions"> 메시지 남기기 </a>
   </p-button>
   <anchor-dialog>
     <article for="#case1-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
-        나는 더 이상 배울 수 없어, 너희 문서를 보고 싶지 않아, 그래도 쓸 수 있어?
+        더 이상 배울 힘이 없어요, 문서 보고 싶지도 않은데, 쓸 수 있을까요?
       </chat-bubble>
-      <p>ofa.js를 먼저 배울 필요 없이, 이를 기반으로 개발된 컴포넌트를 바로 재사용할 수 있습니다.</p>
+      <p>ofa.js를 먼저 배우지 않아도, 이를 기반으로 개발된 컴포넌트를 바로 재사용할 수 있습니다.</p>
       <p>
-        오픈소스 컴포넌트 작성자가 코드를 작성한 뒤, 다른 사람들은 예제를 보고 몇 줄만 복사하면 순식간에 기능을 자신의 프로젝트로 옮길 수 있습니다.
+        오픈소스 컴포넌트 작성자가 코드를 완성하면, 다른 사람들은 예시를 보고 몇 줄만 복사해서 자신의 프로젝트에 기능을 즉시 가져올 수 있습니다.
       </p>
     </article>
     <article for="#case2-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
-        오래된 프로젝트에 임시로 기능 하나만 추가하고 싶어
+        오래된 프로젝트에 임시로 기능 하나 추가하고 싶어요
       </chat-bubble>
-      <p>기존 프로젝트에 script 태그로 ofa.js를 불러오기만 하면 즉시 사용할 수 있습니다.</p>
-      <p>불러온 후, 다양한 컴포넌트를 손쉽게 사용할 수 있습니다.</p>
+      <p>기존 프로젝트에 script 태그로 ofa.js를 불러오기만 하면, 즉시 사용할 수 있습니다.</p>
+      <p>불러온 후, 다양한 컴포넌트를 바로 사용할 수 있습니다.</p>
     </article>
     <article for="#case3-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
-        나는 개발 초보자고, Nodejs와 npm에 발길이 끊겼어
+        개발 초보인데, Nodejs랑 npm 때문에 포기했어요
       </chat-bubble>
-      <p>ofa.js는 초보자에게 매우 친화적이며, Node.js, npm 같은 도구를 배울 필요가 없습니다.</p>
-      <p>브라우저 하나와 아무 정적 서버만 있으면 개발을 시작할 수 있습니다.</p>
+      <p>ofa.js는 초보자에게 매우 친숙하며, Node.js, npm 등의 도구를 배울 필요가 없습니다.</p>
+      <p>브라우저 하나와 아무 정적 서버 하나만 있으면 개발을 시작할 수 있습니다.</p>
       <p>
-        Chrome 브라우저를 사용한다면
+        Chrome 브라우저를 사용한다면,
         <a href="https://core.noneos.com/?redirect=studio" target="_blank" style="color: var(--md-sys-color-primary)">OFA Studio</a>
-        이 온라인 도구를 열면 정적 서버를 준비할 필요조차 없이 바로 시작할 수 있습니다.
+        이 온라인 도구를 열면 정적 서버를 준비할 필요 없이 바로 시작할 수 있습니다.
       </p>
-      <a href="./documentation/create-first-app.md" olink="" style="color: var(--md-sys-color-primary)">튜토리얼: 첫 앱 만들기</a>
+      <a href="./documentation/create-first-app.md" olink="" style="color: var(--md-sys-color-primary)">튜토리얼: 첫 번째 애플리케이션 만들기</a>
     </article>
     <article for="#case4-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
-        거대한 쇼핑몰 시스템을 개발하려는데, 너희가 감당할 수 있어?
+        거대한 쇼핑몰 시스템을 개발하는데, 여러분이 감당할 수 있나요?
       </chat-bubble>
-      <p>ofa.js는 마이크로 프론트엔드 아키텍처 패턴을 채택하고 있어 대형 프로젝트에 매우 적합합니다.</p>
+      <p>ofa.js는 마이크로 프론트엔드 아키텍처 패턴을 채택하기 때문에 대규모 프로젝트에 매우 적합합니다.</p>
       <p>
-        쇼핑몰 시스템을 충분히 세분화된 요구사항으로 나누어, 컴포넌트 단위로 개발한 뒤 독립적인 폴더에 배치하면 정적 서버만으로도 바로 컴포넌트 효과를 미리 볼 수 있습니다.
+        쇼핑몰 시스템을 충분히 세분화된 요구사항으로 나누어, 각각의 컴포넌트를 개발하고 독립된 폴더에 배치한 후, 정적 서버를 통해 컴포넌트 효과를 바로 미리 볼 수 있습니다.
       </p>
       <p>
-        마지막으로 하나씩 조립해 거대한 시스템을 완성합니다. ofa.js의
-        마이크로 프론트엔드 방식은 바로 거대 애플리케이션을 해결하는 묘약입니다.
+        마지막으로 하나씩 조립하여 거대한 시스템을 만듭니다. ofa.js의 마이크로 프론트엔드 모드는 바로 모놀리식 애플리케이션을 해결하는 좋은 방법입니다.
       </p>
       <p>
-        사례를 참고하세요.
-        <a href="https://os.noneos.com/" target="_blank" style="color: var(--md-sys-color-primary)">NoneOS</a>, 이는 ofa.js로 개발한 운영체제로 규모가 매우 큽니다
+        사례
+        <a href="https://os.noneos.com/" target="_blank" style="color: var(--md-sys-color-primary)">NoneOS</a>를 참고할 수 있습니다. 이는 ofa.js로 개발된 운영체제로, 규모가 매우 방대합니다.
       </p>
     </article>
     <article for="#case5-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
-        나는 백엔드 개발자고, 백엔드 템플릿 엔진만으로 개발하고 싶어. ofa.js를 사용하는 게 적절할까?
+        저는 백엔드 개발자인데, 그냥 백엔드 템플릿 엔진으로 개발하고 싶어요, ofa.js를 사용해도 괜찮을까요?
       </chat-bubble>
       <p>
-        ofa.js의 SSR은 Node.js에 종속되지 않으며, SCSR
-        규칙만 지킨다면 어떤 백엔드 언어로도 템플릿 엔진 개발이 가능합니다.
+        ofa.js의 SSR은 Node.js와 결합될 필요가 없습니다. SCSR 규칙만 준수한다면, 어떤 백엔드 언어로든 템플릿 엔진 개발을 할 수 있습니다.
       </p>
       <p>
         자세한 내용은
         <a href="./documentation/ssr.md" style="color: var(--md-sys-color-primary)" olink="">ofa.js SSR</a>
-        을 참고하세요
+        을 참고하세요.
       </p>
     </article>
   </anchor-dialog>
@@ -178,20 +178,32 @@
 </center-block>
 
 <center-block>
-  <h2>매우 낮은 사용 문턱</h2>
-  <p>ofa.js 기반 컴포넌트를 사용하면 의존성과 설정 문제를 고려할 필요가 없습니다</p>
+  <h2>극히 낮은 사용 문턱</h2>
+  <p>ofa.js 기반으로 개발된 컴포넌트를 사용하면 의존성과 설정 문제를 고려할 필요가 없습니다</p>
   <o-playground name="Punch Demo" style="--editor-height: 300px; width: 100%">
     <code>
       <template>
-        <!-- 개발 완료된 punch-logo 컴포넌트 로드 -->
-        <l-m src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"></l-m>
+        <!-- 개발된 punch-logo 컴포넌트 로드 -->
+        <l-m src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"></l-m>
+        <style>
+          p {
+            white-space: nowrap;
+            font-size: 18px;
+          }
+        </style>
         <!-- punch-logo 컴포넌트 사용 -->
-        <punch-logo style="margin: 50px 0 0 100px">
-          <img src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg" logo="" height="90">
-          <h2>야근 안 해</h2>
-          <p slot="fly">퇴근해 줘</p>
-          <p slot="fly">조금만 늦게 퇴근</p>
-          <p slot="fly">주말 야근</p>
+        <punch-logo style="margin: 50px 0 0 150px">
+          <img src="https://ofajs.com/img/logo.svg" logo="" height="90">
+          <h2>더 이상 야근 안 해</h2>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            퇴근해 줘
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            늦게 퇴근해
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            주말에 야근해
+          </p>
         </punch-logo>
       </template>
     </code>
@@ -261,6 +273,116 @@
       </template>
     </code>
   </o-playground>
+</center-block>
+
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
+<style>
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .comp-card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: relative;
+    top: 0px;
+    border: 2px solid var(--md-sys-color-normal);
+    border-radius: 16px;
+    padding: 24px;
+    background: var(--md-sys-color-surface);
+    transition: all 0.2s ease;
+  }
+  .comp-card:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    top: -2px;
+  }
+  .comp-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--md-sys-color-primary);
+  }
+  .comp-card p {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .comp-card p-button {
+    align-self: center;
+    margin-top: 16px;
+  }
+</style>
+
+<center-block>
+  <h2>마이크로 프론트엔드 모범 사례</h2>
+  <p>
+    현재 웹사이트의 모든 컴포넌트는 독립적으로 사용, 확인, 참조할 수 있으며, 특정 환경에 의존할 필요 없이 즉시 사용이 가능합니다.
+  </p>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <h3>punch-logo</h3>
+      <p>펀치 애니메이션 로고 컴포넌트로, 클릭 시 분산 애니메이션 효과가 재생됩니다</p>
+      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
+        <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
+        <h4>ofa.js</h4>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="">
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="">
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
+      </punch-logo>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2Fpunch-logo.html">문서 보기</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>chat-bubble</h3>
+      <p>챗 버블 컴포넌트로, 채팅 메시지를 표시하고 아바타와 콘텐츠 커스터마이징을 지원합니다</p>
+      <chat-bubble style="margin-bottom: 8px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
+        안녕하세요, 이것은 챗 버블 예시입니다
+      </chat-bubble>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">문서 보기</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>anchor-dialog</h3>
+      <p>앵커 대화상자 컴포넌트로, 특정 요소를 클릭하면 대화상자가 나타나 커스텀 콘텐츠를 표시합니다</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">클릭해 보세요</button>
+      <anchor-dialog>
+        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
+          <h4 style="margin: 0 0 8px">대화상자 예시</h4>
+          <p style="margin: 0">간단한 앵커 대화상자 데모입니다</p>
+        </article>
+      </anchor-dialog>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">문서 보기</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>flow-chart</h3>
+      <p>플로우차트 컴포넌트로, 프로세스 노드와 연결 관계를 나타냅니다</p>
+      <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
+        <div name="a" to="b">시작</div>
+        <div name="b" to="c">처리</div>
+        <div name="c">종료</div>
+      </flow-chart>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">문서 보기</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>o-md</h3>
+      <p>온라인 Markdown 렌더링 컴포넌트로, 복잡한 의존성 없이 Markdown 파일을 읽고 표시할 수 있습니다</p>
+      <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">문서 보기</a>
+      </p-button>
+    </div>
+  </div>
 </center-block>
 
 <center-block>

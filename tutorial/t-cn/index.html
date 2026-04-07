@@ -2,6 +2,8 @@
 
 <l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
 
+<l-m src="https://book.ofajs.com/o-md/o-md.html"></l-m>
+
 <center-block>
   <punch-logo>
     <img logo="" src="../img/logo.svg" alt="">
@@ -57,8 +59,8 @@
     </chat-bubble>
     <chat-bubble id="case5-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
-      我是後端開發，我隻想用後端的模闆引擎來開發，使用 ofa.js
-      閤適嗎？</chat-bubble>
+      我是後端開發，我隻想用後端的模闆引擎來開發，使用 ofa.js 閤適嗎？
+    </chat-bubble>
   </flow-container>
   <p-button style="margin-top: 16px" size="large" variant="outlined">
     <a href="https://github.com/ofajs/discussion/discussions"> 給我們留言 </a>
@@ -183,14 +185,26 @@
     <code>
       <template>
         <!-- 加載開發好的 punch-logo 組件 -->
-        <l-m src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"></l-m>
+        <l-m src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"></l-m>
+        <style>
+          p {
+            white-space: nowrap;
+            font-size: 18px;
+          }
+        </style>
         <!-- 使用 punch-logo 組件 -->
-        <punch-logo style="margin: 50px 0 0 100px">
-          <img src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg" logo="" height="90">
+        <punch-logo style="margin: 50px 0 0 150px">
+          <img src="https://ofajs.com/img/logo.svg" logo="" height="90">
           <h2>不加班瞭</h2>
-          <p slot="fly">下班給我</p>
-          <p slot="fly">遲點下班</p>
-          <p slot="fly">周末加班</p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            下班給我
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            遲點下班
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            周末加班
+          </p>
         </punch-logo>
       </template>
     </code>
@@ -260,6 +274,116 @@
       </template>
     </code>
   </o-playground>
+</center-block>
+
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
+<style>
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .comp-card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: relative;
+    top: 0px;
+    border: 2px solid var(--md-sys-color-normal);
+    border-radius: 16px;
+    padding: 24px;
+    background: var(--md-sys-color-surface);
+    transition: all 0.2s ease;
+  }
+  .comp-card:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    top: -2px;
+  }
+  .comp-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--md-sys-color-primary);
+  }
+  .comp-card p {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .comp-card p-button {
+    align-self: center;
+    margin-top: 16px;
+  }
+</style>
+
+<center-block>
+  <h2>微前端最佳實踐</h2>
+  <p>
+    當前網站的所有組件均可獨立使用、獨立査看、獨立引用，無需依賴特定環境，眞正做到卽拿卽用。
+  </p>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <h3>punch-logo</h3>
+      <p>衝擊動畫 Logo 組件，點擊時播放飛散動畫效菓</p>
+      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
+        <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
+        <h4>ofa.js</h4>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="">
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="">
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
+      </punch-logo>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2Fpunch-logo.html">査看文檔</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>chat-bubble</h3>
+      <p>聊天氣泡組件，用於顯示聊天消息，支持頭像和內容自定義</p>
+      <chat-bubble style="margin-bottom: 8px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
+        妳好，這是一個聊天氣泡示例
+      </chat-bubble>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">査看文檔</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>anchor-dialog</h3>
+      <p>錨點對話框組件，點擊特定元素時彈齣對話框顯示自定義內容</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">點擊試試</button>
+      <anchor-dialog>
+        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
+          <h4 style="margin: 0 0 8px">對話框示例</h4>
+          <p style="margin: 0">這是一個簡單的錨點對話框演示</p>
+        </article>
+      </anchor-dialog>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">査看文檔</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>flow-chart</h3>
+      <p>流程圖組件，用於展示流程節點和連接關系</p>
+      <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
+        <div name="a" to="b">開始</div>
+        <div name="b" to="c">處理</div>
+        <div name="c">結束</div>
+      </flow-chart>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">査看文檔</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>o-md</h3>
+      <p>在綫 Markdown 渲染組件，無需復雜依賴卽可讀取和展示 Markdown 文件</p>
+      <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">査看文檔</a>
+      </p-button>
+    </div>
+  </div>
 </center-block>
 
 <center-block>

@@ -2,6 +2,8 @@
 
 <l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
 
+<l-m src="https://book.ofajs.com/o-md/o-md.html"></l-m>
+
 <center-block>
   <punch-logo>
     <img logo="" src="../img/logo.svg" alt="">
@@ -37,7 +39,7 @@
 
 <center-block style="--container-max-width: 100%; padding: 128px 0">
   <h2>Un framework frontend casi de bala de plata</h2>
-  <p>Sea cual sea el escenario de uso, ofa.js es adecuado.</p>
+  <p>Sea cual sea el escenario de uso, ofa.js es la opción adecuada.</p>
   <flow-container style="height: 300px; width: 100%">
     <chat-bubble id="case1-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
@@ -49,7 +51,7 @@
     </chat-bubble>
     <chat-bubble id="case3-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
-      Soy nuevo en desarrollo y Nodejs y npm me han echado para atrás
+      Soy nuevo en desarrollo y Nodejs y npm me han hecho tirar la toalla
     </chat-bubble>
     <chat-bubble id="case4-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
@@ -57,8 +59,8 @@
     </chat-bubble>
     <chat-bubble id="case5-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
-      Soy desarrollador backend y solo quiero usar el motor de plantillas del backend, ¿es ofa.js
-      adecuado?</chat-bubble>
+      Soy desarrollador backend y solo quiero usar el motor de plantillas del backend, ¿es ofa.js adecuado?
+    </chat-bubble>
   </flow-container>
   <p-button style="margin-top: 16px" size="large" variant="outlined">
     <a href="https://github.com/ofajs/discussion/discussions"> Déjanos un mensaje </a>
@@ -69,9 +71,9 @@
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
         Ya no puedo aprender más, no quiero leer vuestra documentación, ¿puedo usarlo?
       </chat-bubble>
-      <p>No necesitas aprender ofa.js primero; puedes reutilizar componentes basados en él directamente.</p>
+      <p>No necesitas aprender ofa.js primero; puedes reutilizar componentes desarrollados con él directamente.</p>
       <p>
-        Tras escribir el código, los demás solo deben copiar unas líneas del ejemplo para integrar la funcionalidad en su proyecto al instante.
+        Tras escribir el código, los usuarios solo deben copiar unas líneas del ejemplo para integrar la funcionalidad en su proyecto al instante.
       </p>
     </article>
     <article for="#case2-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
@@ -79,13 +81,13 @@
         <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
         Quiero añadir una funcionalidad temporal a un proyecto antiguo
       </chat-bubble>
-      <p>Simplemente incluye ofa.js en tu proyecto actual con una etiqueta script y empieza a usarlo.</p>
-      <p>Tras la inclusión, dispones de multitud de componentes al instante.</p>
+      <p>Simplemente incluye ofa.js con una etiqueta script en tu proyecto actual y empieza a usarlo de inmediato.</p>
+      <p>Tras la importación, dispondrás de todo tipo de componentes.</p>
     </article>
     <article for="#case3-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
-        Soy nuevo en desarrollo y Nodejs y npm me han echado para atrás
+        Soy nuevo en desarrollo y Nodejs y npm me han hecho tirar la toalla
       </chat-bubble>
       <p>ofa.js es muy amigable para principiantes; no requiere aprender Node.js, npm ni otras herramientas.</p>
       <p>Solo necesitas un navegador y cualquier servidor estático para empezar a desarrollar.</p>
@@ -101,13 +103,13 @@
         <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
         ¿Podéis soportar el desarrollo de un enorme sistema de tienda online?
       </chat-bubble>
-      <p>ofa.js es perfecto para proyectos grandes gracias a su arquitectura de micro-frontend.</p>
+      <p>ofa.js es ideal para proyectos grandes gracias a su arquitectura de micro-frontend.</p>
       <p>
         Puedes dividir el sistema de la tienda en requisitos muy pequeños, desarrollar componente a componente, colocarlos en carpetas independientes y previsualizarlos directamente con un servidor estático.
       </p>
       <p>
         Finalmente, ensamblar todo en un sistema enorme. El modo micro-frontend de ofa.js
-        es el remedio ideal contra aplicaciones monolíticas.
+        es el remedio perfecto contra aplicaciones monolíticas.
       </p>
       <p>
         Consulta el caso
@@ -120,8 +122,8 @@
         Soy desarrollador backend y solo quiero usar el motor de plantillas del backend, ¿es ofa.js adecuado?
       </chat-bubble>
       <p>
-        El SSR de ofa.js no está atado a Node.js; siempre que sigas las reglas SCSR
-        puedes usar cualquier lenguaje backend para desarrollar con motores de plantillas.
+        El SSR de ofa.js no está atado a Node.js; siempre que cumplas las reglas SCSR
+        puedes usar cualquier lenguaje backend para desarrollar con motor de plantillas.
       </p>
       <p>
         Consulta detalles en
@@ -178,19 +180,31 @@
 
 <center-block>
   <h2>Umbral de uso extremadamente bajo</h2>
-  <p>Al usar componentes desarrollados con ofa.js, no necesitas preocuparte por dependencias ni problemas de configuración</p>
-  <o-playground name="Punch Demo" style="--editor-height: 300px; width: 100%">
+  <p>Al usar componentes desarrollados basados en ofa.js, no es necesario considerar problemas de dependencias o configuración</p>
+  <o-playground name="Demo de Punch" style="--editor-height: 300px; width: 100%">
     <code>
       <template>
         <!-- Cargar el componente punch-logo ya desarrollado -->
-        <l-m src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"></l-m>
+        <l-m src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"></l-m>
+        <style>
+          p {
+            white-space: nowrap;
+            font-size: 18px;
+          }
+        </style>
         <!-- Usar el componente punch-logo -->
-        <punch-logo style="margin: 50px 0 0 100px">
-          <img src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg" logo="" height="90">
-          <h2>No más horas extra</h2>
-          <p slot="fly">Hora de irse a casa</p>
-          <p slot="fly">Salir más tarde</p>
-          <p slot="fly">Trabajo en fines de semana</p>
+        <punch-logo style="margin: 50px 0 0 150px">
+          <img src="https://ofajs.com/img/logo.svg" logo="" height="90">
+          <h2>No más horas extras</h2>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            Dame la hora de salida
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            Salir tarde
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            Trabajar el fin de semana
+          </p>
         </punch-logo>
       </template>
     </code>
@@ -260,6 +274,116 @@
       </template>
     </code>
   </o-playground>
+</center-block>
+
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
+<style>
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .comp-card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: relative;
+    top: 0px;
+    border: 2px solid var(--md-sys-color-normal);
+    border-radius: 16px;
+    padding: 24px;
+    background: var(--md-sys-color-surface);
+    transition: all 0.2s ease;
+  }
+  .comp-card:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    top: -2px;
+  }
+  .comp-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--md-sys-color-primary);
+  }
+  .comp-card p {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .comp-card p-button {
+    align-self: center;
+    margin-top: 16px;
+  }
+</style>
+
+<center-block>
+  <h2>Mejores Prácticas de Micro Frontend</h2>
+  <p>
+    Todos los componentes del sitio web actual se pueden usar, ver y referenciar de forma independiente, sin depender de un entorno específico, logrando verdaderamente un uso inmediato.
+  </p>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <h3>punch-logo</h3>
+      <p>Componente de Logo con animación de impacto, reproduce un efecto de animación de dispersión al hacer clic</p>
+      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
+        <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
+        <h4>ofa.js</h4>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="">
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="">
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
+      </punch-logo>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2Fpunch-logo.html">Ver Documentación</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>chat-bubble</h3>
+      <p>Componente de burbuja de chat, utilizado para mostrar mensajes de chat, admite personalización de avatar y contenido</p>
+      <chat-bubble style="margin-bottom: 8px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
+        Hola, este es un ejemplo de burbuja de chat
+      </chat-bubble>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">Ver Documentación</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>anchor-dialog</h3>
+      <p>Componente de cuadro de diálogo anclado, al hacer clic en un elemento específico se abre un cuadro de diálogo que muestra contenido personalizado</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">Haz clic para probar</button>
+      <anchor-dialog>
+        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
+          <h4 style="margin: 0 0 8px">Ejemplo de Cuadro de Diálogo</h4>
+          <p style="margin: 0">Esta es una demostración simple de un cuadro de diálogo anclado</p>
+        </article>
+      </anchor-dialog>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">Ver Documentación</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>flow-chart</h3>
+      <p>Componente de diagrama de flujo, utilizado para mostrar nodos de proceso y relaciones de conexión</p>
+      <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
+        <div name="a" to="b">Inicio</div>
+        <div name="b" to="c">Proceso</div>
+        <div name="c">Fin</div>
+      </flow-chart>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">Ver Documentación</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>o-md</h3>
+      <p>Componente de renderizado de Markdown en línea, puede leer y mostrar archivos Markdown sin dependencias complejas</p>
+      <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">Ver Documentación</a>
+      </p-button>
+    </div>
+  </div>
 </center-block>
 
 <center-block>
