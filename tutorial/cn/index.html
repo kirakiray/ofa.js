@@ -390,17 +390,17 @@
   </p>
   <div class="comp-grid">
     <div class="comp-card">
-      <h3>anchor-dialog</h3>
-      <p>锚点对话框组件，点击特定元素时弹出对话框显示自定义内容</p>
-      <button id="demo-anchor-btn" style="margin-bottom: 8px">点击试试</button>
-      <anchor-dialog>
-        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
-          <h4 style="margin: 0 0 8px">对话框示例</h4>
-          <p style="margin: 0">这是一个简单的锚点对话框演示</p>
-        </article>
-      </anchor-dialog>
+      <h3>punch-logo</h3>
+      <p>冲击动画 Logo 组件，点击时播放飞散动画效果</p>
+      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
+        <img logo src="../img/logo.svg" style="width: 26px; height: 30px" />
+        <h4>ofa.js</h4>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="" />
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="" />
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="" />
+      </punch-logo>
       <p-button>
-        <a href="../publics/_comps/anchor-dialog/README-cn.md">查看文档</a>
+        <a href="../publics/_comps/punch-logo/README-cn.md">查看文档</a>
       </p-button>
     </div>
     <div class="comp-card">
@@ -419,6 +419,20 @@
       </p-button>
     </div>
     <div class="comp-card">
+      <h3>anchor-dialog</h3>
+      <p>锚点对话框组件，点击特定元素时弹出对话框显示自定义内容</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">点击试试</button>
+      <anchor-dialog>
+        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
+          <h4 style="margin: 0 0 8px">对话框示例</h4>
+          <p style="margin: 0">这是一个简单的锚点对话框演示</p>
+        </article>
+      </anchor-dialog>
+      <p-button>
+        <a href="../publics/_comps/anchor-dialog/README-cn.md">查看文档</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
       <h3>flow-chart</h3>
       <p>流程图组件，用于展示流程节点和连接关系</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
@@ -428,20 +442,6 @@
       </flow-chart>
       <p-button>
         <a href="../publics/_comps/flow-chart/README-cn.md">查看文档</a>
-      </p-button>
-    </div>
-    <div class="comp-card">
-      <h3>punch-logo</h3>
-      <p>冲击动画 Logo 组件，点击时播放飞散动画效果</p>
-      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
-        <img logo src="../img/logo.svg" style="width: 26px; height: 30px" />
-        <h4>ofa.js</h4>
-        <img src="../publics/sources/npm.svg" slot="fly" alt="" />
-        <img src="../publics/sources/yarn.svg" slot="fly" alt="" />
-        <img src="../publics/sources/pnpm.svg" slot="fly" alt="" />
-      </punch-logo>
-      <p-button>
-        <a href="../publics/_comps/punch-logo/README-cn.md">查看文档</a>
       </p-button>
     </div>
   </div>
