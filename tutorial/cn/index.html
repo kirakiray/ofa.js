@@ -383,6 +383,13 @@
     <div class="comp-card">
       <h3>anchor-dialog</h3>
       <p>锚点对话框组件，点击特定元素时弹出对话框显示自定义内容</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">点击试试</button>
+      <anchor-dialog>
+        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
+          <h4 style="margin: 0 0 8px">对话框示例</h4>
+          <p style="margin: 0">这是一个简单的锚点对话框演示</p>
+        </article>
+      </anchor-dialog>
       <p-button>
         <a href="../publics/_comps/anchor-dialog/README-cn.md">查看文档</a>
       </p-button>
@@ -390,6 +397,10 @@
     <div class="comp-card">
       <h3>chat-bubble</h3>
       <p>聊天气泡组件，用于显示聊天消息，支持头像和内容自定义</p>
+      <chat-bubble style="margin-bottom: 8px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar" />
+        你好，这是一个聊天气泡示例
+      </chat-bubble>
       <p-button>
         <a href="../publics/_comps/chat-bubble/README-cn.md">查看文档</a>
       </p-button>
@@ -408,6 +419,13 @@
     <div class="comp-card">
       <h3>punch-logo</h3>
       <p>冲击动画 Logo 组件，点击时播放飞散动画效果</p>
+      <punch-logo style="height: 60px; margin-bottom: 8px">
+        <img logo src="../img/logo.svg" alt="" style="height: 40px" />
+        <span style="font-size: 14px; font-weight: bold">ofa.js</span>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="" style="height: 16px" />
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="" style="height: 16px" />
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="" style="height: 16px" />
+      </punch-logo>
       <p-button>
         <a href="../publics/_comps/punch-logo/README-cn.md">查看文档</a>
       </p-button>
