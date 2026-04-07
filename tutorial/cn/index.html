@@ -70,9 +70,8 @@
         src="https://avatars.githubusercontent.com/u/3492426"
         slot="avatar"
       />
-      我是后端开发，我只想用后端的模板引擎来开发，使用 ofa.js
-      合适吗？</chat-bubble
-    >
+      我是后端开发，我只想用后端的模板引擎来开发，使用 ofa.js 合适吗？
+    </chat-bubble>
   </flow-container>
   <p-button style="margin-top: 16px" size="large" variant="outlined">
     <a href="https://github.com/ofajs/discussion/discussions"> 给我们留言 </a>
@@ -348,11 +347,16 @@
 <style>
   .comp-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px;
     margin-top: 24px;
   }
   .comp-card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: relative;
+    top: 0px;
     border: 2px solid var(--md-sys-color-normal);
     border-radius: 16px;
     padding: 24px;
@@ -362,7 +366,7 @@
   .comp-card:hover {
     border-color: var(--md-sys-color-primary);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    top: -2px;
   }
   .comp-card h3 {
     margin: 0 0 8px 0;
@@ -372,6 +376,11 @@
     color: var(--md-sys-color-on-surface);
     margin-bottom: 16px;
     line-height: 1.5;
+  }
+
+  .comp-card p-button {
+    align-self: center;
+    margin-top: 16px;
   }
 </style>
 <center-block>
@@ -398,7 +407,11 @@
       <h3>chat-bubble</h3>
       <p>聊天气泡组件，用于显示聊天消息，支持头像和内容自定义</p>
       <chat-bubble style="margin-bottom: 8px">
-        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar" />
+        <img
+          src="https://avatars.githubusercontent.com/u/11347639"
+          slot="avatar"
+          alt="avatar"
+        />
         你好，这是一个聊天气泡示例
       </chat-bubble>
       <p-button>
@@ -407,6 +420,7 @@
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
+      <p>流程图组件，用于展示流程节点和连接关系</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">开始</div>
         <div name="b" to="c">处理</div>
@@ -419,12 +433,12 @@
     <div class="comp-card">
       <h3>punch-logo</h3>
       <p>冲击动画 Logo 组件，点击时播放飞散动画效果</p>
-      <punch-logo style="height: 60px; margin-bottom: 8px">
-        <img logo src="../img/logo.svg" alt="" style="height: 40px" />
-        <span style="font-size: 14px; font-weight: bold">ofa.js</span>
-        <img src="../publics/sources/npm.svg" slot="fly" alt="" style="height: 16px" />
-        <img src="../publics/sources/yarn.svg" slot="fly" alt="" style="height: 16px" />
-        <img src="../publics/sources/pnpm.svg" slot="fly" alt="" style="height: 16px" />
+      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
+        <img logo src="../img/logo.svg" style="width: 26px; height: 30px" />
+        <h4>ofa.js</h4>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="" />
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="" />
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="" />
       </punch-logo>
       <p-button>
         <a href="../publics/_comps/punch-logo/README-cn.md">查看文档</a>
