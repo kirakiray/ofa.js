@@ -1,5 +1,7 @@
 # punch-logo
 
+[简体中文](./README-cn.md)
+
 Logo component with punch animation effect, plays flying animation and logo display effect on click.
 
 ## Prerequisites

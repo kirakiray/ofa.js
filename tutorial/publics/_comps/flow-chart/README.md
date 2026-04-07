@@ -1,5 +1,7 @@
 # flow-chart
 
+[简体中文](./README-cn.md)
+
 Flow chart component that automatically layouts and renders connections between nodes.
 
 ## Prerequisites

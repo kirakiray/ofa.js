@@ -1,5 +1,7 @@
 # chat-bubble
 
+[简体中文](./README-cn.md)
+
 Chat bubble component for displaying chat messages with customizable avatar and content.
 
 ## Prerequisites

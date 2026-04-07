@@ -1,5 +1,7 @@
 # anchor-dialog
 
+[简体中文](./README-cn.md)
+
 Anchor dialog component that displays a dialog with custom content when clicking on specific elements.
 
 ## Prerequisites
