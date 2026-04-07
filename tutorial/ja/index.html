@@ -320,12 +320,12 @@
 <center-block>
   <h2>マイクロフロントエンドのベストプラクティス</h2>
   <p>
-    現在のウェブサイトのすべてのコンポーネントは独立して使用・表示・参照可能で、特定の環境に依存せず、まさにそのまま利用できます。
+    現在のウェブサイトのすべてのコンポーネントは、特定の環境に依存することなく、独立して使用、表示、参照でき、真にそのまま使用できます。
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>インパクトアニメーションLogoコンポーネント、クリック時に飛び散るアニメーション効果を再生</p>
+      <p>衝撃アニメーションロゴコンポーネント、クリック時に飛散アニメーション効果を再生</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -334,52 +334,52 @@
         <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
       </punch-logo>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2Fpunch-logo.html">ドキュメントを見る</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2FREADME.md">ドキュメントを表示</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>チャット吹き出しコンポーネント、チャットメッセージを表示し、アバターと内容のカスタマイズをサポート</p>
+      <p>チャットバブルコンポーネント、チャットメッセージの表示に使用、アバターとコンテンツのカスタマイズをサポート</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
-        こんにちは、これはチャット吹き出しのサンプルです
+        こんにちは、これはチャットバブルの例です
       </chat-bubble>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">ドキュメントを見る</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">ドキュメントを表示</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
       <p>アンカーダイアログコンポーネント、特定の要素をクリックするとダイアログがポップアップしてカスタムコンテンツを表示</p>
-      <button id="demo-anchor-btn" style="margin-bottom: 8px">クリックしてみて</button>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">クリックして試す</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
-          <h4 style="margin: 0 0 8px">ダイアログサンプル</h4>
+          <h4 style="margin: 0 0 8px">ダイアログの例</h4>
           <p style="margin: 0">これはシンプルなアンカーダイアログのデモです</p>
         </article>
       </anchor-dialog>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">ドキュメントを見る</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">ドキュメントを表示</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>フローチャートコンポーネント、フローノードと接続関係を表示するために使用</p>
+      <p>フローチャートコンポーネント、プロセスのノードと接続関係を表示するために使用</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">開始</div>
         <div name="b" to="c">処理</div>
         <div name="c">終了</div>
       </flow-chart>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">ドキュメントを見る</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">ドキュメントを表示</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>o-md</h3>
-      <p>オンラインMarkdownレンダリングコンポーネント、複雑な依存関係なしでMarkdownファイルを読み込み表示</p>
+      <p>オンラインマークダウン描画コンポーネント、複雑な依存関係なしでマークダウンファイルを読み取り表示</p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">ドキュメントを見る</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">ドキュメントを表示</a>
       </p-button>
     </div>
   </div>

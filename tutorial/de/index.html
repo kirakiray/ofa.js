@@ -319,12 +319,12 @@
 <center-block>
   <h2>Best Practices für Micro-Frontends</h2>
   <p>
-    Alle Komponenten dieser Website können unabhängig verwendet, betrachtet und referenziert werden, ohne auf eine bestimmte Umgebung angewiesen zu sein – wirklich sofort einsatzbereit.
+    Alle Komponenten der aktuellen Website können unabhängig verwendet, unabhängig betrachtet und unabhängig referenziert werden, ohne eine bestimmte Umgebung zu benötigen – wirklich sofort einsatzbereit.
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>Logo-Komponente mit Aufprallanimation, spielt beim Klicken eine Zerstreuungsanimation ab</p>
+      <p>Logo-Komponente mit Impact-Animation; beim Klick wird eine Zerstäubungsanimation abgespielt</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -333,52 +333,52 @@
         <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
       </punch-logo>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2Fpunch-logo.html">Dokumentation ansehen</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2FREADME.md">Dokumentation anzeigen</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>Chatblasen-Komponente zur Anzeige von Chatnachrichten, unterstützt benutzerdefinierte Avatare und Inhalte</p>
+      <p>Chat-Blasen-Komponente zur Anzeige von Chat-Nachrichten mit anpassbarem Avatar und Inhalt</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
-        Hallo, dies ist ein Beispiel für eine Chatblase
+        Hallo, das ist ein Beispiel für eine Chat-Blase
       </chat-bubble>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">Dokumentation ansehen</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">Dokumentation anzeigen</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>Ankerdialog-Komponente, die beim Klicken auf ein bestimmtes Element einen Dialog mit benutzerdefiniertem Inhalt öffnet</p>
-      <button id="demo-anchor-btn" style="margin-bottom: 8px">Klicken Sie, um es zu versuchen</button>
+      <p>Anker-Dialogkomponente; beim Klick auf ein bestimmtes Element öffnet sich ein Dialog mit benutzerdefiniertem Inhalt</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">Klicken zum Ausprobieren</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
-          <h4 style="margin: 0 0 8px">Dialogbeispiel</h4>
-          <p style="margin: 0">Dies ist eine einfache Demonstration eines Ankerdialogs</p>
+          <h4 style="margin: 0 0 8px">Dialog-Beispiel</h4>
+          <p style="margin: 0">Dies ist eine einfache Anker-Dialog-Demo</p>
         </article>
       </anchor-dialog>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">Dokumentation ansehen</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">Dokumentation anzeigen</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>Flussdiagramm-Komponente zur Darstellung von Prozessknoten und Verbindungsbeziehungen</p>
+      <p>Flussdiagramm-Komponente zur Darstellung von Prozessknoten und Verbindungen</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">Start</div>
         <div name="b" to="c">Verarbeitung</div>
         <div name="c">Ende</div>
       </flow-chart>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">Dokumentation ansehen</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">Dokumentation anzeigen</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>o-md</h3>
-      <p>Online-Markdown-Rendering-Komponente, die Markdown-Dateien ohne komplexe Abhängigkeiten lesen und anzeigen kann</p>
+      <p>Online-Markdown-Rendering-Komponente; Markdown-Dateien können ohne komplexe Abhängigkeiten gelesen und angezeigt werden</p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">Dokumentation ansehen</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">Dokumentation anzeigen</a>
       </p-button>
     </div>
   </div>

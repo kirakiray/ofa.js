@@ -320,12 +320,12 @@
 <center-block>
   <h2>마이크로 프론트엔드 모범 사례</h2>
   <p>
-    현재 웹사이트의 모든 컴포넌트는 독립적으로 사용, 확인, 참조할 수 있으며, 특정 환경에 의존할 필요 없이 즉시 사용이 가능합니다.
+    현재 웹사이트의 모든 컴포넌트는 독립적으로 사용·조회·참조할 수 있으며, 특정 환경에 의존하지 않고 바로 가져다 쓸 수 있습니다.
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>펀치 애니메이션 로고 컴포넌트로, 클릭 시 분산 애니메이션 효과가 재생됩니다</p>
+      <p>충격 애니메이션 로고 컴포넌트, 클릭 시 흩날리는 애니메이션 효과 재생</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -334,15 +334,15 @@
         <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
       </punch-logo>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2Fpunch-logo.html">문서 보기</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2FREADME.md">문서 보기</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>챗 버블 컴포넌트로, 채팅 메시지를 표시하고 아바타와 콘텐츠 커스터마이징을 지원합니다</p>
+      <p>채팅 말풍선 컴포넌트, 채팅 메시지 표시에 사용되며 아바타와 콘텐츠 커스터마이징 지원</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
-        안녕하세요, 이것은 챗 버블 예시입니다
+        안녕하세요, 이것은 채팅 말풍선 예시입니다
       </chat-bubble>
       <p-button>
         <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">문서 보기</a>
@@ -350,12 +350,12 @@
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>앵커 대화상자 컴포넌트로, 특정 요소를 클릭하면 대화상자가 나타나 커스텀 콘텐츠를 표시합니다</p>
+      <p>앵커 대화상자 컴포넌트, 특정 요소 클릭 시 대화상자를 띄워 커스텀 콘텐츠 표시</p>
       <button id="demo-anchor-btn" style="margin-bottom: 8px">클릭해 보세요</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
           <h4 style="margin: 0 0 8px">대화상자 예시</h4>
-          <p style="margin: 0">간단한 앵커 대화상자 데모입니다</p>
+          <p style="margin: 0">이것은 간단한 앵커 대화상자 데모입니다</p>
         </article>
       </anchor-dialog>
       <p-button>
@@ -364,7 +364,7 @@
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>플로우차트 컴포넌트로, 프로세스 노드와 연결 관계를 나타냅니다</p>
+      <p>플로우차트 컴포넌트, 프로세스 노드와 연결 관계를 보여줌</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">시작</div>
         <div name="b" to="c">처리</div>
@@ -376,7 +376,7 @@
     </div>
     <div class="comp-card">
       <h3>o-md</h3>
-      <p>온라인 Markdown 렌더링 컴포넌트로, 복잡한 의존성 없이 Markdown 파일을 읽고 표시할 수 있습니다</p>
+      <p>온라인 Markdown 렌더링 컴포넌트, 복잡한 의존성 없이 Markdown 파일을 읽고 표시</p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
         <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">문서 보기</a>
