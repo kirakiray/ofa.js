@@ -132,6 +132,7 @@
             let rowStartIndex = 0;
             let maxRowHeight = 0;
             const rowWidths = [];
+            let totalRows = 0;
 
             nodes.forEach((node, index) => {
               if (currentX + node.width > containerWidth && index > 0) {
@@ -143,6 +144,7 @@
                 currentX = 0;
                 maxRowHeight = 0;
                 rowStartIndex = index;
+                totalRows++;
               }
 
               node.x = currentX;
@@ -157,11 +159,12 @@
             }
 
             const totalHeight = currentY + maxRowHeight + 16;
-            const containerHeight = containerRect.height || this.ele.offsetHeight || totalHeight;
-            const startY = Math.max(
-              16,
-              (containerHeight - totalHeight) / 2,
-            );
+            const containerHeight = containerRect.height || this.ele.offsetHeight || 0;
+            
+            let startY = 16;
+            if (containerHeight > totalHeight) {
+              startY = (containerHeight - totalHeight) / 2;
+            }
 
             for (let row = 0; row <= rowWidths.length; row++) {
               const rowNodes = nodes.filter((n) => n.row === row);
@@ -177,9 +180,9 @@
             }
 
             this.renderNodes(nodes);
-            const extraHeight = this.renderLines(nodes, lines, nodeMap);
+            this.renderLines(nodes, lines, nodeMap);
 
-            const minHeight = totalHeight + startY + extraHeight;
+            const minHeight = totalHeight;
             this.ele.style.minHeight = `${minHeight}px`;
             
             const container = this.shadow.ele.querySelector(".container");
@@ -215,8 +218,6 @@
             const svg = this.shadow.ele.querySelector("#svg");
             svg.innerHTML = "";
 
-            let maxExtraHeight = 0;
-
             lines.forEach((line) => {
               const fromNode = nodes.find((n) => n.name === line.from);
               const toNode = nodes.find((n) => n.name === line.to);
@@ -229,7 +230,6 @@
               );
 
               let d;
-              let isVerticalArrow = false;
 
               if (fromNode.row === toNode.row) {
                 const x1 = fromNode.x + fromNode.width;
@@ -239,7 +239,6 @@
                 const midX = (x1 + x2) / 2;
                 d = `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
               } else {
-                isVerticalArrow = true;
                 const x1 = fromNode.x + fromNode.width / 2;
                 const y1 = fromNode.y + fromNode.height;
                 const x2 = toNode.x + toNode.width / 2;
@@ -247,11 +246,6 @@
 
                 const midY = (y1 + y2) / 2;
                 d = `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
-
-                const lineEndY = y2;
-                const extraHeight =
-                  lineEndY - (fromNode.y + fromNode.height) + 20;
-                maxExtraHeight = Math.max(maxExtraHeight, extraHeight);
               }
 
               path.setAttribute("d", d);
@@ -296,8 +290,6 @@
 
               svg.appendChild(path);
             });
-
-            return maxExtraHeight;
           },
         },
         async attached() {
