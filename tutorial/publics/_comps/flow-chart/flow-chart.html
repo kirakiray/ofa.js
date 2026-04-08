@@ -3,12 +3,12 @@
     :host {
       position: relative;
       display: block;
-      overflow: hidden;
+      overflow: visible;
     }
     .container {
       position: relative;
       width: 100%;
-      height: 100%;
+      min-height: 100%;
     }
     svg {
       position: absolute;
@@ -16,6 +16,7 @@
       left: 0;
       width: 100%;
       height: 100%;
+      min-height: 100%;
       pointer-events: none;
       z-index: 1;
     }
@@ -106,6 +107,7 @@
             });
 
             const containerRect = this.ele.getBoundingClientRect();
+            const containerWidth = containerRect.width || this.ele.offsetWidth || 800;
             const horizontalGap = 40;
             const verticalGap = 60;
 
@@ -132,7 +134,7 @@
             const rowWidths = [];
 
             nodes.forEach((node, index) => {
-              if (currentX + node.width > containerRect.width && index > 0) {
+              if (currentX + node.width > containerWidth && index > 0) {
                 rowWidths.push(currentX - horizontalGap);
                 for (let i = rowStartIndex; i < index; i++) {
                   nodes[i].y = currentY + (maxRowHeight - nodes[i].height) / 2;
@@ -155,9 +157,10 @@
             }
 
             const totalHeight = currentY + maxRowHeight + 16;
+            const containerHeight = containerRect.height || this.ele.offsetHeight || totalHeight;
             const startY = Math.max(
               16,
-              (containerRect.height - totalHeight) / 2,
+              (containerHeight - totalHeight) / 2,
             );
 
             for (let row = 0; row <= rowWidths.length; row++) {
@@ -165,7 +168,7 @@
               if (rowNodes.length === 0) continue;
 
               const rowWidth = rowWidths[row] || 0;
-              const startX = (containerRect.width - rowWidth) / 2;
+              const startX = (containerWidth - rowWidth) / 2;
 
               rowNodes.forEach((node) => {
                 node.x += startX;
@@ -176,10 +179,11 @@
             this.renderNodes(nodes);
             const extraHeight = this.renderLines(nodes, lines, nodeMap);
 
-            if (extraHeight > 0) {
-              const minHeight = totalHeight + startY + extraHeight;
-              this.ele.style.minHeight = `${minHeight}px`;
-            }
+            const minHeight = totalHeight + startY + extraHeight;
+            this.ele.style.minHeight = `${minHeight}px`;
+            
+            const container = this.shadow.ele.querySelector(".container");
+            container.style.height = `${minHeight}px`;
           },
 
           clear() {

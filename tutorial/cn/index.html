@@ -213,13 +213,13 @@
     AI使用
     <b style="color: var(--md-sys-color-primary)">ofa.js</b> 生成前端项目的流程
   </div>
-  <flow-chart style="width: 100%; height: 100px">
+  <flow-chart style="width: 100%">
     <div name="ai-model" to="container">AI大模型</div>
     <div name="container" to="preview">部署代码到静态容器</div>
     <div name="preview">预览项目</div>
   </flow-chart>
   <div class="w-title">AI使用当前主流前端框架生成项目的流程</div>
-  <flow-chart style="width: 100%; height: 100px">
+  <flow-chart style="width: 100%">
     <div name="ai-model" to="cloud-container">AI大模型</div>
     <div name="cloud-container" to="init">创建云端容器</div>
     <div name="init" to="deploy">安装依赖</div>
@@ -459,7 +459,10 @@
     </div>
     <div class="comp-card">
       <h3>o-md</h3>
-      <p>在线 Markdown 渲染组件，无需复杂依赖即可读取和展示 Markdown 文件</p>
+      <p>
+        一行代码即可渲染和查看 Markdown
+        的组件；当前点击跳转查看文档的功能，也是基于它实现的。
+      </p>
       <o-md
         style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px"
         src="https://book.ofajs.com/o-md/README.md"
