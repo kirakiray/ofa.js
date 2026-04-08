@@ -54,16 +54,22 @@
 
             const hostHeight = this.offsetHeight || 300;
 
-            // 打乱顺序
             children.sort(() => Math.random() - 0.5);
 
             children.forEach((el, index) => {
               const y = Math.random() * (hostHeight - 50);
-              const delay = index === 0 ? 0 : index * 2;
               const duration = 15 + Math.random() * 20;
 
               el.style.top = `${y}px`;
-              el.style.animation = `flow-container-float ${duration}s linear ${delay}s infinite`;
+              
+              if (index < Math.ceil(children.length * 0.3)) {
+                const progress = Math.random();
+                const delay = -duration * progress;
+                el.style.animation = `flow-container-float ${duration}s linear ${delay}s infinite`;
+              } else {
+                const delay = index * 2;
+                el.style.animation = `flow-container-float ${duration}s linear ${delay}s infinite`;
+              }
             });
           },
         },
