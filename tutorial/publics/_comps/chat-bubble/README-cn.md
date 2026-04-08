@@ -24,9 +24,6 @@
 <chat-bubble>
   <img src="avatar.png" slot="avatar" alt="用户名" />
   这是消息内容
-  <article slot="article">
-    <p>附加文章内容</p>
-  </article>
 </chat-bubble>
 ```
 
@@ -36,7 +33,6 @@
 |--------|------|
 | `avatar` | 头像图片，会自动应用圆形样式 |
 | 默认插槽 | 消息内容 |
-| `article` | 附加文章内容 |
 
 ## 示例
 
@@ -54,10 +50,7 @@
     <div style="text-align: center; padding: 100px">
       <chat-bubble>
         <img src="../../sources/webpack.svg" slot="avatar" alt="webpack" />
-        你好，我是webpack。
-        <article slot="article">
-          <p>我是描述性文字。</p>
-        </article>
+        你好，我是 webpack。
       </chat-bubble>
     </div>
   </body>
@@ -68,4 +61,4 @@
 
 - 自动圆形头像显示
 - 气泡样式带阴影效果
-- 支持自定义内容插槽
+- 支持头像和内容插槽

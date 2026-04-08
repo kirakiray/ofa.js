@@ -26,9 +26,6 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
 <chat-bubble>
   <img src="avatar.png" slot="avatar" alt="username" />
   This is the message content
-  <article slot="article">
-    <p>Additional article content</p>
-  </article>
 </chat-bubble>
 ```
 
@@ -38,7 +35,6 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
 |-----------|-------------|
 | `avatar` | Avatar image, automatically applies circular styling |
 | Default slot | Message content |
-| `article` | Additional article content |
 
 ## Example
 
@@ -57,9 +53,6 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
       <chat-bubble>
         <img src="../../sources/webpack.svg" slot="avatar" alt="webpack" />
         Hello, I am webpack.
-        <article slot="article">
-          <p>I am descriptive text.</p>
-        </article>
       </chat-bubble>
     </div>
   </body>
@@ -70,4 +63,4 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
 
 - Automatic circular avatar display
 - Bubble style with shadow effect
-- Support for custom content slots
+- Support for avatar and content slots
