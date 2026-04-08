@@ -2,6 +2,12 @@
 
 <l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
 <l-m src="https://book.ofajs.com/o-md/o-md.html"></l-m>
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
+<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
+<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
+<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
+<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
 
 <center-block>
   <punch-logo>
@@ -30,11 +36,7 @@
   </div>
 </center-block>
 
-<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
-<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
-<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
-
-<center-block style="--container-max-width: 100%; padding: 128px 0">
+<center-block style="--container-max-width: 100%;">
   <h2>近乎银弹型的前端框架</h2>
   <p>无论是什么应用场景，都适合使用 ofa.js。</p>
   <flow-container style="height: 300px; width: 100%">
@@ -195,8 +197,6 @@
   </anchor-dialog>
 </center-block>
 
-<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
-
 <style>
   .w-title {
     padding: 24px 0 8px;
@@ -230,14 +230,6 @@
   <p-button size="large" style="margin-top: 16px">
     <a href="./scenarios/more-suitable-for-ai.md">查看详情</a>
   </p-button>
-</center-block>
-
-<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
-
-<center-block>
-  <h2>基于 Web Components 开发</h2>
-  <p>你可以在任何支持 Web Components 的平台上使用 ofa.js</p>
-  <support-platforms></support-platforms>
 </center-block>
 
 <center-block>
@@ -344,12 +336,24 @@
   </o-playground>
 </center-block>
 
-<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+<center-block>
+  <h2>支持多种模板语法</h2>
+  <o-page src="../publics/_comps/render-case/render-case.html"></o-page>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./documentation/content-rendering.md">学习更多模板语法</a>
+  </p-button>
+</center-block>
+
+<center-block>
+  <h2>基于 Web Components 开发</h2>
+  <p>你可以在任何支持 Web Components 的平台上使用 ofa.js</p>
+  <support-platforms></support-platforms>
+</center-block>
+
 <style>
   .comp-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
+    column-count: 3;
+    column-gap: 24px;
     margin-top: 24px;
   }
   .comp-card {
@@ -363,6 +367,8 @@
     padding: 24px;
     background: var(--md-sys-color-surface);
     transition: all 0.2s ease;
+    break-inside: avoid;
+    margin-bottom: 24px;
   }
   .comp-card:hover {
     border-color: var(--md-sys-color-primary);
@@ -489,7 +495,8 @@
         <code path="style.css"> h3 { color: #42b983; } </code>
       </o-playground>
       <p-button>
-        <a href="https://playground.ofajs.com/README.md" target="_blank"
+        <a
+          href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fplayground.ofajs.com%2FREADME.md"
           >查看文档</a
         >
       </p-button>
@@ -497,14 +504,6 @@
   </div>
 </center-block>
 
-<center-block>
-  <h2>支持多种模板语法</h2>
-  <o-page src="../publics/_comps/render-case/render-case.html"></o-page>
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./documentation/content-rendering.md">学习更多模板语法</a>
-  </p-button>
-</center-block>
-<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
 <center-block>
   <h2>jQuery的精神继承者</h2>
   <p>既支持模板语法，又能直接操作节点，灵活高效两不误</p>
