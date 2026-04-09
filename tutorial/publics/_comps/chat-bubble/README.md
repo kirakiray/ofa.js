@@ -51,7 +51,7 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
     <l-m src="https://ofajs.com/publics/_comps/chat-bubble/chat-bubble.html"></l-m>
     <div style="text-align: center; padding: 100px">
       <chat-bubble>
-        <img src="../../sources/webpack.svg" slot="avatar" alt="webpack" />
+        <img src="https://ofajs.com/publics/sources/webpack.svg" slot="avatar" alt="webpack" />
         Hello, I am webpack.
       </chat-bubble>
     </div>
