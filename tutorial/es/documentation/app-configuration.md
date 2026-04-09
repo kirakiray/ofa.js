@@ -177,9 +177,9 @@ Componente que se muestra cuando falla la carga de la página, la función recib
 ```javascript
 export const fail = ({src, error}) => {
   return `<div class='error'>
-    <p>页面加载失败</p>
-    <p>地址: ${src}</p>
-    <button on:click="back()">返回</button>
+    <p>Error al cargar la página</p>
+    <p>Dirección: ${src}</p>
+    <button on:click="back()">Regresar</button>
   </div>`;
 };
 ```

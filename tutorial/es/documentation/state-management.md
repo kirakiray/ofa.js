@@ -167,22 +167,22 @@ El objeto de estado creado por `$.stanz()` es reactivo. Cuando los datos del est
 ```javascript
 const store = $.stanz({ count: 0 });
 
-// 在组件中
+// En el componente
 export default {
   data: {
     store: {}
   },
   proto:{
     increment() {
-        store.count++; // 所有引用了 store.count 的组件都会自动更新
+        store.count++; // Todos los componentes que referencian store.count se actualizarán automáticamente
     }
   },
   attached() {
-    // 直接引用状态对象的属性
+    // Referencia directa a la propiedad del objeto de estado
     this.store = store;
   },
   detached(){
-    this.store = {}; // 组件销毁时，清空挂载的状态数据
+    this.store = {}; // Cuando el componente se destruye, vacía los datos de estado montados
   }
 };
 ```
@@ -194,7 +194,7 @@ Los objetos de estado admiten reactividad profunda; los cambios en objetos y arr
 ```javascript
 const store = $.stanz({
   user: {
-    name: "张三",
+    name: "Zhang San",
     settings: {
       theme: "dark"
     }
@@ -202,10 +202,10 @@ const store = $.stanz({
   list: []
 });
 
-// 修改嵌套属性也会触发更新
-store.user.name = "李四";
+// Modificar propiedades anidadas también activa la actualización
+store.user.name = "Li Si";
 store.user.settings.theme = "light";
-store.list.push({ id: 1, title: "新任务" });
+store.list.push({ id: 1, title: "Nueva tarea" });
 ```
 
 ## Mejores prácticas
@@ -260,7 +260,7 @@ const cartStore = $.stanz({ total: 0 });
           padding: 8px;
         }
       </style>
-      <button on:click="addItem">Add Item</button>
+      <button on:click="addItem">Agregar Elemento</button>
       <o-fill :value="list">
         <div>{{$index}} - <demo-comp :val="$data.val"></demo-comp></div>
       </o-fill>
@@ -291,7 +291,7 @@ const cartStore = $.stanz({ total: 0 });
             display: inline-block;
         }
       </style>
-      {{val}} - {{cartStore.total}} <button on:click="addStoreTotal">Add Store Total</button>
+      {{val}} - {{cartStore.total}} <button on:click="addStoreTotal">Agregar Total de la Tienda</button>
       <script>
         const cartStore = $.stanz({ total: 0 });
         export default async () => {
@@ -310,7 +310,7 @@ const cartStore = $.stanz({ total: 0 });
                 this.cartStore = cartStore;
             },
             detached(){
-                this.cartStore = {}; // 组件销毁时，清空挂载的状态数据
+                this.cartStore = {}; // Al destruir el componente, vaciar los datos de estado montados
             }
           };
         };

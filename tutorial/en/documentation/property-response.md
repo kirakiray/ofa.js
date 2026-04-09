@@ -47,7 +47,7 @@ Sometimes we need to store data that doesn't require reactive updates, such as P
 
 Non-reactive properties are typically prefixed with an underscore `_` to distinguish them from reactive ones.
 
-<o-playground name="Non-reactive data example" style="--editor-height: 500px">
+<o-playground name="Non-reactive Data Example" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -59,8 +59,8 @@ Non-reactive properties are typically prefixed with an underscore `_` to disting
       </style>
       <p style="color: blue;">count: {{count}}</p>
       <p style="color: green;">count2: {{_count2}}</p>
-      <button on:click="count++">Increment Blue</button>
-      <button on:click="_count2++">Increment Green</button>
+      <button on:click="count++">Blue increases</button>
+      <button on:click="_count2++">Green increments</button>
       <script>
         export default async () => {
           return {
@@ -75,7 +75,7 @@ Non-reactive properties are typically prefixed with an underscore `_` to disting
   </code>
 </o-playground>
 
-When clicking the "Green Increase" button, although the `_count2` value has actually increased, since it is a non-reactive property, it does not trigger a view update, so the display on the interface remains unchanged. When clicking the "Blue Increase" button, since `count` is a reactive property, it triggers a re-render of the entire component, and only then does the Green display content get synchronized and updated.
+When clicking the `Green increments` button, although the value of `_count2` has actually increased, since it is a non-reactive property, it will not trigger view updates, so the display on the interface does not change. When clicking the `Blue increases` button, since `count` is a reactive property, it will trigger the re-rendering of the entire component, and only at this time will the Green display content be synchronized and updated.
 
 Non-reactive object data performs better than reactive data because it does not trigger component re-renders.
 

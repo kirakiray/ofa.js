@@ -162,7 +162,7 @@ En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode
 
 ### 1. Mise à jour réactive
 
-`$.stanz()` 创建的状态对象是响应式的。当状态数据发生变化时，所有引用该数据的组件都会自动更新。
+Les objets d'état créés par `$.stanz()` sont réactifs. Lorsque les données d'état changent, tous les composants qui référencent ces données se mettent à jour automatiquement.
 
 ```javascript
 const store = $.stanz({ count: 0 });
@@ -194,7 +194,7 @@ L'objet d'état prend en charge la réactivité en profondeur ; les changements 
 ```javascript
 const store = $.stanz({
   user: {
-    name: "张三",
+    name: "Jean Dupont",
     settings: {
       theme: "dark"
     }
@@ -202,8 +202,8 @@ const store = $.stanz({
   list: []
 });
 
-// La modification des propriétés imbriquées déclenche également la mise à jour
-store.user.name = "李四";
+// La modification des propriétés imbriquées déclenchera également la mise à jour
+store.user.name = "Pierre Martin";
 store.user.settings.theme = "light";
 store.list.push({ id: 1, title: "Nouvelle tâche" });
 ```

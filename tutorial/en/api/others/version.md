@@ -1,4 +1,4 @@
-# 版本
+# version
 
 You can get the version number of the currently imported ofa.js through the `ofa.version` property.
 

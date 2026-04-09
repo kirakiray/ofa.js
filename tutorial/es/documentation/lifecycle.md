@@ -128,7 +128,7 @@ El siguiente ejemplo demuestra cómo usar ganchos de ciclo de vida en un compone
   </code>
 </o-playground>
 
-En este ejemplo, puedes observar el orden y el momento de ejecución de los diferentes hooks del ciclo de vida. Cuando haces clic en el botón "移除组件", puedes ver que se activa el hook `detached`.
+En este ejemplo, puedes observar el orden de ejecución y el momento de los diferentes ganchos del ciclo de vida. Cuando haces clic en el botón "Eliminar componente", puedes ver que se activa el gancho `detached`.
 
 ## Escenarios de aplicación reales
 

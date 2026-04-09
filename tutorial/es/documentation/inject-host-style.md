@@ -52,11 +52,11 @@ El siguiente ejemplo muestra cómo utilizar `<inject-host>` para aplicar estilos
       <l-m src="./user-list-item.html"></l-m>
       <user-list>
         <user-list-item>
-          <span>张三</span>
+          <span>Zhang San</span>
           <span slot="age">25</span>
         </user-list-item>
         <user-list-item>
-          <span class="item-name">李四</span>
+          <span class="item-name">Li Si</span>
           <span slot="age">30</span>
         </user-list-item>
       </user-list>
@@ -159,5 +159,5 @@ De esta manera, puedes:- Aplicar estilos a elementos de cualquier profundidad de
 
 ### Consejos de rendimiento
 
-由于 `<inject-host>` puede déclenche el reinyecto de estilos del host, lo que puede causar reflujo o repintado del componente, úselo con precaución en escenarios de actualización frecuente.  
-若仅需为插槽内第一级元素设置样式，优先使用 [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) 伪类选择器，可避免穿透式注入带来的额外渲染开销，从而获得更佳性能。
+Dado que `<inject-host>` desencadena la reinyección de estilos del host, lo que puede provocar el reflujo o repintado del componente, utilícelo con precaución en escenarios de actualización frecuente.  
+Si solo necesita establecer estilos para los elementos de primer nivel dentro del slot, priorice el uso del selector de pseudo-clase [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted), ya que puede evitar el costo de renderizado adicional causado por la inyección de tipo "penetración", obteniendo así un mejor rendimiento.

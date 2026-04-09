@@ -2,13 +2,13 @@
 
 하위 요소 인스턴스를 가져오는 것은 매우 간단합니다. 당신은 단지 인스턴스를 배열처럼 사용하여 숫자 인덱스를 통해 그 하위 요소 인스턴스를 가져오면 됩니다.
 
-<o-playground name="children - 자식 요소" style="--editor-height: 380px">
+<o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>I am 1</li>
-        <li>I am 2</li>
-        <li>I am 3</li>
+        <li>나는 1입니다</li>
+        <li>나는 2입니다</li>
+        <li>나는 3입니다</li>
       </ul>
       <div id="logger1" style="color:red;"></div>
       <div id="logger2" style="color:blue;"></div>

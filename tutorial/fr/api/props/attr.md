@@ -8,7 +8,7 @@ La méthode `attr` sert à obtenir ou définir les attributs des éléments.
 
 Vous pouvez directement utiliser la méthode `attr` pour obtenir ou définir les attributs d'un élément.
 
-<o-playground name="attr - 直接使用" style="--editor-height: 500px">
+<o-playground name="attr - utilisation directe" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <style>
@@ -19,9 +19,9 @@ Vous pouvez directement utiliser la méthode `attr` pour obtenir ou définir les
           color: green;
         }
       </style>
-      <div id="target1" test-attr="1">Je suis la cible 1</div>
-      <div id="target2">Je suis la cible 2</div>
-      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">journal</div>
+      <div id="target1" test-attr="1">I am target 1</div>
+      <div id="target2">I am target 2</div>
+      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">logger</div>
       <script>
         $("#logger").text = $("#target1").attr('test-attr');
         setTimeout(()=> {

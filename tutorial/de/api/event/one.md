@@ -6,10 +6,10 @@ Mit der `one`-Methode können Sie einen einmaligen Ereignishandler für das Ziel
 
 Hier ist ein Beispiel, das zeigt, wie die `one`-Methode verwendet wird, um einen Klick-Event-Handler für ein Button-Element zu registrieren:
 
-<o-playground name="one - click 一次性事件" style="--editor-height: 300px">
+<o-playground name="one - click Einmalige Ereignisse" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <button id="target">Zähler erhöhen</button>
+      <button id="target">add count</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>

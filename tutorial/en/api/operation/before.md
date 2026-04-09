@@ -1,4 +1,4 @@
-# 之前
+# before
 
 The `before` method is used to insert elements before the target element. Before performing the `before` operation, the initialization of the [$ method](../instance/dollar.md) is automatically executed, so you can directly specify the specific element string or object.
 

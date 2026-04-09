@@ -1,0 +1,24 @@
+<template page>
+  <style>
+    :host {
+      display: block;
+      color: Green;
+    }
+  </style>
+  <h2>{{val}}</h2>
+  <button on:click="handleButtonClick">Click me</button>
+  <script>
+    export default async () => {
+      return {
+        data: {
+          val: "Hello World",
+        },
+        proto: {
+          handleButtonClick() {
+            this.val = "Hello ofa.js App Demo";
+          },
+        },
+      };
+    };
+  </script>
+</template>

@@ -56,7 +56,9 @@
       opacity: 0;
       transition: transform 0.3s ease;
     }
-    ::slotted(h2) {
+    ::slotted(h2),
+    ::slotted(h3),
+    ::slotted(h4) {
       opacity: 0;
       transition: all 0.6s ease;
     }
@@ -85,7 +87,7 @@
 
             const content = host.shadow.$(".content");
             const logoImg = this.$("img[logo]");
-            const h2 = this.$("h2");
+            const h2 = this.$("h2, h3, h4");
 
             content.classList.remove("punching");
             content.style.transform = "";
@@ -144,7 +146,7 @@
                 if (logoImg) {
                   logoImg.style.transform = "rotate(0deg)";
                 }
-                const h2 = this.$("h2");
+                const h2 = this.$("h2, h3, h4");
                 if (h2) {
                   h2.style.opacity = 1;
                 }

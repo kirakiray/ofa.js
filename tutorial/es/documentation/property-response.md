@@ -16,7 +16,7 @@ ofa.js no solo soporta la reactividad de valores de propiedades básicas, sino q
       </style>
       <p style="color: blue;">count: {{count}}</p>
       <p style="color: green;">count2: {{obj.count2}}</p>
-      <button on:click="handleAddCount">增加</button>
+      <button on:click="handleAddCount">Aumentar</button>
       <script>
         export default async () => {
           return {
@@ -59,8 +59,8 @@ Los nombres de las propiedades no reactivas suelen llevar un guion bajo `_` como
       </style>
       <p style="color: blue;">count: {{count}}</p>
       <p style="color: green;">count2: {{_count2}}</p>
-      <button on:click="count++">Aumentar Azul</button>
-      <button on:click="_count2++">Aumentar Verde</button>
+      <button on:click="count++">Blue increases</button>
+      <button on:click="_count2++">Green increments</button>
       <script>
         export default async () => {
           return {
@@ -75,7 +75,7 @@ Los nombres de las propiedades no reactivas suelen llevar un guion bajo `_` como
   </code>
 </o-playground>
 
-Al hacer clic en el botón `Green增加`, aunque el valor de `_count2` de hecho ya se ha incrementado, dado que es una propiedad no reactiva, no se activa la actualización de la vista y, por lo tanto, la visualización en la interfaz no cambia. Al hacer clic en el botón `Blue增加`, como `count` es una propiedad reactiva, se activa el re-renderizado del componente entero, momento en el que se sincroniza y actualiza el contenido mostrado de Green.
+Al hacer clic en el botón `Green increments`, aunque el valor de `_count2` realmente ha aumentado, debido a que es una propiedad no reactiva, no desencadena una actualización de la vista, por lo que la visualización en la interfaz no cambia. Al hacer clic en el botón `Blue increases`, dado que `count` es una propiedad reactiva, desencadena un nuevo renderizado de todo el componente, y es en ese momento cuando se actualiza sincrónicamente el contenido mostrado por Green.
 
 Los datos de objetos no reactivos tienen un mejor rendimiento que los datos de objetos reactivos porque los datos no reactivos no desencadenan la re-renderización de componentes.
 

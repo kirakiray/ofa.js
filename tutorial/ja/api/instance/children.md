@@ -2,7 +2,7 @@
 
 子要素インスタンスの取得は非常に簡単で、インスタンスを配列として扱い、数値インデックスでその子要素インスタンスを取得するだけです。
 
-<o-playground name="children - 子要素" style="--editor-height: 380px">
+<o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">
     <template>
       <ul>

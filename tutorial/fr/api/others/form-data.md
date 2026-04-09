@@ -6,19 +6,19 @@ La méthode `formData` sert à générer un objet de données lié aux élément
 
 Dans l’exemple ci-dessous, nous montrons comment utiliser la méthode `formData` pour générer des données d’objet liées à un élément de formulaire :
 
-<o-playground name="formData - 基本使用" style="--editor-height: 500px">
+<o-playground name="formData - Utilisation de base" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <form id="myForm">
         <input type="text" name="username" value="John Doe" />
         <div>
-          sex:
+          sexe:
           <label>
-            man
+            homme
             <input type="radio" name="sex" value="man" />
           </label>
           <label>
-            woman
+            femme
             <input type="radio" name="sex" value="woman" />
           </label>
         </div>
@@ -85,19 +85,19 @@ Par défaut, la méthode `formData()` écoute tous les éléments `input`, `sele
 
 Dans l’exemple ci-dessous, nous montrons comment écouter un élément de formulaire spécifique en passant un sélecteur CSS :
 
-<o-playground name="formData - 特定表单" style="--editor-height: 500px">
+<o-playground name="formData - formulaire spécifique" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <form id="myForm">
         <input type="text" name="username" value="John Doe" class="use-it" />
         <div>
-          sexe:
+          sex:
           <label>
-            homme
+            man
             <input type="radio" name="sex" value="man" class="use-it" />
           </label>
           <label>
-            femme
+            woman
             <input type="radio" name="sex" value="woman" class="use-it" />
           </label>
         </div>

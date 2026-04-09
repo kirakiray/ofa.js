@@ -104,7 +104,7 @@ Dann kann das übergeordnete Element dieses benutzerdefinierte Ereignis mit der 
 
 ## bubbles - Ereignisblasen-Mechanismus
 
-`bubbles` 属性 steuert, ob ein Ereignis an übergeordnete Elemente nach oben weitergeleitet wird. Wenn es auf `true` gesetzt ist, breitet sich das Ereignis entlang des DOM-Baums nach oben aus. Der Standardwert ist `true`. Wenn es auf `false` gesetzt ist, wird das Ereignis nicht weitergeleitet.
+Das `bubbles`-Attribut steuert, ob ein Ereignis zu übergeordneten Elementen aufsteigt (bubbling). Wenn es auf `true` gesetzt ist, breitet sich das Ereignis im DOM-Baum nach oben aus. Der Standardwert ist `true`. Wenn es auf `false` gesetzt wird, wird das Ereignis nicht aufsteigen.
 
 ### Detaillierte Erklärung des Bubble-Mechanismus
 
@@ -209,7 +209,7 @@ Das `composed`-Attribut steuert, ob Ereignisse die Shadow-DOM-Grenze passieren k
 
 ### Durchdringungsbeispiel
 
-<o-playground name="Benutzerdefiniertes Ereignis mit Daten-Beispiel" style="--editor-height: 500px">
+<o-playground name="Beispiel für benutzerdefinierte Ereignisse mit Daten" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -228,8 +228,8 @@ Das `composed`-Attribut steuert, ob Ereignisse die Shadow-DOM-Grenze passieren k
       <div on:child-event="handleChildEventFromComponent">
         <bubble-component></bubble-component>
       </div>
-      <p>监听事件: {{bubbledEventCount}} 次</p>
-      <p>接受到的数据: <span style="color:red;">{{result}}</span></p>
+      <p>Ereignis abgehört: {{bubbledEventCount}} mal</p>
+      <p>Empfangene Daten: <span style="color:red;">{{result}}</span></p>
       <script>
         export default async () => {
           return {
@@ -259,8 +259,8 @@ Das `composed`-Attribut steuert, ob Ereignisse die Shadow-DOM-Grenze passieren k
         }
       </style>
       <child-component on:child-event="handleChildEventFromComponent"></child-component>
-      <p>监听事件: {{bubbledEventCount}} 次</p>
-      <p>接受到的数据: <span style="color:pink;">{{result}}</span></p>
+      <p>Ereignis abgehört: {{bubbledEventCount}} mal</p>
+      <p>Empfangene Daten: <span style="color:pink;">{{result}}</span></p>
       <script>
         export default async () => {
           return {
@@ -289,24 +289,24 @@ Das `composed`-Attribut steuert, ob Ereignisse die Shadow-DOM-Grenze passieren k
           border: 1px solid green;
         }
       </style>
-      <button on:click="triggerNonComposedEvent">触发非穿透事件</button>
-      <button on:click="triggerComposedEvent">触发穿透事件</button>
+      <button on:click="triggerNonComposedEvent">Nicht-durchdringendes Ereignis auslösen</button>
+      <button on:click="triggerComposedEvent">Durchdringendes Ereignis auslösen</button>
       <script>
         export default async () => {
           return {
             tag: "child-component",
             proto: {
               triggerNonComposedEvent() {
-                // 非穿透事件，只会被直接监听者捕获
+                // Nicht-durchdringendes Ereignis, wird nur vom direkten Listener erfasst
                 this.emit('child-event', {
-                  data: { type: 'non-composed', message: '非穿透事件触发', timestamp: Date.now() },
+                  data: { type: 'non-composed', message: 'Nicht-durchdringendes Ereignis ausgelöst', timestamp: Date.now() },
                   composed: false
                 });
               },
               triggerComposedEvent() {
-                // 穿透事件，会跨越 Shadow DOM 边界
+                // Durchdringendes Ereignis, überwindet Shadow-DOM-Grenzen
                 this.emit('child-event', {
-                  data: { type: 'composed', message: '穿透事件触发', timestamp: Date.now() },
+                  data: { type: 'composed', message: 'Durchdringendes Ereignis ausgelöst', timestamp: Date.now() },
                   composed: true
                 });
               }

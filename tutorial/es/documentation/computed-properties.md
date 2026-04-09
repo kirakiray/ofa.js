@@ -8,7 +8,7 @@ Las propiedades computadas son una forma de derivar nuevos datos a partir de dat
 - **Reactiva**: cuando se actualizan los datos de los que depende, la propiedad calculada se actualiza automáticamente  
 - **Declarativa**: se crean relaciones de dependencia de forma declarativa, lo que hace que el código sea más claro y fácil de entender
 
-## get 计算属性
+## get Propiedad calculada
 
 La propiedad `get` se utiliza para derivar nuevos valores a partir de datos reactivos, no acepta parámetros y solo devuelve un valor calculado basado en otros datos.
 
@@ -79,7 +79,7 @@ Las propiedades computadas se utilizan comúnmente para manejar lógicas complej
           return {
             data: {
               filterText: '',
-              names: ['张3', '李4', '王54']
+              names: ['Juan', 'María', 'Carlos']
             },
             proto: {
               get filteredNames() {
@@ -102,7 +102,7 @@ Las propiedades computadas se utilizan comúnmente para manejar lógicas complej
 
 Los `set` de las propiedades computadas te permiten modificar el estado de datos subyacente mediante operaciones de asignación. Recibe un parámetro, que generalmente se utiliza para actualizar inversamente los datos originales de los que depende.
 
-<o-playground name="set 计算属性示例" style="--editor-height: 700px">
+<o-playground name="set ejemplo de propiedad calculada" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -117,11 +117,11 @@ Los `set` de las propiedades computadas te permiten modificar el estado de datos
         }
       </style>
       <div>
-        <p>基础数值: {{count}}</p>
-        <p>双倍数值: {{countDouble}}</p>
-        <button on:click="resetCount">重置计数</button>
-        <button on:click="setCountDouble">设置双倍值为 10</button>
-        <button on:click="incrementCount">增加基础值</button>
+        <p>Valor base: {{count}}</p>
+        <p>Valor doble: {{countDouble}}</p>
+        <button on:click="resetCount">Restablecer contador</button>
+        <button on:click="setCountDouble">Establecer valor doble a 10</button>
+        <button on:click="incrementCount">Incrementar valor base</button>
       </div>
       <script>
         export default async () => {
@@ -134,7 +134,7 @@ Los `set` de las propiedades computadas te permiten modificar el estado de datos
                 return this.count * 2;
               },
               set countDouble(val) {
-                this.count = Math.max(0, val / 2); // 确保 count 不为负数
+                this.count = Math.max(0, val / 2); // Asegura que count no sea negativo
               },
               resetCount() {
                 this.count = 0;

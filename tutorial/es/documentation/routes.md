@@ -8,7 +8,7 @@ Una aplicación de una sola página vincula el componente `o-app` con la barra d
 
 ## Uso básico
 
-使用官方的 `o-router` 组件包裹 `o-app` 组件，即可实现单页面应用。
+Envuelve el componente `o-app` con el componente oficial `o-router` para implementar una aplicación de una sola página.
 
 ```html
 <!doctype html>
@@ -148,7 +148,7 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
 
 ## Cómo funciona
 
-单页面应用基于浏览器的 Hash 模式实现：
+Aplicación de una sola página implementada con el modo Hash del navegador:
 
 1. Cuando se produce un cambio de página dentro de la aplicación, `o-router` actualiza automáticamente el valor hash en la barra de direcciones (por ejemplo, `#/about.html`)
 2. Cuando el usuario actualiza la página o accede a través de una URL, `o-router` lee el valor hash y carga la página correspondiente

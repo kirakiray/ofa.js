@@ -2,6 +2,20 @@
 
 <l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
 
+<l-m src="https://book.ofajs.com/o-md/o-md.html"></l-m>
+
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+
+<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
+
+<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
+
+<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
+
+<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
+
+<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
+
 <center-block>
   <punch-logo>
     <img logo="" src="../img/logo.svg" alt="">
@@ -29,110 +43,100 @@
   </div>
 </center-block>
 
-<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
-
-<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
-
-<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
-
-<center-block style="--container-max-width: 100%; padding: 128px 0">
+<center-block style="--container-max-width: 100%">
   <h2>ほぼ銀弾型のフロントエンドフレームワーク</h2>
-  <p>どんな利用シーンでも、ofa.jsは最適です。</p>
+  <p>どんなアプリケーションシナリオでも、ofa.jsは適しています。</p>
   <flow-container style="height: 300px; width: 100%">
     <chat-bubble id="case1-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
-      もう学習に疲れた、ドキュメントは読みたくない、使えるか？
+      もう学ぶの疲れた、ドキュメント読みたくない、使える？
     </chat-bubble>
     <chat-bubble id="case2-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
-      レガシープロジェクトに機能をちょっと追加したい
+      古いプロジェクトに一時的に機能を追加したい
     </chat-bubble>
     <chat-bubble id="case3-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
-      開発初心者で、Nodejsとnpmに挫折した
+      開発初心者で、Nodejs と npm に挫折した
     </chat-bubble>
     <chat-bubble id="case4-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
-      巨大なショッピングモールシステムを開発しても、支えられるか？
+      巨大なショッピングモールシステムを開発する、あなたたちは対応できる？
     </chat-bubble>
     <chat-bubble id="case5-bubble" style="cursor: pointer">
       <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
-      バックエンド開発者で、バックエンドのテンプレートエンジンだけ使いたい、ofa.jsは
-      適しているか？</chat-bubble>
+      バックエンド開発者です、バックエンドのテンプレートエンジンだけで開発したい、ofa.js は適していますか？
+    </chat-bubble>
   </flow-container>
   <p-button style="margin-top: 16px" size="large" variant="outlined">
-    <a href="https://github.com/ofajs/discussion/discussions"> コメントを送る </a>
+    <a href="https://github.com/ofajs/discussion/discussions"> 私たちにメッセージを残す </a>
   </p-button>
   <anchor-dialog>
     <article for="#case1-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar">
-        もう学習に疲れた、ドキュメントは読みたくない、使えるか？
+        もう学ぶの疲れた、ドキュメント読みたくない、使える？
       </chat-bubble>
-      <p>ofa.jsを先に学ぶ必要はなく、それで作られたコンポーネントをそのまま再利用できる。</p>
+      <p>ofa.jsを先に学ぶ必要はなく、それに基づいて開発されたコンポーネントを直接再利用できます。</p>
       <p>
-        オープンソースコンポーネントの作者がコードを書き終えたら、他の人はサンプルを参考に数行コピーするだけで、瞬時に機能を自分のプロジェクトに持ち込める。
+        オープンソースコンポーネントの作者がコードを書いた後、他の人は例に従って数行コピーするだけで、瞬時に機能を自分のプロジェクトに取り込めます。
       </p>
     </article>
     <article for="#case2-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/53500371?v=4" slot="avatar">
-        レガシープロジェクトに機能をちょっと追加したい
+        古いプロジェクトに一時的に機能を追加したい
       </chat-bubble>
-      <p>既存プロジェクトにscriptタグでofa.jsを読み込むだけで、すぐに使い始められる。</p>
-      <p>導入後、さまざまなコンポーネントが手軽に利用可能になる。</p>
+      <p>既存のプロジェクトでscriptタグを通じてofa.jsを導入するだけで、すぐに使用できます。</p>
+      <p>導入後、様々なコンポーネントが手に入ります。</p>
     </article>
     <article for="#case3-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/34147999" slot="avatar">
-        開発初心者で、Nodejsとnpmに挫折した
+        開発初心者で、Nodejs と npm に挫折した
       </chat-bubble>
-      <p>ofa.jsは初心者に非常に優しく、Node.jsやnpmなどのツールを学ぶ必要がない。</p>
-      <p>ブラウザと任意の静的サーバーがあれば、開発を始められる。</p>
+      <p>ofa.jsは新人にとても優しく、Node.js、npmなどのツールを学ぶ必要はありません。</p>
+      <p>ブラウザ1つと任意の静的サーバーがあれば、開発を始められます。</p>
       <p>
-        Chromeブラウザを使っていれば、
+        Chromeブラウザを使っているなら、
         <a href="https://core.noneos.com/?redirect=studio" target="_blank" style="color: var(--md-sys-color-primary)">OFA Studio</a>
-        というオンラインツールを開けば、静的サーバーの準備も不要で、すぐに始められる。
+        というオンラインツールを開けば、静的サーバーを準備する必要はなく、直接始められます。
       </p>
-      <a href="./documentation/create-first-app.md" olink="" style="color: var(--md-sys-color-primary)">チュートリアル：最初のアプリを作成</a>
+      <a href="./documentation/create-first-app.md" olink="" style="color: var(--md-sys-color-primary)">チュートリアル：最初のアプリを作成する</a>
     </article>
     <article for="#case4-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/1961952" slot="avatar">
-        巨大なショッピングモールシステムを開発しても、支えられるか？
+        巨大なショッピングモールシステムを開発する、あなたたちは対応できる？
       </chat-bubble>
-      <p>ofa.jsはマイクロフロントエンドアーキテクチャを採用しているため、大型プロジェクトに最適。</p>
+      <p>ofa.jsはマイクロフロントエンドのアーキテクチャパターンを採用しているため、大規模プロジェクトに非常に適しています。</p>
       <p>
-        モールシステムを十分に細かい要件に分割し、コンポーネントごとに開発し、独立したフォルダに配置して、静的サーバーで直接コンポーネントの効果をプレビューできる。
+        ショッピングモールシステムを十分に細かい要件に分割し、コンポーネントごとに開発し、独立したフォルダに配置すれば、静的サーバーを通じて直接コンポーネントの効果をプレビューできます。
       </p>
       <p>
-        最後に一つずつ組み立てて巨大なシステムにする。ofa.jsの
-        マイクロフロントエンドモードは、モノリシックアプリケーションの特効薬だ。
+        最後に一つずつ組み立てて巨大なシステムにします。ofa.jsのマイクロフロントエンドモードは、まさにモノリシックアプリケーションの特効薬です。
       </p>
       <p>
-        ケーススタディ
-        <a href="https://os.noneos.com/" target="_blank" style="color: var(--md-sys-color-primary)">NoneOS</a>を参考にどうぞ。これはofa.jsで開発されたオペレーティングシステムで、非常に大規模。
+        参考ケース：
+        <a href="https://os.noneos.com/" target="_blank" style="color: var(--md-sys-color-primary)">NoneOS</a>、これはofa.jsで開発されたオペレーティングシステムで、規模が非常に大きいです。
       </p>
     </article>
     <article for="#case5-bubble" style="max-width: 60vw; font-size: 18px; padding: 32px">
       <chat-bubble style="margin-bottom: 24px">
         <img src="https://avatars.githubusercontent.com/u/3492426" slot="avatar">
-        バックエンド開発者で、バックエンドのテンプレートエンジンだけ使いたい、ofa.jsは適しているか？
+        バックエンド開発者です、バックエンドのテンプレートエンジンだけで開発したい、ofa.js は適していますか？
       </chat-bubble>
       <p>
-        ofa.jsのSSRはNode.jsに縛られず、SCSR
-        ルールを守れば、任意のバックエンド言語でテンプレートエンジン開発が可能。
+        ofa.jsのSSRはNode.jsに縛られず、SCSRルールに従えば、任意のバックエンド言語でテンプレートエンジン開発ができます。
       </p>
       <p>
         詳細は
         <a href="./documentation/ssr.md" style="color: var(--md-sys-color-primary)" olink="">ofa.js SSR</a>
-        を参照。
+        を参照してください。
       </p>
     </article>
   </anchor-dialog>
 </center-block>
-
-<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
 
 <style>
   .w-title {
@@ -148,15 +152,15 @@
   <p>コンパイルプロセスを経ず、直接コードを実行します。</p>
   <div class="w-title">
     AIが
-    <b style="color: var(--md-sys-color-primary)">ofa.js</b> を使用してフロントエンドプロジェクトを生成するフロー
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b> を使用してフロントエンドプロジェクトを生成するプロセス
   </div>
-  <flow-chart style="width: 100%; height: 100px">
+  <flow-chart style="width: 100%">
     <div name="ai-model" to="container">AI大規模モデル</div>
     <div name="container" to="preview">コードを静的コンテナにデプロイ</div>
     <div name="preview">プロジェクトをプレビュー</div>
   </flow-chart>
-  <div class="w-title">AIが現在の主流フロントエンドフレームワークを使用してプロジェクトを生成するフロー</div>
-  <flow-chart style="width: 100%; height: 100px">
+  <div class="w-title">AIが現在の主流フロントエンドフレームワークを使用してプロジェクトを生成するプロセス</div>
+  <flow-chart style="width: 100%">
     <div name="ai-model" to="cloud-container">AI大規模モデル</div>
     <div name="cloud-container" to="init">クラウドコンテナを作成</div>
     <div name="init" to="deploy">依存関係をインストール</div>
@@ -164,34 +168,32 @@
     <div name="preview">プロジェクトをプレビュー</div>
   </flow-chart>
 
-  <p-button size="large">
-    <a href="./scenarios/more-suitable-for-ai.md">詳細を表示</a>
+  <p-button size="large" style="margin-top: 24px">
+    <a href="./scenarios/more-suitable-for-ai.md">詳細を見る</a>
   </p-button>
 </center-block>
 
-<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
-
 <center-block>
-  <h2>Web Componentsに基づく開発</h2>
-  <p>Web Componentsをサポートするあらゆるプラットフォームでofa.jsを使用できます</p>
-  <support-platforms></support-platforms>
-</center-block>
-
-<center-block>
-  <h2>極めて低い導入ハードル</h2>
-  <p>ofa.jsベースで開発されたコンポーネントを使用すれば、依存関係や設定を気にする必要はありません</p>
+  <h2>極めて低い使用ハードル</h2>
+  <p>ofa.js を基に開発されたコンポーネントを使用する場合、依存関係や設定の問題を考慮する必要はありません</p>
   <o-playground name="Punch Demo" style="--editor-height: 300px; width: 100%">
     <code>
       <template>
-        <!-- 開発済みの punch-logo コンポーネントを読み込む -->
-        <l-m src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"></l-m>
+        <!-- 開発済みの punch-logo コンポーネントをロード -->
+        <l-m src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"></l-m>
         <!-- punch-logo コンポーネントを使用 -->
-        <punch-logo style="margin: 50px 0 0 100px">
-          <img src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg" logo="" height="90">
-          <h2>もう残業はしない</h2>
-          <p slot="fly">定時退社</p>
-          <p slot="fly">遅くまで残業</p>
-          <p slot="fly">週末の残業</p>
+        <punch-logo style="margin: 50px 0 0 150px">
+          <img src="https://ofajs.com/img/logo.svg" logo="" height="90">
+          <h2>残業はもうしない</h2>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            定時で帰らせて
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            少し遅くまで残業
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            週末出勤
+          </p>
         </punch-logo>
       </template>
     </code>
@@ -271,7 +273,140 @@
   </p-button>
 </center-block>
 
-<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
+<center-block>
+  <h2>Web Componentsに基づく開発</h2>
+  <p>Web Componentsをサポートするあらゆるプラットフォームでofa.jsを使用できます</p>
+  <support-platforms></support-platforms>
+</center-block>
+
+<style>
+  .comp-grid {
+    column-count: 3;
+    column-gap: 24px;
+    margin-top: 24px;
+  }
+  .comp-card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: relative;
+    top: 0px;
+    border: 2px solid var(--md-sys-color-normal);
+    border-radius: 16px;
+    padding: 24px;
+    background: var(--md-sys-color-surface);
+    transition: all 0.2s ease;
+    break-inside: avoid;
+    margin-bottom: 24px;
+  }
+  .comp-card:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    top: -2px;
+  }
+  .comp-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--md-sys-color-primary);
+  }
+  .comp-card p {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .comp-card p-button {
+    align-self: center;
+    margin-top: 16px;
+  }
+</style>
+
+<center-block>
+  <h2>マイクロフロントエンドのベストプラクティス</h2>
+  <p>
+    現在のウェブサイトのすべてのコンポーネントは独立して使用・表示・参照でき、特定の環境に依存せず、まさにそのまま利用可能です。
+  </p>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <h3>punch-logo</h3>
+      <p>衝撃アニメーションLogoコンポーネント、クリック時に飛散アニメーション効果を再生</p>
+      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
+        <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
+        <h4>ofa.js</h4>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="">
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="">
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
+      </punch-logo>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2FREADME.md">ドキュメントを見る</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>chat-bubble</h3>
+      <p>チャットバブルコンポーネント、チャットメッセージを表示し、アバターとコンテンツのカスタマイズをサポート</p>
+      <chat-bubble style="margin-bottom: 8px">
+        <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
+        こんにちは、これはチャットバブルのサンプルです
+      </chat-bubble>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">ドキュメントを見る</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>anchor-dialog</h3>
+      <p>アンカーダイアログコンポーネント、特定の要素をクリックするとダイアログがポップアップしてカスタムコンテンツを表示</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">クリックしてみて</button>
+      <anchor-dialog>
+        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
+          <h4 style="margin: 0 0 8px">ダイアログサンプル</h4>
+          <p style="margin: 0">これはシンプルなアンカーダイアログのデモです</p>
+        </article>
+      </anchor-dialog>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">ドキュメントを見る</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>flow-chart</h3>
+      <p>フローチャートコンポーネント、フローノードと接続関係を表示するために使用</p>
+      <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
+        <div name="a" to="b">開始</div>
+        <div name="b" to="c">処理</div>
+        <div name="c">終了</div>
+      </flow-chart>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">ドキュメントを見る</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>o-md</h3>
+      <p>
+        1行のコードでMarkdownをレンダリング・表示できるコンポーネント；現在のクリックジャンプでドキュメントを見る機能も、これに基づいて実現されています。
+      </p>
+      <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">ドキュメントを見る</a>
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>o-playground</h3>
+      <p>インタラクティブコードプレビューコンポーネント、複数ファイル編集・リアルタイムプレビューなどの機能をサポート</p>
+      <o-playground style="--editor-height: 200px; margin-bottom: 8px">
+        <code path="demo.html" preview="" active="">
+          <template>
+            <div style="text-align: center; padding: 20px">
+              <h3>Hello o-playground</h3>
+              <p>これはインタラクティブコードエディタです</p>
+            </div>
+          </template>
+        </code>
+        <code path="style.css"> h3 { color: #42b983; } </code>
+      </o-playground>
+      <p-button>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fplayground.ofajs.com%2FREADME.md">ドキュメントを見る</a>
+      </p-button>
+    </div>
+  </div>
+</center-block>
 
 <center-block>
   <h2>jQueryの精神的な継承者</h2>

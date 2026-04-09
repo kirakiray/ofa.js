@@ -84,7 +84,7 @@ It is worth noting that property binding (`:`) and attribute inheritance (`attr:
 - Requires special handling to parse complex data
 - Must define `attrs` inside the component in advance to receive attribute values
 
-请提供您需要对比的语法内容或句子，我将为您翻译。```html
+Syntax comparison:```html
 <!-- Property binding: pass JavaScript values while preserving data types -->
 <my-component :data-value="complexObject"></my-component>
 <my-component :count="42"></my-component>

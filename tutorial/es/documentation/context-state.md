@@ -13,9 +13,9 @@ El estado de contexto es un mecanismo en ofa.js para compartir datos entre compo
 El componente `o-provider` se utiliza para definir proveedores de datos compartidos. Se identifica a sí mismo mediante el atributo `name` y define los datos que se compartirán a través de atributos (como `custom-a="value"`).
 
 ```html
-<o-proveedor nombre="userInfo" nombre-personalizado="张三" edad-personalizada="25">
+<o-provider name="userInfo" custom-name="Zhang San" custom-age="25">
   ...
-</o-proveedor>
+</o-provider>
 ```
 
 ### Atributos
@@ -86,7 +86,7 @@ export default {
         }
       </style>
       <user-avatar></user-avatar>
-      <div>用户ID: {{userId}}</div>
+      <div>ID de usuario: {{userId}}</div>
       <user-name></user-name>
       <o-consumer name="userInfo" watch:user-id="userId"></o-consumer>
       <script>
@@ -111,7 +111,7 @@ export default {
           border-radius: 50%;
         }
       </style>
-      {{userId}}头像
+      Avatar {{userId}}
       <o-consumer name="userInfo" watch:user-id="userId"></o-consumer>
       <script>
         export default async ()=>{
@@ -133,7 +133,7 @@ export default {
           color: rgba(204, 153, 0, 1);
         }
       </style>
-      User-{{userId}}
+      Usuario-{{userId}}
       <o-consumer name="userInfo" watch:user-id="userId"></o-consumer>
       <script>
         export default async ()=>{
@@ -154,10 +154,10 @@ export default {
 `o-root-provider` es un proveedor global a nivel raíz; su ámbito abarca todo el documento. Incluso sin un proveedor padre, los consumidores pueden obtener los datos del proveedor raíz.
 
 ```html
-<!-- 定义全局根提供者 -->
-<o-root-provider name="globalConfig" custom-theme="dark" custom-language="es-ES"></o-root-provider>
+<!-- Definir proveedor de raíz global -->
+<o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN"></o-root-provider>
 
-<!-- 在页面的任何位置都可以消费 -->
+<!-- Se puede consumir en cualquier parte de la página -->
 <o-consumer name="globalConfig" watch:custom-theme="theme"></o-consumer>
 ```
 
@@ -346,7 +346,7 @@ proto:{
 <o-playground name="Ejemplo de getProvider" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-provider name="userInfo" custom-name="张三" custom-age="25">
+      <o-provider name="userInfo" custom-name="ZhangShan" custom-age="25">
         <o-page src="page.html"></o-page>
       </o-provider>
     </template>
@@ -379,7 +379,7 @@ proto:{
             updateProvider() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                provider.customName = "李四";
+                provider.customName = "LiSi";
                 provider.customAge = 30;
               }
             },
@@ -410,7 +410,7 @@ const globalProvider = $.getRootProvider("globalConfig");
 2. **A través de Shadow DOM**: busca el proveedor superior dentro del Shadow DOM  
 3. **Manejo de eventos**: obtiene el proveedor correspondiente en la devolución de llamada del evento
 
-## dispatch 事件派发
+## Despacho de eventos
 
 El provider puede emitir eventos a todos los consumers que lo consumen:
 

@@ -44,12 +44,12 @@ Las subpáginas especifican la ruta de la página principal exportando la propie
   </style>
   <p>{{val}}</p>
   <script>
-    export const parent = 'layout.html'; // ⚠️ 关键代码
+    export const parent = 'layout.html'; // ⚠️ Código clave
 
     export default async () => {
       return {
         data: {
-          val: "Hola, código de demostración de ofa.js",
+          val: "Hola Código de Demostración de ofa.js",
         },
       };
     };

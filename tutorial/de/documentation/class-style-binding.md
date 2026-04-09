@@ -129,7 +129,7 @@ Verwenden Sie die Syntax `:style.propertyName`, um bestimmte Stileigenschaften z
 
 Du kannst auch mehrere Style-Eigenschaften auf einmal binden:
 
-<o-playground name="多样式属性绑定" style="--editor-height: 500px">
+<o-playground name="Mehrere Stil-Attribut-Bindungen" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -140,7 +140,7 @@ Du kannst auch mehrere Style-Eigenschaften auf einmal binden:
         }
       </style>
       <p :style.color="textColor" :style.fontSize="fontSize + 'px'" :style.backgroundColor="bgColor">
-        Dynamisches Styling Beispiel
+        Dynamisches Styling-Beispiel
       </p>
       <button on:click="changeStyles">Stile ändern</button>
       <script>

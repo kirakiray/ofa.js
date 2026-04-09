@@ -194,7 +194,7 @@ Das Statusobjekt unterstützt tiefe Reaktivität; Änderungen an verschachtelten
 ```javascript
 const store = $.stanz({
   user: {
-    name: "张三",
+    name: "Zhang San",
     settings: {
       theme: "dark"
     }
@@ -202,10 +202,10 @@ const store = $.stanz({
   list: []
 });
 
-// 修改嵌套属性也会触发更新
-store.user.name = "李四";
+// Änderungen an verschachtelten Eigenschaften lösen ebenfalls Updates aus
+store.user.name = "Li Si";
 store.user.settings.theme = "light";
-store.list.push({ id: 1, title: "新任务" });
+store.list.push({ id: 1, title: "Neue Aufgabe" });
 ```
 
 ## Best Practices

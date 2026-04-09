@@ -11,7 +11,7 @@ const app = document.querySelector("o-app");
 console.log(app.src);
 ```
 
-## 当前
+## current
 
 The `current` property is used to obtain the page instance currently being displayed. It lets you access and manipulate the page that is on screen, such as updating its content or performing specific actions.
 

@@ -8,10 +8,10 @@ La méthode `text` est utilisée pour obtenir ou définir le contenu textuel d'u
 
 Vous pouvez obtenir ou définir directement le contenu textuel d’un élément.
 
-<o-playground name="text - 直接使用" style="--editor-height: 300px">
+<o-playground name="text - utilisation directe" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target1">cible 1</div>
+      <div id="target1">target 1</div>
       <div id="target2">texte d'origine</div>
       <br>
       <div id="logger" style="color:red;"></div>

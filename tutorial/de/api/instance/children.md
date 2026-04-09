@@ -2,7 +2,7 @@
 
 Das Abrufen von Unterelement-Instanzen ist sehr einfach: Du musst die Instanz nur wie ein Array behandeln und über den numerischen Index auf ihre Unterelement-Instanzen zugreifen.
 
-<o-playground name="children - Kindelemente" style="--editor-height: 380px">
+<o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">
     <template>
       <ul>

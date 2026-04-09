@@ -41,7 +41,7 @@
 
 jQuery와 유사하게, fn.extend를 통해 기본 인스턴스의 속성이나 메서드를 확장할 수도 있습니다. fn에서 확장된 속성이나 메서드는 모든 인스턴스에 적용됩니다.
 
-<o-playground name="extend - 확장底层" style="--editor-height: 560px">
+<o-playground name="extend - 하부 레이어 확장" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>

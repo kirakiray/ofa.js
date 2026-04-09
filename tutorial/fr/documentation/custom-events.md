@@ -35,7 +35,7 @@ La méthode `emit` accepte deux paramètres :
 
 Ensuite, l'élément parent peut utiliser la méthode `on` [(liaison d'événements)](./event-binding.md) pour écouter cet événement personnalisé.
 
-### emit 示例 d'utilisation
+### Exemple d'utilisation de emit
 
 <o-playground name="Exemple d'utilisation d'emit" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -197,7 +197,7 @@ L'attribut `bubbles` contrôle si l'événement remonte aux éléments parents. 
   </code>
 </o-playground>
 
-## composed - 穿透 Shadow DOM 边界
+## composed - traverse les limites du Shadow DOM
 
 La propriété `composed` contrôle si un événement peut traverser la frontière du Shadow DOM. C’est particulièrement important pour le développement de Web Components, et sa valeur par défaut est `false`.
 

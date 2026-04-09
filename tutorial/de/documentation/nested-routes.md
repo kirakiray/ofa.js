@@ -288,7 +288,7 @@ Eine übergeordnete Seite kann ebenfalls ihre eigene übergeordnete Seite haben 
 </template>
 ```
 
-## 示例 für mehrstufige Verschachtelung
+## Beispiel für mehrstufige Verschachtelung
 
 <o-playground name="Vollständiges Beispiel für verschachtelte Routen" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>

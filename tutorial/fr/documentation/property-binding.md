@@ -40,7 +40,7 @@ La liaison unidirectionnelle d'attributs utilise la syntaxe `:toKey="fromKey"` p
 
 La liaison d'attributs bidirectionnelle utilise la syntaxe `sync:xxx`, permettant la synchronisation bidirectionnelle entre les données du composant et les éléments DOM. Lorsque les données du composant changent, l'attribut de l'élément DOM se met à jour ; lorsque l'attribut de l'élément DOM change (par exemple via une saisie utilisateur), les données du composant sont également synchronisées.
 
-<o-playground name="双向属性绑定" style="--editor-height: 500px">
+<o-playground name="Liaison bidirectionnelle des propriétés" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -57,8 +57,8 @@ La liaison d'attributs bidirectionnelle utilise la syntaxe `sync:xxx`, permettan
         }
       </style>
       <p>Valeur actuelle : {{val}}</p>
-      <input type="text" sync:value="val" placeholder="Ceci est un champ de saisie à liaison bidirectionnelle">
-      <p>Astuce : Modifier le contenu dans le champ de saisie mettra à jour en temps réel la valeur affichée ci-dessus</p>
+      <input type="text" sync:value="val" placeholder="Ceci est une zone de saisie à liaison bidirectionnelle">
+      <p>Astuce : Modifier le contenu dans la zone de saisie mettra à jour la valeur affichée ci-dessus en temps réel.</p>
       <script>
         export default async () => {
           return {

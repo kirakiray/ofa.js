@@ -47,7 +47,7 @@ Manchmal müssen wir Daten speichern, die nicht reaktiv aktualisiert werden müs
 
 Die Benennung nicht-reaktiver Eigenschaften erfolgt in der Regel durch das Voranstellen eines Unterstrichs `_` vor den Eigenschaftsnamen, um sie von reaktiven Eigenschaften zu unterscheiden.
 
-<o-playground name="Nicht-reaktives Datenbeispiel" style="--editor-height: 500px">
+<o-playground name="Beispiel für nicht-reaktive Daten" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -59,8 +59,8 @@ Die Benennung nicht-reaktiver Eigenschaften erfolgt in der Regel durch das Voran
       </style>
       <p style="color: blue;">count: {{count}}</p>
       <p style="color: green;">count2: {{_count2}}</p>
-      <button on:click="count++">Blau erhöhen</button>
-      <button on:click="_count2++">Grün erhöhen</button>
+      <button on:click="count++">Blau erhöht</button>
+      <button on:click="_count2++">Grün erhöht</button>
       <script>
         export default async () => {
           return {
@@ -75,7 +75,7 @@ Die Benennung nicht-reaktiver Eigenschaften erfolgt in der Regel durch das Voran
   </code>
 </o-playground>
 
-Beim Klicken der Schaltfläche `Green增加` ist der Wert von `_count2` zwar tatsächlich erhöht worden, da es sich jedoch um eine nicht-reaktive Eigenschaft handelt, wird keine Aktualisierung der Ansicht ausgelöst, und die Anzeige in der Benutzeroberfläche bleibt daher unverändert. Beim Klicken der Schaltfläche `Blue增加` hingegen handelt es sich bei `count` um eine reaktive Eigenschaft, wodurch eine vollständige Neurenderung der Komponente ausgelöst wird und erst dann der Inhalt von Green synchron aktualisiert wird.
+Wenn Sie auf die Schaltfläche `Green increments` klicken, erhöht sich zwar der Wert von `_count2` tatsächlich, aber da es sich um eine nicht-reaktive Eigenschaft handelt, wird keine Ansichtsaktualisierung ausgelöst, sodass die Anzeige auf der Benutzeroberfläche unverändert bleibt. Wenn Sie auf die Schaltfläche `Blue increases` klicken, wird aufgrund der reaktiven Eigenschaft `count` eine Neuberechnung der gesamten Komponente ausgelöst, und erst dann wird die Anzeige von Green synchron aktualisiert.
 
 Nicht-reaktive Objektdaten haben eine bessere Leistung als reaktive Objektdaten, da nicht-reaktive Daten keine erneute Renderung der Komponente auslösen.
 

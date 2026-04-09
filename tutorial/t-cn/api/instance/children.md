@@ -4,7 +4,7 @@
 
 獲取子元素實例非常簡單，妳隻需要將實例當作數組，通過數字索引獲取牠的子元素實例。
 
-<o-playground name="children - 子元素" style="--editor-height: 380px">
+<o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">
     <template>
       <ul>

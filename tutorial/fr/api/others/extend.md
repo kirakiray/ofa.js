@@ -41,7 +41,7 @@
 
 Comme jQuery, vous pouvez également étendre les propriétés ou méthodes des instances de base via `fn.extend` ; les propriétés ou méthodes étendues à partir de `fn` seront appliquées à toutes les instances.
 
-<o-playground name="extend - 扩展底层" style="--editor-height: 560px">
+<o-playground name="extend - Extension de la couche inférieure" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -204,7 +204,7 @@ Jusqu’à présent, tu devrais déjà comprendre que de nombreuses syntaxes de 
 
 Vous pouvez consulter l'exemple ci-dessous pour mieux comprendre le principe de rendu des modèles d’ofa.js :
 
-<o-playground name="extend - 模板语法原理" style="--editor-height: 480px">
+<o-playground name="extend - Principes de syntaxe de modèle" style="--editor-height: 480px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./temp-three.html"></l-m>

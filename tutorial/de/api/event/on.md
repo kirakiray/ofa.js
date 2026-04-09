@@ -29,7 +29,7 @@ In diesem Beispiel verwenden wir die `on`-Methode, um einen Klick-Event-Handler 
 
 Sie können auch Template-Syntax verwenden, um Methoden an Zielelemente zu binden.
 
-<o-playground name="on - 模板语法" style="--editor-height: 400px">
+<o-playground name="on - Template-Syntax" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./on-demo.html"></l-m>
@@ -38,7 +38,7 @@ Sie können auch Template-Syntax verwenden, um Methoden an Zielelemente zu binde
   </code>
   <code path="on-demo.html" active>
     <template component>
-      <button on:click="addCount">Add Count</button>
+      <button on:click="addCount">Zähler erhöhen</button>
       <div>{{count}}</div>
       <script>
         export default {
@@ -65,10 +65,10 @@ In diesem Beispiel binden wir mit `on:click` auf dem Button-Element eine Methode
 
 Nach der Registrierung eines Ereignisses wird die ausgelöste Funktion mit dem Event-Parameter versehen, um mit dem nativen Verhalten übereinzustimmen:
 
-<o-playground name="on - event 参数" style="--editor-height: 300px">
+<o-playground name="on - event Parameter" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <button id="target">Zähler erhöhen</button>
+      <button id="target">add count</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>

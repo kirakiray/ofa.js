@@ -36,7 +36,7 @@ Le composant `o-if` est utilisé pour décider de rendre son contenu en fonction
 
 ### Fonctionnement de o-if
 
-`o-if` 只会在条件为真时才将内容渲染到 DOM 中，当条件为假时，`o-if` 内的 DOM 元素会被完全移除。这种实现方式适合在条件变化不太频繁的情况下使用，因为它涉及到 DOM 的创建和销毁。
+`o-if` ne rendra le contenu dans le DOM que lorsque la condition est vraie, et lorsque la condition est fausse, les éléments DOM à l'intérieur de `o-if` seront complètement supprimés. Cette méthode de mise en œuvre convient aux situations où les conditions ne changent pas fréquemment, car elle implique la création et la destruction du DOM.
 
 ## Composants o-else-if et o-else
 

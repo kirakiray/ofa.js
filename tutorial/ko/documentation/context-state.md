@@ -346,7 +346,7 @@ proto:{
 <o-playground name="getProvider 예제" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-provider name="userInfo" custom-name="张三" custom-age="25">
+      <o-provider name="userInfo" custom-name="장삼" custom-age="25">
         <o-page src="page.html"></o-page>
       </o-provider>
     </template>
@@ -379,7 +379,7 @@ proto:{
             updateProvider() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                provider.customName = "李四";
+                provider.customName = "이사";
                 provider.customAge = 30;
               }
             },
@@ -540,7 +540,7 @@ $("#myProvider").dispatch("custom-event", {
 
 ## 모범 사례
 
-1. **합리적인命名**: provider와 consumer에 의미 있는 name을 사용하여 추적 및 유지보수 용이하게 하기
-2. **과도한 사용 지양**: 컨텍스트 상태는 컴포넌트 간 데이터 공유에 적합하며, 일반 부모-자식 컴포넌트는 props 사용 권장
-3. **루트 제공자는 전역 설정용**: 테마, 언어, 전역 상태 등은 root-provider 사용 적합
-4. **적시 정리**: provider가 제거되면 consumer가 자동으로 데이터를 정리하므로 수동 처리 불필요
+1. **적절한 명명**: provider와 consumer에 의미 있는 name을 사용하여 추적과 유지보수가 용이하도록 합니다
+2. **과도한 사용 방지**: 컨텍스트 상태는 컴포넌트 간 데이터 공유에 적합하며, 일반적인 부모-자식 컴포넌트는 props 사용을 권장합니다
+3. **루트 제공자(Root Provider)를 통한 전역 설정**: 테마, 언어, 전역 상태 등은 root-provider 사용이 적합합니다
+4. **적시 정리**: provider가 제거되면 consumer는 자동으로 데이터를 정리하므로 수동 처리할 필요가 없습니다

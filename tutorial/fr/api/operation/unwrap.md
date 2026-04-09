@@ -48,4 +48,4 @@ const $el = $(`
 $el.$('#target').unwrap(); // Erreur, car il possède d'autres nœuds adjacents
 ```
 
-Veuillez noter qu'il ne faut pas操作 à l'intérieur de composants de modèle tels que o-fill ou o-if.
+**Veuillez noter de ne pas manipuler à l’intérieur des composants de modèle tels que o-fill ou o-if.**

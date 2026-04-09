@@ -4,18 +4,18 @@
 
 El método `wrap` se utiliza para envolver una capa de elemento alrededor del elemento objetivo. Antes de ejecutar la operación `wrap`, se realiza automáticamente la operación de inicialización del [método $](../instance/dollar.md), por lo que se puede proporcionar directamente la cadena de caracteres del elemento o el objeto.
 
-<o-playground name="wrap - 包裹元素" style="--editor-height: 440px">
+<o-playground name="wrap - elemento envuelto" style="--editor-height: 440px">
   <code path="demo.html">
     <template>
       <style> div{border: #aaa solid 1px; margin:8px; padding:8px;} </style>
       <div>
-        <div>Soy 1</div>
-        <div id="target">Soy 2</div>
-        <div>Soy 3</div>
+        <div>I am 1</div>
+        <div id="target">I am 2</div>
+        <div>I am 3</div>
       </div>
       <script>
         setTimeout(()=>{
-          \$('#target').wrap(`<div style="border-color:red;">envolver</div>`);
+          \$('#target').wrap(`<div style="border-color:red;">wrap</div>`);
         }, 500);
       </script>
     </template>

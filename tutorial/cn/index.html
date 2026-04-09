@@ -1,6 +1,13 @@
 <title>ofa.js - 渐进式微前端框架</title>
 
 <l-m src="../publics/_comps/punch-logo/punch-logo.html"></l-m>
+<l-m src="https://book.ofajs.com/o-md/o-md.html"></l-m>
+<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
+<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
+<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
+<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
+<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
+<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
 
 <center-block>
   <punch-logo>
@@ -29,11 +36,7 @@
   </div>
 </center-block>
 
-<l-m src="../publics/_comps/chat-bubble/chat-bubble.html"></l-m>
-<l-m src="../publics/_comps/flow-container/flow-container.html"></l-m>
-<l-m src="../publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
-
-<center-block style="--container-max-width: 100%; padding: 128px 0">
+<center-block style="--container-max-width: 100%">
   <h2>近乎银弹型的前端框架</h2>
   <p>无论是什么应用场景，都适合使用 ofa.js。</p>
   <flow-container style="height: 300px; width: 100%">
@@ -70,9 +73,8 @@
         src="https://avatars.githubusercontent.com/u/3492426"
         slot="avatar"
       />
-      我是后端开发，我只想用后端的模板引擎来开发，使用 ofa.js
-      合适吗？</chat-bubble
-    >
+      我是后端开发，我只想用后端的模板引擎来开发，使用 ofa.js 合适吗？
+    </chat-bubble>
   </flow-container>
   <p-button style="margin-top: 16px" size="large" variant="outlined">
     <a href="https://github.com/ofajs/discussion/discussions"> 给我们留言 </a>
@@ -195,8 +197,6 @@
   </anchor-dialog>
 </center-block>
 
-<l-m src="../publics/_comps/flow-chart/flow-chart.html"></l-m>
-
 <style>
   .w-title {
     padding: 24px 0 8px;
@@ -213,13 +213,13 @@
     AI使用
     <b style="color: var(--md-sys-color-primary)">ofa.js</b> 生成前端项目的流程
   </div>
-  <flow-chart style="width: 100%; height: 100px">
+  <flow-chart style="width: 100%">
     <div name="ai-model" to="container">AI大模型</div>
     <div name="container" to="preview">部署代码到静态容器</div>
     <div name="preview">预览项目</div>
   </flow-chart>
   <div class="w-title">AI使用当前主流前端框架生成项目的流程</div>
-  <flow-chart style="width: 100%; height: 100px">
+  <flow-chart style="width: 100%">
     <div name="ai-model" to="cloud-container">AI大模型</div>
     <div name="cloud-container" to="init">创建云端容器</div>
     <div name="init" to="deploy">安装依赖</div>
@@ -227,17 +227,9 @@
     <div name="preview">预览项目</div>
   </flow-chart>
 
-  <p-button size="large">
+  <p-button size="large" style="margin-top: 24px">
     <a href="./scenarios/more-suitable-for-ai.md">查看详情</a>
   </p-button>
-</center-block>
-
-<l-m src="../publics/_comps/support-platforms/support-platforms.html"></l-m>
-
-<center-block>
-  <h2>基于 Web Components 开发</h2>
-  <p>你可以在任何支持 Web Components 的平台上使用 ofa.js</p>
-  <support-platforms></support-platforms>
 </center-block>
 
 <center-block>
@@ -248,19 +240,21 @@
       <template>
         <!-- 加载开发好的 punch-logo 组件 -->
         <l-m
-          src="https://ofajs.github.io/ofa-v4-docs/docs/publics/comps/punch-logo.html"
+          src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"
         ></l-m>
         <!-- 使用 punch-logo 组件 -->
-        <punch-logo style="margin: 50px 0 0 100px">
-          <img
-            src="https://ofajs.github.io/ofa-v4-docs/docs/publics/logo.svg"
-            logo
-            height="90"
-          />
+        <punch-logo style="margin: 50px 0 0 150px">
+          <img src="https://ofajs.com/img/logo.svg" logo="" height="90" />
           <h2>不加班了</h2>
-          <p slot="fly">下班给我</p>
-          <p slot="fly">迟点下班</p>
-          <p slot="fly">周末加班</p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            下班给我
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            迟点下班
+          </p>
+          <p slot="fly" style="font-size: 18px; white-space: nowrap">
+            周末加班
+          </p>
         </punch-logo>
       </template>
     </code>
@@ -335,6 +329,7 @@
     </code>
   </o-playground>
 </center-block>
+
 <center-block>
   <h2>支持多种模板语法</h2>
   <o-page src="../publics/_comps/render-case/render-case.html"></o-page>
@@ -342,7 +337,167 @@
     <a href="./documentation/content-rendering.md">学习更多模板语法</a>
   </p-button>
 </center-block>
-<l-m src="../publics/_comps/split-code/split-code.html"></l-m>
+
+<center-block>
+  <h2>基于 Web Components 开发</h2>
+  <p>你可以在任何支持 Web Components 的平台上使用 ofa.js</p>
+  <support-platforms></support-platforms>
+</center-block>
+
+<style>
+  .comp-grid {
+    column-count: 3;
+    column-gap: 24px;
+    margin-top: 24px;
+  }
+  .comp-card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: relative;
+    top: 0px;
+    border: 2px solid var(--md-sys-color-normal);
+    border-radius: 16px;
+    padding: 24px;
+    background: var(--md-sys-color-surface);
+    transition: all 0.2s ease;
+    break-inside: avoid;
+    margin-bottom: 24px;
+  }
+  .comp-card:hover {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    top: -2px;
+  }
+  .comp-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--md-sys-color-primary);
+  }
+  .comp-card p {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .comp-card p-button {
+    align-self: center;
+    margin-top: 16px;
+  }
+</style>
+<center-block>
+  <h2>微前端最佳实践</h2>
+  <p>
+    当前网站的所有组件均可独立使用、独立查看、独立引用，无需依赖特定环境，真正做到即拿即用。
+  </p>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <h3>punch-logo</h3>
+      <p>冲击动画 Logo 组件，点击时播放飞散动画效果</p>
+      <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
+        <img logo src="../img/logo.svg" style="width: 26px; height: 30px" />
+        <h4>ofa.js</h4>
+        <img src="../publics/sources/npm.svg" slot="fly" alt="" />
+        <img src="../publics/sources/yarn.svg" slot="fly" alt="" />
+        <img src="../publics/sources/pnpm.svg" slot="fly" alt="" />
+      </punch-logo>
+      <p-button>
+        <a
+          href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2FREADME.md"
+          >查看文档</a
+        >
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>chat-bubble</h3>
+      <p>聊天气泡组件，用于显示聊天消息，支持头像和内容自定义</p>
+      <chat-bubble style="margin-bottom: 8px">
+        <img
+          src="https://avatars.githubusercontent.com/u/11347639"
+          slot="avatar"
+          alt="avatar"
+        />
+        你好，这是一个聊天气泡示例
+      </chat-bubble>
+      <p-button>
+        <a
+          href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md"
+          >查看文档</a
+        >
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>anchor-dialog</h3>
+      <p>锚点对话框组件，点击特定元素时弹出对话框显示自定义内容</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">点击试试</button>
+      <anchor-dialog>
+        <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
+          <h4 style="margin: 0 0 8px">对话框示例</h4>
+          <p style="margin: 0">这是一个简单的锚点对话框演示</p>
+        </article>
+      </anchor-dialog>
+      <p-button>
+        <a
+          href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md"
+          >查看文档</a
+        >
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>flow-chart</h3>
+      <p>流程图组件，用于展示流程节点和连接关系</p>
+      <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
+        <div name="a" to="b">开始</div>
+        <div name="b" to="c">处理</div>
+        <div name="c">结束</div>
+      </flow-chart>
+      <p-button>
+        <a
+          href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md"
+          >查看文档</a
+        >
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>o-md</h3>
+      <p>
+        一行代码即可渲染和查看 Markdown
+        的组件；当前点击跳转查看文档的功能，也是基于它实现的。
+      </p>
+      <o-md
+        style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px"
+        src="https://book.ofajs.com/o-md/README.md"
+      ></o-md>
+      <p-button>
+        <a
+          href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md"
+          >查看文档</a
+        >
+      </p-button>
+    </div>
+    <div class="comp-card">
+      <h3>o-playground</h3>
+      <p>交互式代码预览组件，支持多文件编辑、实时预览等功能</p>
+      <o-playground style="--editor-height: 200px; margin-bottom: 8px">
+        <code path="demo.html" preview active>
+          <template>
+            <div style="text-align: center; padding: 20px">
+              <h3>Hello o-playground</h3>
+              <p>这是一个交互式代码编辑器</p>
+            </div>
+          </template>
+        </code>
+        <code path="style.css"> h3 { color: #42b983; } </code>
+      </o-playground>
+      <p-button>
+        <a
+          href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fplayground.ofajs.com%2FREADME.md"
+          >查看文档</a
+        >
+      </p-button>
+    </div>
+  </div>
+</center-block>
+
 <center-block>
   <h2>jQuery的精神继承者</h2>
   <p>既支持模板语法，又能直接操作节点，灵活高效两不误</p>

@@ -109,7 +109,7 @@
 
 객체나 배열 타입의 중첩된 데이터에 대해서는 watch 내부에서 자동으로 깊은 감시를 수행합니다.
 
-<o-playground name="watchers - 깊은 감시" style="--editor-height: 700px">
+<o-playground name="watchers - 깊이 감시" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -146,9 +146,9 @@
           return {
             data: {
               user: {
-                name: "张三",
+                name: "장삼",
                 age: 25,
-                hobbies: ["篮球", "足球"],
+                hobbies: ["농구", "축구"],
               },
               log: "",
             },
@@ -160,24 +160,24 @@
                 const watcher = watchers[0]; // 하나 가져오기
                 console.log("수정: ",watcher.target);
                 if(watcher.type === 'set'){
-                  this.log += `값 수정-> 속성 "${watcher.name}"이(가) "${watcher.oldValue}"에서 "${watcher.value}"로 변경됨 <br>`;
+                  this.log += `값 수정-> 속성 "${watcher.name}" "${watcher.oldValue}"에서 "${watcher.value}"(으)로 변경 <br>`;
                 }else{
-                  this.log += `메서드 실행${watcher.type}-> 함수명 "${watcher.name}"  인자 "${watcher.args}" <br>`;
+                  this.log += `메서드 실행${watcher.type}-> 함수명 "${watcher.name}" 매개변수 "${watcher.args}" <br>`;
                 }
               },
             },
             proto: {
               updateName() {
-                this.user.name = "李四";
+                this.user.name = "이사";
               },
               updateAge() {
                 this.user.age = 30;
               },
               addHobby() {
-                this.user.hobbies.push("游泳");
+                this.user.hobbies.push("수영");
               },
               updateHobby() {
-                this.user.hobbies[0] = "羽毛球";
+                this.user.hobbies[0] = "배드민턴";
               },
             },
           };

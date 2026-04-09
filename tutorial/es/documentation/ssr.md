@@ -73,7 +73,7 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
 
 <body>
   <o-app src="/app-config.js">
-    <!-- 页面模块内容插入位置 ⬇️ -->
+    <!-- Ubicación de inserción del contenido del módulo de página ⬇️ -->
     <template page>
       <style>
         :host {
@@ -81,7 +81,7 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
           height: 100%;
         }
       </style>
-      <p>Soy la Página</p>
+      <p>Soy Página</p>
       <script>
         export default async ({ load, query }) => {
           return {
@@ -99,9 +99,9 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
 
 Por lo tanto, puedes utilizar cualquier lenguaje de desarrollo (Go, Java, PHP, Nodejs, Python, etc.) y cualquier motor de renderizado de plantillas backend (como `html/template` de Go, Smarty/Twig/Blade de PHP, etc.) para incrustar la estructura de código de renderizado isomórfico de ofa.js en la plantilla y así lograr SSR.
 
-* [Caso de SSR con Nodejs](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
-* [Caso de SSR con PHP](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
-* [Caso de SSR con Go](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
+* [Caso SSR de Nodejs](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
+* [Caso SSR de PHP](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
+* [Caso SSR de Go](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
 
 ### Estructura de la plantilla de renderizado isomórfico
 

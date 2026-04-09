@@ -57,7 +57,7 @@ En utilisant les fonctionnalités de l'objet `css`, vous pouvez ajuster rapideme
 
 Vous pouvez également définir le style des éléments cibles via la syntaxe de modèle.
 
-<o-playground name="css - 模板语法" style="--editor-height: 400px">
+<o-playground name="css - syntaxe de modèle" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./css-demo.html"></l-m>
@@ -71,7 +71,7 @@ Vous pouvez également définir le style des éléments cibles via la syntaxe de
   </code>
   <code path="css-demo.html" active>
     <template component>
-      <div :css.color="txt">I am target</div>
+      <div :css.color="txt">Je suis la cible</div>
       <script>
         export default {
           tag: "css-demo",

@@ -244,7 +244,7 @@ Vous pouvez utiliser plusieurs attributs simultanément pour définir des condit
   </code>
 </o-playground>
 
-## checkMatch 手动刷新
+## checkMatch Actualisation manuelle
 
 Dans certains cas, les changements des variables CSS peuvent ne pas être détectés automatiquement ; vous pouvez alors appeler manuellement la méthode `$.checkMatch()` pour déclencher la détection des styles.
 
