@@ -147,29 +147,34 @@
 </style>
 
 <center-block>
-  <h2>🤖 Framework frontend plus adapté pour l'IA 🤖</h2>
-  <p>Exécutez le code directement, sans passer par le processus de compilation.</p>
+  <h2>Framework front-end plus adapté pour l'IA générative</h2>
+  <p>Pas de processus de compilation, le code s'exécute directement.</p>
   <div class="w-title">
-    Processus de génération de projet frontend par l'IA utilisant
+    Processus de génération de projets front-end par l'IA utilisant
     <b style="color: var(--md-sys-color-primary)">ofa.js</b>
   </div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="container">Grand modèle d'IA</div>
+    <div name="ai-model" to="container">Modèle d'IA</div>
     <div name="container" to="preview">Déployer le code dans un conteneur statique</div>
     <div name="preview">Prévisualiser le projet</div>
   </flow-chart>
-  <div class="w-title">Processus de génération de projet avec les frameworks frontend actuels principaux utilisés par l'IA</div>
+  <div class="w-title">Processus de génération de projets par l'IA utilisant les frameworks front-end actuels</div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="cloud-container">Grand modèle d'IA</div>
+    <div name="ai-model" to="cloud-container">Modèle d'IA</div>
     <div name="cloud-container" to="init">Créer un conteneur cloud</div>
     <div name="init" to="deploy">Installer les dépendances</div>
     <div name="deploy" to="preview">Déployer et compiler le code</div>
     <div name="preview">Prévisualiser le projet</div>
   </flow-chart>
 
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./scenarios/more-suitable-for-ai.md">Voir les détails</a>
-  </p-button>
+  <div style="margin-top: 24px">
+    <p-button size="large">
+      <a href="./scenarios/more-suitable-for-ai.md">Voir les détails</a>
+    </p-button>
+    <p-button size="large" variant="outlined" style="margin-left: 8px">
+      <a href="./scenarios/use-ofa.js-in-project.md">Voir les prompts IA</a>
+    </p-button>
+  </div>
 </center-block>
 
 <center-block>
@@ -320,14 +325,14 @@
 </style>
 
 <center-block>
-  <h2>Meilleures pratiques des micro-frontends</h2>
+  <h2>Meilleures pratiques de micro-frontends</h2>
   <p>
-    Tous les composants du site actuel peuvent être utilisés indépendamment, consultés indépendamment et référencés indépendamment, sans dépendre d'un environnement spécifique, ce qui permet de les utiliser immédiatement.
+    Tous les composants de ce site peuvent être utilisés, visualisés et référencés indépendamment, sans dépendre d'un environnement spécifique, pour un usage immédiat.
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>Composant Logo avec animation d'impact, lecture de l'animation de dispersion au clic</p>
+      <p>Composant Logo avec animation d'impact, joue un effet d'animation d'éclatement au clic</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -352,12 +357,12 @@
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>Composant dialogue d'ancre, affiche un dialogue avec du contenu personnalisé lors du clic sur un élément spécifique</p>
+      <p>Composant boîte de dialogue ancrée, affiche un contenu personnalisé lors du clic sur un élément spécifique</p>
       <button id="demo-anchor-btn" style="margin-bottom: 8px">Cliquez pour essayer</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
-          <h4 style="margin: 0 0 8px">Exemple de dialogue</h4>
-          <p style="margin: 0">Ceci est une démonstration simple de dialogue d'ancre</p>
+          <h4 style="margin: 0 0 8px">Exemple de boîte de dialogue</h4>
+          <p style="margin: 0">Ceci est une démonstration simple de boîte de dialogue ancrée</p>
         </article>
       </anchor-dialog>
       <p-button>
@@ -366,7 +371,7 @@
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>Composant diagramme de flux pour afficher les nœuds et les connexions</p>
+      <p>Composant diagramme de flux pour afficher les nœuds de processus et les relations de connexion</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">Début</div>
         <div name="b" to="c">Traitement</div>
@@ -379,7 +384,7 @@
     <div class="comp-card">
       <h3>o-md</h3>
       <p>
-        Composant permettant de rendre et visualiser Markdown en une seule ligne de code ; la fonctionnalité de navigation vers la documentation lors d'un clic est également implémentée via ce composant.
+        Composant pour rendre et visualiser Markdown en une seule ligne de code ; la fonctionnalité de navigation pour voir la documentation est également implémentée avec celui-ci.
       </p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
@@ -388,10 +393,11 @@
     </div>
     <div class="comp-card">
       <h3>o-playground</h3>
-      <p>Composant d'aperçu de code interactif avec support de l'édition multi-fichiers et de la prévisualisation en temps réel</p>
+      <p>Composant de prévisualisation de code interactif, prenant en charge l'édition multi-fichiers, la prévisualisation en temps réel, etc.</p>
       <o-playground style="--editor-height: 200px; margin-bottom: 8px">
         <code path="demo.html" preview="" active="">
           <template>
+            <link rel="stylesheet" href="./style.css">
             <div style="text-align: center; padding: 20px">
               <h3>Hello o-playground</h3>
               <p>Ceci est un éditeur de code interactif</p>

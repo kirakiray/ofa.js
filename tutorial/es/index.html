@@ -147,29 +147,34 @@
 </style>
 
 <center-block>
-  <h2>🤖 Marco de Frontend Más Adecuado para IA 🤖</h2>
-  <p>Sin proceso de compilación, ejecuta el código directamente.</p>
+  <h2>Un framework frontend más adecuado para IA generativa</h2>
+  <p>Ejecuta el código directamente, sin pasar por el proceso de compilación.</p>
   <div class="w-title">
-    Flujo de generación de proyectos frontend con
-    <b style="color: var(--md-sys-color-primary)">ofa.js</b> usado por IA
+    Flujo de uso de IA para generar proyectos frontend con
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b>
   </div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="container">Gran Modelo IA</div>
+    <div name="ai-model" to="container">Modelo de IA grande</div>
     <div name="container" to="preview">Desplegar código en contenedor estático</div>
-    <div name="preview">Vista previa del proyecto</div>
+    <div name="preview">Previsualizar proyecto</div>
   </flow-chart>
-  <div class="w-title">Flujo de generación de proyectos con marcos frontend actuales usado por IA</div>
+  <div class="w-title">Flujo de generación de proyectos con frameworks frontend actuales principales usando IA</div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="cloud-container">Gran Modelo IA</div>
+    <div name="ai-model" to="cloud-container">Modelo de IA grande</div>
     <div name="cloud-container" to="init">Crear contenedor en la nube</div>
     <div name="init" to="deploy">Instalar dependencias</div>
     <div name="deploy" to="preview">Desplegar y compilar código</div>
-    <div name="preview">Vista previa del proyecto</div>
+    <div name="preview">Previsualizar proyecto</div>
   </flow-chart>
 
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./scenarios/more-suitable-for-ai.md">Ver detalles</a>
-  </p-button>
+  <div style="margin-top: 24px">
+    <p-button size="large">
+      <a href="./scenarios/more-suitable-for-ai.md">Ver detalles</a>
+    </p-button>
+    <p-button size="large" variant="outlined" style="margin-left: 8px">
+      <a href="./scenarios/use-ofa.js-in-project.md">Ver indicaciones para IA</a>
+    </p-button>
+  </div>
 </center-block>
 
 <center-block>
@@ -320,14 +325,14 @@
 </style>
 
 <center-block>
-  <h2>Mejores Prácticas de Micro Frontend</h2>
+  <h2>Mejores prácticas para Micro Frontends</h2>
   <p>
-    Todos los componentes de este sitio web se pueden usar, ver y referenciar de forma independiente, sin depender de un entorno específico, logrando así un uso inmediato.
+    Todos los componentes del sitio web actual se pueden usar de forma independiente, ver de forma independiente y referenciar de forma independiente, sin depender de un entorno específico, verdaderamente listos para usar.
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>Componente de Logo con animación de impacto, reproduce un efecto de animación de dispersión al hacer clic</p>
+      <p>Componente de Logo con animación de impacto, reproduce el efecto de animación de dispersión al hacer clic</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -336,32 +341,32 @@
         <img src="../publics/sources/pnpm.svg" slot="fly" alt="">
       </punch-logo>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2FREADME.md">Ver Documentación</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fpunch-logo%2FREADME.md">Ver documentación</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>Componente de burbuja de chat, utilizado para mostrar mensajes de chat, admite personalización de avatar y contenido</p>
+      <p>Componente de burbuja de chat, utilizado para mostrar mensajes de chat, soporta personalización de avatar y contenido</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
         Hola, este es un ejemplo de burbuja de chat
       </chat-bubble>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">Ver Documentación</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">Ver documentación</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>Componente de cuadro de diálogo anclado, muestra contenido personalizado en un cuadro de diálogo emergente al hacer clic en un elemento específico</p>
+      <p>Componente de diálogo con anclaje, muestra un cuadro de diálogo con contenido personalizado al hacer clic en elementos específicos</p>
       <button id="demo-anchor-btn" style="margin-bottom: 8px">Haz clic para probar</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
-          <h4 style="margin: 0 0 8px">Ejemplo de Cuadro de Diálogo</h4>
-          <p style="margin: 0">Esta es una demostración simple de un cuadro de diálogo anclado</p>
+          <h4 style="margin: 0 0 8px">Ejemplo de diálogo</h4>
+          <p style="margin: 0">Esta es una demostración simple de un cuadro de diálogo con anclaje</p>
         </article>
       </anchor-dialog>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">Ver Documentación</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fanchor-dialog%2FREADME.md">Ver documentación</a>
       </p-button>
     </div>
     <div class="comp-card">
@@ -369,29 +374,30 @@
       <p>Componente de diagrama de flujo, utilizado para mostrar nodos de proceso y relaciones de conexión</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">Inicio</div>
-        <div name="b" to="c">Procesar</div>
+        <div name="b" to="c">Proceso</div>
         <div name="c">Fin</div>
       </flow-chart>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">Ver Documentación</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fflow-chart%2FREADME.md">Ver documentación</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>o-md</h3>
       <p>
-        Componente que puede renderizar y ver Markdown con una sola línea de código; la funcionalidad actual de hacer clic para ver la documentación también se implementa basándose en él.
+        Un componente que puede renderizar y ver Markdown con solo una línea de código; la función actual de saltar a la documentación con un clic también está implementada basándose en él.
       </p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">Ver Documentación</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fbook.ofajs.com%2Fo-md%2FREADME.md">Ver documentación</a>
       </p-button>
     </div>
     <div class="comp-card">
       <h3>o-playground</h3>
-      <p>Componente interactivo de vista previa de código, admite edición de múltiples archivos, vista previa en tiempo real y otras funciones</p>
+      <p>Componente de vista previa de código interactivo, soporta edición de múltiples archivos, vista previa en tiempo real y otras funciones</p>
       <o-playground style="--editor-height: 200px; margin-bottom: 8px">
         <code path="demo.html" preview="" active="">
           <template>
+            <link rel="stylesheet" href="./style.css">
             <div style="text-align: center; padding: 20px">
               <h3>Hello o-playground</h3>
               <p>Este es un editor de código interactivo</p>
@@ -401,7 +407,7 @@
         <code path="style.css"> h3 { color: #42b983; } </code>
       </o-playground>
       <p-button>
-        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fplayground.ofajs.com%2FREADME.md">Ver Documentación</a>
+        <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fplayground.ofajs.com%2FREADME.md">Ver documentación</a>
       </p-button>
     </div>
   </div>

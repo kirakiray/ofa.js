@@ -1,2 +1,4 @@
 - name: Vorteile der Verwendung von ofa.js für KI
   url: ./more-suitable-for-ai.md
+- name: KI-Prompts für ofa.js-Projekte
+  url: ./use-ofa.js-in-project.md

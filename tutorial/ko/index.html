@@ -148,7 +148,7 @@
 </style>
 
 <center-block>
-  <h2>🤖 AI에 더 적합한 프론트엔드 프레임워크 🤖</h2>
+  <h2>생성형 AI에 더 적합한 프론트엔드 프레임워크</h2>
   <p>컴파일 과정 없이 코드를 바로 실행합니다.</p>
   <div class="w-title">
     AI가
@@ -168,9 +168,14 @@
     <div name="preview">프로젝트 미리보기</div>
   </flow-chart>
 
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./scenarios/more-suitable-for-ai.md">자세히 보기</a>
-  </p-button>
+  <div style="margin-top: 24px">
+    <p-button size="large">
+      <a href="./scenarios/more-suitable-for-ai.md">자세히 보기</a>
+    </p-button>
+    <p-button size="large" variant="outlined" style="margin-left: 8px">
+      <a href="./scenarios/use-ofa.js-in-project.md">AI 프롬프트 보기</a>
+    </p-button>
+  </div>
 </center-block>
 
 <center-block>
@@ -323,7 +328,7 @@
 <center-block>
   <h2>마이크로 프론트엔드 모범 사례</h2>
   <p>
-    현재 웹사이트의 모든 컴포넌트는 독립적으로 사용, 확인, 참조가 가능하며 특정 환경에 의존하지 않아 바로 사용할 수 있습니다.
+    현재 웹사이트의 모든 컴포넌트는 독립적으로 사용, 독립적으로 확인, 독립적으로 참조할 수 있으며 특정 환경에 의존하지 않아 진정한 즉시 사용 가능합니다.
   </p>
   <div class="comp-grid">
     <div class="comp-card">
@@ -342,7 +347,7 @@
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>채팅 말풍선 컴포넌트, 채팅 메시지 표시에 사용되며 프로필 사진과 내용 커스터마이징 지원</p>
+      <p>채팅 말풍선 컴포넌트, 채팅 메시지 표시에 사용되며 아바타와 내용 커스터마이징 지원</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
         안녕하세요, 이것은 채팅 말풍선 예시입니다
@@ -353,7 +358,7 @@
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>앵커 다이얼로그 컴포넌트, 특정 요소 클릭 시 커스텀 내용을 표시하는 다이얼로그 팝업</p>
+      <p>앵커 다이얼로그 컴포넌트, 특정 요소 클릭 시 다이얼로그가 팝업되어 커스텀 내용 표시</p>
       <button id="demo-anchor-btn" style="margin-bottom: 8px">클릭해 보세요</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
@@ -367,7 +372,7 @@
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>플로우차트 컴포넌트, 프로세스 노드와 연결 관계를 표시하는 데 사용</p>
+      <p>플로우 차트 컴포넌트, 프로세스 노드와 연결 관계 표시에 사용</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">시작</div>
         <div name="b" to="c">처리</div>
@@ -380,7 +385,7 @@
     <div class="comp-card">
       <h3>o-md</h3>
       <p>
-        한 줄의 코드로 Markdown을 렌더링하고 볼 수 있는 컴포넌트; 현재 클릭 시 문서를 보기 위한 점프 기능도 이를 기반으로 구현되었습니다.
+        한 줄의 코드로 Markdown을 렌더링하고 볼 수 있는 컴포넌트; 현재 클릭 시 문서 보기로 이동하는 기능도 이를 기반으로 구현되었습니다.
       </p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
@@ -389,10 +394,11 @@
     </div>
     <div class="comp-card">
       <h3>o-playground</h3>
-      <p>인터랙티브 코드 미리보기 컴포넌트, 다중 파일 편집, 실시간 미리보기 등의 기능 지원</p>
+      <p>인터랙티브 코드 미리보기 컴포넌트, 다중 파일 편집, 실시간 미리보기 등 기능 지원</p>
       <o-playground style="--editor-height: 200px; margin-bottom: 8px">
         <code path="demo.html" preview="" active="">
           <template>
+            <link rel="stylesheet" href="./style.css">
             <div style="text-align: center; padding: 20px">
               <h3>Hello o-playground</h3>
               <p>이것은 인터랙티브 코드 에디터입니다</p>
