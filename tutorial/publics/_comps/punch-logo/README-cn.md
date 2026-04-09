@@ -57,7 +57,7 @@
   <body>
     <l-m src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"></l-m>
     <div style="text-align: center; padding: 100px">
-      <punch-logo>
+      <punch-logo></punch-logo>
         <img logo src="https://ofajs.com/img/logo.svg" alt="" />
         <h2>ofa.js</h2>
         <img src="https://ofajs.com/publics/sources/webpack.svg" slot="fly" alt="webpack" />
