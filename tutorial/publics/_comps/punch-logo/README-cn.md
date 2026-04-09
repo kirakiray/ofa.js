@@ -58,19 +58,19 @@
     <l-m src="https://ofajs.com/publics/_comps/punch-logo/punch-logo.html"></l-m>
     <div style="text-align: center; padding: 100px">
       <punch-logo>
-        <img logo src="../../../logo.svg" alt="" />
+        <img logo src="https://ofajs.com/img/logo.svg" alt="" />
         <h2>ofa.js</h2>
-        <img src="../../sources/webpack.svg" slot="fly" alt="webpack" />
-        <img src="../../sources/npm.svg" slot="fly" alt="npm" />
-        <img src="../../sources/nodejs.svg" slot="fly" alt="nodejs" />
-        <img src="../../sources/esbuild.svg" slot="fly" alt="esbuild" />
-        <img src="../../sources/pnpm.svg" slot="fly" alt="pnpm" />
-        <img src="../../sources/yarn.svg" slot="fly" alt="yarn" />
-        <img src="../../sources/bun.svg" slot="fly" alt="bun" />
-        <img src="../../sources/deno.svg" slot="fly" alt="deno" />
-        <img src="../../sources/rollup.svg" slot="fly" alt="rollup" />
-        <img src="../../sources/typescript.svg" slot="fly" alt="typescript" />
-        <img src="../../sources/lerna.svg" slot="fly" alt="lerna" />
+        <img src="https://ofajs.com/publics/sources/webpack.svg" slot="fly" alt="webpack" />
+        <img src="https://ofajs.com/publics/sources/npm.svg" slot="fly" alt="npm" />
+        <img src="https://ofajs.com/publics/sources/nodejs.svg" slot="fly" alt="nodejs" />
+        <img src="https://ofajs.com/publics/sources/esbuild.svg" slot="fly" alt="esbuild" />
+        <img src="https://ofajs.com/publics/sources/pnpm.svg" slot="fly" alt="pnpm" />
+        <img src="https://ofajs.com/publics/sources/yarn.svg" slot="fly" alt="yarn" />
+        <img src="https://ofajs.com/publics/sources/bun.svg" slot="fly" alt="bun" />
+        <img src="https://ofajs.com/publics/sources/deno.svg" slot="fly" alt="deno" />
+        <img src="https://ofajs.com/publics/sources/rollup.svg" slot="fly" alt="rollup" />
+        <img src="https://ofajs.com/publics/sources/typescript.svg" slot="fly" alt="typescript" />
+        <img src="https://ofajs.com/publics/sources/lerna.svg" slot="fly" alt="lerna" />
       </punch-logo>
     </div>
   </body>
