@@ -17,7 +17,7 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
 ### 1. Import Component
 
 ```html
-<l-m src="./anchor-dialog.html"></l-m>
+<l-m src="https://ofajs.com/publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
 ```
 
 ### 2. Basic Usage
@@ -54,7 +54,7 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
   </head>
   <body>
-    <l-m src="./anchor-dialog.html"></l-m>
+    <l-m src="https://ofajs.com/publics/_comps/anchor-dialog/anchor-dialog.html"></l-m>
     <div style="text-align: center; padding: 100px">
       <button id="haha">Click Me</button>
       <anchor-dialog>
