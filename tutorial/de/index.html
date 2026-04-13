@@ -147,29 +147,34 @@
 </style>
 
 <center-block>
-  <h2>🤖 Frontend-Framework, besser geeignet für KI 🤖</h2>
-  <p>Umgeht den Kompilierungsprozess und lässt den Code direkt ausführen.</p>
+  <h2>Frontend-Framework, das besser für generative KI geeignet ist</h2>
+  <p>Kein Kompilierungsprozess – der Code läuft sofort.</p>
   <div class="w-title">
-    Prozess der KI bei der Nutzung von
-    <b style="color: var(--md-sys-color-primary)">ofa.js</b> zum Generieren von Frontend-Projekten
+    KI verwendet
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b>, um ein Frontend-Projekt zu erstellen
   </div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="container">KI-Großmodell</div>
-    <div name="container" to="preview">Code in statischen Container bereitstellen</div>
-    <div name="preview">Projektvorschau</div>
+    <div name="ai-model" to="container">Großes KI-Modell</div>
+    <div name="container" to="preview">Code in statischem Container bereitstellen</div>
+    <div name="preview">Projekt-Vorschau</div>
   </flow-chart>
-  <div class="w-title">Prozess der KI bei der Generierung von Projekten mit aktuellen Mainstream-Frontend-Frameworks</div>
+  <div class="w-title">Workflow der KI mit gängigen Frontend-Frameworks</div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="cloud-container">KI-Großmodell</div>
+    <div name="ai-model" to="cloud-container">Großes KI-Modell</div>
     <div name="cloud-container" to="init">Cloud-Container erstellen</div>
     <div name="init" to="deploy">Abhängigkeiten installieren</div>
-    <div name="deploy" to="preview">Code bereitstellen und kompilieren</div>
-    <div name="preview">Projektvorschau</div>
+    <div name="deploy" to="preview">Code bereitstellen & kompilieren</div>
+    <div name="preview">Projekt-Vorschau</div>
   </flow-chart>
 
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./scenarios/more-suitable-for-ai.md">Details ansehen</a>
-  </p-button>
+  <div style="margin-top: 24px">
+    <p-button size="large">
+      <a href="./scenarios/more-suitable-for-ai.md">Details anzeigen</a>
+    </p-button>
+    <p-button size="large" variant="outlined" style="margin-left: 8px">
+      <a href="./scenarios/use-ofa.js-in-project.md">KI-Prompt anzeigen</a>
+    </p-button>
+  </div>
 </center-block>
 
 <center-block>
@@ -322,12 +327,12 @@
 <center-block>
   <h2>Best Practices für Micro-Frontends</h2>
   <p>
-    Alle Komponenten dieser Website lassen sich unabhängig verwenden, einzeln anzeigen und ohne bestimmte Umgebung einbinden – sofort einsetzbar.
+    Alle Komponenten dieser Website können unabhängig verwendet, angesehen und referenziert werden, ohne auf eine spezifische Umgebung angewiesen zu sein – sie sind wirklich sofort einsatzbereit.
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>Logo-Komponente mit Impact-Animation; beim Klicken entfaltet sich ein Zerstäubungseffekt</p>
+      <p>Logo-Komponente mit Aufprall-Animation, spielt beim Klicken eine Zerstreuungsanimation ab</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -341,10 +346,10 @@
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>Chat-Blasen-Komponente zur Anzeige von Nachrichten; Avatar und Inhalt individuell anpassbar</p>
+      <p>Chat-Blase-Komponente zur Anzeige von Chat-Nachrichten, unterstützt benutzerdefinierte Avatare und Inhalte</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
-        Hallo, das ist ein Beispiel für eine Chat-Blase
+        Hallo, dies ist ein Beispiel für eine Chat-Blase
       </chat-bubble>
       <p-button>
         <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">Dokumentation ansehen</a>
@@ -352,12 +357,12 @@
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>Anker-Dialog-Komponente; öffnet beim Klick auf ein bestimmtes Element einen Dialog mit benutzerdefiniertem Inhalt</p>
-      <button id="demo-anchor-btn" style="margin-bottom: 8px">Klick mich</button>
+      <p>Anker-Dialog-Komponente, die beim Klicken auf ein bestimmtes Element einen Dialog mit benutzerdefiniertem Inhalt anzeigt</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">Klicken Sie, um es zu versuchen</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
           <h4 style="margin: 0 0 8px">Dialog-Beispiel</h4>
-          <p style="margin: 0">Dies ist eine einfache Anker-Dialog-Demo</p>
+          <p style="margin: 0">Dies ist eine einfache Demo eines Anker-Dialogs</p>
         </article>
       </anchor-dialog>
       <p-button>
@@ -366,7 +371,7 @@
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>Flussdiagramm-Komponente zur Darstellung von Prozessknoten und Verbindungen</p>
+      <p>Flussdiagramm-Komponente zur Darstellung von Prozessknoten und Verbindungsbeziehungen</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">Start</div>
         <div name="b" to="c">Verarbeitung</div>
@@ -379,8 +384,7 @@
     <div class="comp-card">
       <h3>o-md</h3>
       <p>
-        Eine Komponente, die Markdown mit nur einer Codezeile rendert und anzeigt;
-        die aktuelle Funktion zum Ansehen der Dokumentation basiert ebenfalls darauf.
+        Eine Komponente, die Markdown mit nur einer Codezeile rendern und anzeigen kann; die aktuelle Funktion zum Anzeigen von Dokumentationen durch Klicken basiert ebenfalls darauf.
       </p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
@@ -389,12 +393,13 @@
     </div>
     <div class="comp-card">
       <h3>o-playground</h3>
-      <p>Interaktive Code-Vorschau-Komponente mit Multi-Datei-Editor und Live-Vorschau</p>
+      <p>Interaktive Code-Vorschau-Komponente, unterstützt Mehrfachdatei-Bearbeitung, Echtzeit-Vorschau und mehr</p>
       <o-playground style="--editor-height: 200px; margin-bottom: 8px">
         <code path="demo.html" preview="" active="">
           <template>
+            <link rel="stylesheet" href="./style.css">
             <div style="text-align: center; padding: 20px">
-              <h3>Hallo o-playground</h3>
+              <h3>Hello o-playground</h3>
               <p>Dies ist ein interaktiver Code-Editor</p>
             </div>
           </template>

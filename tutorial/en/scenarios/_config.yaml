@@ -1,2 +1,4 @@
 - name: Advantages of using ofa.js for AI
   url: ./more-suitable-for-ai.md
+- name: AI prompts for ofa.js projects
+  url: ./use-ofa.js-in-project.md

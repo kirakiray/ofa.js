@@ -148,29 +148,34 @@
 </style>
 
 <center-block>
-  <h2>🤖 AIにより適したフロントエンドフレームワーク 🤖</h2>
-  <p>コンパイルプロセスを経ず、直接コードを実行します。</p>
+  <h2>生成AI向けのより適したフロントエンドフレームワーク</h2>
+  <p>コンパイルを経ず、コードをそのまま実行。</p>
   <div class="w-title">
-    AIが
-    <b style="color: var(--md-sys-color-primary)">ofa.js</b> を使用してフロントエンドプロジェクトを生成するプロセス
+    AI使用
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b> 生成前端项目的流程
   </div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="container">AI大規模モデル</div>
-    <div name="container" to="preview">コードを静的コンテナにデプロイ</div>
-    <div name="preview">プロジェクトをプレビュー</div>
+    <div name="ai-model" to="container">AI大模型</div>
+    <div name="container" to="preview">部署代码到静态容器</div>
+    <div name="preview">预览项目</div>
   </flow-chart>
-  <div class="w-title">AIが現在の主流フロントエンドフレームワークを使用してプロジェクトを生成するプロセス</div>
+  <div class="w-title">AI使用当前主流前端框架生成项目的流程</div>
   <flow-chart style="width: 100%">
-    <div name="ai-model" to="cloud-container">AI大規模モデル</div>
-    <div name="cloud-container" to="init">クラウドコンテナを作成</div>
-    <div name="init" to="deploy">依存関係をインストール</div>
-    <div name="deploy" to="preview">コードをデプロイおよびコンパイル</div>
-    <div name="preview">プロジェクトをプレビュー</div>
+    <div name="ai-model" to="cloud-container">AI大模型</div>
+    <div name="cloud-container" to="init">创建云端容器</div>
+    <div name="init" to="deploy">安装依赖</div>
+    <div name="deploy" to="preview">部署和编译代码</div>
+    <div name="preview">预览项目</div>
   </flow-chart>
 
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./scenarios/more-suitable-for-ai.md">詳細を見る</a>
-  </p-button>
+  <div style="margin-top: 24px">
+    <p-button size="large">
+      <a href="./scenarios/more-suitable-for-ai.md">查看详情</a>
+    </p-button>
+    <p-button size="large" variant="outlined" style="margin-left: 8px">
+      <a href="./scenarios/use-ofa.js-in-project.md">查看AI提示词</a>
+    </p-button>
+  </div>
 </center-block>
 
 <center-block>
@@ -323,12 +328,12 @@
 <center-block>
   <h2>マイクロフロントエンドのベストプラクティス</h2>
   <p>
-    現在のウェブサイトのすべてのコンポーネントは独立して使用・表示・参照でき、特定の環境に依存せず、まさにそのまま利用可能です。
+    現在のウェブサイトのすべてのコンポーネントは、特定の環境に依存することなく、独立して使用、表示、参照することができ、まさにそのまま使える状態を実現しています。
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>衝撃アニメーションLogoコンポーネント、クリック時に飛散アニメーション効果を再生</p>
+      <p>衝撃アニメーションロゴコンポーネント。クリック時に飛散アニメーション効果を再生します。</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -342,10 +347,10 @@
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>チャットバブルコンポーネント、チャットメッセージを表示し、アバターとコンテンツのカスタマイズをサポート</p>
+      <p>チャットバブルコンポーネント。チャットメッセージの表示に使用し、アバターとコンテンツのカスタマイズをサポートします。</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
-        こんにちは、これはチャットバブルのサンプルです
+        こんにちは、これはチャットバブルの例です
       </chat-bubble>
       <p-button>
         <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">ドキュメントを見る</a>
@@ -353,11 +358,11 @@
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>アンカーダイアログコンポーネント、特定の要素をクリックするとダイアログがポップアップしてカスタムコンテンツを表示</p>
-      <button id="demo-anchor-btn" style="margin-bottom: 8px">クリックしてみて</button>
+      <p>アンカーダイアログコンポーネント。特定の要素をクリックすると、カスタムコンテンツを表示するダイアログがポップアップします。</p>
+      <button id="demo-anchor-btn" style="margin-bottom: 8px">クリックして試す</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
-          <h4 style="margin: 0 0 8px">ダイアログサンプル</h4>
+          <h4 style="margin: 0 0 8px">ダイアログ例</h4>
           <p style="margin: 0">これはシンプルなアンカーダイアログのデモです</p>
         </article>
       </anchor-dialog>
@@ -367,7 +372,7 @@
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>フローチャートコンポーネント、フローノードと接続関係を表示するために使用</p>
+      <p>フローチャートコンポーネント。プロセスのノードと接続関係を表示するために使用します。</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">開始</div>
         <div name="b" to="c">処理</div>
@@ -380,7 +385,7 @@
     <div class="comp-card">
       <h3>o-md</h3>
       <p>
-        1行のコードでMarkdownをレンダリング・表示できるコンポーネント；現在のクリックジャンプでドキュメントを見る機能も、これに基づいて実現されています。
+        一行のコードでMarkdownをレンダリングして表示できるコンポーネントです。現在のクリックしてドキュメントを表示する機能も、これに基づいて実装されています。
       </p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
@@ -389,13 +394,14 @@
     </div>
     <div class="comp-card">
       <h3>o-playground</h3>
-      <p>インタラクティブコードプレビューコンポーネント、複数ファイル編集・リアルタイムプレビューなどの機能をサポート</p>
+      <p>インタラクティブなコードプレビューコンポーネント。マルチファイル編集、リアルタイムプレビューなどの機能をサポートします。</p>
       <o-playground style="--editor-height: 200px; margin-bottom: 8px">
         <code path="demo.html" preview="" active="">
           <template>
+            <link rel="stylesheet" href="./style.css">
             <div style="text-align: center; padding: 20px">
               <h3>Hello o-playground</h3>
-              <p>これはインタラクティブコードエディタです</p>
+              <p>これはインタラクティブなコードエディタです</p>
             </div>
           </template>
         </code>

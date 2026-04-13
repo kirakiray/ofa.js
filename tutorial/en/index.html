@@ -149,18 +149,18 @@
 </style>
 
 <center-block>
-  <h2>🤖 A Frontend Framework More Suitable for AI 🤖</h2>
-  <p>Skip the compilation process and run code directly.</p>
+  <h2>A Frontend Framework More Suitable for Generative AI</h2>
+  <p>Run the code directly without going through the compilation process.</p>
   <div class="w-title">
-    AI uses
-    <b style="color: var(--md-sys-color-primary)">ofa.js</b> workflow to generate frontend projects
+    The process of AI using
+    <b style="color: var(--md-sys-color-primary)">ofa.js</b> to generate frontend projects
   </div>
   <flow-chart style="width: 100%">
     <div name="ai-model" to="container">AI Large Model</div>
     <div name="container" to="preview">Deploy code to static container</div>
     <div name="preview">Preview project</div>
   </flow-chart>
-  <div class="w-title">AI workflow to generate projects using current mainstream frontend frameworks</div>
+  <div class="w-title">The process of AI using current mainstream frontend frameworks to generate projects</div>
   <flow-chart style="width: 100%">
     <div name="ai-model" to="cloud-container">AI Large Model</div>
     <div name="cloud-container" to="init">Create cloud container</div>
@@ -169,9 +169,14 @@
     <div name="preview">Preview project</div>
   </flow-chart>
 
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./scenarios/more-suitable-for-ai.md">View details</a>
-  </p-button>
+  <div style="margin-top: 24px">
+    <p-button size="large">
+      <a href="./scenarios/more-suitable-for-ai.md">View Details</a>
+    </p-button>
+    <p-button size="large" variant="outlined" style="margin-left: 8px">
+      <a href="./scenarios/use-ofa.js-in-project.md">View AI Prompts</a>
+    </p-button>
+  </div>
 </center-block>
 
 <center-block>
@@ -323,12 +328,12 @@
 <center-block>
   <h2>Micro-frontend Best Practices</h2>
   <p>
-    All components on this site can be used, viewed, and referenced independently, without relying on a specific environment—truly plug-and-play.
+    All components on the current site can be used, viewed, and referenced independently without relying on a specific environment, truly achieving plug-and-play.
   </p>
   <div class="comp-grid">
     <div class="comp-card">
       <h3>punch-logo</h3>
-      <p>Impact-animation logo component; click to trigger a scatter animation</p>
+      <p>Impact-animation Logo component; click to trigger a scatter animation</p>
       <punch-logo style="margin-bottom: 8px; display: block; margin: 0 auto">
         <img logo="" src="../img/logo.svg" style="width: 26px; height: 30px">
         <h4>ofa.js</h4>
@@ -342,10 +347,10 @@
     </div>
     <div class="comp-card">
       <h3>chat-bubble</h3>
-      <p>Chat-bubble component for displaying messages; supports custom avatar and content</p>
+      <p>Chat bubble component for displaying messages; supports custom avatar and content</p>
       <chat-bubble style="margin-bottom: 8px">
         <img src="https://avatars.githubusercontent.com/u/11347639" slot="avatar" alt="avatar">
-        Hello, this is a chat-bubble demo
+        Hello, this is a chat-bubble example
       </chat-bubble>
       <p-button>
         <a href="https://book.ofajs.com/o-md/view.html?link=https%3A%2F%2Fofajs.com%2Fpublics%2F_comps%2Fchat-bubble%2FREADME.md">View Docs</a>
@@ -353,12 +358,12 @@
     </div>
     <div class="comp-card">
       <h3>anchor-dialog</h3>
-      <p>Anchor-dialog component; click a specific element to pop up a dialog with custom content</p>
+      <p>Anchor dialog component; clicking a specific element pops up a dialog with custom content</p>
       <button id="demo-anchor-btn" style="margin-bottom: 8px">Click to try</button>
       <anchor-dialog>
         <article for="#demo-anchor-btn" style="padding: 24px; min-width: 200px">
-          <h4 style="margin: 0 0 8px">Dialog Demo</h4>
-          <p style="margin: 0">This is a simple anchor-dialog demonstration</p>
+          <h4 style="margin: 0 0 8px">Dialog Example</h4>
+          <p style="margin: 0">This is a simple anchor-dialog demo</p>
         </article>
       </anchor-dialog>
       <p-button>
@@ -367,7 +372,7 @@
     </div>
     <div class="comp-card">
       <h3>flow-chart</h3>
-      <p>Flow-chart component for displaying process nodes and their connections</p>
+      <p>Flow-chart component for displaying process nodes and connections</p>
       <flow-chart style="width: 100%; height: 80px; margin-bottom: 8px">
         <div name="a" to="b">Start</div>
         <div name="b" to="c">Process</div>
@@ -381,7 +386,7 @@
       <h3>o-md</h3>
       <p>
         Render and view Markdown with a single line of code;
-        the doc-jumping feature you’re using right now is built on it.
+        the “View Docs” links here are powered by it.
       </p>
       <o-md style="width: 100%; height: 80px; overflow: auto; margin-bottom: 8px" src="https://book.ofajs.com/o-md/README.md"></o-md>
       <p-button>
@@ -394,6 +399,7 @@
       <o-playground style="--editor-height: 200px; margin-bottom: 8px">
         <code path="demo.html" preview="" active="">
           <template>
+            <link rel="stylesheet" href="./style.css">
             <div style="text-align: center; padding: 20px">
               <h3>Hello o-playground</h3>
               <p>This is an interactive code editor</p>

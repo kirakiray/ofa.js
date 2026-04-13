@@ -1,2 +1,4 @@
 - name: AIがofa.jsを使用する利点
   url: ./more-suitable-for-ai.md
+- name: ofa.jsプロジェクトにおけるAIプロンプト
+  url: ./use-ofa.js-in-project.md

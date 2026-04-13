@@ -17,7 +17,7 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
 ### 1. Import Component
 
 ```html
-<l-m src="./flow-chart.html"></l-m>
+<l-m src="https://ofajs.com/publics/_comps/flow-chart/flow-chart.html"></l-m>
 ```
 
 ### 2. Basic Usage
@@ -51,7 +51,7 @@ This component depends on [ofa.js](https://github.com/ofajs/ofa.js). Please incl
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
   </head>
   <body>
-    <l-m src="./flow-chart.html"></l-m>
+    <l-m src="https://ofajs.com/publics/_comps/flow-chart/flow-chart.html"></l-m>
     <flow-chart style="width: 100%; height: 200px">
       <div name="a" to="b">AAA</div>
       <div name="b" to="c">BBB</div>

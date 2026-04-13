@@ -149,7 +149,7 @@
 </style>
 
 <center-block>
-  <h2>🤖 更適閤AI使用的前端框架 🤖</h2>
+  <h2>更適閤生成式AI使用的前端框架</h2>
   <p>不走編譯的流程，直接讓代碼跑起來。</p>
   <div class="w-title">
     AI使用
@@ -169,9 +169,14 @@
     <div name="preview">預覽項目</div>
   </flow-chart>
 
-  <p-button size="large" style="margin-top: 24px">
-    <a href="./scenarios/more-suitable-for-ai.md">査看詳情</a>
-  </p-button>
+  <div style="margin-top: 24px">
+    <p-button size="large">
+      <a href="./scenarios/more-suitable-for-ai.md">査看詳情</a>
+    </p-button>
+    <p-button size="large" variant="outlined" style="margin-left: 8px">
+      <a href="./scenarios/use-ofa.js-in-project.md">査看AI提示詞</a>
+    </p-button>
+  </div>
 </center-block>
 
 <center-block>
@@ -395,6 +400,7 @@
       <o-playground style="--editor-height: 200px; margin-bottom: 8px">
         <code path="demo.html" preview="" active="">
           <template>
+            <link rel="stylesheet" href="./style.css">
             <div style="text-align: center; padding: 20px">
               <h3>Hello o-playground</h3>
               <p>這是一個交互式代碼編輯器</p>
