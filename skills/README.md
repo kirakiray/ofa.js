@@ -39,3 +39,16 @@ Collection of skills for working with ofa.js framework.
 - Event operations: on, emit, off, one
 - Stanz features: watch, watchTick, unwatch
 - o-app component: goto, replace, back, current, routers
+
+---
+
+## ofajs-cases
+
+**Description:** ofa.js case studies and complete component examples. Use when user wants to see complete working examples, build real-world components, or learn through practical implementations.
+
+**When to invoke:** User wants complete working component examples, needs practical implementation patterns, asks about building specific UI components like switches, modals, or forms, or learns best by studying real-world cases.
+
+**Location:** `./ofajs-cases/SKILL.md`
+
+**Cases available:**
+- Switch Component: Complete toggle/switch with attrs/data, events, slots, two-way binding
