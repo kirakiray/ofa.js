@@ -223,6 +223,7 @@ instance.watchTick(() => {
 ### unwatch - Remove Watcher
 ```javascript
 const tid = instance.watch(() => {});
+// const tid = instance.watchTick(() => {});
 instance.unwatch(tid);
 ```
 
