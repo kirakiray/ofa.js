@@ -62,3 +62,6 @@
 - `on:event` for event binding
 - `sync:` for two-way binding
 - `o-fill` uses `$data` for current item, `$index` for index
+
+## references
+- [o-fill List Rendering](./references/11-o-fill.md)

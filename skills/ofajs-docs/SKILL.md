@@ -218,4 +218,5 @@ See the `references/` directory for comprehensive examples:
 - [Router/SPA](./references/08-router.md)
 - [Context State: Provider and Consumer](./references/10-provider-consumer.md)
 - [o-fill List Rendering](./references/11-o-fill.md)
+- [Computed Properties](./references/12-computed-properties.md)
 - [Component Development Cases: Switch Component](./references/09-switch-component.md)
