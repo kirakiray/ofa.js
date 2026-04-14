@@ -78,6 +78,23 @@ ofa.js is a lightweight web frontend framework for building web applications wit
 <o-if :value="condition">...</o-if>
 ```
 
+### CSS Variable Binding with data()
+Use `data(key)` inside `<style>` to bind component data to CSS values:
+
+```html
+<style>
+  .box {
+    font-size: data(size);
+    color: green;
+    transition: all data(time)s ease;
+  }
+</style>
+<input type="number" sync:value="size" />
+<input type="number" sync:value="time" />
+```
+
+Note: Keep styles with `data()` in a separate `<style>` block from static styles for better performance. Don't mix `data()` styles with pseudo-selectors like `:hover` in the same block.
+
 ## Components
 
 ### Creating Components

@@ -165,22 +165,66 @@ export default async () => ({
 
 ## Styling with match-var
 
-For CSS variable-based theming:
+`match-var` matches styles based on CSS variable values on the component itself:
 
 ```html
 <template component>
-  <match-var theme="dark">
+  <match-var theme="light">
     <style>
-      :host { background-color: #333; color: white; }
+      .content { background-color: #f5f5f5; color: #333; }
     </style>
   </match-var>
-  <slot></slot>
+  <match-var theme="dark">
+    <style>
+      .content { background-color: #333; color: white; }
+    </style>
+  </match-var>
+  <div class="content">
+    <slot></slot>
+  </div>
 </template>
 ```
 
+Usage - set CSS variable via style attribute:
+
 ```html
-<!-- Usage -->
-<theme-box theme="dark"></theme-box>
+<theme-box style="--theme: dark;">Dark Theme</theme-box>
+<theme-box style="--theme: light;">Light Theme</theme-box>
+```
+
+Using data() for dynamic theming:
+
+```html
+<template page>
+  <style>
+    .container { --theme: data(currentTheme); }
+  </style>
+  <button on:click="toggleTheme">Toggle</button>
+  <div class="container">
+    <theme-box>Dynamic Theme</theme-box>
+  </div>
+  <script>
+    export default async () => ({
+      data: { currentTheme: "light" },
+      proto: {
+        toggleTheme() {
+          this.currentTheme = this.currentTheme === "light" ? "dark" : "light";
+        }
+      }
+    });
+  </script>
+</template>
+```
+
+For Firefox compatibility, call `$.checkMatch()` after changing variables:
+
+```javascript
+proto: {
+  updateTheme() {
+    this.currentTheme = "dark";
+    $.checkMatch();
+  }
+}
 ```
 
 ## Best Practices
