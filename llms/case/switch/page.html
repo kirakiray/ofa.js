@@ -4,7 +4,7 @@
       display: block;
     }
   </style>
-  
+
   <style>
     h2 {
       color: #333;
@@ -60,10 +60,10 @@
   <div class="demo-section">
     <h3>带标签</h3>
     <div class="demo-row">
-      <ofa-switch label="启用通知"></ofa-switch>
+      <ofa-switch>启用通知</ofa-switch>
     </div>
     <div class="demo-row">
-      <ofa-switch :checked="true" label="自动保存"></ofa-switch>
+      <ofa-switch :checked="true">自动保存</ofa-switch>
     </div>
   </div>
 
@@ -72,7 +72,9 @@
     <h3>双向绑定</h3>
     <div class="demo-row">
       <ofa-switch sync:checked="switchState"></ofa-switch>
-      <span class="status-text">当前状态: {{switchState ? '开启' : '关闭'}}</span>
+      <span class="status-text"
+        >当前状态: {{switchState ? '开启' : '关闭'}}</span
+      >
     </div>
   </div>
 

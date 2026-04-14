@@ -184,3 +184,4 @@ See the `references/` directory for comprehensive examples:
 - [State Management](./references/06-state-management.md)
 - [Slots](./references/07-slots.md)
 - [Router/SPA](./references/08-router.md)
+- [Component Development Cases: Switch Component](./references/09-switch-component.md)

@@ -1,7 +1,8 @@
 <template component>
   <style>
     :host {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       vertical-align: middle;
     }
 
@@ -65,15 +66,39 @@
       font-size: 14px;
       color: #333;
     }
+
+    .label {
+      margin-left: 8px;
+      vertical-align: middle;
+      font-size: 14px;
+      color: #333;
+    }
+
+    :host(:empty) .label {
+      display: none;
+    }
   </style>
 
-  <div class="switch" class:disabled="disabled" class:checked="checked" on:click="toggle">
-    <input type="checkbox" class="switch-input" :checked="checked" :disabled="disabled">
+  <div
+    class="switch"
+    class:disabled="disabled !== null"
+    class:checked="checked"
+    on:click="toggle"
+  >
+    <input
+      type="checkbox"
+      class="switch-input"
+      :checked="checked"
+      :disabled="disabled"
+    />
     <span class="switch-slider"></span>
   </div>
   <o-if :value="label">
     <span class="switch-label">{{label}}</span>
   </o-if>
+  <div class="label">
+    <slot></slot>
+  </div>
 
   <script>
     export default async () => {
@@ -84,14 +109,14 @@
           label: null,
         },
         data: {
-            checked:false
+          checked: false,
         },
         proto: {
           toggle() {
             if (this.disabled !== null) {
               return;
             }
-            
+
             this.checked = this.checked ? null : true;
             this.emit("change", {
               data: { checked: this.checked },
