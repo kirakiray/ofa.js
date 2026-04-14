@@ -123,12 +123,12 @@ export default async ({ load }) => {
 
 ## Lifecycle Hooks
 
-| Hook | Timing | Purpose |
-|------|--------|---------|
-| `ready` | DOM created | DOM operations, init third-party libs |
-| `attached` | Added to DOM | Start timers, add event listeners |
-| `loaded` | All subcomponents loaded | Execute after complete component tree ready |
-| `detached` | Removed from DOM | Cleanup timers, remove listeners |
+| Hook       | Timing                   | Purpose                                     |
+| ---------- | ------------------------ | ------------------------------------------- |
+| `ready`    | DOM created              | DOM operations, init third-party libs       |
+| `attached` | Added to DOM             | Start timers, add event listeners           |
+| `loaded`   | All subcomponents loaded | Execute after complete component tree ready |
+| `detached` | Removed from DOM         | Cleanup timers, remove listeners            |
 
 ### Example
 ```javascript
@@ -152,16 +152,31 @@ export default async () => {
 const store = $.stanz({ count: 0 });
 
 // In component
-export default {
-  data: { store: {} },
-  attached() { this.store = store; },
-  detached() { this.store = {}; }
-};
+export default async ()=>{
+  return {
+    data: { store: {} },
+    attached() { this.store = store; },
+    detached() { this.store = {}; }
+  };
+}
 ```
 
 ### Module-level State
 ```javascript
-const cartStore = $.stanz({ total: 0 });
+export const cartStore = $.stanz({ total: 0 });
+```
+
+```javascript
+// In component
+export default async ({load})=>{
+  const { cartStore } = await load("./data.js");
+
+  return {
+    data: { cartStore: {} },
+    attached() { this.cartStore = cartStore; },
+    detached() { this.cartStore = {}; }
+  };
+}
 ```
 
 ## When to Use This Skill
@@ -184,4 +199,5 @@ See the `references/` directory for comprehensive examples:
 - [State Management](./references/06-state-management.md)
 - [Slots](./references/07-slots.md)
 - [Router/SPA](./references/08-router.md)
+- [Context State: Provider and Consumer](./references/10-provider-consumer.md)
 - [Component Development Cases: Switch Component](./references/09-switch-component.md)
