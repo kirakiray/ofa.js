@@ -219,4 +219,9 @@ See the `references/` directory for comprehensive examples:
 - [Context State: Provider and Consumer](./references/10-provider-consumer.md)
 - [o-fill List Rendering](./references/11-o-fill.md)
 - [Computed Properties](./references/12-computed-properties.md)
-- [Component Development Cases: Switch Component](./references/09-switch-component.md)
+
+## Component Case Studies
+
+See the [ofajs-cases skill](../ofajs-cases/SKILL.md) for complete component development examples:
+
+- [Switch Component](../ofajs-cases/references/09-switch-component.md)
