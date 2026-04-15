@@ -112,33 +112,20 @@
   </o-else>
 
   <script>
-    export default async () => {
+    export default async ({ load }) => {
+      const { todos } = await load("./data.js");
+
       return {
         data: {
           todos: [],
           inputText: "",
-          storageKey: "ofa-todolist-demo",
-        },
-        attached() {
-          const stored = localStorage.getItem(this.storageKey);
-          if (stored) {
-            try {
-              this.todos = JSON.parse(stored);
-            } catch (e) {
-              console.error("Failed to parse stored todos:", e);
-            }
-          }
         },
         proto: {
-          saveTodos() {
-            localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
-          },
           addTodo() {
             const text = this.inputText.trim();
             if (!text) return;
             this.todos.push({ text, completed: false });
             this.inputText = "";
-            this.saveTodos();
           },
           handleKeydown(e) {
             if (e.key === "Enter") {
@@ -148,15 +135,19 @@
           toggleTodo(data, index) {
             // const data = this.todos[index];
             data.completed = !data.completed;
-            this.saveTodos();
           },
           deleteTodo(index) {
             this.todos.splice(index, 1);
-            this.saveTodos();
           },
           get remainingCount() {
             return this.todos.filter((t) => !t.completed).length;
           },
+        },
+        attached() {
+          this.todos = todos;
+        },
+        detached() {
+          this.todos = [];
         },
       };
     };
