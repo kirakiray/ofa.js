@@ -2,124 +2,29 @@
   <style>
     :host {
       display: flex;
+      flex-direction: column;
       height: 100vh;
-    }
-    .file-list {
-      width: 300px;
-      border-right: 1px solid #e0e0e0;
-      overflow: auto;
-      padding: 20px;
-      background: #fafafa;
-    }
-    .editor {
-      flex: 1;
-      padding: 20px;
-      overflow: auto;
-    }
-    .dir-item {
-      margin-bottom: 5px;
-    }
-    .dir-toggle {
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .dir-toggle:hover {
-      background: #e0e0e0;
-    }
-    .dir-toggle::before {
-      content: "▶";
-      font-size: 10px;
-      transition: transform 0.2s;
-    }
-    .dir-toggle.opened::before {
-      transform: rotate(90deg);
-    }
-    .file-item {
-      padding-left: 14px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .file-item:hover {
-      background: #e0e0e0;
-    }
-    .file-item.active {
-      background: #007bff;
-      color: white;
-    }
-    .placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: #888;
-      font-size: 18px;
     }
   </style>
 
-  <div class="file-list">
-    <o-fill :value="fileData.children" name="file-tree"> </o-fill>
+  <l-m src="./filelist.html"></l-m>
+  <l-m src="./editor.html"></l-m>
+  <div style="text-align: center; padding: 4px; border-bottom: 1px solid #ccc">
+    {{currentFile}}
   </div>
 
-  <template name="file-tree">
-    <div>
-      <o-if :value="$data.type === 'dir'">
-        <div class="dir-item">
-          <div
-            class="dir-toggle"
-            class:opened="$data.opened"
-            on:click="$host.toggle($data,$event)"
-          >
-            <span>{{$data.name}}</span>
-          </div>
-          <div
-            style="padding-left: 20px"
-            :style.display="$data.opened ? 'block' : 'none'"
-          >
-            <o-if :value="$data.children.length > 0">
-              <o-fill :value="$data.children" name="file-tree"></o-fill>
-            </o-if>
-            <o-else>
-              <div style="color: #aaa; padding: 5px 10px; font-size: 12px">
-                (empty)
-              </div>
-            </o-else>
-          </div>
-        </div>
-      </o-if>
-      <o-else-if :value="$data.type === 'file'">
-        <div class="file-item" on:click="$host.selectFile($data)">
-          {{$data.name}}
-        </div>
-      </o-else-if>
-    </div>
-  </template>
-
-  <div class="editor">
-    <div class="placeholder">编辑器区域（等待联动效果）</div>
+  <div style="display: flex; flex: 1">
+    <o-provider name="project-data" sync:active-path="currentFile">
+      <file-list></file-list>
+      <file-editor></file-editor>
+    </o-provider>
   </div>
 
   <script>
-    export default async ({ load }) => {
-      const { fileData } = await load("./data.js");
-
+    export default async () => {
       return {
         data: {
-          fileData,
-          selectedFile: null,
-        },
-        proto: {
-          toggle(data, event) {
-            event.stopPropagation();
-            data.opened = !data.opened;
-            // const target = e.target.closest(".dir-toggle");
-            // target.classList.toggle("opened");
-          },
-          selectFile(file) {
-            this.selectedFile = file;
-          },
+          currentFile: null,
         },
       };
     };
