@@ -14,15 +14,15 @@
   <!-- <button on:click="addNum">Add num</button> -->
   <button on:click="num++">Add num</button>
   <script>
-    export default async () => {
+    export default async ({ query }) => {
       return {
         data: {
-          val: "Hello World",
+          val: query.val || "Hello World",
           num: 0,
         },
         proto: {
           handleButtonClick() {
-            this.val = "Hello ofa.js App Demo";
+            this.val = "Change the value";
           },
           //   addNum() {
           //     this.num++;

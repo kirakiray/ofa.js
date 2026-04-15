@@ -89,14 +89,11 @@
     <input
       type="checkbox"
       class="switch-input"
-      :checked="checked"
-      :disabled="disabled"
+      attr:checked="checked"
+      attr:disabled="disabled"
     />
     <span class="switch-slider"></span>
   </div>
-  <o-if :value="label">
-    <span class="switch-label">{{label}}</span>
-  </o-if>
   <div class="label" on:click="toggle">
     <slot></slot>
   </div>
@@ -107,7 +104,6 @@
         tag: "ofa-switch",
         attrs: {
           disabled: null,
-          label: null,
         },
         data: {
           checked: false,
@@ -125,9 +121,6 @@
               composed: true,
             });
           },
-        },
-        ready() {
-          // 初始化完成
         },
       };
     };

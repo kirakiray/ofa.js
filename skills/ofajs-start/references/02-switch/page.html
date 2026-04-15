@@ -63,7 +63,7 @@
       <ofa-switch>启用通知</ofa-switch>
     </div>
     <div class="demo-row">
-      <ofa-switch :checked="true">自动保存</ofa-switch>
+      <ofa-switch :checked="boolTrue">自动保存</ofa-switch>
     </div>
   </div>
 
@@ -104,6 +104,7 @@
     export default async () => {
       return {
         data: {
+          boolTrue: true,
           switchState: false,
           clickCount: 0,
         },
