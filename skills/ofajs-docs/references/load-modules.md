@@ -63,3 +63,22 @@
     };
   };
 </script>
+```
+
+## 确保组件完全加载
+
+`load` 方法与 `<l-m>` 标签功能一致，但可以确保目标组件完全加载完成后，才进入当前页面或组件模块的初始化流程。
+
+```html
+<script>
+  export default async ({ load }) => {
+    // 等待 header 和 footer 组件完全加载后，才继续执行
+    await load("./components/header.html");
+    await load("./components/footer.html");
+
+    return {
+      data: {},
+    };
+  };
+</script>
+```
