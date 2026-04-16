@@ -379,6 +379,155 @@ export default async () => ({
 
 ---
 
+# 加载模块与第三方库
+
+`export default` 函数可接收 `{ load, url }` 参数。
+
+## 参数说明
+
+- `url`：当前模块完整 URL
+- `load`：加载模块/资源，支持 JSON、第三方 ES Module
+
+## 基本用法
+
+```html
+<template component>
+  <div :html="content"></div>
+  <script>
+    export default async ({ load }) => {
+      const { marked } = await load("https://cdn.jsdelivr.net/npm/marked/marked.esm.js");
+      return {
+        tag: "md-view",
+        attrs: { src: null },
+        data: { content: "" },
+        watch: { src() { this.loadMd(); } },
+        proto: {
+          async loadMd() {
+            this.content = marked.parse(await (await fetch(this.src)).text());
+          }
+        }
+      };
+    };
+  </script>
+</template>
+```
+
+## 加载本地模块/JSON
+
+```html
+<script>
+  export default async ({ load }) => {
+    const { store } = await load("./data.js");
+    const config = await load("./config.json");
+    return {
+      data: { store, config },
+    };
+  };
+</script>
+```
+
+## 确保组件完全加载
+
+```html
+<script>
+  export default async ({ load }) => {
+    await load("./components/header.html");
+    await load("./components/footer.html");
+    return { data: {} };
+  };
+</script>
+```
+
+---
+
+# 官方组件
+
+## replace-temp 组件
+
+用途：在 `select`、`table`、`tbody` 等对内部标签结构有要求的场景中做列表渲染。
+
+```html
+<select>
+  <template is="replace-temp">
+    <x-fill :value="items">
+      <option>{{$data}}</option>
+    </x-fill>
+  </template>
+</select>
+```
+
+规则：只有普通 `o-fill` 不能正常工作时再使用。
+
+## inject-host 组件
+
+用途：从组件内部向宿主注入样式，控制插槽内容里的深层元素样式。
+
+优先级：先用 `::slotted()`，不够用时再用 `inject-host`。
+
+```html
+<template component>
+  <inject-host>
+    <style>
+      user-list .list-item-content { color: red; }
+    </style>
+  </inject-host>
+  <slot></slot>
+  <script>
+    export default async () => ({ tag: "user-list" });
+  </script>
+</template>
+```
+
+注意：使用带组件名前缀的具体选择器，避免污染其他组件。
+
+---
+
+# match-var 样式查询
+
+根据 CSS 变量切换样式，常用于主题场景。
+
+```html
+<template component>
+  <match-var theme="dark">
+    <style>
+      :host { background: #333; color: #fff; }
+    </style>
+  </match-var>
+  <match-var theme="light">
+    <style>
+      :host { background: #fff; color: #333; }
+    </style>
+  </match-var>
+  <slot></slot>
+</template>
+```
+
+配合 CSS 变量：
+
+```html
+<template page>
+  <style>
+    .wrap { --theme: data(currentTheme); }
+  </style>
+  <button on:click="changeTheme">切换主题</button>
+  <div class="wrap">
+    <theme-box></theme-box>
+  </div>
+  <script>
+    export default async () => ({
+      data: { currentTheme: "light" },
+      proto: {
+        changeTheme() {
+          this.currentTheme = this.currentTheme === "light" ? "dark" : "light";
+        }
+      }
+    });
+  </script>
+</template>
+```
+
+---
+
 # 补充说明
 
 1. **事件传参**：`on:click="addNumber(5)"` 或 `handleClick($event)`
@@ -386,3 +535,5 @@ export default async () => ({
 3. **自定义类实例**：用 `_` 开头存储，避免被转为响应式
 4. **attrs vs data**：`attrs` 和 `data` 的 key 不能重名
 5. **响应式数据清理**：`detached` 中清空引用和取消监听
+6. **watch 对象**：在模块参数中添加 `watch` 对象监听属性变化
+7. **递归渲染**：`o-fill` 可通过 `name` 属性实现递归列表渲染
