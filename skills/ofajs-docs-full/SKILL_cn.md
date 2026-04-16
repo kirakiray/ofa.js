@@ -1004,8 +1004,241 @@ export default async () => ({
 
 ---
 
-# 其他参考文档
+# 加载模块与第三方库
 
-- [加载模块与第三方库](references/load-modules.md)：`export default` 函数中 `load` 和 `url` 参数的用法
-- [官方组件](references/official-components.md)：`replace-temp` 和 `inject-host` 组件的用法
-- [match-var 样式查询](references/match-var.md)：根据 CSS 变量切换样式的用法
+`export default` 函数可接收 `{ load, url }` 参数，用于动态加载模块和第三方库。
+
+## 参数说明
+
+- `url`：当前模块完整 URL
+- `load`：加载模块/资源，支持 JSON、第三方 ES Module，与 `<l-m>` 功能一致且共享缓存
+
+## 基本用法
+
+```html
+<template component>
+  <div :html="content"></div>
+  <script>
+    export default async ({ load, url }) => {
+      const { marked } = await load("https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js");
+      return {
+        tag: "md-view",
+        attrs: { src: null },
+        data: { content: "" },
+        watch: { src() { this.loadMd(); } },
+        proto: {
+          async loadMd() {
+            this.content = marked.parse(await (await fetch(this.src)).text());
+          }
+        }
+      };
+    };
+  </script>
+</template>
+```
+
+## 加载本地模块
+
+```html
+<script>
+  export default async ({ load }) => {
+    const { store } = await load("./data.js");
+    return {
+      data: {
+        localStore: {},
+      },
+      attached() {
+        this.localStore = store;
+      },
+      detached() {
+        this.localStore = {};
+      },
+    };
+  };
+</script>
+```
+
+## 加载 JSON
+
+```html
+<script>
+  export default async ({ load }) => {
+    const config = await load("./config.json");
+    return {
+      data: { settings: config },
+    };
+  };
+</script>
+```
+
+## 确保组件完全加载
+
+`load` 方法与 `<l-m>` 标签功能一致，但可以确保目标组件完全加载完成后，才进入当前页面或组件模块的初始化流程。
+
+```html
+<script>
+  export default async ({ load }) => {
+    // 等待 header 和 footer 组件完全加载后，才继续执行
+    await load("./components/header.html");
+    await load("./components/footer.html");
+
+    return {
+      data: {},
+    };
+  };
+</script>
+```
+
+---
+
+# 官方组件
+
+ofa.js 提供了一些官方组件，用于解决特定场景下的问题。
+
+## replace-temp 组件
+
+用途：在 `select`、`table`、`tbody` 等对内部标签结构有要求的场景中做列表渲染。
+
+```html
+<select>
+  <template is="replace-temp">
+    <x-fill :value="items">
+      <option>{{$data}}</option>
+    </x-fill>
+  </template>
+</select>
+```
+
+规则：
+
+- 只有普通 `o-fill` / `x-fill` 不能正常工作时再使用。
+- 模板尽量保持简单，不要叠加太多复杂逻辑。
+
+## inject-host 组件
+
+用途：从组件内部向宿主注入样式，用于控制插槽内容里的深层元素样式。
+
+优先级：
+
+1. 能用 `::slotted()` 就先用 `::slotted()`。
+2. 只有 `::slotted()` 不够用时再用 `inject-host`。
+
+```html
+<template component>
+  <inject-host>
+    <style>
+      user-list user-list-item .user-list-item-content {
+        color: red;
+      }
+    </style>
+  </inject-host>
+
+  <slot></slot>
+
+  <script>
+    export default async () => ({
+      tag: "user-list",
+    });
+  </script>
+</template>
+```
+
+注意：
+
+- `inject-host` 会把内部样式注入宿主作用域。
+- 选择器过宽时可能污染其他组件样式。
+- 推荐使用带组件名前缀的具体选择器。
+- 避免直接使用 `.content`、`div` 这类通用选择器。
+
+推荐：
+
+```html
+<inject-host>
+  <style>
+    user-list .list-item-content {
+      color: red;
+    }
+  </style>
+</inject-host>
+```
+
+不推荐：
+
+```html
+<inject-host>
+  <style>
+    .content {
+      color: red;
+    }
+  </style>
+</inject-host>
+```
+
+---
+
+# match-var 样式查询
+
+`match-var` 适合根据 CSS 变量切换样式，常用于主题场景。
+
+## 基本用法
+
+```html
+<template component>
+  <match-var theme="dark">
+    <style>
+      :host {
+        background: #333;
+        color: #fff;
+      }
+    </style>
+  </match-var>
+  <match-var theme="light">
+    <style>
+      :host {
+        background: #fff;
+        color: #333;
+      }
+    </style>
+  </match-var>
+  <slot></slot>
+</template>
+```
+
+配合 `data()` 设置 CSS 变量：
+
+```html
+<template page>
+  <style>
+    .wrap {
+      --theme: data(currentTheme);
+    }
+  </style>
+  <button onclick="changeTheme">切换主题</button>
+  <div class="wrap">
+    <theme-box></theme-box>
+  </div>
+  <script>
+    export default async () => ({
+      data: { currentTheme: "light" },
+      proto:{
+        changeTheme(value){
+          if(value && typeof value === "string"){
+            this.currentTheme = value;
+            return;
+          }
+          this.currentTheme = this.currentTheme === "light" ? "dark" : "light";
+        }
+      }
+    });
+  </script>
+</template>
+```
+
+## 手动触发检测
+
+Firefox 浏览器在某些情况下可能无法自动检测到 CSS 变量的变化，此时可手动调用以下方法触发样式更新：
+
+## 使用建议
+
+- 纯样式主题传递优先考虑 `match-var`
+- 配合 CSS 变量实现动态主题切换
