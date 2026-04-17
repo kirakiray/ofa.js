@@ -9,7 +9,7 @@ const SKILLS_DIR = path.resolve(__dirname, '..');
 const SOURCE_DIR = path.join(SKILLS_DIR, 'ofajs-docs');
 const TARGET_DIR = path.join(SKILLS_DIR, 'ofajs-docs-full');
 
-const ASSETS_PATTERN = /-\s+\[([^\]]+)\]\((assets\/[^\)]+\.(html|js|mjs))\):\s*(.+)/g;
+const ASSETS_PATTERN = /-\s+\[([^\]]+)\]\((assets\/[^)]+)\):\s*(.+)/g;
 const REFS_LIST_PATTERN = /-\s+\[([^\]]+)\]\((references\/[^\)]+\.md)\)/g;
 const REFS_INLINE_PATTERN = /\[([^\]]+)\]\((references\/[^\)]+\.md)\)/g;
 
