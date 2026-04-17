@@ -90,9 +90,25 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 
 ---
 
+# 快速上手
+
+在 HTML 中直接引入 ofa.js：
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.min.mjs" type="module"></script>
+```
+
+使用页面模块：
+
+```html
+<o-page src="./page.html"></o-page>
+```
+
+---
+
 # 页面模块
 
-使用 `<template page>` 定义页面模块，文件后缀为 `.html`。
+使用 `<template page>` 定义，文件后缀 `.html`。
 
 ```html
 <template page>
@@ -125,24 +141,42 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 ```
 
 **要点**：
-- 逻辑写在 `<script>` 中，`export default` 函数返回对象
-- **有且只能存在一个 script 标签**
+- 逻辑写在 `<script>` 中，`export default` 函数返回对象，**有且只能存在一个 script 标签**
 - 可接收 `{ query }` 参数获取 URL 查询参数
 - 数据在 `data` 中定义，方法在 `proto` 中定义
-- 使用 `{{key}}` 语法渲染数据
+- 使用 `{{key}}` 语法渲染数据为文本
 - 使用 `on:xxx` 绑定事件，可用事件参考 DOM 事件
 - 使用 `get xxx` 定义计算属性（不是 computed）
 - 样式写在 `<style>` 中，`:host` 选择器定义模块自身样式
-- 直接运行函数：简单操作如 `count++` 可直接在事件属性中编写
-- 传递参数：`on:click="addNumber(5)"`，参数会传递给 proto 方法
-- 访问事件对象：在事件处理器中通过 `$event` 参数访问
+- 直接运行函数：简单操作如 `count++`、`isShow = !isShow` 可直接在事件属性中编写
+- 传递参数到事件处理器：`on:click="addNumber(5)"`
+- 访问事件对象：通过 `$event` 参数，如 `handleClick($event)`
 - `_` 前缀属性为非响应式属性，变化不会触发视图更新
+- 直接设置到实例上的对象数据会被自动转化为响应式状态数据，自定义类实例请用 `_` 前缀存储：
+
+```html
+<script>
+  export default async () => ({
+    data: {
+      obj: { val: "hello world" },
+    },
+    attached() {
+      const obj2 = { val: "change val" };
+      this.obj = obj2;
+      console.log(this.obj.val === obj2.val); // => true
+      console.log(this.obj === obj2); // => false，已被转换为响应式数据
+      // this.obj = new SomeClass(); // ❌ 会被自动转换为响应式数据
+      // this._obj = new SomeClass(); // ✅ 不会被转换
+    },
+  });
+</script>
+```
 
 ---
 
 # 组件模块
 
-使用 `<template component>` 定义组件模块，返回对象中必须包含 `tag` 字段。
+使用 `<template component>` 定义，返回对象中必须包含 `tag` 字段。
 
 ```html
 <template component>
@@ -163,13 +197,17 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
     export default async () => {
       return {
         tag: "ofa-switch",
-        attrs: { disabled: null, checked: null },
-        data: { disabled: null, checked: false },
+        attrs: { disabled: null },
+        data: { checked: false },
         proto: {
           toggle() {
             if (this.disabled !== null) return;
-            this.checked = !this.checked;
-            this.emit("change", { data: { checked: this.checked } });
+            this.checked = this.checked ? null : true;
+            this.emit("change", {
+              data: { checked: this.checked },
+              bubbles: true,
+              composed: true,
+            });
           },
         },
       };
@@ -178,7 +216,7 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 </template>
 ```
 
-**使用页面模块引用组件**：
+**使用组件**：
 
 ```html
 <template page>
@@ -187,46 +225,39 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
   <ofa-switch sync:checked="switchState"></ofa-switch>
   <ofa-switch on:change="handleSwitchChange"></ofa-switch>
   <script>
-    export default async () => {
-      return {
-        data: { switchState: false },
-        proto: {
-          handleSwitchChange(e) {
-            console.log("Switch changed:", e.data.checked);
-          },
+    export default async () => ({
+      data: { switchState: false },
+      proto: {
+        handleSwitchChange(e) {
+          console.log("Switch changed:", e.data.checked);
         },
-      };
-    };
+      },
+    });
   </script>
 </template>
 ```
 
 **要点**：
-- `<l-m src="path">` 引入组件模块
-- `attrs` 定义属性默认值，会渲染到组件的 `attributes` 上
+- `<l-m src="path">` 引入组件模块，引入后即可使用标签名
+- `attrs` 定义属性默认值，会渲染到组件的 `attributes` 上，通过 attrs 传递的属性会默认转为字符串
 - **`attrs` 和 `data` 的 key 不能重名**
-- 通过 attrs 传递的属性会默认转为字符串
+- 组件模块**不能使用 `query` 参数**
 
 ---
 
 # 属性传递语法
 
-- `:toKey="fromKey"` - 单向传递，上层改动后同步到组件
-- `sync:toKey="fromKey"` - 双向绑定，任一方改动都会同步到另一方
-- `class:className="fromKey"` - 当 fromKey 为 true 时添加类名
-- `attr:toKey="fromKey"` - 传递到 attributes 属性，null 则移除
+| 语法 | 说明 |
+|------|------|
+| `:toKey="fromKey"` | 单向传递，上层改动后同步到组件 |
+| `sync:toKey="fromKey"` | 双向绑定，任一方改动都会同步到另一方 |
+| `class:className="fromKey"` | 当 fromKey 为 true 时添加类名，反之移除 |
+| `attr:toKey="fromKey"` | 传递到 attributes 属性，null 则移除 |
 
 ```html
-<!-- 单向传递 -->
 <child-comp :value="parentValue"></child-comp>
-
-<!-- 双向绑定 -->
 <child-comp sync:value="parentValue"></child-comp>
-
-<!-- 动态类名 -->
 <div class:active="isActive"></div>
-
-<!-- 传递到 attributes -->
 <input attr:value="inputValue" attr:disabled="isDisabled">
 ```
 
@@ -234,13 +265,12 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 
 # 插槽
 
-`<slot></slot>` 定义插槽，`<slot name="xxx">` 定义命名插槽。
+`<slot></slot>` 定义默认插槽，`<slot name="xxx">` 定义命名插槽，与 Web Component 一致。
 
 ```html
 <template component>
   <div class="header"><slot name="header"></slot></div>
   <div class="content"><slot></slot></div>
-  <div class="footer"><slot name="footer"></slot></div>
   <script>export default async () => ({ tag: "my-card" });</script>
 </template>
 
@@ -248,7 +278,6 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 <my-card>
   <span slot="header">标题</span>
   <p>内容</p>
-  <span slot="footer">页脚</span>
 </my-card>
 ```
 
@@ -256,76 +285,70 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 
 # 事件通信
 
-- `this.emit("eventName", options)` 触发自定义事件
-- `options.data` - 事件数据
-- `options.bubbles` - 是否冒泡（默认 true）
-- `options.composed` - 是否穿透 Shadow DOM（默认 false）
+`this.emit("eventName", options)` 触发自定义事件：
+- `options.data`：事件数据
+- `options.bubbles`：是否冒泡（默认 true）
+- `options.composed`：是否穿透 Shadow DOM（默认 false）
 
-```javascript
-this.emit("change", { data: { checked: this.checked } });
-// 上层监听
-<ofa-switch on:change="handleChange"></ofa-switch>
-// 或
-<ofa-switch on:change="handleChange($event)"></ofa-switch>
-```
+上层监听：`on:eventName="handler"` 等同于 `on:eventName="handler($event)"`，会传递 Event 对象。
 
 ---
 
 # 列表渲染
 
-使用 `<o-fill :value="list">` 组件进行列表渲染。
+使用 `<o-fill :value="list">` 组件。
+
+**内置变量**：`$data`（当前项数据）、`$index`（当前项索引）、`$host`（当前页面/组件模块实例）
 
 ```html
-<ul class="todo-list">
+<ul>
   <o-fill :value="todos">
-    <li class="todo-item" class:completed="$data.completed">
-      <input type="checkbox" :checked="$data.completed" on:change="$host.toggleTodo($data,$index)" />
-      <span class="todo-text">{{$data.text}}</span>
+    <li class:completed="$data.completed">
+      <input type="checkbox" :checked="$data.completed"
+        on:change="$host.toggleTodo($data,$index)" />
+      <span>{{$data.text}}</span>
       <button on:click="$host.deleteTodo($index)">删除</button>
     </li>
   </o-fill>
 </ul>
 ```
 
-**内置变量**：
-- `$data` - 当前项数据
-- `$index` - 当前项索引
-- `$host` - 当前页面/组件模块的实例
-
-**递归渲染**（通过 name 属性）：
+**递归渲染**（通过 `name` 属性定义模板，模板可递归引用自身）：
 
 ```html
-<o-fill :value="filelist.children" name="file-tree"></o-fill>
+<o-fill :value="tree.children" name="file-tree"></o-fill>
 <template name="file-tree">
   <div>
     <o-if :value="$data.type === 'dir'">
-      <div class="dir-item" on:click="$host.toggle($data,$event)">{{$data.name}}</div>
-      <o-fill :value="$data.children" name="file-tree"></o-fill>
+      <div on:click="$host.toggle($data,$event)">{{$data.name}}</div>
+      <div :style.display="$data.opened ? 'block' : 'none'">
+        <o-fill :value="$data.children" name="file-tree"></o-fill>
+      </div>
     </o-if>
     <o-else-if :value="$data.type === 'file'">
-      <div class="file-item" on:click="$host.selectFile($data)">{{$data.name}}</div>
+      <div on:click="$host.selectFile($data)">{{$data.name}}</div>
     </o-else-if>
   </div>
 </template>
 ```
 
+**动态 style 绑定**：`:style.display="expr"` 可动态设置 style 属性。
+
 ---
 
 # 条件渲染
 
-使用 `<o-if>` / `<o-else-if>` / `<o-else>` 组件进行条件渲染。
+使用 `<o-if>` / `<o-else-if>` / `<o-else>` 组件，`:value="bool"` 为布尔值。
 
 ```html
 <o-if :value="todos.length === 0">
-  <p class="empty-tip">暂无待办事项</p>
+  <p>暂无待办事项</p>
 </o-if>
 <o-else-if :value="remainingCount === 0">
-  <p class="empty-tip">所有任务都已完成！</p>
+  <p>所有任务都已完成！</p>
 </o-else-if>
 <o-else>
-  <ul class="todo-list">
-    <o-fill :value="todos"><li>{{$data.text}}</li></o-fill>
-  </ul>
+  <p>共 {{todos.length}} 项，还有 {{remainingCount}} 项未完成</p>
 </o-else>
 ```
 
@@ -333,63 +356,67 @@ this.emit("change", { data: { checked: this.checked } });
 
 # 响应式数据
 
-`$.stanz()` 创建响应式状态数据。
+`$.stanz()` 创建响应式状态数据：
 
 ```javascript
 const store = $.stanz({ count: 0, items: [] });
-
-// 监听变化（下一帧触发）
-const tid = store.watchTick(() => console.log('tick:', store.count));
-
-// 同步监听（实时触发）
-const wid = store.watch(() => console.log('change:', store.count));
-
-// 取消监听
-store.unwatch(wid);
+const tid = store.watchTick(() => console.log('tick:', store.count)); // 下一帧触发
+const wid = store.watch(() => console.log('change:', store.count));   // 实时触发
+store.unwatch(wid); // 取消监听
 ```
 
-**非响应式数据**：`_` 前缀属性为非响应式属性。
+**使用外部响应式数据**：在 `attached` 中赋值，在 `detached` 中清空引用并取消监听，否则内存泄漏。
 
 ```javascript
-// 正确使用
-this._cache = { done: true };
-this._instance = new SomeClass();
+export default async ({ load }) => {
+  const { todos } = await load("./data.js");
+  return {
+    data: { todos: [] },
+    attached() { this.todos = todos; },
+    detached() { this.todos = []; },
+  };
+};
+```
 
-// 错误：实例上的对象数据会被自动转化为响应式数据
-// this.obj = new SomeClass(); // 不要这么做
+**非响应式数据**：`_` 前缀属性为非响应式属性，变化不会触发视图更新。
+
+```javascript
+this._cache = { done: true };
+this._instance = new SomeClass(); // 自定义类实例用 _ 前缀
+```
+
+---
+
+# watch 属性监听
+
+在模块参数中添加 `watch` 对象，为属性定义监听函数，属性值变化时自动触发。
+
+```javascript
+export default async () => ({
+  data: { activePath: null, fileContent: "" },
+  watch: {
+    async activePath(path) {
+      if (!path) return;
+      this.fileContent = await getContent(path);
+    },
+  },
+});
 ```
 
 ---
 
 # 生命周期
 
-- `attached()` - 元素添加到 DOM 时调用
-- `detached()` - 元素从 DOM 移除时调用
-- `routerChange()` - 路由变化时调用（布局页面使用）
-- `ready()` - 页面加载完成时调用
-
-```javascript
-export default async ({ load }) => {
-  const { todos } = await load("./data.js");
-  return {
-    data: { localTodos: [] },
-    attached() {
-      this.localTodos = todos;
-    },
-    detached() {
-      this.localTodos = [];
-    },
-  };
-};
-```
+- `attached()` - 元素添加到 DOM 时
+- `detached()` - 元素从 DOM 移除时
+- `routerChange()` - 路由变化时（布局页面使用）
+- `ready()` - 页面加载完成时
 
 ---
 
-# 路由
+# 路由与多级嵌套页面
 
-使用 `<o-router>` 包裹 `<o-app>` 构建单页应用。
-
-**入口文件**：
+## 入口文件
 
 ```html
 <!doctype html>
@@ -404,17 +431,20 @@ export default async ({ load }) => {
 </html>
 ```
 
-**app-config.js**：
+## app-config.js
 
 ```javascript
 export const home = "./home.html";
 export const pageAnime = {
-  in: "fadeIn",
-  out: "fadeOut"
+  current: { opacity: 1, transform: "translate(0, 0)" },
+  next: { opacity: 0, transform: "translate(30px, 0)" },
+  previous: { opacity: 0, transform: "translate(-30px, 0)" },
 };
 ```
 
-**父页面（布局）**：
+## 父页面（布局）
+
+父页面使用 `<slot></slot>` 预留子页面渲染位置。
 
 ```html
 <template page>
@@ -441,35 +471,41 @@ export const pageAnime = {
 </template>
 ```
 
-**子页面**：
+## 子页面
+
+子页面通过 `export const parent` 指定父页面路径建立嵌套关系。
 
 ```html
 <template page>
   <h1>首页</h1>
   <button on:click="goDetail">查看详情</button>
   <script>
-    export const parent = "./layout.html"; // 指定父页面
+    export const parent = "./layout.html";
     export default async ({ query }) => ({
-      data: { id: query.id },
+      data: { id: query.id || '未知' },
       proto: {
-        goDetail() { this.goto(`./detail.html?id=${this.id}`); },
+        goDetail() { this.goto(`./detail.html?id=101`); },
       },
     });
   </script>
 </template>
 ```
 
-**路由跳转**：
+## 路由跳转
+
 - 声明式：`<a href="./page.html" olink>链接</a>`
 - 编程式：`this.goto("./page.html")`
 - 替换页面：`this.replace("./new.html")`
 - 后退：`this.back()`
+- 子页面通过 `{ query }` 参数获取 URL 查询参数
 
 ---
 
 # Provider 与上下文状态
 
 ## o-provider 提供者
+
+用 `name` 标识，所有非保留属性作为共享数据，响应式更新。
 
 ```html
 <o-provider name="project-data" sync:active-path="currentFile">
@@ -478,38 +514,43 @@ export const pageAnime = {
 </o-provider>
 ```
 
-- 所有非保留属性都会作为共享数据
-- 响应式更新，消费者会自动更新
-
 ## o-consumer 消费者
+
+通过 `name` 匹配上层 provider，`watch:xxx` 监听上下文属性变化并同步到当前组件。
 
 ```html
 <o-consumer name="project-data" watch:active-path="activePath"></o-consumer>
 ```
 
 ```javascript
-return {
+export default async () => ({
   data: { activePath: null },
   watch: {
-    activePath(path) {
-      console.log('path changed:', path);
-    }
-  }
-};
+    async activePath(path) {
+      if (!path) return;
+      this.fileContent = await getContent(path);
+    },
+  },
+});
 ```
 
 ## o-root-provider 根提供者
 
+全局作用域，即使没有父级 provider 也可获取。同 name 时，离消费者最近的 provider 优先。
+
 ```html
-<o-root-provider name="globalConfig" custom-theme="dark"></o-root-provider>
+<o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN"></o-root-provider>
+<!-- 任何位置都可消费 -->
+<o-consumer name="globalConfig" watch:custom-theme="theme"></o-consumer>
 ```
 
 ## getProvider(name) 方法
 
+获取提供者对象，直接修改属性即可同步到其他子组件（注意驼峰命名）。
+
 ```javascript
-// 获取提供者
 const provider = this.getProvider("project-data");
-provider.activePath = "new-path"; // 直接修改即可同步
+provider.activePath = "new-path";
 
 // 获取全局根提供者
 const globalProvider = $.getRootProvider("globalConfig");
@@ -517,8 +558,10 @@ const globalProvider = $.getRootProvider("globalConfig");
 
 ## dispatch 事件派发
 
+provider 可派发事件给所有消费它的 consumer：
+
 ```javascript
-provider.dispatch("new-message", { data: { text: "Hello" } });
+$("#chatProvider").dispatch("new-message", { data: { text: "Hello" } });
 ```
 
 消费者监听：`on:new-message="handler"`
@@ -527,7 +570,7 @@ provider.dispatch("new-message", { data: { text: "Hello" } });
 
 # SCSR 同构渲染
 
-每个页面本身是完整的 HTML 文件，服务端直接返回该文件即可实现 SSR。
+每个页面本身是完整的 HTML 文件，服务端直接返回即可实现 SSR。不依赖特定服务器语言。
 
 ```html
 <!doctype html>
@@ -544,9 +587,7 @@ provider.dispatch("new-message", { data: { text: "Hello" } });
         <h1>首页</h1>
         <nav><a href="./home.html" olink>首页</a><a href="./about.html" olink>关于</a></nav>
         <script>
-          export default function () {
-            return { data: {} };
-          }
+          export default function () { return { data: {} }; }
         </script>
       </template>
     </o-app>
@@ -554,28 +595,30 @@ provider.dispatch("new-message", { data: { text: "Hello" } });
 </html>
 ```
 
-服务端返回时必须设置：`Content-Type: text/html; charset=UTF-8`
+**要点**：
+- SCSR 模式下页面包含完整的 `<o-app><template page>...</template></o-app>` 结构
+- 服务端拼接模板时，将 `template page` 内容替换为实际页面模块内容
+- 服务端返回时必须设置：`Content-Type: text/html; charset=UTF-8`
 
 ---
 
 # 加载模块与第三方库
 
-`export default` 函数中可接收 `load` 和 `url` 参数。
+`export default` 函数可接收 `{ load, url }` 参数。
+
+- `url`：当前模块完整 URL
+- `load`：加载模块/资源，支持 JSON、第三方 ES Module，与 `<l-m>` 功能一致且共享缓存
 
 ```javascript
 export default async ({ load, url }) => {
   // 加载第三方库
-  const { marked } = await load("https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js");
-
+  const { marked } = await load("https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.esm.js");
   // 加载本地模块
   const { store } = await load("./data.js");
-
   // 加载 JSON
   const config = await load("./config.json");
-
-  // 等待组件加载完成
+  // 等待组件加载完成后才继续初始化
   await load("./components/header.html");
-
   return { data: {} };
 };
 ```
@@ -586,7 +629,7 @@ export default async ({ load, url }) => {
 
 ## replace-temp 组件
 
-在 `select`、`table` 等对内部标签结构有要求的场景中做列表渲染。
+在 `select`、`table`、`tbody` 等对内部标签结构有要求的场景中做列表渲染。只有普通 `o-fill` / `x-fill` 不能正常工作时再使用。
 
 ```html
 <select>
@@ -598,7 +641,7 @@ export default async ({ load, url }) => {
 
 ## inject-host 组件
 
-从组件内部向宿主注入样式。
+从组件内部向宿主注入样式，用于控制插槽内容里的深层元素样式。优先用 `::slotted()`，不够时再用 `inject-host`。推荐使用带组件名前缀的具体选择器，避免通用选择器污染。
 
 ```html
 <template component>
@@ -616,7 +659,7 @@ export default async ({ load, url }) => {
 
 # match-var 样式查询
 
-根据 CSS 变量切换样式。
+根据 CSS 变量切换样式，常用于主题场景。
 
 ```html
 <template component>
@@ -630,6 +673,31 @@ export default async ({ load, url }) => {
 </template>
 ```
 
+配合 CSS 变量 `data()` 设置：
+
+```html
+<template page>
+  <style>
+    .wrap { --theme: data(currentTheme); }
+  </style>
+  <button on:click="changeTheme">切换主题</button>
+  <div class="wrap"><theme-box></theme-box></div>
+  <script>
+    export default async () => ({
+      data: { currentTheme: "light" },
+      proto: {
+        changeTheme(value) {
+          if (value && typeof value === "string") { this.currentTheme = value; return; }
+          this.currentTheme = this.currentTheme === "light" ? "dark" : "light";
+        }
+      }
+    });
+  </script>
+</template>
+```
+
+Firefox 浏览器在某些情况下可能无法自动检测 CSS 变量变化，需手动触发样式更新。
+
 ---
 
 # API 参考
@@ -637,14 +705,13 @@ export default async ({ load, url }) => {
 ## 核心函数
 
 ```javascript
-$("#target");           // 选择单个元素
-$("h3", el);            // 在 el 内选择
-$('my-component').shadow.$("#target"); // 选择影子节点内元素
-$("<div>hello</div>");   // 创建元素
+$("#target");                              // 选择单个元素
+el.$("h3");                                // 在 el 内选择
+$('my-comp').shadow.$("#target");          // 选择影子节点内元素
+$("<div>hello</div>");                     // 创建元素
 $({ tag: "div", text: "hello", css: { color: "red" } }); // 创建带属性元素
-
-$.all("li");            // 选择所有匹配元素
-$.all("li", el);        // 在 el 内选择
+$.all("li");                               // 选择所有匹配元素
+$.all("li", el);                           // 在 el 内选择所有
 ```
 
 ## 实例属性
@@ -652,7 +719,7 @@ $.all("li", el);        // 在 el 内选择
 ```javascript
 ele;                    // 原生 DOM 元素
 tag;                    // 标签名
-shadow;                 // Shadow DOM
+shadow;                 // Shadow DOM（this.shadow.$("#id") 访问影子节点）
 root;                   // 根节点
 host;                   // 宿主组件
 hosts;                  // 所有宿主链
@@ -660,66 +727,69 @@ parent;                 // 父元素
 parents;                // 所有祖先元素
 parentsUntil(expr);     // 祖先元素直到条件
 next; prev;             // 后/前一个兄弟
-nexts; prevs;            // 后/前所有兄弟
+nexts; prevs;           // 后/前所有兄弟
 siblings;               // 所有兄弟
 index;                  // 在父元素中的索引
-length; children;       // 子元素数量
+length; children;       // 子元素数量（通过 [n] 访问）
 ```
 
 ## 节点操作
 
 ```javascript
-push("<li>new</li>");   // 添加到末尾
-unshift("<li>first</li>"); // 添加到开头
-pop(); shift();          // 移除末尾/开头
-splice(1, 1, "<li>replace</li>"); // 替换
-before("<div>before</div>"); // 在前插入
-after("<div>after</div>");  // 在后插入
-remove();                // 移除元素
-wrap("<div></div>");    // 包裹元素
-unwrap();                // 解包
-clone();                 // 克隆
-is('li');                // 检测选择器匹配
-contains('.child');      // 检测包含
+$("ul").push("<li>new</li>");          // 添加到末尾
+$("ul").unshift("<li>first</li>");     // 添加到开头
+$("ul").pop();                         // 移除末尾
+$("ul").shift();                       // 移除开头
+$("ul").splice(1, 1, "<li>replace</li>"); // 替换
+$("#target").before("<div>before</div>");  // 在前插入
+$("#target").after("<div>after</div>");    // 在后插入
+$("#target").remove();                     // 移除元素
+$("#target").wrap("<div class='wrap'></div>"); // 包裹
+$("#target").unwrap();                      // 解包
+$("#target").clone();                       // 克隆
+$("#target").is('li');                      // 检测选择器匹配
+$("#target").contains('.child');            // 检测包含
 ```
 
 ## 文本、HTML、属性、样式
 
 ```javascript
-text;                    // 文本内容
-text = "new text";       // 设置文本
-html;                    // HTML 内容
-html = "<b>hello</b>";   // 设置 HTML
-attr('title');           // 获取属性
-attr('title', 'tip');    // 设置属性
-css.color;               // 获取计算样式
-css.color = 'red';       // 设置样式
-style.color;             // style 属性
-classList.add('active'); // 类名操作
-data.red;                // dataset
+el.text;                    // 获取文本
+el.text = "new text";       // 设置文本
+el.html;                    // 获取 HTML
+el.html = "<b>hello</b>";   // 设置 HTML
+el.attr('title');           // 获取属性
+el.attr('title', 'tip');    // 设置属性
+el.css.color;               // 获取计算样式
+el.css.color = 'red';       // 设置样式
+el.css = { color: "blue" }; // 批量设置样式
+el.style.color;             // style 属性
+el.classList.add('active'); // 类名操作（add/remove/toggle）
+el.data.red;                // dataset
+el.data.red = "1";          // 设置 dataset
 ```
 
 ## 事件
 
 ```javascript
-on("click", handler);           // 绑定事件
-one("click", handler);          // 一次性事件
-emit("custom", { data: { value: 1 }, bubbles: true }); // 触发事件
-off("click", handler);           // 解绑事件
+el.on("click", handler);                          // 绑定事件
+el.one("click", () => console.log("once"));       // 一次性事件
+el.emit("custom", { data: { value: 1 }, bubbles: true, composed: false }); // 触发事件
+el.off("click", handler);                          // 解绑事件
 ```
 
 ## o-app / o-page
 
 ```javascript
-$("o-app").src;                  // 配置文件路径
-$("o-app").current;              // 当前页面
-$("o-app").routers;              // 路由历史
-$("o-app").goto("/page2.html"); // 跳转
-$("o-app").replace("/new.html"); // 替换
-$("o-app").back();               // 后退
+$("o-app").src;                   // 配置文件路径
+$("o-app").current;               // 当前页面
+$("o-app").routers;               // 路由历史
+$("o-app").goto("/page2.html");   // 跳转
+$("o-app").replace("/new.html");  // 替换
+$("o-app").back();                // 后退
 
-this.goto("./page2.html");       // 页面内跳转
-this.replace("./new.html");      // 页面内替换
+this.goto("./page2.html");        // 页面内跳转
+this.replace("./new.html");       // 页面内替换
 this.back();                      // 后退
 ```
 
@@ -734,22 +804,22 @@ formState.username = "Yao";
 ## 响应式数据
 
 ```javascript
-$.stanz({ count: 0 });           // 创建响应式数据
-watch(callback);                  // 实时监听
-watchTick(callback);              // 下一帧监听
-unwatch(wid);                     // 取消监听
+$.stanz({ count: 0 });    // 创建响应式数据
+store.watch(callback);     // 实时监听
+store.watchTick(callback); // 下一帧监听
+store.unwatch(wid);        // 取消监听
 ```
 
 ## 扩展
 
 ```javascript
-$("#target").extend({ say() { return "hello"; } });
-$.fn.extend({ get good() { return "good"; } });
+el.extend({ say() { return "hello"; } });
+$.fn.extend({ get good() { return "good"; }, say() { return 'hello'; } });
 ```
 
 ## 其他
 
 ```javascript
-refresh();              // 刷新组件
-ofa.version;           // 版本号
+this.refresh();          // 刷新组件
+ofa.version;             // 版本号
 ```
