@@ -9,7 +9,7 @@ const SKILLS_DIR = path.resolve(__dirname, '..');
 const SOURCE_DIR = path.join(SKILLS_DIR, 'ofajs-docs');
 const TARGET_DIR = path.join(SKILLS_DIR, 'ofajs-docs-full');
 
-const ASSETS_PATTERN = /-\s+\[([^\]]+)\]\((assets\/[^\)]+\.html)\):\s*(.+)/g;
+const ASSETS_PATTERN = /-\s+\[([^\]]+)\]\((assets\/[^\)]+\.(html|js|mjs))\):\s*(.+)/g;
 const REFS_LIST_PATTERN = /-\s+\[([^\]]+)\]\((references\/[^\)]+\.md)\)/g;
 const REFS_INLINE_PATTERN = /\[([^\]]+)\]\((references\/[^\)]+\.md)\)/g;
 
@@ -70,8 +70,8 @@ ${fileContent}`;
     return endContent;
 }
 
-const sourceFile = path.join(SOURCE_DIR, 'SKILL_cn.md');
-const targetFile = path.join(TARGET_DIR, 'SKILL_cn.md');
+const sourceFile = path.join(SOURCE_DIR, 'SKILL.md');
+const targetFile = path.join(TARGET_DIR, 'SKILL.md');
 
 if (!fs.existsSync(sourceFile)) {
     console.error(`Source file not found: ${sourceFile}`);
