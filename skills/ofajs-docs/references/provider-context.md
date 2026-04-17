@@ -127,7 +127,3 @@ export default async () => {
 相比事件冒泡和属性逐层传递，当涉及多层嵌套的数据同步时，使用 `o-provider` 和 `o-consumer` 可大幅提升开发效率。
 
 子组件中使用 `this.getProvider(providerName)` 获取上下文对象，直接修改 `custom-name` 上下文属性即可同步到其他子组件，无需逐层传递（记得修正驼峰命名）。
-
-## 相关文档
-
-- [状态管理完整教程](../llms/origin/state.md)
