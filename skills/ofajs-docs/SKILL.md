@@ -45,6 +45,7 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 | `props: { msg: String }` | `attrs: { msg: 'default' }` | 组件属性使用 attrs 定义 |
 | `methods: { foo() {} }` | `proto: { foo() {} }` | 方法定义在 proto 对象中 |
 | `data() { return { count: 0 } }` | `data: { count: 0 }` | data 是对象而非函数 |
+| `style="width: {{val}}"` | `:style.width="val"` | 内联样式绑定使用 `:style.` 前缀 |
 
 ---
 
