@@ -1,6 +1,6 @@
 ---
-name: "ofajs-docs"
-description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组件开发、页面模块，或想要构建无需 Node.js/Webpack 的 Web 应用时使用。"
+name: ofajs-docs
+description: ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组件开发、页面模块，或想要构建无需 Node.js/Webpack 的 Web 应用时使用。
 ---
 
 # ⚠️ AI 使用规范（重要）
@@ -47,6 +47,7 @@ description: "ofa.js 框架教程。当用户询问 ofa.js 的使用方法、组
 | `methods: { foo() {} }` | `proto: { foo() {} }` | 方法定义在 proto 对象中 |
 | `data() { return { count: 0 } }` | `data: { count: 0 }` | data 是对象而非函数 |
 | `.click(handler)` | `.on("click", handler)` | 事件绑定使用 .on() 方法 |
+| `attrs` 和 `data` 同名 key | 保持唯一 | `attrs` 和 `data` 的 key 不能重复 |
 
 ---
 
