@@ -11,6 +11,7 @@
 ### 快速参考
 
 - [快速参考表](./references/cheat-sheet.md)：ofa.js 核心 API 和语法的速查表，包括模板语法、生命周期、数据管理等。
+- [API 参考手册](./references/api.md)：ofa.js独立使用的 API 文档，包括实例方法、节点操作、属性操作、事件处理等。
 - [常见模式与最佳实践](./references/patterns.md)：汇总常用代码模式和最佳实践，包括表单处理、列表操作、组件通信、性能优化等。
 
 ### 开始使用
