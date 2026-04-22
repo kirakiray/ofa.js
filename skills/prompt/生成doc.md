@@ -130,4 +130,20 @@
 </template>
 ```
 
+## 常见错误对照表
 
+| ❌ 错误写法 | ✅ 正确写法 | 说明 |
+|------------|-----------|------|
+| `computed: { double() {} }` | `get double() {}` | ofa.js 使用 getter 定义计算属性 |
+| `this.$route.query.id` | `{ query }` 参数 | 通过函数参数获取查询参数 |
+| `v-if="show"` | `<o-if :value="show">` | 使用 o-if 组件进行条件渲染 |
+| `v-for="item in list"` | `<o-fill :value="list">` | 使用 o-fill 组件进行列表渲染 |
+| `@click="handle"` | `on:click="handle"` | 事件绑定使用 on: 前缀 |
+| `:class="{ active: isActive }"` | `class:active="isActive"` | 动态类名使用 class: 语法 |
+| `style="width: {{val}}"` | `:style.width="val"` | 内联样式绑定使用 `:style.` 前缀 |
+| `v-model="value"` | `sync:value="value"` | 双向绑定使用 sync: 语法 |
+| `props: { msg: String }` | `attrs: { msg: 'default' }` | 组件属性使用 attrs 定义 |
+| `methods: { foo() {} }` | `proto: { foo() {} }` | 方法定义在 proto 对象中 |
+| `data() { return { count: 0 } }` | `data: { count: 0 }` | data 是对象而非函数 |
+| `.click(handler)` | `.on("click", handler)` | 事件绑定使用 .on() 方法 |
+| `attrs` 和 `data` 同名 key | 保持唯一 | `attrs` 和 `data` 的 key 不能重复 |
