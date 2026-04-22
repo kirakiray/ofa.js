@@ -96,7 +96,7 @@
   </code>
 </o-playground>
 
-实际转化后的代码为：
+实际转化后的代码为下面两段代码：
 
 ```html
 <!-- demo.html -->
