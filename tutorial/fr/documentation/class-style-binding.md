@@ -256,9 +256,9 @@ Pour les attributs de type booléen (tels que `disabled`, `hidden`), ofa.js déc
   </code>
 </o-playground>
 
-## Fonctions de données dans les balises de style
+## La fonction data()
 
-Vous pouvez utiliser `data(xxx)` dans les styles pour lier les données du composant. Cela est particulièrement adapté aux scénarios où les styles doivent être modifiés dynamiquement en fonction des données du composant.
+Vous pouvez utiliser `data(key)` dans le style pour lier les données du composant. C'est particulièrement adapté aux scénarios où le style doit être modifié dynamiquement en fonction des données du composant.
 
 <o-playground name="Fonction de données dans les balises de style" style="--editor-height: 500px">
   <code>
@@ -269,28 +269,30 @@ Vous pouvez utiliser `data(xxx)` dans les styles pour lier les données du compo
           border: 1px solid red;
           padding: 10px;
         }
-        p:hover{
+        p {
+          font-size: 10px;
           color:red;
+          transition: all .3s ease;
         }
       </style>
       <style>
-        p {
+        p:hover {
           font-size: data(size);
-          color:green;
+          color: green;
           transition: all data(time)s ease;
         }
       </style>
-      Taille de police : <input type="number" sync:value="size" placeholder="Ceci est une zone de saisie à liaison bidirectionnelle" />
+      Hover FontSize: <input type="number" sync:value="size" placeholder="Il s'agit d'une zone de saisie liée bidirectionnellement" />
       <br />
-      Temps de transition : <input type="number" step="0.3" min="0" sync:value="time" placeholder="Ceci est une zone de saisie à liaison bidirectionnelle" />
-      <p>{{val}} - taille : {{size}}</p>
+      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Il s'agit d'une zone de saisie liée bidirectionnellement" />
+      <p>{{val}} - size: {{size}}</p>
       <script>
         export default async () => {
           return {
             data: {
               size: 16,
               time: 0.3,
-              val: "Hello ofa.js Demo Code",
+              val: "Bonjour, code de démonstration de ofa.js",
             }
           };
         };
@@ -301,10 +303,10 @@ Vous pouvez utiliser `data(xxx)` dans les styles pour lier les données du compo
 
 ## Remarques
 
-Le principe de `data(xxx)` dans `style` est de remplacer l'intégralité du contenu du style. Il est donc préférable de ne placer que les styles liés aux données dans ce style, et de mettre les styles qui n'en ont pas besoin dans un autre style, ce qui améliore les performances.
+`data(key)` dans la balise `style` remplace en principe tout le contenu du style. Pour éviter de rendre inutilement des styles non pertinents, il est recommandé de placer les styles contenant `data(key)` dans une balise `style` séparée, tandis que les styles ne nécessitant pas de liaison de données doivent être placés dans une autre balise `style`, afin d'obtenir de meilleures performances.
 
 ```html
-<!-- ❌ Les p:hover sans data(xxx) seront également rafraîchis -->
+<!-- ❌ p:hover sans data(key) sera également rafraîchi -->
 <style>
   p {
     font-size: data(size);

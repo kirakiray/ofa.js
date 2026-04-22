@@ -256,9 +256,9 @@ Para atributos de tipo booleano (como `disabled`, `hidden`), ofa.js decide si a�
   </code>
 </o-playground>
 
-## Funciones de datos dentro de etiquetas de estilo
+## Función data()
 
-Puedes usar `data(xxx)` en los estilos para enlazar datos del componente. Esto es muy adecuado para escenarios en los que los estilos deben cambiar dinámicamente según los datos del componente.
+Se puede usar `data(key)` en los estilos para vincular datos de componentes. Esto es muy adecuado para escenarios donde se necesita cambiar dinámicamente el estilo según los datos del componente.
 
 <o-playground name="Función de datos dentro de etiquetas de estilo" style="--editor-height: 500px">
   <code>
@@ -269,28 +269,30 @@ Puedes usar `data(xxx)` en los estilos para enlazar datos del componente. Esto e
           border: 1px solid red;
           padding: 10px;
         }
-        p:hover{
+        p {
+          font-size: 10px;
           color:red;
+          transition: all .3s ease;
         }
       </style>
       <style>
-        p {
+        p:hover {
           font-size: data(size);
-          color:green;
+          color: green;
           transition: all data(time)s ease;
         }
       </style>
-      TamañoFuente: <input type="number" sync:value="size" placeholder="Este es un campo de entrada con enlace bidireccional" />
+      Hover FontSize: <input type="number" sync:value="size" placeholder="Este es un cuadro de entrada con enlace bidireccional" />
       <br />
-      TiempoTransición: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Este es un campo de entrada con enlace bidireccional" />
-      <p>{{val}} - tamaño: {{size}}</p>
+      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Este es un cuadro de entrada con enlace bidireccional" />
+      <p>{{val}} - size: {{size}}</p>
       <script>
         export default async () => {
           return {
             data: {
               size: 16,
               time: 0.3,
-              val: "Código de demostración de ofa.js",
+              val: "Hola ofa.js Código de demostración",
             }
           };
         };
@@ -301,18 +303,18 @@ Puedes usar `data(xxx)` en los estilos para enlazar datos del componente. Esto e
 
 ## Precauciones
 
-Lo que está dentro de `style` en `data(xxx)` técnicamente reemplaza todo el contenido de style, por lo que es mejor escribir solo los estilos relacionados con data dentro de style, y poner los que no necesitan data en otro style, así el rendimiento es mejor.
+La etiqueta `style` con `data(key)` reemplazará, en principio, todo el contenido de style. Para evitar la repetición de estilos irrelevantes, se recomienda colocar los estilos que contienen `data(key)` en una etiqueta `style` separada, mientras que los estilos sin enlace de datos se colocan en otra etiqueta `style`, obteniendo así un mejor rendimiento.
 
 ```html
-<!-- ❌ El p:hover sin data(xxx) también será actualizado -->
+<!-- ❌ El p:hover sin data(key) también se actualizará -->
 <style>
   p {
     font-size: data(size);
-    color: green;
+    color:green;
     transition: all data(time)s ease;
   }
-  p:hover {
-    color: red;
+  p:hover{
+    color:red;
   }
 </style>
 ``````html

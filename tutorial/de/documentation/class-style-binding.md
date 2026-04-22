@@ -256,11 +256,11 @@ Für boolesche Attribute (wie `disabled`, `hidden`) entscheidet ofa.js basierend
   </code>
 </o-playground>
 
-## Datenfunktionen im Style-Tag
+## data() Funktion
 
-Sie können `data(xxx)` in Stilen verwenden, um Komponentendaten zu binden. Dies ist besonders geeignet für Szenarien, in denen sich Stile basierend auf Komponentendaten dynamisch ändern müssen.
+In Stilen kann `data(key)` verwendet werden, um Komponentendaten zu binden. Dies eignet sich besonders für Szenarien, in denen das Styling dynamisch basierend auf Komponentendaten geändert werden muss.
 
-<o-playground name="Datenfunktionen innerhalb von Style-Tags" style="--editor-height: 500px">
+<o-playground name="Datenfunktion in Style-Tags" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -269,28 +269,30 @@ Sie können `data(xxx)` in Stilen verwenden, um Komponentendaten zu binden. Dies
           border: 1px solid red;
           padding: 10px;
         }
-        p:hover{
+        p {
+          font-size: 10px;
           color:red;
+          transition: all .3s ease;
         }
       </style>
       <style>
-        p {
+        p:hover {
           font-size: data(size);
-          color:green;
+          color: green;
           transition: all data(time)s ease;
         }
       </style>
-      FontSize: <input type="number" sync:value="size" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
+      Hover Schriftgröße: <input type="number" sync:value="size" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
       <br />
-      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
-      <p>{{val}} - size: {{size}}</p>
+      Übergangszeit: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
+      <p>{{val}} - Größe: {{size}}</p>
       <script>
         export default async () => {
           return {
             data: {
               size: 16,
               time: 0.3,
-              val: "Hello ofa.js Demo Code",
+              val: "Hallo ofa.js Demo Code",
             }
           };
         };
@@ -301,10 +303,10 @@ Sie können `data(xxx)` in Stilen verwenden, um Komponentendaten zu binden. Dies
 
 ## Hinweise
 
-`data(xxx)` innerhalb von `style` ersetzt technisch gesehen den gesamten Inhalt von style, daher ist es am besten, nur die data-bezogenen Stile in style zu schreiben und Stile, die keine data benötigen, in ein anderes style-Element zu verschieben, das ist performanter.
+Das `data(key)` innerhalb eines `style`-Tags ersetzt prinzipiell den gesamten Inhalt des Styles. Um wiederholtes Rendern nicht betroffener Stile zu vermeiden, wird empfohlen, Stile mit `data(key)` in ein eigenes `style`-Tag zu setzen, während Stile ohne Datenbindung in ein anderes `style`-Tag ausgelagert werden, um eine bessere Leistung zu erzielen.
 
 ```html
-<!-- ❌ p:hover ohne data(xxx) wird ebenfalls aktualisiert -->
+<!-- ❌ Ein p:hover ohne data(key) wird ebenfalls aktualisiert -->
 <style>
   p {
     font-size: data(size);

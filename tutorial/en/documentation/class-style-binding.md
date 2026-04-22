@@ -256,11 +256,11 @@ For Boolean attributes (such as `disabled`, `hidden`), ofa.js decides whether to
   </code>
 </o-playground>
 
-## Data Functions Inside Style Tags
+## data() function
 
-You can use `data(xxx)` in styles to bind component data. This is particularly suitable for scenarios where styles need to be dynamically changed based on component data.
+You can use `data(key)` in styles to bind component data. This is perfect for scenarios where styles need to change dynamically based on component data.
 
-<o-playground name="Data Functions within Style Tags" style="--editor-height: 500px">
+<o-playground name="Data function in style tags" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -269,18 +269,20 @@ You can use `data(xxx)` in styles to bind component data. This is particularly s
           border: 1px solid red;
           padding: 10px;
         }
-        p:hover{
+        p {
+          font-size: 10px;
           color:red;
+          transition: all .3s ease;
         }
       </style>
       <style>
-        p {
+        p:hover {
           font-size: data(size);
-          color:green;
+          color: green;
           transition: all data(time)s ease;
         }
       </style>
-      FontSize: <input type="number" sync:value="size" placeholder="This is a two-way bound input box" />
+      Hover FontSize: <input type="number" sync:value="size" placeholder="This is a two-way bound input box" />
       <br />
       TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="This is a two-way bound input box" />
       <p>{{val}} - size: {{size}}</p>
@@ -301,10 +303,10 @@ You can use `data(xxx)` in styles to bind component data. This is particularly s
 
 ## Notes
 
-The `data(xxx)` inside `style` essentially replaces the entire content of the style, so it's better to only write data-related styles inside the style and place non-data styles in another style for better performance.
+`data(key)` inside the `style` tag will in principle replace the entire content of the style. To avoid redundant rendering of unrelated styles, it is recommended to place styles containing `data(key)` in a separate `style` tag, while styles that do not require data binding should be placed in another `style` tag for better performance.
 
 ```html
-<!-- ❌ p:hover without data(xxx) will also be refreshed -->
+<!-- ❌ p:hover without data(key) will also be refreshed -->
 <style>
   p {
     font-size: data(size);
