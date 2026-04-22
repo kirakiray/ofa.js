@@ -8,6 +8,11 @@
 
 - [介绍](./references/introduction.md)：ofa.js 框架的核心概念、设计初衷和主要优势，包括零门槛使用、AI 友好特性和微前端原生支持。
 
+### 快速参考
+
+- [快速参考表](./references/cheat-sheet.md)：ofa.js 核心 API 和语法的速查表，包括模板语法、生命周期、数据管理等。
+- [常见模式与最佳实践](./references/patterns.md)：汇总常用代码模式和最佳实践，包括表单处理、列表操作、组件通信、性能优化等。
+
 ### 开始使用
 
 - [脚本引用](./references/script-reference.md)：如何通过 script 标签和 ESM 模块引入 ofa.js，包括调试模式的启用方法。
