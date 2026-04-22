@@ -144,10 +144,10 @@ const $ele = $(ele);
 <!DOCTYPE html>
 ...
 <l-m src="./test-comp.html"></l-m>
-<test-comp></test-comp>
+<test-comp id="target"></test-comp>
 <script type="module">
   setTimeout(()=>{
-    console.log($('test-comp').title);  // => OFAJS 组件示例
+    console.log($('#target').title);  // => OFAJS 组件示例
   },300);
 </script>
 ```
@@ -166,7 +166,7 @@ const $ele = $(ele);
           title: "OFAJS 组件示例",
         },
         attached(){
-          console.log(this === $('test-comp')); // true
+          console.log(this === $('#target')); // true
         }
       };
     };

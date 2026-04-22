@@ -69,6 +69,44 @@ const newEl = $({
 $('#target1').push(newEl);
 ```
 
+### 获取的示例和页面/组件实例的关系
+
+`$` 方法可用于从全局获取对应页面或组件元素的实例，其功能与页面或组件模块内生命周期方法中的 `this` 指向相同。
+
+```html
+<!DOCTYPE html>
+...
+<l-m src="./test-comp.html"></l-m>
+<test-comp id="target"></test-comp>
+<script type="module">
+  setTimeout(()=>{
+    console.log($('#target').title);  // => OFAJS 组件示例
+  },300);
+</script>
+```
+
+```html
+<!-- test-comp.html -->
+<template component>
+  <div>
+    <p>{{title}}</p>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "test-comp",
+        data: {
+          title: "OFAJS 组件示例",
+        },
+        attached(){
+          console.log(this === $('#target')); // true
+        }
+      };
+    };
+  </script>
+</template>
+```
+
 ---
 
 ## all
