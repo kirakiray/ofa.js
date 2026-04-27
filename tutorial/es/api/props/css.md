@@ -2,18 +2,18 @@
 
 
 
-El método `css` se utiliza para obtener o establecer los estilos de un elemento objetivo.
+`css` método se utiliza para obtener o establecer el estilo del elemento objetivo.
 
 ## Uso directo
 
-Puedes usar directamente el método `css` para obtener o establecer los estilos de un elemento.
+Puedes usar directamente el método `css` para obtener o establecer el estilo de un elemento.
 
 <o-playground name="css - uso directo" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target">texto original</div>
+      <div id="target">origin text</div>
       <br>
-      <h4>registro</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = $("#target").css.color;
@@ -28,12 +28,12 @@ Puedes usar directamente el método `css` para obtener o establecer los estilos 
 
 ## Configuración completa
 
-Al obtener el objeto `css`, puedes establecer directamente los valores de estilo en el elemento.
+A través del objeto `css` obtenido, puedes establecer directamente los valores de estilo en el elemento.
 
-<o-playground name="css - configuración completa" style="--editor-height: 400px">
+<o-playground name="css - Configuración completa" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
-      <div id="target" style="color:red">texto original</div>
+      <div id="target" style="color:red">origin text</div>
       <br>
       <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
@@ -51,13 +51,13 @@ Al obtener el objeto `css`, puedes establecer directamente los valores de estilo
   </code>
 </o-playground>
 
-Utilizando las características del objeto `css`, podrás ajustar rápidamente los estilos del elemento de destino。
+Usando las características del objeto `css`, puedes ajustar rápidamente el estilo del elemento objetivo.
 
-## Uso mediante sintaxis de plantilla
+## Uso de la sintaxis de plantillas
 
-También puedes usar la sintaxis de plantillas para establecer el estilo del elemento de destino.
+También puedes configurar el estilo del elemento objetivo mediante la sintaxis de plantilla.
 
-<o-playground name="css - Sintaxis de plantilla" style="--editor-height: 400px">
+<o-playground name="css - sintaxis de plantilla" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./css-demo.html"></l-m>
@@ -71,7 +71,7 @@ También puedes usar la sintaxis de plantillas para establecer el estilo del ele
   </code>
   <code path="css-demo.html" active>
     <template component>
-      <div :css.color="txt">Soy el objetivo</div>
+      <div :css.color="txt">I am target</div>
       <script>
         export default {
           tag: "css-demo",
@@ -89,9 +89,9 @@ También puedes usar la sintaxis de plantillas para establecer el estilo del ele
   </code>
 </o-playground>
 
-## Trucos para configurar CSS
+## Consejos para configurar CSS
 
-Puedes modificar un atributo de estilo de un elemento mediante `$ele.css = {...$ele.css, color:'red'}` sin afectar los demás atributos de estilo. De esta forma puedes cambiar solo una propiedad sin tener que reescribir todo el estilo.
+Puedes modificar una propiedad de estilo de un elemento mediante `$ele.css = {...$ele.css, color:'red'}` sin afectar otras propiedades de estilo. Esta forma permite modificar solo una propiedad sin reescribir todo el estilo.
 
 ### Ejemplo
 
@@ -101,4 +101,4 @@ const myElement = $("#myElement");
 myElement.css = { ...myElement.css, color: 'red' };
 ```
 
-En el ejemplo anterior, al usar `{ ...myElement.css, color: 'red' }`, solo modificamos el estilo de color del elemento, manteniendo las demás propiedades de estilo sin cambios. Esta es una técnica muy útil que permite modificar los estilos de los elementos de forma flexible.
+En el ejemplo anterior, al usar `{ ...myElement.css, color: 'red' }`, solo modificamos el color del elemento y mantenemos el resto de las propiedades de estilo sin cambios. Esta es una técnica muy conveniente para modificar dinámicamente los estilos de un elemento.

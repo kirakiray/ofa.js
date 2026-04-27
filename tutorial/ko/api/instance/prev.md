@@ -8,14 +8,14 @@
   <code path="demo.html">
     <template>
       <ul>
-        <li id="first">나는 1입니다</li>
-        <li id="target">나는 대상입니다</li>
-        <li>나는 3입니다</li>
+        <li id="first">I am 1</li>
+        <li id="target">I am target</li>
+        <li>I am 3</li>
       </ul>
       <div id="logger1" style="border:red solid 1px;padding:8px;">-</div>
       <script>
         setTimeout(()=>{
-          \$('#target').prev.text = "대상 이전 요소 변경";
+          \$('#target').prev.text = "change target prev element";
           \$("#logger1").text = \$('#first') === $('#target').prev
         },500);
       </script>

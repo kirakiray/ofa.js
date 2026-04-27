@@ -1,10 +1,10 @@
 # root
 
-Using the `root` property allows you to obtain the root node of an element.
+Use the `root` property to get the root node of the element.
 
-On the page, the root node of ordinary elements is always a `document` instance.
+On a page, the root node of ordinary elements is the `document` instance.
 
-<o-playground name="root - Root Node" style="--editor-height: 320px">
+<o-playground name="root - root node" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>
@@ -20,9 +20,9 @@ On the page, the root node of ordinary elements is always a `document` instance.
   </code>
 </o-playground>
 
-## Elements within the shadow node
+## Elements Inside Shadow Nodes
 
-Since elements inside a component are isolated from the external environment, the `root` property of elements within the shadow node is the shadow root.
+Because the elements inside the component are isolated from the external environment, the `root` attribute of elements within the shadow root is the shadow root node.
 
 
 <o-playground name="root - shadow node" style="--editor-height: 600px">

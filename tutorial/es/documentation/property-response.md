@@ -1,8 +1,8 @@
-# Respuesta de atributo
+# Respuesta de atributos
 
-En el anterior [enlace de propiedades](./property-binding.md) presentamos un mecanismo de respuesta de propiedades simple, es decir, cómo renderizar el valor de una propiedad del componente en la visualización de texto.
+En el [enlace de propiedades](./property-binding.md) anterior, presentamos el mecanismo simple de respuesta de propiedades, es decir, cómo renderizar los valores de propiedades de un componente en la visualización de texto.
 
-ofa.js no solo soporta la reactividad de valores de propiedades básicas, sino que también soporta el renderizado reactivo de valores de propiedades internas de objetos multinivel anidados.
+ofa.js no solo admite la reactividad de valores de propiedades básicas, sino también la renderización reactiva de valores de propiedades dentro de objetos anidados en múltiples niveles.
 
 <o-playground name="Ejemplo de datos no reactivos" style="--editor-height: 500px">
   <code>
@@ -39,13 +39,13 @@ ofa.js no solo soporta la reactividad de valores de propiedades básicas, sino q
   </code>
 </o-playground>
 
-Todos los datos vinculados a la instancia de ofa.js se convertirán automáticamente en datos reactivos. Los datos reactivos solo admiten tipos de datos básicos como cadenas, números, booleanos, arrays y objetos. Para tipos de datos complejos como funciones o instancias de clases, deben almacenarse como **propiedades no reactivas**, cuyos cambios no provocarán una nueva renderización del componente.
+Todos los datos vinculados al objeto de instancia de ofa.js se convertirán automáticamente en datos reactivos. Los datos reactivos solo admiten tipos de datos básicos como cadenas, números, booleanos, arreglos y objetos. Para tipos de datos complejos como funciones e instancias de clase, deben almacenarse como **propiedades no reactivas**, cuyos cambios no activarán el re-renderizado del componente.
 
 ## Datos no reactivos
 
-A veces necesitamos almacenar algunos datos que no requieren actualización reactiva, como instancias de Promise, objetos de expresiones regulares u otros objetos complejos, en estos casos es necesario usar propiedades no reactivas. Los cambios en estas propiedades no provocarán la re-renderización del componente, son adecuadas para almacenar datos que no requieren vinculación con la vista.
+A veces necesitamos almacenar datos que no requieren actualizaciones reactivas, como instancias de Promise, objetos de expresión regular u otros objetos complejos. En estos casos, es necesario utilizar propiedades no reactivas. Los cambios en estas propiedades no desencadenan un nuevo renderizado del componente, y son adecuados para almacenar datos que no necesitan estar sincronizados con la vista.
 
-Los nombres de las propiedades no reactivas suelen llevar un guion bajo `_` como prefijo, para distinguirlas de las propiedades reactivas.
+Los nombres de las propiedades no reactivas generalmente se prefijan con un guion bajo `_` antes del nombre de la propiedad, para distinguirlas de las propiedades reactivas.
 
 <o-playground name="Ejemplo de datos no reactivos" style="--editor-height: 500px">
   <code>
@@ -75,8 +75,8 @@ Los nombres de las propiedades no reactivas suelen llevar un guion bajo `_` como
   </code>
 </o-playground>
 
-Al hacer clic en el botón `Green increments`, aunque el valor de `_count2` realmente ha aumentado, debido a que es una propiedad no reactiva, no desencadena una actualización de la vista, por lo que la visualización en la interfaz no cambia. Al hacer clic en el botón `Blue increases`, dado que `count` es una propiedad reactiva, desencadena un nuevo renderizado de todo el componente, y es en ese momento cuando se actualiza sincrónicamente el contenido mostrado por Green.
+Al hacer clic en el botón `Incrementos verdes`, aunque el valor de `_count2` ya ha aumentado, al ser una propiedad no reactiva, no desencadena una actualización de la vista, por lo que la visualización en la interfaz no cambia. Al hacer clic en el botón `Aumentos azules`, dado que `count` es una propiedad reactiva, desencadena un nuevo renderizado de todo el componente, momento en el que se actualiza sincrónicamente el contenido de la visualización verde.
 
-Los datos de objetos no reactivos tienen un mejor rendimiento que los datos de objetos reactivos porque los datos no reactivos no desencadenan la re-renderización de componentes.
+Los datos de objetos no reactivos tienen un mejor rendimiento que los datos de objetos reactivos, porque los datos no reactivos no desencadenan el re-renderizado de los componentes.
 
 

@@ -1,21 +1,21 @@
 # Anwendungskonfiguration
 
-Die `app-config.js`-Konfigurationsdatei unterstützt neben der Startseitenadresse und der Seitenübergangsanimation auch weitere Konfigurationsoptionen zur Steuerung des Ladezustands der Anwendung, der Fehlerbehandlung, der Initialisierungslogik und der Navigationsfunktionen.
+`app-config.js` Konfigurationsdatei unterstützt neben der Startseiten-URL und der Seitenübergangsanimation weitere Konfigurationsoptionen zur Steuerung des Ladezustands der Anwendung, der Fehlerbehandlung, der Initialisierungslogik und der Navigationsfunktionen.
 
 ```javascript
 // app-config.js
-// Wird angezeigt während des Ladens
+// Angezeigter Inhalt beim Laden
 export const loading = () => "<div>Loading...</div>";
 
-// Komponente, die angezeigt wird, wenn das Laden der Seite fehlschlägt
+// Komponente, die bei fehlgeschlagenem Laden angezeigt wird
 export const fail = (src, error) => `<div>Failed to load: ${src}</div>`;
 
-// Callback nach erfolgreicher Initialisierung der Anwendung
+// Rückruf nach Abschluss der App-Initialisierung
 export const ready() {
   console.log("App is ready!");
 }
 
-// Methoden und Eigenschaften, die zum Anwendungsprototyp hinzugefügt werden
+// Methoden und Eigenschaften zum App-Prototyp hinzugefügt
 export const proto = {
   customMethod() {
     console.log("Custom method called");
@@ -30,9 +30,9 @@ export const proto = {
     </template>
   </code>
   <code path="app-config.js">
-    // Startseiten-Adresse der Anwendung
+    // Startseitenadresse der Anwendung
     export const home = "./home.html";
-    // Konfiguration für Seitenwechsel-Animation
+    // Seitenwechsel-Animationseinstellungen
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -125,21 +125,21 @@ export const proto = {
 
 ## loading - Ladezustand
 
-Eine Komponente, die während des Seitenladevorgangs angezeigt wird; kann eine String-Vorlage oder eine Funktion sein, die eine Vorlage zurückgibt.
+Die Komponente, die während des Seitenladevorgangs angezeigt wird, kann eine String-Vorlage oder eine Funktion sein, die eine Vorlage zurückgibt.
 
 ```javascript
-// Einfache String-Vorlage
+// Einfacher String-Template
 export const loading = "<div class='loading'>Loading...</div>";
 
-// Dynamische Generierung mit Funktion
+// Mit Funktion dynamisch erzeugen
 export const loading = () => {
   return `<div class='loading'>
-    <span>Lädt...</span>
+    <span>Ladevorgang läuft...</span>
   </div>`;
 };
 ```
 
-Hier ist eine ansprechende und sofort in Ihr Projekt einsetzbare Loading-Implementierung:
+Unten ist eine schöne und direkt in Projekte kopierbare Loading-Implementierung:
 
 ```javascript
 export const loading = () => {
@@ -172,91 +172,91 @@ export const loading = () => {
 
 ## fail - Fehlerbehandlung
 
-Die Komponente, die bei einem fehlgeschlagenen Seitenladevorgang angezeigt wird. Die Funktion erhält ein Objekt-Argument mit `src` (Adresse der fehlgeschlagenen Seite) und `error` (Fehlermeldung).
+Komponente, die angezeigt wird, wenn das Seitenladen fehlschlägt. Die Funktion empfängt ein Objekt als Parameter, das `src` (Adresse der fehlgeschlagenen Seite) und `error` (Fehlermeldung) enthält.
 
 ```javascript
 export const fail = ({src, error}) => {
   return `<div class='error'>
-    <p>Seitenladefehler</p>
+    <p>Seite konnte nicht geladen werden</p>
     <p>Adresse: ${src}</p>
     <button on:click="back()">Zurück</button>
   </div>`;
 };
 ```
 
-## proto - Prototyperweiterung
+## proto - Prototyp-Erweiterung
 
-Fügen Sie der Anwendungsinstanz benutzerdefinierte Methoden und berechnete Eigenschaften hinzu, die in Seitenkomponenten über `this.app` zugänglich sind.
+Fügen Sie benutzerdefinierte Methoden und berechnete Eigenschaften zur App-Instanz hinzu, die in Seitenkomponenten über `this.app` zugegriffen werden können.
 
 ```javascript
 export const proto = {
-  // Benutzerdefinierte Methoden
+  // Benutzerdefinierte Methode
   navigateToHome() {
     this.goto("home.html");
   },
-  // Berechnete Eigenschaften
+  // Berechnete Eigenschaft
   get isAtHome() {
     return this.current?.src.includes("home.html");
   },
 };
 ```
 
-Auf der Seite aufrufen:
+In der Seite aufrufen:
 
 ```html
 <template page>
   <button on:click="app.navigateToHome()">Zurück zur Startseite</button>
-  <p>Auf der Startseite: {{app.isAtHome}}</p>
+  <p>Ist auf der Startseite: {{app.isAtHome}}</p>
 </template>
 ```
 
-## ready - Initialisierungs-Callback
+## ready - Initialisierungsrückruf
 
-Eine Callback-Funktion, die nach dem Laden der Anwendungskonfiguration ausgeführt wird. Hier können Initialisierungsvorgänge durchgeführt werden. Auf die Methoden und Eigenschaften der Anwendungsinstanz kann über `this` zugegriffen werden.
+Die Callback-Funktion wird nach dem Laden der Anwendungskonfiguration ausgeführt; hier können Initialisierungsvorgänge vorgenommen werden. Über `this` kann auf Methoden und Eigenschaften der Anwendungsinstanz zugegriffen werden.
 
 ```javascript
 export const ready() {
-  console.log("Anwendung wurde initialisiert");
-  // Zugriff auf this (o-app Elementinstanz) ist möglich
-  console.log(this.current); // Aktuelle o-page Elementinstanz abrufen
+  console.log("Anwendung initialisiert");
+  // this (o-app Elementinstanz) kann zugegriffen werden
+  console.log(this.current); // Aktuelle Seite o-page Elementinstanz abrufen
   // this.someMethod();
 }
 ```
 
 ## allowForward - Vorwärtsfunktion
 
-Steuert, ob die Vorwärts-Funktion des Browsers aktiviert ist. Wenn auf `true` gesetzt, können die Zurück- und Vorwärts-Schaltflächen des Browsers zur Navigation verwendet werden.
+Steuert, ob die Browser-Vorwärts-Funktion aktiviert ist. Nach dem Setzen auf `true` können die Zurück- und Vorwärts-Buttons des Browsers zur Navigation verwendet werden.
 
 ```javascript
 export const allowForward = true;
 ```
 
-Wenn aktiviert, können Benutzer über die Vorwärts-/Rückwärts-Buttons des Browsers navigieren, und die Navigationsmethode `forward()` der Anwendung wird ebenfalls wirksam.
+Wenn aktiviert, kann der Benutzer über die Vorwärts-/Rückwärts-Schaltflächen des Browsers navigieren, und die Navigationsmethode `forward()` der Anwendung wird ebenfalls wirksam.
 
 ## Programmatische Navigation
 
-Neben der Verwendung von `olink`-Links können Sie auch Navigationsmethoden in JavaScript aufrufen:
+Neben der Verwendung von `olink`-Links können Sie auch die Navigationsmethode in JavaScript aufrufen:
 
 ```javascript
-// Zu einer bestimmten Seite springen (zum Verlauf hinzufügen)
+// Zur angegebenen Seite springen (zum Verlauf hinzufügen)
 this.goto("./about.html");
 
 // Aktuelle Seite ersetzen (nicht zum Verlauf hinzufügen)
 this.replace("./about.html");
 
-// Zur vorherigen Seite zurückgehen
+// Zur vorherigen Seite zurückkehren
 this.back();
 
-// Zur nächsten Seite vorwärts gehen (erfordert allowForward: true)
+// Zur nächsten Seite gehen (erfordert allowForward: true)
 this.forward();
 ```
 
-## Routing-Verlauf
+## Router-Verlauf
 
-Über die Eigenschaft `routers` kann man den Browserverlauf abrufen:
+Über die Eigenschaft `routers` kann der Browserverlauf abgerufen werden:
 
 ```javascript
-// Alle Routenverläufe abrufen
+// Alle Router-Historie abrufen
 const history = app.routers;
 // Rückgabeformat: [{ src: "./page1.html" }, { src: "./page2.html" }, ...]
 
@@ -266,12 +266,12 @@ const currentPage = app.current;
 
 ## Überwachung von Routenänderungen
 
-Sie können auf Routenänderungen reagieren, indem Sie auf das `router-change`-Ereignis hören:
+Sie können auf Routenänderungen reagieren, indem Sie das Ereignis `router-change` abhören:
 
 ```javascript
 app.on("router-change", (e) => {
   const { data } = e;
-  console.log("Routing-Änderung:", data.name); // goto, replace, forward, back
+  console.log("Routeränderung:", data.name); // goto, replace, forward, back
   console.log("Seitenadresse:", data.src);
 });
 ```

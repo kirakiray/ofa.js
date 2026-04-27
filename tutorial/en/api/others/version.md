@@ -1,8 +1,8 @@
 # version
 
-You can get the version number of the currently imported ofa.js through the `ofa.version` property.
+Through the `ofa.version` property, you can get the version number of the currently introduced ofa.js.
 
-> **ofa.js version ≥ 4.3.40 required**
+> **ofa.js version requirement ≥ 4.3.40**
 
 <o-playground name="version - Get Version">
   <code path="demo.html">
@@ -15,4 +15,4 @@ You can get the version number of the currently imported ofa.js through the `ofa
   </code>
 </o-playground>
 
-This way, you can display the currently used version of ofa.js on the page.
+In this way, you can display the currently used ofa.js version on the page。

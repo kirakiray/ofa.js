@@ -20,9 +20,9 @@ El método `unwrap` se utiliza para eliminar el elemento de envoltura externo de
   </code>
 </o-playground>
 
-## Precauciones
+## Notas importantes
 
-El elemento objetivo **debe tener un nodo padre**, de lo contrario no se puede ejecutar la operación de unwrap.
+El elemento objetivo **debe tener un nodo padre**, de lo contrario no se puede realizar la operación unwrap.
 
 ```javascript
 const $el = $(`
@@ -31,8 +31,8 @@ const $el = $(`
 </div>
 `);
 
-$el.unwrap(); // Error, no elemento padre, no se puede desenvuelve
-$el.$('#target').unwrap(); // Correcto, eliminar el elemento envolvente
+$el.unwrap(); // Error, no hay elemento padre, no se puede usar unwrap
+$el.$('#target').unwrap(); // Correcto, elimina el elemento que envuelve
 ```
 
 Cuando el elemento objetivo tiene otros elementos hermanos, tampoco se puede ejecutar unwrap.
@@ -41,11 +41,11 @@ Cuando el elemento objetivo tiene otros elementos hermanos, tampoco se puede eje
 const $el = $(`
 <div>
     <div id="target"></div>
-    <div>I am siblings</div>
+    <div>Soy hermano</div>
 </div>
 `);
 
 $el.$('#target').unwrap(); // Error, porque tiene otros nodos adyacentes
 ```
 
-**Tenga en cuenta que no se debe operar dentro de componentes de plantilla como o-fill o o-if.**
+**Tenga en cuenta, no opere dentro de los componentes de plantilla como o-fill o o-if.**

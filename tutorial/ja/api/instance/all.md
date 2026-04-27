@@ -2,7 +2,7 @@
 
 
 
-`all` メソッドを使用すると、ページ上のCSSセレクターに一致するすべての要素を取得し、これらの要素のインスタンスを含む配列を返します。
+`all` メソッドを使用すると、ページ上のCSSセレクターに一致するすべての要素を取得し、それらの要素インスタンスを含む配列を返すことができます。
 
 <o-playground name="all - すべての要素を取得" style="--editor-height: 360px">
   <code path="demo.html">
@@ -23,11 +23,11 @@
   </code>
 </o-playground>
 
-## 子要素を取得する
+## 子要素の取得
 
-インスタンスも `all` メソッドを持っており、インスタンス上の `all` メソッドを通じて子要素を選択・取得できる。
+インスタンスにも `all` メソッドがあり、インスタンス上の `all` メソッドを使用して子要素を選択および取得できます。
 
-<o-playground name="all - 子要素の取得" style="--editor-height: 360px">
+<o-playground name="all - 子要素を取得" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">

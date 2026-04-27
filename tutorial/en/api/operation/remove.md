@@ -2,9 +2,9 @@
 
 The `remove` method is used to delete the target node.
 
-**Please note: do not operate within template components like o-fill or o-if.**
+**Note: Do not operate within template components such as o-fill or o-if.**
 
-<o-playground name="remove - Remove Node" style="--editor-height: 300px">
+<o-playground name="remove - delete node" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

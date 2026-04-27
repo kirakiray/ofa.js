@@ -2,7 +2,7 @@
 
 
 
-要素の `dataset` を取得し、`data` 属性とネイティブの [dataset](https://developer.mozilla.org/ja/docs/Web/API/HTMLElement/dataset) と一致させます。
+要素の `dataset` を取得し、`data` 属性とネイティブの [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) と一致させます。
 
 <o-playground name="data - 使用例" style="--editor-height: 400px">
   <code path="demo.html">

@@ -1,8 +1,8 @@
 # Attributantwort
 
-Im vorherigen Abschnitt [Attribut-Binding](./property-binding.md) haben wir den einfachen Mechanismus der Attribut-Reaktivität vorgestellt, also wie man den Wert einer Komponenteneigenschaft in einer Textanzeige rendert.
+In der vorherigen [Eigenschaftsbindung](./property-binding.md) haben wir den einfachen Eigenschaftsreaktionsmechanismus vorgestellt, also wie die Eigenschaftswerte einer Komponente in der Textanzeige gerendert werden.
 
-ofa.js unterstützt nicht nur die Reaktivität von grundlegenden Eigenschaftswerten, sondern auch das reaktive Rendering von inneren Eigenschaftswerten von mehrschichtig verschachtelten Objekten.
+ofa.js unterstützt nicht nur die Reaktivität einfacher Attributwerte, sondern auch die reaktive Darstellung von Attributwerten in tief verschachtelten Objekten.
 
 <o-playground name="Beispiel für nicht-reaktive Daten" style="--editor-height: 500px">
   <code>
@@ -39,13 +39,13 @@ ofa.js unterstützt nicht nur die Reaktivität von grundlegenden Eigenschaftswer
   </code>
 </o-playground>
 
-Alle Daten, die an ein ofa.js-Instanzobjekt gebunden werden, werden automatisch in reaktive Daten umgewandelt. Reaktive Daten unterstützen nur primitive Datentypen wie Strings, Zahlen, boolesche Werte, Arrays und Objekte. Für komplexe Datentypen wie Funktionen oder Klasseninstanzen müssen diese als **nicht-reaktive Eigenschaften** gespeichert werden, da Änderungen an diesen Eigenschaften keine erneute Komponentenrenderierung auslösen.
+Alle Daten, die an das ofa.js-Instanzobjekt gebunden sind, werden automatisch in reaktive Daten umgewandelt. Reaktive Daten unterstützen nur grundlegende Datentypen wie Zeichenketten, Zahlen, Boolesche Werte, Arrays und Objekte. Komplexe Datentypen wie Funktionen und Klasseninstanzen müssen als **nicht-reaktive Eigenschaften** gespeichert werden, und Änderungen dieser Eigenschaften lösen kein erneutes Rendern der Komponente aus.
 
-## Nicht-responsive Daten
+## Nicht-reaktive Daten
 
-Manchmal müssen wir Daten speichern, die nicht reaktiv aktualisiert werden müssen, wie beispielsweise Promise-Instanzen, reguläre Ausdrücke oder andere komplexe Objekte. In solchen Fällen müssen nicht-reaktive Eigenschaften verwendet werden. Änderungen an diesen Eigenschaften lösen kein erneutes Rendern der Komponente aus und eignen sich daher für die Speicherung von Daten, die keine Verknüpfung mit der Ansicht erfordern.
+Manchmal müssen wir Daten speichern, die keine reaktiven Updates benötigen, wie z.B. Promise-Instanzen, reguläre Ausdrucksobjekte oder andere komplexe Objekte. In diesem Fall müssen nicht-reaktive Eigenschaften verwendet werden. Änderungen dieser Eigenschaften lösen kein erneutes Rendern der Komponenten aus und eignen sich zum Speichern von Daten, die keine Sichtverknüpfung erfordern.
 
-Die Benennung nicht-reaktiver Eigenschaften erfolgt in der Regel durch das Voranstellen eines Unterstrichs `_` vor den Eigenschaftsnamen, um sie von reaktiven Eigenschaften zu unterscheiden.
+Die Benennung von nicht-reaktiven Eigenschaften erfolgt üblicherweise durch das Hinzufügen eines Unterstrichs `_` als Präfix vor dem Eigenschaftsnamen, um sie von reaktiven Eigenschaften zu unterscheiden.
 
 <o-playground name="Beispiel für nicht-reaktive Daten" style="--editor-height: 500px">
   <code>
@@ -75,8 +75,8 @@ Die Benennung nicht-reaktiver Eigenschaften erfolgt in der Regel durch das Voran
   </code>
 </o-playground>
 
-Wenn Sie auf die Schaltfläche `Green increments` klicken, erhöht sich zwar der Wert von `_count2` tatsächlich, aber da es sich um eine nicht-reaktive Eigenschaft handelt, wird keine Ansichtsaktualisierung ausgelöst, sodass die Anzeige auf der Benutzeroberfläche unverändert bleibt. Wenn Sie auf die Schaltfläche `Blue increases` klicken, wird aufgrund der reaktiven Eigenschaft `count` eine Neuberechnung der gesamten Komponente ausgelöst, und erst dann wird die Anzeige von Green synchron aktualisiert.
+Beim Klicken auf die Schaltfläche `Green increments` wurde der Wert von `_count2` zwar tatsächlich erhöht, da es sich jedoch um eine nicht-reaktive Eigenschaft handelt, wird keine Aktualisierung der Ansicht ausgelöst, und die Anzeige in der Benutzeroberfläche bleibt unverändert. Beim Klicken auf die Schaltfläche `Blue increases` wird hingegen, da `count` eine reaktive Eigenschaft ist, eine vollständige Neurenderung der Komponente ausgelöst, wodurch die Anzeige von Green erst jetzt synchron aktualisiert wird.
 
-Nicht-reaktive Objektdaten haben eine bessere Leistung als reaktive Objektdaten, da nicht-reaktive Daten keine erneute Renderung der Komponente auslösen.
+Nicht-reaktive Objektdaten haben eine bessere Leistung als reaktive Objektdaten, da nicht-reaktive Daten kein erneutes Rendern der Komponente auslösen.
 
 

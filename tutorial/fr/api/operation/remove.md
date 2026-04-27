@@ -4,7 +4,7 @@
 
 La méthode `remove` est utilisée pour supprimer le nœud cible.
 
-**Veuillez noter que vous ne devez pas opérer à l’intérieur des composants de modèle tels que o-fill ou o-if.**
+**Veuillez noter, ne pas opérer à l'intérieur des composants de modèle tels que o-fill ou o-if.**
 
 <o-playground name="remove - supprimer un nœud" style="--editor-height: 300px">
   <code path="demo.html">

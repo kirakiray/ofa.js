@@ -14,11 +14,11 @@
       url: ./content-rendering.md
     - name: Event Binding
       url: ./event-binding.md
-    - name: Property Reactivity
+    - name: Property Response
       url: ./property-response.md
     - name: Property Binding
       url: ./property-binding.md
-    - name: Class and Style Binding
+    - name: Class & Style Binding
       url: ./class-style-binding.md
     - name: Conditional Rendering
       url: ./conditional-rendering.md
@@ -32,9 +32,9 @@
       url: ./lifecycle.md
 - name: Components
   content:
-    - name: Creating Components
+    - name: Create Component
       url: ./create-component.md
-    - name: Inheriting Attributes
+    - name: Pass Feature Attributes
       url: ./inherit-attributes.md
     - name: Slots
       url: ./slots.md
@@ -42,9 +42,9 @@
       url: ./deep-property-binding.md
     - name: Custom Events
       url: ./custom-events.md
-- name: Application & Scaling
+- name: Application & Scale
   content:
-    - name: Micro Apps
+    - name: Micro App
       url: ./micro-app.md
     - name: App Configuration & Related Functions
       url: ./app-configuration.md
@@ -60,15 +60,15 @@
       url: ./state-management.md
     - name: Context State
       url: ./context-state.md
-    - name: Style Queries
+    - name: Style Query
       url: ./match-var.md
 - name: Production & Deployment
   url: ./build-app.md
 - name: Other Components
   content:
-    - name: Inject Host Styles
+    - name: Inject Host Style
       url: ./inject-host-style.md
-    - name: Non-Explicit Components
+    - name: Non-Explicit Component
       url: ./non-explicit-component.md
     - name: replace-temp Component
       url: ./replace-template.md

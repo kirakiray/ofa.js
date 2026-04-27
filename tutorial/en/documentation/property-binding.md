@@ -1,10 +1,10 @@
-# Property Binding
+# Attribute Binding
 
-ofa.js supports binding data to properties of instantiated element objects, such as the value or checked attributes of input elements.
+ofa.js supports binding data to properties of the object after element instantiation, such as the value or checked attribute of an input element.
 
 ## One-way property binding
 
-One-way property binding uses the `:toKey="fromKey"` syntax to synchronize component data "one-way" to DOM element properties. When the component data changes, the element properties update immediately; however, changes to the element itself (such as user input) are not written back to the component, maintaining a single and controllable data flow.
+Unidirectional attribute binding uses the `:toKey="fromKey"` syntax，to synchronize component data “one-way” to DOM element attributes。When component data changes，element attributes update instantly；however，changes to the element itself (such as user input) do not write back to the component，keeping the data flow unidirectional and controllable.
 
 <o-playground name="One-way Property Binding" style="--editor-height: 500px">
   <code>
@@ -24,7 +24,7 @@ One-way property binding uses the `:toKey="fromKey"` syntax to synchronize compo
       </style>
       <p>Current value: {{val}}</p>
       <input type="text" :value="val" placeholder="This is a one-way bound input">
-      <p>Note: editing the input directly won't change the displayed value above</p>
+      <p>Note: Changing the content directly in the input box will not alter the value shown above</p>
       <script>
         export default async () => {
           return {
@@ -38,7 +38,7 @@ One-way property binding uses the `:toKey="fromKey"` syntax to synchronize compo
 
 ## Two-way Property Binding
 
-Two-way property binding uses the `sync:xxx` syntax to synchronize component data with DOM element attributes bidirectionally. When the component data changes, the DOM element’s attribute is updated; when the attribute changes (e.g., through user input), the component data is updated in sync.
+Two-way property binding uses the `sync:xxx` syntax, achieving bidirectional synchronization between component data and DOM elements. When the component data changes, the attributes of the DOM element are updated; when the attributes of the DOM element change (such as user input), the component data is also updated synchronously.
 
 <o-playground name="Two-way Property Binding" style="--editor-height: 500px">
   <code>
@@ -56,9 +56,9 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
           box-sizing: border-box;
         }
       </style>
-      <p>Current Value: {{val}}</p>
-      <input type="text" sync:value="val" placeholder="This is a two-way bound input field">
-      <p>Tip: Modifying content in the input field will update the displayed value above in real-time.</p>
+      <p>Current value: {{val}}</p>
+      <input type="text" sync:value="val" placeholder="This is a two-way binding input box">
+      <p>Tip: Modifying the content in the input box will update the displayed value in real time</p>
       <script>
         export default async () => {
           return {
@@ -70,16 +70,16 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
   </code>
 </o-playground>
 
-### Features of Two-way Binding
+### Characteristics of Two-Way Binding
 
-- Data Flow: Component ↔ DOM Element (Two-way)
+- Data flow: component ↔ DOM element (bidirectional)
 - Component data changes → DOM element updates
-- DOM element changes → Component data updates
-- Applicable to scenarios requiring user input and data synchronization
+- DOM element changes → component data updates
+- Suitable for scenarios requiring user input and data synchronization
 
-### Common Two-Way Binding Scenarios
+### Common two-way binding scenarios
 
-<o-playground name="Two-way Form Binding Example" style="--editor-height: 700px">
+<o-playground name="Two-way Binding Example" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -103,7 +103,7 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
           border-radius: 4px;
         }
       </style>
-      <h3>Two-way Form Binding Example</h3>
+      <h3>Two-way Binding Example</h3>
       <div class="form-group">
         <label>Text Input:</label>
         <input type="text" sync:value="textInput" placeholder="Enter text">
@@ -113,13 +113,13 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
         <input type="number" sync:value="numberInput" placeholder="Enter number">
       </div>
       <div class="form-group">
-        <label>Textarea:</label>
-        <textarea sync:value="textareaInput" rows="3" placeholder="Enter multi-line text"></textarea>
+        <label>Multiline Text:</label>
+        <textarea sync:value="textareaInput" rows="3" placeholder="Enter multiline text"></textarea>
       </div>
       <div class="form-group">
-        <label>Select Box:</label>
+        <label>Select:</label>
         <select sync:value="selectedOption">
-          <option value="">Please choose...</option>
+          <option value="">Please select...</option>
           <option value="option1">Option 1</option>
           <option value="option2">Option 2</option>
           <option value="option3">Option 3</option>
@@ -135,9 +135,9 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
         <h4>Live Preview:</h4>
         <p>Text: {{textInput}}</p>
         <p>Number: {{numberInput}}</p>
-        <p>Textarea: {{textareaInput}}</p>
-        <p>Select: {{selectedOption}}</p>
-        <p>Checkbox status: {{isChecked ? 'checked' : 'unchecked'}}</p>
+        <p>Multiline Text: {{textareaInput}}</p>
+        <p>Selected: {{selectedOption}}</p>
+        <p>Checkbox Status: {{isChecked ? 'Checked' : 'Unchecked'}}</p>
       </div>
       <script>
         export default async () => {
@@ -152,7 +152,7 @@ Two-way property binding uses the `sync:xxx` syntax to synchronize component dat
 
 ## Notes
 
-1. **Performance**: Two-way binding creates data watchers; heavy use can impact performance.  
-2. **Data Consistency**: It keeps data and view in sync, but guard against infinite update loops.  
-3. **Initial Values**: Provide proper initial values for bound data to prevent undefined display issues.  
-4. **Event Conflicts**: Avoid combining two-way binding with manual event handling on the same element to prevent conflicts.
+1. **Performance Considerations**: Two-way binding creates data listeners, and heavy usage may impact performance.
+2. **Data Consistency**: Two-way binding ensures consistency between data and view, but care must be taken to avoid infinite update loops.
+3. **Initial Value Settings**: Ensure that bound data has appropriate initial values to avoid display issues with undefined.
+4. **Event Conflicts**: Avoid using two-way binding and manual event handling on the same element simultaneously to prevent conflicts.

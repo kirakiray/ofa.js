@@ -1,6 +1,6 @@
 # Microaplicación
 
-Usando `o-app` para la aplicación, esta etiqueta representa una microaplicación que cargará el archivo de configuración `app-config.js`, el cual define la dirección de la página de inicio de la aplicación y la configuración de la animación de cambio de página.
+Usa `o-app` para aplicación, esta etiqueta representa una microaplicación, que cargará el archivo de configuración `app-config.js`, el cual define la dirección de la página de inicio y la configuración de animación de cambio de página.
 
 ```html
 <o-app src="./app-config.js"></o-app>
@@ -28,7 +28,7 @@ export const pageAnime = {
 };
 ```
 
-<o-playground name="Ejemplo de Micro Aplicación" style="--editor-height: 500px">
+<o-playground name="Ejemplo de microaplicación" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-app src="./app-config.js"></o-app>
@@ -70,7 +70,7 @@ export const pageAnime = {
         export default async () => {
           return {
             data: {
-              val: "Hola dea.js App Demo",
+              val: "Hola Demo de App de ofa.js",
             },
           };
         };
@@ -85,14 +85,14 @@ export const pageAnime = {
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">Volver</button> </div>
+      <div style="padding: 8px;"> <button on:click="back()">Atrás</button> </div>
       <p>{{val}}</p>
-      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
+      <p> Acerca de <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async ({query}) => {
           return {
             data: {
-              val: `Hola dea.js App Demo (desde ${query.id})`,
+              val: `Hola Demo de App de ofa.js (desde ${query.id})`,
             },
           };
         };
@@ -101,9 +101,9 @@ export const pageAnime = {
   </code>
 </o-playground>
 
-## home - Página de inicio
+## home - dirección de la página de inicio
 
-Especifica la ruta del módulo de la página de inicio que se cargará al iniciar la aplicación; admite rutas relativas y absolutas.
+Especifica la ruta del módulo de la página de inicio que se carga al iniciar la aplicación, compatible con rutas relativas y absolutas.
 
 ```javascript
 export const home = "./pages/home.html";
@@ -111,13 +111,13 @@ export const home = "./pages/home.html";
 
 ## pageAnime - Animación de transición de página
 
-Controlar el efecto de animación de transición al cambiar de página, incluye tres estados:
+Controla los efectos de animación de transición al cambiar de página, incluye tres estados:
 
 | Estado | Descripción |
-|--------|-------------|
-| `current` | Estilo después de que finaliza la animación de la página actual |
-| `next` | Estilo inicial cuando la nueva página entra |
-| `previous` | Estilo objetivo cuando la página anterior sale |```javascript
+|------|------|
+| `current` | Estilo de la página actual después de la animación |
+| `next` | Estilo inicial al entrar en una nueva página |
+| `previous` | Estilo objetivo al salir de la página anterior |```javascript
 export const pageAnime = {
   current: {
     opacity: 1,
@@ -134,19 +134,19 @@ export const pageAnime = {
 };
 ```
 
-## Métodos de paso de parámetros
+## Forma de pasar parámetros
 
-En `o-app`, la navegación entre páginas admite el paso de parámetros mediante URL Query, y la página destino los recibe a través del parámetro `query` de la función del módulo.
+En `o-app`, la navegación entre páginas admite pasar parámetros a través de la URL Query, y la página de destino los recibe mediante el parámetro `query` de la función del módulo.
 
 ## Navegación de página
 
-En la aplicación o-app, cada módulo de página puede usar la etiqueta `<a>` con el atributo `olink` para cambiar de página. Esta etiqueta activa el enrutamiento de la aplicación, incluye animaciones de transición y no recarga toda la página.
+Dentro de o-app, cada módulo de página puede usar la etiqueta `<a>` con el atributo `olink` para cambiar de página. Esta etiqueta activa el cambio de ruta de la aplicación, incluye animaciones de transición y no recarga toda la página.
 
 ```html
-<a href="./about.html" olink>Ir a la página about</a>
+<a href="./about.html" olink>Ir a la página acerca</a>
 ```
 
-En los componentes de página, se puede utilizar el método `back()` para volver a la página anterior:
+En el componente de página, puedes utilizar el método `back()` para volver a la página anterior:
 
 ```html
 <template page>

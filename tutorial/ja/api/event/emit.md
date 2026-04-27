@@ -2,11 +2,11 @@
 
 
 
-`emit` メソッドを使用すると、イベントを能動的にトリガーすることができ、トリガーされたイベントにはバブリング機構があります。バブリング機構とは、イベントが内部要素から外部要素へ、内側から外側の階層に向かってイベントがトリガーされることを意味します。
+`emit` メソッドを使用すると、イベントを自発的にトリガーでき、トリガーされたイベントにはバブリングメカニズムがあります。バブリングメカニズムとは、イベントが内部要素から外部要素へ、内側から外側の階層に沿ってイベントをトリガーすることを意味します。
 
-以下は、`emit` メソッドを使用してカスタムイベントをトリガーし、バブリング機構を利用してイベントを外部要素へ伝播させる方法を示す例です：
+以下は、`emit` メソッドを使ってカスタムイベントを発火し、バブリング機構を利用して外側の要素にイベントを伝える例です：
 
-<o-playground name="emit - イベントの発火" style="--editor-height: 560px">
+<o-playground name="emit - イベントをトリガーする" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -36,32 +36,32 @@
   </code>
 </o-playground>
 
-この例では、`<ul>`要素と`<li>`要素にそれぞれ同じカスタムイベント`custom-event`のハンドラを登録しています。`emit`メソッドでイベントを発火させると、そのイベントは`<li>`要素から`<ul>`要素へバブリングし、両方のイベントハンドラが実行されます。
+この例では、`<ul>` 要素と `<li>` 要素にそれぞれ同じカスタムイベント `custom-event` のハンドラを登録しています。`emit` メソッドでイベントをトリガーすると、そのイベントが `<li>` 要素から `<ul>` 要素にバブリングし、2つのイベントハンドラが実行されます。
 
 ## カスタムデータ
 
-`data` パラメータを指定することで、カスタムデータをイベントハンドラーに渡すことができます：
+`data` パラメータを指定することで、カスタムデータをイベントハンドラに渡すことができます：
 
 <o-playground name="emit - カスタムデータ" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
         <li id="target">
-          I am target
+          私はターゲットです
         </li>
       </ul>
       <div id="logger1" style="border:red solid 1px;padding:8px;">-</div>
       <div id="logger2" style="border:blue solid 1px;padding:8px;">-</div>
       <script>
         \$('ul').on('custom-event',(event)=>{
-          \$("#logger1").text = 'ul is triggered;  =>  ' + event.data;
+          \$("#logger1").text = 'ulがトリガーされました;  =>  ' + event.data;
         });
         \$('#target').on('custom-event',(event)=>{
-          \$("#logger2").text = 'target is triggered;  =>  ' + event.data;
+          \$("#logger2").text = 'targetがトリガーされました;  =>  ' + event.data;
         });
         setTimeout(()=>{
           \$("#target").emit("custom-event",{ 
-            data:"I am data"
+            data:"私はデータです"
           });
         },500);
       </script>
@@ -69,13 +69,13 @@
   </code>
 </o-playground>
 
-この例では、`data` パラメータを通じてカスタムデータをイベントハンドラに渡しています。イベントハンドラは `event.data` を通じて渡されたデータを取得できます。
+この例では、`data` パラメータを介してカスタムデータをイベントハンドラに渡しています。イベントハンドラは `event.data` を介して渡されたデータを取得できます。
 
-## バブルしないイベントトリガー
+## バブリングを発生させないイベント
 
-イベントのバブリングを望まない場合は、イベントをトリガーする際に `bubbles: false` パラメータを指定できます：
+イベントのバブリングを防ぎたい場合は、イベントをトリガーする際に `bubbles: false` パラメータを指定します：
 
-<o-playground name="emit - バブリングしない" style="--editor-height: 560px">
+<o-playground name="emit - バブルしない" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -102,13 +102,13 @@
   </code>
 </o-playground>
 
-この例では、`bubbles: false` パラメータを使用してカスタムイベントをトリガーしました。このイベントは親要素へバブリングしないため、`<li>` 要素のイベントハンドラのみが実行されます。
+在这个示例中，我们使用 `bubbles: false` 参数触发了自定义事件。这个事件不会冒泡到上层元素，所以只有 `<li>` 元素的事件处理程序被触发。
 
-## ルートノードを貫通する
+## ルートノードの貫通
 
-デフォルトでは、イベントはカスタムコンポーネントのシャドウDOMを通過しません。しかし、`composed: true` を設定することで、カスタムイベントがルートノードを通過し、ルートノードの外側の要素をトリガーできるようになります。
+デフォルトでは、イベントはカスタムコンポーネントのシャドーDOMを貫通しません。しかし、`composed: true` を設定することで、カスタムイベントがルートノードを貫通し、ルートノードの外側の要素をトリガーさせることができます。
 
-<o-playground name="emit - ペネトレートルートノード" style="--editor-height: 560px">
+<o-playground name="emit - ルートノードを透過" style="--editor-height: 560px">
   <code path="demo.html" preview>
     <template>
       <div id="outer-logger"></div>
@@ -149,4 +149,4 @@
   </code>
 </o-playground>
 
-この例では、カスタムコンポーネント `composed-test` を作成しました。これは、シャドウ DOM 内の要素とイベントをトリガーするボタンを含んでいます。デフォルトでは、イベントはシャドウ DOM からルートノードに伝播しません。しかし、イベントをトリガーする際に `composed: true` パラメータを使用することで、イベントがルートノードに伝播し、ルートノード外の要素をトリガーしました。
+この例では、カスタムコンポーネント `composed-test` を作成しました。このコンポーネントは、シャドウ DOM 内の要素と、イベントをトリガーするボタンを含んでいます。デフォルトでは、イベントはシャドウ DOM を越えてルートノードに到達しません。しかし、イベントをトリガーする際に `composed: true` パラメータを使用することで、イベントがルートノードまで透過し、ルートノード外の要素をトリガーするようにしています。

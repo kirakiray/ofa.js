@@ -1,6 +1,6 @@
 # Unterelemente
 
-Das Abrufen von Unterelement-Instanzen ist sehr einfach: Du musst die Instanz nur wie ein Array behandeln und über den numerischen Index auf ihre Unterelement-Instanzen zugreifen.
+Das Abrufen von Instanzen untergeordneter Elemente ist sehr einfach. Sie müssen die Instanz lediglich als Array betrachten und die Instanzen der untergeordneten Elemente über einen numerischen Index abrufen.
 
 <o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">

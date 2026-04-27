@@ -1,16 +1,16 @@
-# Características de los datos de ejemplo
+# Características de los datos de instancia
 
-La instancia de objeto obtenida o creada a través de `$` posee las características completas de datos de stanz, ya que la instancia de `$` hereda de stanz. Esto significa que puedes utilizar los métodos y características de manipulación de datos proporcionados por `stanz` para operar y monitorear los datos del objeto de instancia.
+Los objetos de instancia obtenidos o creados mediante `$` poseen todas las características de datos de stanz, ya que las instancias de `$` heredan de stanz. Esto significa que puedes utilizar los métodos de operación de datos y las características proporcionadas por `stanz` para manipular y monitorear los datos de los objetos de instancia.
 
-> El siguiente ejemplo utiliza elementos regulares, ya que los componentes personalizados suelen traer datos ya registrados, mientras que los elementos regulares normalmente solo contienen información de etiqueta, por lo que son más adecuados para la demostración.
+> Los siguientes ejemplos utilizan elementos regulares, ya que los componentes personalizados suelen tener datos registrados incorporados, mientras que los elementos regulares generalmente solo contienen información de etiquetas, por lo que son más adecuados para la demostración.
 
 ## watch
 
 
 
-Las instancias pueden observar cambios en los valores mediante el método `watch`; incluso si se modifica el valor de un subobjeto del objeto, el cambio también puede ser detectado en el método `watch` del objeto.
+Las instancias pueden monitorear cambios de valor mediante el método `watch`; incluso si se modifica el valor de un objeto secundario, también se puede detectar el cambio en el método `watch` del objeto.
 
-A continuación se muestra un ejemplo que demuestra cómo utilizar la instancia `$` y el método `watch`:
+A continuación se muestra un ejemplo que demuestra cómo usar la instancia `$` y el método `watch`:
 
 <o-playground name="stanz - watch" style="--editor-height: 480px">
   <code path="demo.html">
@@ -25,32 +25,32 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar la instancia 
           \$("#logger").text = target;
         });
         setTimeout(() => {
-          target.aaa = "Soy aaa";
+          target.aaa = "I am aaa";
         }, 600);
         setTimeout(() => {
           target.bbb = {
             child: {
-              val: "Soy bbb child val",
+              val: "I am bbb child val",
             },
           };
         }, 1200);
         setTimeout(() => {
-          target.bbb.child.val = "cambiar bbb child val";
+          target.bbb.child.val = "change bbb child val";
         }, 1800);
       </script>
     </template>
   </code>
 </o-playground>
 
-En este ejemplo, primero creamos una instancia de objeto `$` llamada `target`, y luego utilizamos el método `watch` para monitorear sus cambios. Incluso si modificamos el valor de un subobjeto, como `target.bbb.child.val`, el método `watch` puede detectar estos cambios y actualizar el contenido del elemento `logger`. Esto demuestra la poderosa característica de la instancia de objeto `$`, permitiéndote monitorear fácilmente los cambios en los objetos.
+En este ejemplo, primero creamos un objeto de instancia `$` llamado `target`, y luego usamos el método `watch` para monitorear sus cambios. Incluso si modificamos el valor de un subobjeto del objeto, como el valor de `target.bbb.child.val`, el método `watch` puede detectar estos cambios y actualizar el contenido del elemento `logger`. Esto demuestra la poderosa característica del objeto de instancia `$`, que te permite monitorear fácilmente los cambios en un objeto.
 
 ## watchTick
 
 
 
-Los métodos `watchTick` y `watch` tienen funcionalidades similares, pero `watchTick` incluye una operación de throttling interna, ejecutándose una sola vez bajo un único hilo, por lo que puede escuchar cambios en los datos de manera más eficiente en escenarios con mayores requisitos de rendimiento.
+`watchTick` y el método `watch` tienen funciones similares, pero `watchTick` tiene una operación de throttling interna, que se ejecuta una vez en un solo hilo, por lo que en algunos escenarios con mayores requisitos de rendimiento, puede monitorear los cambios de datos de manera más efectiva.
 
-A continuación se muestra un ejemplo que demuestra cómo utilizar el método `watchTick` de la instancia `$`:
+A continuación se muestra un ejemplo que demuestra cómo usar el método `watchTick` de la instancia `$`:
 
 <o-playground name="stanz - watchTick" style="--editor-height: 480px">
   <code path="demo.html">
@@ -64,12 +64,12 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar el método `w
         let count1 = 0;
         target.watch(() => {
           count1++;
-          \$("#logger1").text = 'watch ejecutado：' + count1;
+          \$("#logger1").text = 'Número de ejecuciones de watch: ' + count1;
         });
         let count2 = 0;
         target.watchTick(()=>{
           count2++;
-          \$("#logger2").text = 'watchTick ejecutado：' + count2;
+          \$("#logger2").text = 'Número de ejecuciones de watchTick: ' + count2;
         });
         setTimeout(() => {
           target.aaa = "I am aaa";
@@ -81,13 +81,13 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar el método `w
   </code>
 </o-playground>
 
-En este ejemplo, primero creamos un objeto instancia `$` llamado `target`. Luego, utilizamos los métodos `watch` y `watchTick` para observar los cambios del objeto. El método `watch` se ejecuta inmediatamente cuando los datos cambian, mientras que el método `watchTick` se ejecuta una sola vez en un solo hilo, por lo que puede limitar la frecuencia de las operaciones de observación. Puedes elegir utilizar el método `watch` o `watchTick` según tus necesidades para observar los cambios en los datos.
+En este ejemplo, primero creamos una instancia del objeto `$` llamada `target`. Luego, utilizamos el método `watch` y el método `watchTick` para monitorear los cambios del objeto. El método `watch` se ejecuta inmediatamente cuando los datos cambian, mientras que el método `watchTick` se ejecuta una vez en un solo hilo, lo que permite limitar la frecuencia de las operaciones de monitoreo. Puedes elegir usar el método `watch` o `watchTick` para monitorear los cambios en los datos según tus necesidades.
 
 ## unwatch
 
 
 
-El método `unwatch` se utiliza para cancelar la escucha de datos, y puede revocar los escuchas de `watch` o `watchTick` registrados anteriormente.
+`unwatch` método se utiliza para cancelar la escucha de datos, y puede revocar la escucha de `watch` o `watchTick` registrada anteriormente.
 
 Aquí hay un ejemplo que demuestra cómo usar el método `unwatch` de la instancia `$`:
 
@@ -119,17 +119,17 @@ Aquí hay un ejemplo que demuestra cómo usar el método `unwatch` de la instanc
   </code>
 </o-playground>
 
-En este ejemplo, primero creamos una instancia del objeto `$` llamada `target`, y luego utilizamos los métodos `watch` y `watchTick` para registrar dos escuchas respectivamente. Posteriormente, pasamos los valores de retorno de las escuchas previamente guardados `tid1` y `tid2` a través del método `unwatch` para cancelar estas dos escuchas. Esto significa que los cambios de propiedad en el primer `setTimeout` no activarán ninguna escucha, ya que las escuchas han sido canceladas.
+En este ejemplo, primero creamos una instancia `$` llamada `target`, luego registramos dos observadores mediante los métodos `watch` y `watchTick`. Después, utilizamos el método `unwatch` pasando los valores de retorno previamente guardados `tid1` y `tid2` para cancelar ambos observadores. Esto significa que el cambio de propiedad dentro del primer `setTimeout` no activará ningún observador, ya que han sido cancelados.
 
-## Valor no observable
+## Valor no escuchado
 
-En la instancia `$`, los nombres de propiedades que comienzan con guion bajo `_` indican que estos valores no serán observados por los métodos `watch` o `watchTick`. Esto es muy útil para algunas propiedades temporales o privadas, ya que puedes modificarlas libremente sin desencadenar la observación.
+En la instancia `$`, los nombres de propiedades que comienzan con guion bajo `_` indican que estos valores no serán monitoreados por los métodos `watch` o `watchTick`. Esto es muy útil para propiedades temporales o privadas, ya que puedes modificarlas libremente sin activar la monitorización.
 
 Dentro de la plantilla, esto se conoce como [datos no reactivos](../../documentation/state-management.md).
 
-A continuación se presenta un ejemplo que demuestra cómo usar valores de atributos que comienzan con un guión bajo para evitar ser monitoreados：
+A continuación se muestra un ejemplo que demuestra cómo utilizar valores de atributo que comienzan con guión bajo para evitar ser escuchado:
 
-<o-playground name="stanz - Datos no reactivos" style="--editor-height: 480px">
+<o-playground name="stanz - datos no reactivos" style="--editor-height: 480px">
   <code path="demo.html">
     <template>
       <div id="target"></div>
@@ -142,25 +142,25 @@ A continuación se presenta un ejemplo que demuestra cómo usar valores de atrib
           \$("#logger").text = target;
         });
         setTimeout(() => {
-          target._aaa = "Soy aaa";
+          target._aaa = "I am aaa";
         }, 600);
         setTimeout(() => {
-          target._aaa = "cambiar aaa";
+          target._aaa = "change aaa";
         }, 1200);
       </script>
     </template>
   </code>
 </o-playground>
 
-En este ejemplo, creamos una instancia del objeto `$` llamada `target`, y luego utilizamos el método `watch` para monitorear los cambios en los valores de las propiedades. En el `setTimeout`, intentamos modificar el valor de la propiedad `_aaa`, pero este cambio no activará el monitoreo. Esto es útil para situaciones en las que es necesario actualizar el valor de una propiedad sin desencadenar el monitoreo.
+En este ejemplo, creamos un objeto instancia `$` llamado `target`, y luego utilizamos el método `watch` para escuchar los cambios en el valor de las propiedades. En `setTimeout`, intentamos cambiar el valor de la propiedad `_aaa`, pero este cambio no activará la escucha. Esto es muy útil para situaciones en las que se necesita actualizar el valor de una propiedad sin activar la escucha.
 
 ## Características básicas
 
-Los datos del objeto establecidos en la instancia se convertirán en una instancia de Stanz, y esta instancia de Stanz permite la escucha.
+Los datos de objeto establecidos en la instancia se convertirán en una instancia de Stanz, y este tipo de instancia de Stanz permite la escucha.
 
 ```javascript
 const obj = {
-  val: "Soy obj"
+  val: "I am obj"
 };
 
 $("#target").obj = obj;
@@ -168,7 +168,7 @@ console.log($("#target").obj.val === obj.val);
 console.log($("#target").obj === obj);
 ```
 
-También podemos usar `$.stanz` para crear un dato Stanz que no esté vinculado a una instancia.
+También podemos utilizar `$.stanz` para crear un dato Stanz que no esté vinculado a una instancia.
 
 ```javascript
 const data = $.stanz({
@@ -182,6 +182,6 @@ data.watch(() => {
 data.val = "change val";
 ```
 
-Estos ejemplos demuestran las características básicas de configurar datos de objetos como instancias de Stanz para su observación.
+Estos ejemplos muestran las características básicas de configurar datos de objeto como instancias de Stanz para su escucha.
 
-Para ver más características completas, consulta [stanz](https://github.com/ofajs/stanz).
+Para más características completas, consulte [stanz](https://github.com/ofajs/stanz).

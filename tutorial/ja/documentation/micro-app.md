@@ -1,6 +1,6 @@
-# マイクロアプリケーション
+# マイクロアプリ
 
-`o-app` を使用してアプリ化を行います。このタグはマイクロアプリを表しており、`app-config.js` 設定ファイルをロードします。このファイルは、アプリのトップページのアドレスとページ遷移アニメーションの設定を定義しています。
+`o-app` を使用してアプリケーション化します。このタグはマイクロアプリケーションを表し、`app-config.js` 設定ファイルを読み込みます。このファイルはアプリケーションのホームページアドレスとページ切り替えアニメーション設定を定義します。
 
 ```html
 <o-app src="./app-config.js"></o-app>
@@ -37,7 +37,7 @@ export const pageAnime = {
   <code path="app-config.js">
     // アプリケーションのホームページアドレス
     export const home = "./home.html";
-    // ページ切り替えアニメーション設定
+    // ページ遷移アニメーション設定
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -62,10 +62,10 @@ export const pageAnime = {
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html?id=10010" olink>Aboutへ (10010)</a>
+      <a href="./about.html?id=10010" olink>Go to About (10010)</a>
       <br>
       <br>
-      <a href="./about.html?id=10030" olink>Aboutへ (10030)</a>
+      <a href="./about.html?id=10030" olink>Go to About (10030)</a>
       <script>
         export default async () => {
           return {
@@ -87,7 +87,7 @@ export const pageAnime = {
       </style>
       <div style="padding: 8px;"> <button on:click="back()">戻る</button> </div>
       <p>{{val}}</p>
-      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
+      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a>について</p>
       <script>
         export default async ({query}) => {
           return {
@@ -101,9 +101,10 @@ export const pageAnime = {
   </code>
 </o-playground>
 
-## home - ホームページアドレス
+## home - トップページアドレス
 
-アプリケーション起動時に読み込まれるホームページモジュールのパスを指定し、相対パスと絶対パスの両方に対応します。
+指定应用启动时加载的首页模块路径，支持相对路径和绝对路径。
+アプリケーション起動時に読み込むトップページモジュールのパスを指定します。相対パスと絶対パスをサポートします。
 
 ```javascript
 export const home = "./pages/home.html";
@@ -111,13 +112,13 @@ export const home = "./pages/home.html";
 
 ## pageAnime - ページ切り替えアニメーション
 
-ページ切り替え時のトランジションアニメーション効果を制御し、3つの状態を含む：
+ページ切り替え時のトランジションアニメーション効果を制御し、3つの状態を含みます：
 
 | 状態 | 説明 |
 |------|------|
 | `current` | 現在のページのアニメーション終了後のスタイル |
-| `next` | 新しいページが入場する際の開始スタイル |
-| `previous` | 古いページが退場する際の目標スタイル |```javascript
+| `next` | 新しいページが入ってくる際の開始スタイル |
+| `previous` | 古いページが離れる際の目標スタイル |```javascript
 export const pageAnime = {
   current: {
     opacity: 1,
@@ -134,19 +135,19 @@ export const pageAnime = {
 };
 ```
 
-## 引数の渡し方
+## パラメータの渡し方
 
-`o-app` では、ページ遷移時に URL クエリを介してパラメータを渡すことがサポートされており、対象ページはモジュール関数の `query` パラメータで受け取ります。
+在 `o-app` 内では、ページ遷移は URL Query を介してパラメータを渡すことをサポートし、ターゲットページはモジュール関数の `query` パラメータで受け取ります。
 
 ## ページナビゲーション
 
-o-app内では、各ページモジュールは`olink`属性を持つ`<a>`タグを使ってページ遷移を行う。このタグはアプリのルーティング遷移をトリガーし、トランジションアニメーションを伴い、ページ全体をリフレッシュしない。
+o-app内では、各ページモジュールは `olink` 属性を持つ `<a>` タグを使用してページ切り替えを行うことができます。このタグはアプリのルート切り替えをトリガーし、トランジションアニメーションを伴い、ページ全体をリフレッシュしません。
 
 ```html
-<a href="./about.html" olink>アバウトページへ移動</a>
+<a href="./about.html" olink>概要ページにジャンプ</a>
 ```
 
-ページコンポーネントでは、`back()` メソッドを使用して前のページに戻ることができます：
+ページコンポーネントでは、 `back()` メソッドを使って前のページに戻ることができます：
 
 ```html
 <template page>

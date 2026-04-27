@@ -2,20 +2,20 @@
 
 
 
-Usando el atributo `parents`, puedes obtener fácilmente todas las instancias de elementos padres del elemento actual, que se devolverán en forma de array.
+Usando la propiedad `parents`, puede obtener fácilmente todas las instancias de los elementos padre del elemento actual, que se devolverán en forma de matriz.
 
-<o-playground name="parents - Elemento padre" style="--editor-height: 360px">
+<o-playground name="parents - elemento padre" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div>
         <ul>
-          <li>Soy 1</li>
-          <li id="target">Soy target</li>
-          <li>Soy 3</li>
+          <li>I am 1</li>
+          <li id="target">I am target</li>
+          <li>I am 3</li>
         </ul>
       </div>
       <div>
-        registrador: <span id="logger"></span>
+        logger: <span id="logger"></span>
       </div>
       <script>
         setTimeout(()=>{

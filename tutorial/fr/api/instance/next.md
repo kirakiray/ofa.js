@@ -2,7 +2,7 @@
 
 
 
-En utilisant l'attribut `next`, vous pouvez obtenir l'instance d'élément adjacent suivant.
+En utilisant la propriété `next`, vous pouvez obtenir l'instance de l'élément adjacent suivant.
 
 <o-playground name="next - élément suivant" style="--editor-height: 320px">
   <code path="demo.html">

@@ -1,16 +1,16 @@
-# Stilabfragen
+# Stil-Abfrage
 
-
+`match-var` ist eine Funktionskomponente in ofa.js, die zur Stilzuordnung basierend auf CSS-Variablen dient. Mit `match-var` können Sie je nach aktuellen CSS-Variablenwerten der Komponente dynamisch verschiedene Stile zuordnen und anwenden. Diese Funktion ist speziell für die Übergabe von stilbezogenen Kontextzuständen gedacht, erfordert keine Verwendung von JavaScript, ist bequemer zu verwenden und eignet sich für die Übergabe von Stilen wie z. B. Themenfarben.
 
 ## Kernkonzepte
 
-- **match-var**: Stil-Matching-Komponente, die entscheidet, ob interne Stile angewendet werden, basierend auf dem Wert der CSS-Variablen
-- **Attribut-Matching**: Definiert über Komponentenattribute, welche CSS-Variablen und erwarteten Werte abgeglichen werden sollen
-- **Stilanwendung**: Bei erfolgreichem Matching werden die Stile des internen `<style>`-Tags auf die Komponente angewendet
+- **match-var**: Eine Komponente zur Stilübereinstimmung, die basierend auf dem Wert einer CSS-Variable entscheidet, ob der interne Stil angewendet wird.
+- **Attributübereinstimmung**: Definiert die abzugleichende CSS-Variable und den erwarteten Wert über die Komponenteneigenschaften.
+- **Stilanwendung**: Bei erfolgreicher Übereinstimmung wird der Stil des internen `<style>`-Tags auf die Komponente angewendet.
 
 ## Grundlegende Verwendung
 
-Die `match-var`-Komponente definiert über Attribute die abzugleichenden CSS-Variablen und die erwarteten Werte. Sobald der CSS-Variablenwert der Komponente mit dem angegebenen Attributwert übereinstimmt, werden die innerhalb definierten Stile angewendet.
+`match-var` Komponente definiert über Attribute die zu übereinstimmenden CSS-Variablen und die erwarteten Werte. Wenn der CSS-Variablenwert der Komponente mit dem angegebenen Attributwert übereinstimmt, werden die intern definierten Stile angewendet.
 
 ```html
 <match-var theme="dark">
@@ -23,17 +23,15 @@ Die `match-var`-Komponente definiert über Attribute die abzugleichenden CSS-Var
 </match-var>
 ```
 
-### Attribute
+### Eigenschaften
 
-Die `match-var`-Komponente verwendet beliebige Attribute, um die Übereinstimmungsregeln für CSS-Variablen zu definieren. Der Attributname entspricht dem CSS-Variablennamen (ohne das `--`-Präfix), und der Attributwert ist der erwartete Übereinstimmungswert.
+`match-var`-Komponente verwendet beliebige Attribute, um die Übereinstimmungsregeln für CSS-Variablen zu definieren. Der Attributname entspricht dem CSS-Variablennamen (ohne das `--`-Präfix), und der Attributwert ist der erwartete übereinstimmende Wert.
 
 ### Funktionsweise
 
-1. **Browser-Unterstützung**: Wenn der Browser `@container style()`-Abfragen unterstützt, werden die nativen CSS-Fähigkeiten direkt verwendet.
-
-2. **Fallback-Behandlung**: Wenn dies nicht unterstützt wird, werden Änderungen der CSS-Variablenwerte durch Abfrage erkannt, und nach erfolgreicher Übereinstimmung werden Stile dynamisch injiziert.
-
-3. **Manuelle Aktualisierung**: Die Stilerkennung kann manuell durch die Methode `$.checkMatch()` ausgelöst werden.
+1. **Browser-Unterstützung**: Unterstützt der Browser `@container style()`-Abfragen, werden die nativen CSS-Funktionen direkt verwendet
+2. **Fallback**: Falls nicht, wird durch Polling auf Änderungen des CSS-Variablenwerts geprüft; bei Übereinstimmung werden Stile dynamisch eingefügt
+3. **Manuelles Neuladen**: Über die Methode `$.checkMatch()` kann die Stilprüfung manuell ausgelöst werden
 
 ## Grundlegendes Beispiel
 
@@ -59,14 +57,14 @@ Die `match-var`-Komponente verwendet beliebige Attribute, um die Übereinstimmun
       <button on:click="changeTheme">Thema wechseln</button> - Thema:{{currentTheme}}
       <div class="container">
         <theme-box>
-          Zeigt unterschiedliche Stile basierend auf CSS-Variablen an
+          Zeige unterschiedliche Stile basierend auf CSS-Variablen
         </theme-box>
       </div>
         <theme-box style="--theme: light;">
-          Zeigt helles Thema an
+          Helles Thema zeigen
         </theme-box>
         <theme-box style="--theme: dark;">
-          Zeigt dunkles Thema an
+          Dunkles Thema zeigen
         </theme-box>
       </div>
       <script>
@@ -128,9 +126,9 @@ Die `match-var`-Komponente verwendet beliebige Attribute, um die Übereinstimmun
   </code>
 </o-playground>
 
-## Mehrfachbedingungs-Abgleich
+## Mehrfachbedingungsabgleich
 
-Mehrere Attribute können gleichzeitig verwendet werden, um komplexere Übereinstimmungsbedingungen zu definieren; Stile werden nur angewendet, wenn alle CSS-Variablen übereinstimmen.
+Man kann mehrere Attribute gleichzeitig verwenden, um komplexere Übereinstimmungsbedingungen zu definieren. Der Stil wird nur angewendet, wenn alle CSS-Variablen übereinstimmen.
 
 ```html
 <match-var theme="dark" size="large">
@@ -143,9 +141,9 @@ Mehrere Attribute können gleichzeitig verwendet werden, um komplexere Übereins
 </match-var>
 ```
 
-## Beispiel für die Mehrfachbedingungsabgleichung
+## Mehrfachbedingungs-Matching-Beispiel
 
-<o-playground name="Beispiel für Attribut-Übereinstimmung" style="--editor-height: 500px">
+<o-playground name="Attribut-Matching Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -165,11 +163,11 @@ Mehrere Attribute können gleichzeitig verwendet werden, um komplexere Übereins
         }
       </style>
       <l-m src="./test-card.html"></l-m>
-      <div>Theme: {{theme}} <button on:click="changeTheme">Theme wechseln</button></div>
+      <div>Thema: {{theme}} <button on:click="changeTheme">Thema wechseln</button></div>
       <div>Größe: {{size}} <button on:click="changeSize">Größe wechseln</button></div>
       <div class="content">
         <test-card>
-          <div>Beispiel für Mehrfach-Stil-Übereinstimmung</div>
+          <div>Beispiel für mehrfaches Stil-Matching</div>
         </test-card>
       </div>
       <script>
@@ -246,24 +244,24 @@ Mehrere Attribute können gleichzeitig verwendet werden, um komplexere Übereins
   </code>
 </o-playground>
 
-## checkMatch Manuelle Aktualisierung
+## checkMatch manuell aktualisieren
 
-In manchen Fällen können Änderungen an CSS-Variablen möglicherweise nicht automatisch erkannt werden. In solchen Fällen kann die Methode `$.checkMatch()` manuell aufgerufen werden, um die Stilerkennung auszulösen.
+In bestimmten Fällen können Änderungen an CSS-Variablen möglicherweise nicht automatisch erkannt werden. In diesem Fall kann die Methode `$.checkMatch()` manuell aufgerufen werden, um die Stilprüfung auszulösen.
 
-Derzeit unterstützt Firefox die `@container style()`-Abfrage noch nicht, daher muss `$.checkMatch()` manuell aufgerufen werden; sobald die native Browser-Unterstützung in Zukunft verfügbar ist, wird das System automatisch Variablenänderungen erkennen und manuelle Aufrufe sind nicht mehr erforderlich.
+> Derzeit unterstützt Firefox die `@container style()`-Abfrage noch nicht, daher muss `$.checkMatch()` manuell aufgerufen werden. Sobald der Browser diese Funktion nativ unterstützt, erkennt das System Änderungen an Variablen automatisch, ohne dass ein manueller Aufruf erforderlich ist.
 
 ```javascript
 proto: {
   updateTheme() {
     this.theme = 'dark';
-    // Manuell die Stilerkennung auslösen
+    // Stilprüfung manuell auslösen
     $.checkMatch();
   }
 }
 ```
 
-## Best Practices
+## Beste Praktiken
 
-1. **Prioritize native CSS capabilities**: `match-var` prioritizes using the browser's native `@container style()` queries, which offer better performance in modern browsers.
-2. **Organize styles logically**: Group related matching styles together for easier maintenance and understanding.
-3. **Utilize data() binding**: Combine with the `data()` directive to achieve responsive style switching.
+1. **Bevorzugung nativer CSS-Funktionen**: `match-var` verwendet bevorzugt die native `@container style()`-Abfrage des Browsers, die in modernen Browsern eine bessere Leistung bietet
+2. **Sinnvolle Organisation der Styles**: Platzieren Sie zusammengehörige Match-Styles gemeinsam, um die Wartung und das Verständnis zu erleichtern
+3. **Verwendung der data()-Bindung**: In Kombination mit der `data()`-Direktive können reaktive Stilwechsel realisiert werden

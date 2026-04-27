@@ -1,6 +1,6 @@
 # Child Elements
 
-Getting a child element instance is very simple: just treat the instance as an array and access its child element instances by numeric index.
+Getting sub-element instances is very simple; you just need to treat the instance as an array and access its sub-element instances via numeric indexing.
 
 <o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">

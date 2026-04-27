@@ -1,12 +1,12 @@
 # attr
 
-The `attr` method is used to get or set an element's attributes.
+The `attr` method is used to get or set attributes of an element.
 
 ## Direct Use
 
-You can directly use the `attr` method to get or set an element's attributes.
+You can directly use the `attr` method to get or set the attributes of an element.
 
-<o-playground name="attr - Direct Usage" style="--editor-height: 500px">
+<o-playground name="attr - direct use" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <style>
@@ -31,11 +31,11 @@ You can directly use the `attr` method to get or set an element's attributes.
   </code>
 </o-playground>
 
-## Template Syntax Usage
+## Using Template Syntax
 
-You can also use `attr:aaa="bbb"` to set the target element's **aaa** attribute to the value of component **bbb**. This approach is particularly useful for component rendering.
+You can also use `attr:aaa="bbb"` to set the target element's **aaa** attribute to the value of component **bbb**. This approach is especially useful for component rendering.
 
-<o-playground name="attr - template syntax" style="--editor-height: 600px">
+<o-playground name="attr - Template Syntax" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./attr-demo.html"></l-m>

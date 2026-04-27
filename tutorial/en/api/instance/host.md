@@ -1,10 +1,10 @@
 # host
 
-Using the `host` property, you can obtain the instance of the element's host component. This is useful for accessing the data and methods of its host component from within the component.
+Using the `host` attribute, you can obtain the host component instance of an element. This is very useful for accessing the data and methods of its host component inside the component.
 
-Below is an example demonstrating how to use the `host` property to get an instance of the host component:
+The following is an example that demonstrates how to use the `host` attribute to obtain an instance of the host component:
 
-<o-playground name="host - Get Host" style="--editor-height: 700px">
+<o-playground name="host - get host" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -61,7 +61,7 @@ Below is an example demonstrating how to use the `host` property to get an insta
   </code>
 </o-playground>
 
-In this example, we create a custom component `user-card`, and access the host component's (page's) method `sayHi` from within the component via `this.host`, achieving interaction between the component and the host.
+In this example, we created a custom component `user-card`, and inside the component, we accessed the host component (page)'s method `sayHi` via `this.host`, achieving interaction between the component and the host.
 
 If the element is not within a component or page module, the value of `host` will be `null`. For example:
 
@@ -83,4 +83,4 @@ If the element is not within a component or page module, the value of `host` wil
   </code>
 </o-playground>
 
-In this example, the `#target` element is under the body and not inside any component or page, so the value of `$("#target").host` is `null`.
+In this example, the `#target` element is under the body, not within any component or page, so the value of `$("#target").host` is `null`.

@@ -2,11 +2,11 @@
 
 
 
-`ofa.version` プロパティを使用すると、現在読み込んでいる ofa.js のバージョン番号を取得できます。
+`ofa.version` プロパティを使用すると、現在導入されている ofa.js のバージョン番号を取得できます。
 
-> **要求 ofa.js バージョン ≥ 4.3.40**
+> **必要条件 ofa.js バージョン ≥ 4.3.40**
 
-<o-playground name="version - バージョン取得">
+<o-playground name="version - バージョンを取得">
   <code path="demo.html">
     <template>
       <div id="logger"></div>
@@ -17,4 +17,4 @@
   </code>
 </o-playground>
 
-こうすることで、ページ上に現在使っている ofa.js のバージョンを表示できます。
+こうすることで、ページ上に現在使われているofa.jsのバージョンを表示できます。

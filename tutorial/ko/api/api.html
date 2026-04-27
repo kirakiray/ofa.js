@@ -9,13 +9,14 @@
 <article><h1>API 문서</h1>
 
 <p>
-    ofa.js는 템플릿 문법뿐만 아니라 풍부한 API를 제공하여 DOM을 직접 조작할 수 있습니다.
-    <a href="https://jquery.com/">jQuery</a>처럼 복잡한 네이티브 JavaScript를 간결한 ofa.js 문법으로 대체하여 쉽게 DOM 조작을 할 수 있습니다.
+    ofa.js는 템플릿 문법뿐만 아니라 DOM을 직접 조작할 수 있는 풍부한 API도 제공합니다.
+    <a href="https://jquery.com/">jQuery</a>
+    처럼, 간결한 ofa.js 문법으로 장황한 네이티브 JavaScript를 대체하여 쉽게 DOM
+    조작을 완료할 수 있습니다.
   </p>
 
 <p>
-    컴포넌트 또는 페이지 모듈의 라이프사이클 함수 및 사용자 정의 메서드에서 언제든지 ofa.js가 제공하는
-    API를 호출하여 DOM 요소를 유연하고 효율적으로 조작할 수 있습니다.
+    컴포넌트나 페이지 모듈의 생명 주기 함수 및 사용자 정의 메서드 내에서 언제든지 ofa.js가 제공하는 API를 호출하여 DOM 요소를 유연하고 효율적으로 조작할 수 있습니다.
   </p>
 
 <api-container>
@@ -23,207 +24,207 @@
       <h3>인스턴스 관련</h3>
       <api-item>
         <a href="./instance/dollar.md">$(selector)</a>
-        <p>ofa.js의 핵심 함수로, DOM 요소 인스턴스를 가져오고 조작하는 데 사용됩니다.</p>
+        <p>ofa.js의 핵심 함수로, DOM 요소 인스턴스를 가져오고 조작하는 데 사용됩니다</p>
       </api-item>
       <api-item>
         <a href="./instance/all.md">all</a>
-        <p>현재 요소의 모든 자식 요소 인스턴스를 가져옵니다.</p>
+        <p>현재 요소의 모든 자식 요소 인스턴스를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/shadow.md">shadow</a>
-        <p>현재 요소의 shadow root를 가져옵니다.</p>
+        <p>현재 요소의 shadow root를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/prev.md">prev</a>
-        <p>현재 요소의 이전 형제 요소를 가져옵니다.</p>
+        <p>현재 요소의 이전 형제 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/prevs.md">prevs</a>
-        <p>현재 요소 이전의 모든 형제 요소를 가져옵니다.</p>
+        <p>현재 요소 이전의 모든 형제 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/next.md">next</a>
-        <p>현재 요소의 다음 형제 요소를 가져옵니다.</p>
+        <p>현재 요소의 다음 형제 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/nexts.md">nexts</a>
-        <p>현재 요소 이후의 모든 형제 요소를 가져옵니다.</p>
+        <p>현재 요소 이후의 모든 형제 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/siblings.md">siblings</a>
-        <p>현재 요소의 모든 형제 요소를 가져옵니다.</p>
+        <p>현재 요소의 모든 형제 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/parent.md">parent</a>
-        <p>현재 요소의 부모 요소를 가져옵니다.</p>
+        <p>현재 요소의 부모 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/parents.md">parents</a>
-        <p>현재 요소의 모든 조상 요소를 가져옵니다.</p>
+        <p>현재 요소의 모든 조상 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/clone.md">clone</a>
-        <p>현재 요소와 그 자식 요소를 복사합니다.</p>
+        <p>현재 요소와 그 자식 요소를 복사합니다</p>
       </api-item>
       <api-item>
         <a href="./instance/ele.md">ele</a>
-        <p>현재 요소의 자식 요소 인스턴스를 가져옵니다.</p>
+        <p>현재 요소의 자식 요소 인스턴스를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/root.md">root</a>
-        <p>현재 요소가 속한 루트 인스턴스를 가져옵니다.</p>
+        <p>현재 요소가 속한 루트 인스턴스를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/children.md">자식 요소</a>
-        <p>현재 요소의 모든 자식 요소를 가져옵니다.</p>
+        <p>현재 요소의 모든 자식 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/host.md">host</a>
-        <p>현재 요소가 속한 웹 컴포넌트 호스트 요소를 가져옵니다.</p>
+        <p>현재 요소가 속한 web component 호스트 요소를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./instance/app.md">app</a>
-        <p>현재 요소가 속한 o-app 컴포넌트 인스턴스를 가져옵니다.</p>
+        <p>현재 요소가 속한 o-app 컴포넌트 인스턴스를 가져옵니다</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>노드 조작</h3>
       <api-item>
         <a href="./operation/array-like.md">push</a>
-        <p>현재 요소에 자식 요소를 추가합니다.</p>
+        <p>현재 요소의 자식 요소를 추가합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=11">pop</a>
-        <p>현재 요소의 마지막 자식 요소를 삭제합니다.</p>
+        <p>현재 요소의 마지막 자식 요소를 삭제합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=14">shift</a>
-        <p>현재 요소의 첫 번째 자식 요소를 삭제합니다.</p>
+        <p>현재 요소의 첫 번째 자식 요소를 삭제합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=8">unshift</a>
-        <p>현재 요소의 첫 번째 자식 요소를 추가합니다.</p>
+        <p>현재 요소의 첫 번째 자식 요소를 추가합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=17">splice</a>
-        <p>현재 요소의 자식 요소를 추가하거나 삭제합니다.</p>
+        <p>현재 요소의 자식 요소를 추가하거나 삭제합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/before.md">before</a>
-        <p>현재 요소 이전에 자식 요소를 추가합니다.</p>
+        <p>현재 요소 앞에 자식 요소를 추가합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/after.md">after</a>
-        <p>현재 요소 이후에 자식 요소를 추가합니다.</p>
+        <p>현재 요소 뒤에 자식 요소를 추가합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/remove.md">remove</a>
-        <p>현재 요소를 제거합니다.</p>
+        <p>현재 요소를 제거합니다</p>
       </api-item>
       <api-item>
         <a href="./operation/wrap.md">wrap</a>
-        <p>현재 요소를 지정된 요소로 감쌉니다.</p>
+        <p>현재 요소를 지정된 요소로 감쌉니다</p>
       </api-item>
       <api-item>
         <a href="./operation/unwrap.md">unwrap</a>
-        <p>현재 요소의 부모 요소 감싸기를 제거합니다.</p>
+        <p>현재 요소의 부모 요소 감싸기를 해제합니다</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>속성 조작</h3>
       <api-item>
         <a href="./props/text.md">text</a>
-        <p>요소의 텍스트 내용을 가져오거나 설정합니다.</p>
+        <p>요소의 텍스트 내용을 가져오거나 설정합니다</p>
       </api-item>
       <api-item>
         <a href="./props/html.md">html</a>
-        <p>요소의 HTML 내용을 가져오거나 설정합니다.</p>
+        <p>요소의 HTML 내용을 가져오거나 설정합니다</p>
       </api-item>
       <api-item>
         <a href="./props/attr.md">attr</a>
-        <p>요소의 속성을 가져오거나 설정합니다.</p>
+        <p>요소의 속성을 가져오거나 설정합니다</p>
       </api-item>
       <api-item>
         <a href="./props/css.md">css</a>
-        <p>요소의 스타일을 가져오거나 설정합니다.</p>
+        <p>요소의 스타일을 가져오거나 설정합니다</p>
       </api-item>
       <api-item>
         <a href="./props/style.md">style</a>
-        <p>요소의 style 객체를 가져옵니다.</p>
+        <p>요소의 style 객체를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./props/class-list.md">classList</a>
-        <p>요소의 클래스 이름 목록을 가져옵니다.</p>
+        <p>요소의 클래스 이름 목록을 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./props/data.md">data</a>
-        <p>요소의 data 속성을 가져오거나 설정합니다.</p>
+        <p>요소의 data 속성을 가져오거나 설정합니다</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>이벤트 관련</h3>
       <api-item>
         <a href="./event/on.md">on</a>
-        <p>요소에 이벤트 리스너를 추가합니다.</p>
+        <p>요소에 이벤트 리스너를 추가합니다</p>
       </api-item>
       <api-item>
         <a href="./event/one.md">one</a>
-        <p>요소에 한 번만 실행되는 이벤트 리스너를 추가합니다.</p>
+        <p>요소에 한 번만 실행되는 이벤트 리스너를 추가합니다</p>
       </api-item>
       <api-item>
         <a href="./event/emit.md">emit</a>
-        <p>요소의 커스텀 이벤트를 트리거합니다.</p>
+        <p>요소의 사용자 정의 이벤트를 트리거합니다</p>
       </api-item>
       <api-item>
         <a href="./event/off.md">off</a>
-        <p>요소의 이벤트 리스너를 제거합니다.</p>
+        <p>요소의 이벤트 리스너를 제거합니다</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>기타</h3>
       <api-item>
         <a href="./others/app.md">o-app 컴포넌트</a>
-        <p>ofa.js 애플리케이션의 루트 컴포넌트로, 애플리케이션 상태와 라우팅을 관리합니다.</p>
+        <p>ofa.js 애플리케이션의 루트 컴포넌트로, 애플리케이션 상태와 라우팅을 관리합니다</p>
       </api-item>
       <api-item>
         <a href="./others/page.md">o-page 컴포넌트</a>
-        <p>ofa.js의 페이지 컴포넌트로, 싱글 페이지 애플리케이션 페이지를 생성하는 데 사용됩니다.</p>
+        <p>ofa.js의 페이지 컴포넌트로, 단일 페이지 애플리케이션 페이지를 생성하는 데 사용됩니다</p>
       </api-item>
       <api-item>
         <a href="./others/form-data.md">formData</a>
-        <p>폼 데이터를 가져옵니다.</p>
+        <p>폼 데이터를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./others/tag.md">tag</a>
-        <p>요소의 태그 이름을 가져옵니다.</p>
+        <p>요소의 태그 이름을 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./others/index.md">index</a>
-        <p>요소가 부모 요소에서 가지는 인덱스를 가져옵니다.</p>
+        <p>요소의 부모 내 인덱스를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./others/is.md">is</a>
-        <p>요소가 지정된 선택자와 일치하는지 판단합니다.</p>
+        <p>요소가 지정된 선택자와 일치하는지 판단합니다</p>
       </api-item>
       <api-item>
         <a href="./others/refresh.md">refresh</a>
-        <p>현재 컴포넌트 또는 페이지를 새로 고칩니다.</p>
+        <p>현재 컴포넌트 또는 페이지를 새로 고칩니다</p>
       </api-item>
       <api-item>
         <a href="./others/path.md">PATH</a>
-        <p>현재 페이지의 경로를 가져옵니다.</p>
+        <p>현재 페이지의 경로를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./others/extend.md">extend</a>
-        <p>ofa.js의 기능을 확장합니다.</p>
+        <p>ofa.js의 기능을 확장합니다</p>
       </api-item>
       <api-item>
         <a href="./others/version.md">version</a>
-        <p>ofa.js의 버전 번호를 가져옵니다.</p>
+        <p>ofa.js의 버전 번호를 가져옵니다</p>
       </api-item>
       <api-item>
         <a href="./others/stanz.md">인스턴스 데이터 특성</a>
-        <p>Stanz는 ofa.js의 반응형 데이터 특성으로, 데이터의 자동 업데이트를 지원합니다.</p>
+        <p>Stanz는 ofa.js의 반응형 데이터 특성으로, 데이터의 자동 업데이트를 지원합니다</p>
       </api-item>
     </api-list>
   </api-container>

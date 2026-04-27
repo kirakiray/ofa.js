@@ -1,6 +1,6 @@
 # parent
 
-Using the `parent` property, you can obtain the parent element instance of the instance.
+Using the `parent` property, you can get the parent element instance of an instance.
 
 <o-playground name="parent - parent element" style="--editor-height: 320px">
   <code path="demo.html">

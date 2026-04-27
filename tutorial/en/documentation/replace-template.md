@@ -1,6 +1,6 @@
 # replace-temp Component
 
-When attempting list rendering inside special elements like `<select>` or `<table>`, the browser may automatically remove the `<x-fill>` component, causing the list rendering to fail. In such cases, the `replace-temp` approach can be used to solve the problem.
+When we attempt to render a list inside special elements such as select or table, the browser may automatically remove the `<x-fill>` component, causing the list rendering to fail. In this case, the replace-temp approach can be used to resolve the issue.
 
 The usage method is: set `is="replace-temp"` on the `<template>` tag, and place it inside an element that the browser will automatically correct.
 

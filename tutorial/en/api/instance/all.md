@@ -1,8 +1,8 @@
 # all
 
-Using the `all` method, you can get all elements on the page that match the CSS selector and return an array containing these element instances.
+Using the `all` method, you can get all elements on the page that match a CSS selector, and return an array containing instances of these elements.
 
-<o-playground name="all - Get all elements" style="--editor-height: 360px">
+<o-playground name="all - get all elements" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <ul>
@@ -13,7 +13,7 @@ Using the `all` method, you can get all elements on the page that match the CSS 
       <script>
         setTimeout(()=>{
           \$.all("li").forEach((item,index)=>{
-            item.text = `changed item ${index}`;
+            item.text = `change item ${index}`;
           });
         },500);
       </script>
@@ -23,9 +23,9 @@ Using the `all` method, you can get all elements on the page that match the CSS 
 
 ## Get Child Elements
 
-Instances also have an `all` method, which can be used to select and retrieve child elements via the instance's `all` method.
+Instances also have the `all` method, which can be used to select and retrieve child elements.
 
-<o-playground name="all - Get Child Elements" style="--editor-height: 360px">
+<o-playground name="all - get child elements" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">

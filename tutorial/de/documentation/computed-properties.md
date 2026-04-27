@@ -1,18 +1,18 @@
 # Berechnete Eigenschaften
 
-Berechnete Eigenschaften sind eine Methode, um neue Daten aus reaktiven Daten abzuleiten. Sie werden automatisch aktualisiert, wenn sich die abhängigen Daten ändern. In ofa.js sind berechnete Eigenschaften spezielle Methoden, die im `proto`-Objekt definiert sind und mit den JavaScript-Schlüsselwörtern `get` oder `set` definiert werden.
+Berechnete Eigenschaften sind eine Möglichkeit, neue Daten aus reaktiven Daten abzuleiten, die sich automatisch aktualisieren, wenn sich die abhängigen Daten ändern. In ofa.js werden berechnete Eigenschaften als spezielle Methoden im `proto`-Objekt definiert, die mit den JavaScript-Schlüsselwörtern `get` oder `set` definiert werden.
 
 ## Merkmale und Vorteile
 
-- **Cache-Funktion**: Die Ergebnisse berechneter Eigenschaften werden zwischengespeichert und nur neu berechnet, wenn sich die von ihnen abhängigen Daten ändern.
-- **Reaktivität**: Berechnete Eigenschaften aktualisieren sich automatisch, wenn die von ihnen abhängigen Daten aktualisiert werden.
-- **Deklarativ**: Erzeugt Abhängigkeiten auf deklarative Weise, was den Code klarer und verständlicher macht.
+- **Caching**: Die Ergebnisse von berechneten Eigenschaften werden zwischengespeichert; sie werden nur neu berechnet, wenn sich die abhängigen Daten ändern  
+- **Reaktivität**: Wenn sich die abhängigen Daten aktualisieren, wird die berechnete Eigenschaft automatisch aktualisiert  
+- **Deklarativität**: Abhängigkeiten werden deklarativ erstellt, der Code ist klarer und leichter verständlich
 
-## Berechnete get-Eigenschaften
+## get berechnete Eigenschaft
 
-get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzuleiten; sie nehmen keine Parameter entgegen und geben lediglich einen Wert zurück, der auf anderen Daten basiert.
+Der get-Berechnete Eigenschaft wird verwendet, um neue Werte aus reaktiven Daten abzuleiten. Er akzeptiert keine Parameter und gibt nur Werte zurück, die auf Basis anderer Daten berechnet werden.
 
-<o-playground name="get Berechnete Eigenschaft Beispiel" style="--editor-height: 600px">
+<o-playground name="get berechnete Eigenschaft Beispiel" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -22,7 +22,7 @@ get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzulei
           padding: 10px;
         }
       </style>
-      <button on:click="clickMe">Klick Mich - {{count}} - {{countDouble}}</button>
+      <button on:click="clickMe">Klick mich - {{count}} - {{countDouble}}</button>
       <p>Der Wert der berechneten Eigenschaft countDouble ist: {{countDouble}}</p>
       <script>
         export default async () => {
@@ -32,7 +32,7 @@ get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzulei
             },
             proto: {
               get countDouble() {
-                console.log('countDouble wird aufgerufen');
+                console.log('countDouble wurde aufgerufen');
                 return this.count * 2;
               },
               clickMe() {
@@ -46,11 +46,11 @@ get-Berechnungseigenschaften dienen dazu, neue Werte aus reaktiven Daten abzulei
   </code>
 </o-playground>
 
-### Beispiele für praktische Anwendungsszenarien
+### Praktische Anwendungsszenarien und Beispiele
 
-Computed Properties werden häufig zur Verarbeitung komplexer Datenumwandlungslogik verwendet, zum Beispiel zum Filtern von Arrays, zum Formatieren von Anzeigetext usw.:
+Berechnete Eigenschaften werden häufig verwendet, um komplexe Datenumwandlungslogik zu verarbeiten, wie z.B. das Filtern von Arrays oder das Formatieren von Anzeigetexten:
 
-<o-playground name="Berechnete Eigenschaften Beispiel" style="--editor-height: 500px">
+<o-playground name="Beispiel für berechnete Eigenschaften" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -79,7 +79,7 @@ Computed Properties werden häufig zur Verarbeitung komplexer Datenumwandlungslo
           return {
             data: {
               filterText: '',
-              names: ['Zhang3', 'Li4', 'Wang54']
+              names: ['Max3', 'Anna4', 'Tom54']
             },
             proto: {
               get filteredNames() {
@@ -98,11 +98,11 @@ Computed Properties werden häufig zur Verarbeitung komplexer Datenumwandlungslo
   </code>
 </o-playground>
 
-## Berechnete Eigenschaften setzen
+## set Berechnete Eigenschaften
 
-setter ermöglichen es Ihnen, den zugrunde liegenden Datenzustand durch Zuweisungsoperationen zu ändern. Sie empfangen einen Parameter, der typischerweise verwendet wird, um die ursprünglichen Daten, von denen sie abhängen, rückwirkend zu aktualisieren.
+set-Eigenschaften ermöglichen es dir, den zugrunde liegenden Datenstatus durch eine Zuweisungsoperation zu ändern. Sie akzeptieren einen Parameter, der normalerweise verwendet wird, um die ursprünglichen Daten, von denen sie abhängen, rückwärts zu aktualisieren.
 
-<o-playground name="Set-Berechnete Eigenschaft Beispiel" style="--editor-height: 700px">
+<o-playground name="Setter für berechnete Eigenschaft - Beispiel" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -134,7 +134,7 @@ setter ermöglichen es Ihnen, den zugrunde liegenden Datenzustand durch Zuweisun
                 return this.count * 2;
               },
               set countDouble(val) {
-                this.count = Math.max(0, val / 2); // Sicherstellen, dass count nicht negativ ist
+                this.count = Math.max(0, val / 2); // Stellt sicher, dass count nicht negativ wird
               },
               resetCount() {
                 this.count = 0;
@@ -153,9 +153,9 @@ setter ermöglichen es Ihnen, den zugrunde liegenden Datenzustand durch Zuweisun
   </code>
 </o-playground>
 
-## Berechnete Eigenschaften vs. Methoden
+## Berechnete Eigenschaften vs Methoden
 
-Obwohl Methoden ähnliche Funktionen erfüllen können, besitzen berechnete Eigenschaften eine Cache-Funktionalität: Sie werden nur neu berechnet, wenn sich ihre abhängigen Daten ändern, was die Leistung verbessert.
+Obwohl Methoden ähnliche Funktionen implementieren können, hat die berechnete Eigenschaft eine Caching-Eigenschaft: Sie wird nur dann neu ausgewertet, wenn sich ihre abhängigen Daten ändern, was die Leistung verbessert.
 
 ```javascript
 // Verwendung von berechneten Eigenschaften (empfohlen) - mit Cache
@@ -171,13 +171,13 @@ fullName() {
 
 ## Hinweise
 
-1. **Vermeiden Sie asynchrone Operationen**: Berechnete Eigenschaften sollten synchron und ohne Nebenwirkungen bleiben. Asynchrone Aufrufe oder direkte Änderungen des Komponentenzustands sind darin verboten.
-2. **Abhängigkeitsverfolgung**: Achten Sie darauf, nur von reaktiven Daten abhängig zu sein, da Aktualisierungen sonst unvorhersehbar sein können.
-3. **Fehlerschutz**: Wenn innerhalb einer berechneten Eigenschaft zirkuläre Abhängigkeiten oder fehlerhafte Zuweisungen auftreten, kann dies zu Renderfehlern oder sogar Endlosschleifen führen. Stellen Sie sicher, dass Sie Grenzbedingungen im Voraus festlegen und eine ordnungsgemäße Fehlerbehandlung implementieren.
+1. **Asynchrone Vorgänge vermeiden**: Berechnete Eigenschaften sollten synchron und ohne Nebenwirkungen sein, asynchrone Aufrufe oder direkte Änderungen des Komponentenzustands sind darin verboten.  
+2. **Abhängigkeitsverfolgung**: Es muss ausschließlich auf reaktive Daten angewiesen werden, sonst sind Aktualisierungen unvorhersehbar.  
+3. **Fehlerschutz**: Wenn innerhalb einer berechneten Eigenschaft zirkuläre Abhängigkeiten oder abnormale Zuweisungen auftreten, kann dies zu Renderfehlern oder sogar Endlosschleifen führen. Setzen Sie unbedingt im Voraus Randbedingungen und treffen Sie eine Ausnahmebehandlung.
 
 ## Praktische Anwendungsbeispiele
 
-Im Folgenden finden Sie ein einfaches Beispiel zur Formularvalidierung, das die Nützlichkeit von berechneten Eigenschaften veranschaulicht:
+Nachfolgend ein einfaches Beispiel zur Formularvalidierung, das die Nützlichkeit von berechneten Eigenschaften zeigt:
 
 <o-playground name="Formularvalidierungsbeispiel" style="--editor-height: 600px">
   <code>
@@ -208,7 +208,7 @@ Im Folgenden finden Sie ein einfaches Beispiel zur Formularvalidierung, das die 
         }
       </style>
       <h3>Einfaches Validierungsbeispiel</h3>
-      <input type="text" sync:value="username" placeholder="Benutzernamen eingeben (mind. 3 Zeichen)">
+      <input type="text" sync:value="username" placeholder="Benutzernamen eingeben (mindestens 3 Zeichen)">
       <p class="status" class:valid="isValid" class:invalid="!isValid">
         Status: {{statusMessage}}
       </p>

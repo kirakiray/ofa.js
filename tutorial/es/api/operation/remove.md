@@ -2,9 +2,9 @@
 
 
 
-El método `remove` se utiliza para eliminar el nodo objetivo.
+El método `remove` se utiliza para eliminar el nodo de destino.
 
-**Por favor, tenga en cuenta que no se deben realizar operaciones dentro de los componentes de plantilla como o-fill o o-if.**
+**Nota: no opere dentro de los componentes de plantilla como o-fill o o-if。**
 
 <o-playground name="remove - eliminar nodo" style="--editor-height: 300px">
   <code path="demo.html">

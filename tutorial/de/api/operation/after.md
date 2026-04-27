@@ -2,11 +2,11 @@
 
 
 
-Die Methode `after` wird verwendet, um ein Element hinter das Ziel-Element einzufügen. Vor der Ausführung der `after`-Operation wird automatisch die Initialisierung der [$-Methode](../instance/dollar.md) ausgeführt, daher kann direkt ein konkreter Element-String oder ein Objekt angegeben werden.
+Die `after`-Methode wird verwendet, um ein Element nach dem Zielelement einzufügen. Vor der Ausführung der `after`-Operation wird automatisch die Initialisierungsoperation der [$ Methode](../instance/dollar.md) ausgeführt, sodass direkt eine konkrete Elementzeichenfolge oder ein Objekt angegeben werden kann.
 
-**Bitte beachten Sie, dass Sie nicht innerhalb von Vorlagenkomponenten wie o-fill oder o-if arbeiten sollten.**
+**Bitte beachten Sie: Führen Sie keine Operationen innerhalb von Vorlagenkomponenten wie o-fill oder o-if durch.**
 
-<o-playground name="Danach einfügen" style="--editor-height: 300px">
+<o-playground name="after - hinten hinzufügen" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

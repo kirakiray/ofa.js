@@ -1,16 +1,16 @@
-# Hinzufügen oder Löschen von Unterelementen
+# Hinzufügen oder Entfernen von Unterelementen
 
-Element-Instanzen haben array-ähnliche Eigenschaften. Das Hinzufügen oder Löschen von Knoten kann einfach mit den üblichen Array-Methoden erfolgen. Bei Verwendung der Methoden `push`, `unshift`, `pop`, `shift` und `splice` führt das System intern automatisch die Initialisierungsoperation der [$-Methode](../instance/dollar.md) aus, sodass direkt konkrete Elementzeichenketten oder Objekte angegeben werden können.
+Element-Instanzen haben array-ähnliche Eigenschaften; das Hinzufügen oder Entfernen von Knoten erfolgt einfach mit den üblichen Array-Methoden. Bei Verwendung von `push`, `unshift`, `pop`, `shift` und `splice` wird intern automatisch die Initialisierung der [$-Methode](../instance/dollar.md) ausgeführt, sodass direkt konkrete Element-Strings oder -Objekte angegeben werden können.
 
-Ebenso können Sie andere Array-Methoden verwenden, z. B. `forEach`, `map`, `some` usw.
+Gleichermaßen können Sie auch andere Array-Methoden verwenden, z. B. `forEach`, `map`, `some` usw.
 
-**Bitte beachten Sie, dass bei Elementen mit Vorlagensyntax keine Kindelemente hinzugefügt oder entfernt werden sollen.**
+**Beachten Sie, dass Sie auf Elementen mit Vorlagensyntax keine untergeordneten Elemente hinzufügen oder entfernen dürfen.**
 
 ## push
 
 
 
-Fügen Sie ein untergeordnetes Element vom Ende hinzu.
+Füge das untergeordnete Element am Ende hinzu.
 
 <o-playground name="array-like - push" style="--editor-height: 300px">
   <code path="demo.html">
@@ -33,19 +33,19 @@ Fügen Sie ein untergeordnetes Element vom Ende hinzu.
 
 
 
-Fügen Sie ein untergeordnetes Element am Anfang des Arrays ein.
+Füge am Anfang des Arrays untergeordnete Elemente hinzu.
 
 <o-playground name="array-like - unshift" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Ich bin 1</li>
-        <li>Ich bin 2</li>
-        <li>Ich bin 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <script>
         setTimeout(()=>{
-          \$("ul").unshift(`<li style="color:blue;">neues li</li>`);
+          \$("ul").unshift(`<li style="color:blue;">new li</li>`);
         }, 500);
       </script>
     </template>
@@ -56,15 +56,15 @@ Fügen Sie ein untergeordnetes Element am Anfang des Arrays ein.
 
 
 
-Entfernen Sie Unterelemente vom Ende.
+Entferne untergeordnete Elemente vom Ende.
 
 <o-playground name="array-like - pop" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Ich bin 1</li>
-        <li>Ich bin 2</li>
-        <li>Ich bin 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <script>
         setTimeout(()=>{
@@ -79,15 +79,15 @@ Entfernen Sie Unterelemente vom Ende.
 
 
 
-Ein Unterelement am Anfang des Arrays löschen.
+Lösche untergeordnete Elemente am Anfang des Arrays.
 
 <o-playground name="array-like - shift" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Ich bin 1</li>
-        <li>Ich bin 2</li>
-        <li>Ich bin 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <script>
         setTimeout(()=>{
@@ -102,19 +102,19 @@ Ein Unterelement am Anfang des Arrays löschen.
 
 
 
-Sie können vorhandene Kindelemente löschen oder ersetzen und neue Kindelemente hinzufügen. Die Verwendung ähnelt der `splice`-Methode von Arrays.
+Vorhandene untergeordnete Elemente können gelöscht oder ersetzt werden, ebenso können neue untergeordnete Elemente hinzugefügt werden. Die Verwendung ähnelt der `splice`-Methode von Arrays.
 
 <o-playground name="array-like - splice" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Ich bin 1</li>
-        <li>Ich bin 2</li>
-        <li>Ich bin 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <script>
         setTimeout(()=>{
-          \$("ul").splice(1, 2, `<li style="color:green;">neues li 1</li>`, `<li style="color:green;">neues li 2</li>`);
+          \$("ul").splice(1, 2, `<li style="color:green;">new li 1</li>`, `<li style="color:green;">new li 2</li>`);
         }, 500);
       </script>
     </template>

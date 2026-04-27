@@ -6,7 +6,7 @@
 
 ## 直接使用
 
-あなたは直接 `attr` メソッドを使用して要素の属性を取得または設定できます。
+要素の属性を取得または設定するには、`attr` メソッドを直接使用できます。
 
 <o-playground name="attr - 直接使用" style="--editor-height: 500px">
   <code path="demo.html">
@@ -19,9 +19,9 @@
           color: green;
         }
       </style>
-      <div id="target1" test-attr="1">私はターゲット1</div>
-      <div id="target2">私はターゲット2</div>
-      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">ロガー</div>
+      <div id="target1" test-attr="1">I am target 1</div>
+      <div id="target2">I am target 2</div>
+      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">logger</div>
       <script>
         $("#logger").text = $("#target1").attr('test-attr');
         setTimeout(()=> {
@@ -32,9 +32,10 @@
     </template>
   </code>
 </o-playground>
+
 ## テンプレート構文方式での使用
 
-あなたは `attr:aaa="bbb"` の方法を使用して、ターゲット要素の **aaa** 属性をコンポーネント **bbb** の値に設定することもできます。この方法は、コンポーネントのレンダリングに特に役立ちます。
+`attr:aaa="bbb"` という方法も使用でき、対象要素の **aaa** 属性をコンポーネントの **bbb** の値に設定します。この方法は、コンポーネントのレンダリングに特に役立ちます。
 
 <o-playground name="attr - テンプレート構文" style="--editor-height: 600px">
   <code path="demo.html" preview>

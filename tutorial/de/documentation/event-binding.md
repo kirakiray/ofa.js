@@ -1,12 +1,12 @@
 # Ereignisbindung
 
-In ofa.js ist die Ereignisbindung ein wichtiger Mechanismus zur Implementierung von Benutzerinteraktionen. Sie können Ereignishandler auf verschiedene Weise an Elemente binden, um auf Benutzeraktionen zu reagieren.
+In ofa.js ist die Ereignisbindung ein wichtiger Mechanismus zur Umsetzung von Benutzerinteraktionen. Du kannst auf verschiedene Weise Ereignisbehandler für Elemente binden, um auf Benutzeraktionen zu reagieren.
 
-## Ereignisse aus proto binden
+## Ereignisse von proto binden
 
-Dies ist die empfohlene Methode zur Ereignisbindung, geeignet für komplexe Ereignisverarbeitungslogik. Ereignishandlerfunktionen im `proto`-Objekt zu definieren, kann die Codelogik besser organisieren und erleichtert die Wartung und Wiederverwendung.
+Dies ist die empfohlene Methode zur Ereignisbindung, die sich für komplexe Ereignisverarbeitungslogiken eignet. Wenn Sie die Ereignisbehandlungsfunktion im `proto`-Objekt definieren, können Sie die Codelogik besser organisieren, was die Wartung und Wiederverwendung erleichtert.
 
-<o-playground name="Von proto Ereignisse binden" style="--editor-height: 500px">
+<o-playground name="Ereignisse von proto binden" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -35,9 +35,9 @@ Dies ist die empfohlene Methode zur Ereignisbindung, geeignet für komplexe Erei
   </code>
 </o-playground>
 
-## Funktion direkt ausführen
+## Direkte Funktionsausführung
 
-Für einfache Operationen (wie Zählererhöhung, Statuswechsel usw.) können kurze Ausdrücke direkt in den Ereigniseigenschaften geschrieben werden. Diese Methode ist prägnant und klar, geeignet für die Verarbeitung einfacher Logik.
+Bei einfachen Operationen (wie Zählererhöhung, Statusumschaltung usw.) können kurze Ausdrücke direkt im Ereignisattribut geschrieben werden. Diese Methode ist prägnant und klar und eignet sich für die Verarbeitung einfacher Logik.
 
 <o-playground name="Funktion direkt ausführen" style="--editor-height: 500px">
   <code>
@@ -67,16 +67,16 @@ Für einfache Operationen (wie Zählererhöhung, Statuswechsel usw.) können kur
 
 ofa.js unterstützt alle Standard-DOM-Events, einschließlich, aber nicht beschränkt auf:
 
--  Mausereignisse: `click`, `dblclick`, `mousedown`, `mouseup`, `mouseover`, `mouseout` usw.
--  Tastaturereignisse: `keydown`, `keyup`, `keypress` usw.
--  Formularereignisse: `submit`, `change`, `input`, `focus`, `blur` usw.
--  Touch-Ereignisse: `touchstart`, `touchmove`, `touchend` usw.
+- Mausereignisse: `click`, `dblclick`, `mousedown`, `mouseup`, `mouseover`, `mouseout` usw.
+- Tastaturereignisse: `keydown`, `keyup`, `keypress` usw.
+- Formularereignisse: `submit`, `change`, `input`, `focus`, `blur` usw.
+- Touchevents: `touchstart`, `touchmove`, `touchend` usw.
 
-ofa.js unterstützt dieselben Ereignistypen wie native DOM-Ereignisse; weitere Details finden Sie in der [MDN-Ereignisdokumentation](https://developer.mozilla.org/de/docs/Web/API/Event).
+Die von ofa.js unterstützten Ereignistypen sind vollständig identisch mit den nativen DOM-Ereignissen. Weitere Details finden Sie in der [MDN-Ereignisdokumentation](https://developer.mozilla.org/zh-CN/docs/Web/API/Event)。
 
 ## Parameter an Ereignishandler übergeben
 
-Sie können auch Parameter an Event-Handler übergeben:
+Du kannst auch Parameter an den Event-Handler übergeben：
 
 <o-playground name="Parameter an Event-Handler übergeben" style="--editor-height: 600px">
   <code>
@@ -88,8 +88,8 @@ Sie können auch Parameter an Event-Handler übergeben:
           padding: 10px;
         }
       </style>
-      <button on:click="addNumber(5)">Addiere 5 - Aktuell: {{count}}</button>
-      <button on:click="addNumber(10)">Addiere 10 - Aktuell: {{count}}</button>
+      <button on:click="addNumber(5)">Add 5 - Aktuell: {{count}}</button>
+      <button on:click="addNumber(10)">Add 10 - Aktuell: {{count}}</button>
       <script>
         export default async () => {
           return {
@@ -108,11 +108,11 @@ Sie können auch Parameter an Event-Handler übergeben:
   </code>
 </o-playground>
 
-## Auf das Ereignisobjekt zugreifen
+## Zugriff auf das Ereignisobjekt
 
 Im Event-Handler kannst du über den `event`-Parameter auf das native Event-Objekt zugreifen:
 
-<o-playground name="Ereignisobjekt zugreifen" style="--editor-height: 700px">
+<o-playground name="Auf das Event-Objekt zugreifen" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -130,7 +130,7 @@ Im Event-Handler kannst du über den `event`-Parameter auf das native Event-Obje
           justify-content: center;
         }
       </style>
-      <div class="container" on:click="handleClick">Klicken Sie irgendwo, um die Koordinaten anzuzeigen</div>
+      <div class="container" on:click="handleClick">Klicke irgendwo, um die Koordinaten zu sehen</div>
       <p>X: {{x}}, Y: {{y}}</p>
       <script>
         export default async () => {
@@ -152,18 +152,18 @@ Im Event-Handler kannst du über den `event`-Parameter auf das native Event-Obje
   </code>
 </o-playground>
 
-Sie können in Ausdrücken auch den `$event`-Parameter verwenden, um auf das native Ereignisobjekt zuzugreifen, z. B. die Koordinaten des Mausklicks abrufen:
+Sie können auch den Parameter `$event` im Ausdruck verwenden, um auf das native Ereignisobjekt zuzugreifen, z.B. um die Mausklickkoordinaten zu erhalten:
 
 ```html
-<div class="container" on:click="handleClick($event)">Klicken Sie irgendwo, um die Koordinaten anzuzeigen</div>
+<div class="container" on:click="handleClick($event)">Klicken Sie auf eine beliebige Stelle, um die Koordinaten anzuzeigen</div>
 ```
 
-## Auf benutzerdefinierte Ereignisse lauschen
+## Benutzerdefinierte Ereignisse überwachen
 
-Neben dem Abhören nativer DOM-Ereignisse können Sie auch ganz einfach benutzerdefinierte Ereignisse abhören, die von Komponenten ausgelöst werden:
+Neben dem Abhören von nativen DOM-Ereignissen können Sie auch problemlos benutzerdefinierte Ereignisse abhören, die von Komponenten ausgelöst werden:
 
 ```html
 <custom-comp on:custom-event="handleCustomEvent"></custom-comp>
 ```
 
-Für eine detaillierte Erläuterung der benutzerdefinierten Ereignisse lesen Sie bitte im Kapitel [Benutzerdefinierte Ereignisse](custom-events.md). Es wird empfohlen, dem Tutorial sequenziell in der vorgesehenen Reihenfolge zu folgen, da sich die folgenden Inhalte auf natürliche Weise erschließen werden; selbstverständlich können Sie auch jederzeit nachschlagen, um sich das Wissen vorab anzueignen.
+Für ein tieferes Verständnis von benutzerdefinierten Ereignissen lesen Sie bitte das Kapitel [Benutzerdefinierte Ereignisse](custom-events.md). Es wird empfohlen, der Reihenfolge des Tutorials Schritt für Schritt zu folgen, da sich die nachfolgenden Inhalte natürlich entfalten; natürlich sind Sie auch jederzeit willkommen, nachzuschlagen, um vorzeitig Kenntnisse zu erlangen.

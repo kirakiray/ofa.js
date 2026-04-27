@@ -2,9 +2,9 @@
 
 
 
-En utilisant la méthode `one`, vous pouvez enregistrer un gestionnaire d’événement unique pour l’élément cible, ce qui signifie que le gestionnaire sera automatiquement désactivé après la première déclenchement et ne se déclenchera plus.
+En utilisant la méthode `one`, vous pouvez enregistrer un gestionnaire d’événement unique pour l’élément cible, ce qui signifie que le gestionnaire sera automatiquement désactivé après la première occurrence et ne se déclenchera plus.
 
-Voici un exemple démontrant comment utiliser la méthode `one` pour enregistrer un gestionnaire d'événement de clic sur un élément de bouton：
+Voici un exemple montrant comment utiliser la méthode `one` pour enregistrer un gestionnaire d’événement de clic sur un élément bouton :
 
 <o-playground name="one - click événement unique" style="--editor-height: 300px">
   <code path="demo.html">
@@ -23,13 +23,13 @@ Voici un exemple démontrant comment utiliser la méthode `one` pour enregistrer
   </code>
 </o-playground>
 
-Dans cet exemple, nous utilisons la méthode `one` pour attacher un gestionnaire d’événement de clic à l’élément bouton. Lorsque l’utilisateur clique sur le bouton, le gestionnaire d’événement se déclenche, mais ne se déclenchera plus par la suite, car il a été désactivé.
+Dans cet exemple, nous utilisons la méthode `one` pour ajouter un gestionnaire d'événement de clic à un élément bouton. Lorsque l'utilisateur clique sur le bouton, le gestionnaire d'événement se déclenche, mais ne se déclenchera plus par la suite car il a été désassocié.
 
-## Utilisation de la syntaxe de modèle
+## Utilisation via la syntaxe de modèle
 
-Vous pouvez également utiliser la syntaxe des modèles pour lier des gestionnaires d’événements ponctuels à l’élément cible.
+Vous pouvez également utiliser la syntaxe de modèle pour lier un gestionnaire d’événements unique à l’élément cible.
 
-<o-playground name="one - Syntaxe des modèles" style="--editor-height: 400px">
+<o-playground name="one - syntaxe de template" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./one-demo.html"></l-m>
@@ -38,7 +38,7 @@ Vous pouvez également utiliser la syntaxe des modèles pour lier des gestionnai
   </code>
   <code path="one-demo.html" active>
     <template component>
-      <button one:click="addCount">Ajouter le compteur</button>
+      <button one:click="addCount">Add Count</button>
       <div>{{count}}</div>
       <script>
         export default {
@@ -57,4 +57,4 @@ Vous pouvez également utiliser la syntaxe des modèles pour lier des gestionnai
   </code>
 </o-playground>
 
-Dans cet exemple, nous avons lié une méthode appelée `addCount` à l'élément bouton en utilisant `one:click`. Lorsque l'utilisateur clique sur le bouton, cette méthode sera appelée, mais ne se déclenchera plus par la suite, car c'est un gestionnaire d'événements à usage unique.
+Dans cet exemple, nous utilisons la liaison `one:click` sur l'élément bouton pour lier une méthode nommée `addCount`. Lorsque l'utilisateur clique sur le bouton, cette méthode sera appelée, mais elle ne se déclenchera plus par la suite, car il s'agit d'un gestionnaire d'événements à usage unique.

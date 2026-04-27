@@ -2,11 +2,11 @@
 
 
 
-`after`メソッドは、対象要素の後ろに要素を追加するために使用されます。`after`操作を実行する前に、自動的に[$メソッド](../instance/dollar.md)の初期化処理が実行されるため、具体的な要素文字列やオブジェクトを直接記述できます。
+`after` メソッドは、対象要素の後ろに要素を追加するために使用されます。`after` 操作を実行する前に、自動的に [$ メソッド](../instance/dollar.md) の初期化操作が実行されるため、具体的な要素の文字列やオブジェクトを直接記述することができます。
 
 **o-fill や o-if などのテンプレートコンポーネント内で操作しないでください。**
 
-<o-playground name="after - 後に追加" style="--editor-height: 300px">
+<o-playground name="after - 後ろに追加" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

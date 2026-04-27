@@ -29,11 +29,11 @@ const $el = $(`
 </div>
 `);
 
-$el.unwrap(); // Error, no parent element, cannot unwrap
-$el.$('#target').unwrap(); // Correct, remove the wrapping element
+$el.unwrap(); // Error: no parent element, cannot unwrap
+$el.$('#target').unwrap(); // Correct: removes the wrapping element
 ```
 
-When the target element has sibling elements, unwrap cannot be performed either.
+When the target element has other sibling elements, unwrap cannot be executed either.
 
 ```javascript
 const $el = $(`
@@ -43,7 +43,7 @@ const $el = $(`
 </div>
 `);
 
-$el.$('#target').unwrap(); // Error, because it has adjacent siblings
+$el.$('#target').unwrap(); // Error, because it has other sibling nodes
 ```
 
-Please note, do not operate within template components such as o-fill or o-if.
+**Please note, do not operate inside template components such as o-fill or o-if.**

@@ -1,16 +1,16 @@
-# Klassen- und Stilbindungen
+# Klassen- und Stilbindung
 
-In ofa.js kannst du eine flexible UI-Zustandsverwaltung durch dynamisches Binden von Klassennamen, Stilen und Attributen erreichen. Dies ermöglicht es der Benutzeroberfläche, ihr Aussehen automatisch an Datenänderungen anzupassen.
+In ofa.js können Sie durch dynamisches Binden von Klassennamen, Stilen und Attributen ein flexibles UI-State-Management realisieren. Dadurch passt sich die Benutzeroberfläche automatisch an Änderungen der Daten an.
 
-## Klassen-Bindung
+## Klassenbindung
 
-Klassen-Bindung ermöglicht es dir, CSS-Klassen dynamisch basierend auf dem Datenstatus hinzuzufügen oder zu entfernen. Du kannst die Syntax `class:className="booleanExpression"` verwenden, um bestimmte Klassen zu binden.
+Klassenbindungen erlauben es dir, CSS-Klassen basierend auf dem Datenzustand dynamisch hinzuzufügen oder zu entfernen. Du kannst die Syntax `class:className="booleanExpression"` verwenden, um eine bestimmte Klasse zu binden.
 
-Wenn `booleanExpression` `true` ist, wird der Klassenname zum Element hinzugefügt; wenn sie `false` ist, wird der Klassenname entfernt.
+Wenn `booleanExpression` `true` ist, wird der Klassenname zum Element hinzugefügt; wenn `false` ist, wird der Klassenname entfernt.
 
-### Grundlegende Klassen-Bindung
+### Basisklassenbindung
 
-<o-playground name="Grundlegende Klassenbindung" style="--editor-height: 500px">
+<o-playground name="Basis-Klassenbindung" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -23,7 +23,7 @@ Wenn `booleanExpression` `true` ist, wird der Klassenname zum Element hinzugefü
           display: none;
         }
       </style>
-      <button on:click="isHide = !isHide">Anzeige umschalten</button>
+      <button on:click="isHide = !isHide">Toggle Display</button>
       <p class="green" class:hide="isHide">{{val}}</p>
       <script>
         export default async () => {
@@ -39,9 +39,9 @@ Wenn `booleanExpression` `true` ist, wird der Klassenname zum Element hinzugefü
   </code>
 </o-playground>
 
-### Mehrere Klassen-Bindungen
+### Mehrere Klassenbindungen
 
-Sie können auch mehrere Klassen gleichzeitig binden, sodass Elemente abhängig von verschiedenen Bedingungen unterschiedliche visuelle Zustände haben.
+Sie können auch mehrere Klassen gleichzeitig binden, sodass das Element je nach unterschiedlichen Bedingungen verschiedene Erscheinungszustände hat.
 
 <o-playground name="Mehrere Klassen-Bindungen" style="--editor-height: 500px">
   <code>
@@ -67,7 +67,7 @@ Sie können auch mehrere Klassen gleichzeitig binden, sodass Elemente abhängig 
       </style>
       <button on:click="toggleStates">Toggle States</button>
       <p class:active="isActive" class:disabled="isDisabled" class:highlight="isHighlighted">
-        Aktueller Zustand – Aktiv: {{isActive}}, Deaktiviert: {{isDisabled}}, Hervorgehoben: {{isHighlighted}}
+        Current State - Active: {{isActive}}, Disabled: {{isDisabled}}, Highlighted: {{isHighlighted}}
       </p>
       <script>
         export default async () => {
@@ -93,13 +93,13 @@ Sie können auch mehrere Klassen gleichzeitig binden, sodass Elemente abhängig 
 
 ## Stilbindung
 
-Stil-Bindung ermöglicht es dir, Werte für Inline-Stile direkt zu setzen und unterstützt dynamische Aktualisierungen. ofa.js bietet zwei Arten der Stil-Bindung:
+Stil-Bindung ermöglicht es dir, die Werte von Inline-Stilen direkt zu setzen und dynamisch zu aktualisieren. ofa.js bietet zwei Arten der Stil-Bindung:
 
-### Einzelne Stil-Attribut-Bindung
+### Einzelne Stilattributbindung
 
-Verwenden Sie die Syntax `:style.propertyName`, um bestimmte Stileigenschaften zu binden.
+Verwenden Sie die Syntax `:style.propertyName`, um bestimmte Stilattribute zu binden.
 
-<o-playground name="Einfache Stilattributbindung" style="--editor-height: 500px">
+<o-playground name="Einzelne Stilattributbindung" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -110,13 +110,13 @@ Verwenden Sie die Syntax `:style.propertyName`, um bestimmte Stileigenschaften z
         }
       </style>
       <p class="green" :style.color="isGreen ? 'green' : 'red'">{{val}}</p>
-      <button on:click="isGreen = !isGreen">Toggle Color</button>
+      <button on:click="isGreen = !isGreen">Farbe umschalten</button>
       <script>
         export default async () => {
           return {
             data: {
               isGreen: false,
-              val: "Hello ofa.js Demo Code",
+              val: "Hallo ofa.js Demo-Code",
             },
           };
         };
@@ -125,11 +125,11 @@ Verwenden Sie die Syntax `:style.propertyName`, um bestimmte Stileigenschaften z
   </code>
 </o-playground>
 
-### Mehrstilige Attributbindung
+### Mehrfache Stilattributbindung
 
-Du kannst auch mehrere Style-Eigenschaften auf einmal binden:
+Du kannst auch mehrere Stileigenschaften auf einmal binden:
 
-<o-playground name="Mehrere Stil-Attribut-Bindungen" style="--editor-height: 500px">
+<o-playground name="Bindung mehrerer Stil-Eigenschaften" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -140,9 +140,9 @@ Du kannst auch mehrere Style-Eigenschaften auf einmal binden:
         }
       </style>
       <p :style.color="textColor" :style.fontSize="fontSize + 'px'" :style.backgroundColor="bgColor">
-        Dynamisches Styling-Beispiel
+        Dynamic Styling Example
       </p>
-      <button on:click="changeStyles">Stile ändern</button>
+      <button on:click="changeStyles">Change Styles</button>
       <script>
         export default async () => {
           return {
@@ -165,13 +165,13 @@ Du kannst auch mehrere Style-Eigenschaften auf einmal binden:
   </code>
 </o-playground>
 
-## Attribut-Bindung
+## Attributbindung
 
-Neben Klassen- und Stil-Bindungen können Sie auch andere HTML-Attribute dynamisch binden. ofa.js verwendet die Syntax `attr:attributeName`, um Attributbindungen zu realisieren.
+Neben der Bindung von Klassen und Stilen können Sie auch andere HTML-Attribute dynamisch binden. ofa.js verwendet die Syntax `attr:attributeName`, um Attributbindungen zu realisieren.
 
 ### Grundlegende Attributbindung
 
-<o-playground name="Grundlegende Attribut-Bindung" style="--editor-height: 700px">
+<o-playground name="Grundlegende Attributbindung" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -209,9 +209,9 @@ Neben Klassen- und Stil-Bindungen können Sie auch andere HTML-Attribute dynamis
   </code>
 </o-playground>
 
-### Boolesche Attribute
+### Boolesche Attribute Behandlung
 
-Für boolesche Attribute (wie `disabled`, `hidden`) entscheidet ofa.js basierend auf dem Wahrheitswert des gebundenen Werts, ob das Attribut hinzugefügt wird.
+Für boolesche Attribute (wie `disabled`, `hidden`) entscheidet ofa.js anhand des Wahrheitswerts des gebundenen Werts, ob das Attribut hinzugefügt wird.
 
 <o-playground name="Boolesche Attributbehandlung" style="--editor-height: 700px">
   <code>
@@ -223,12 +223,12 @@ Für boolesche Attribute (wie `disabled`, `hidden`) entscheidet ofa.js basierend
           padding: 10px;
         }
       </style>
-      <input type="text" attr:disabled="isDisabled" placeholder="Type here..." />
+      <input type="text" attr:disabled="isDisabled" placeholder="Hier tippen..." />
       <br /><br />
-      <button attr:disabled="isButtonDisabled" on:click="handleButtonClick">Click Me</button>
+      <button attr:disabled="isButtonDisabled" on:click="handleButtonClick">Klick mich</button>
       <br /><br />
       <label>
-        <input type="checkbox" on:change="toggleAll" /> Toggle All States
+        <input type="checkbox" on:change="toggleAll" /> Alle Zustände umschalten
       </label>
       <script>
         export default async () => {
@@ -240,7 +240,7 @@ Für boolesche Attribute (wie `disabled`, `hidden`) entscheidet ofa.js basierend
             },
             proto: {
               handleButtonClick() {
-                alert('Button clicked!');
+                alert('Schaltfläche geklickt!');
               },
               toggleAll(event) {
                 const checked = event.target.checked;
@@ -258,9 +258,9 @@ Für boolesche Attribute (wie `disabled`, `hidden`) entscheidet ofa.js basierend
 
 ## data() Funktion
 
-In Stilen kann `data(key)` verwendet werden, um Komponentendaten zu binden. Dies eignet sich besonders für Szenarien, in denen das Styling dynamisch basierend auf Komponentendaten geändert werden muss.
+Man kann `data(key)` im Stil verwenden, um Komponentendaten zu binden. Dies eignet sich hervorragend für Szenarien, in denen der Stil dynamisch basierend auf den Komponentendaten geändert werden muss.
 
-<o-playground name="Datenfunktion in Style-Tags" style="--editor-height: 500px">
+<o-playground name="Datenfunktion innerhalb von Style-Tags" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -282,17 +282,17 @@ In Stilen kann `data(key)` verwendet werden, um Komponentendaten zu binden. Dies
           transition: all data(time)s ease;
         }
       </style>
-      Hover Schriftgröße: <input type="number" sync:value="size" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
+      Hover FontSize: <input type="number" sync:value="size" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
       <br />
-      Übergangszeit: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
-      <p>{{val}} - Größe: {{size}}</p>
+      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Dies ist ein bidirektional gebundenes Eingabefeld" />
+      <p>{{val}} - size: {{size}}</p>
       <script>
         export default async () => {
           return {
             data: {
               size: 16,
               time: 0.3,
-              val: "Hallo ofa.js Demo Code",
+              val: "Hallo ofa.js Demo-Code",
             }
           };
         };
@@ -303,7 +303,7 @@ In Stilen kann `data(key)` verwendet werden, um Komponentendaten zu binden. Dies
 
 ## Hinweise
 
-Das `data(key)` innerhalb eines `style`-Tags ersetzt prinzipiell den gesamten Inhalt des Styles. Um wiederholtes Rendern nicht betroffener Stile zu vermeiden, wird empfohlen, Stile mit `data(key)` in ein eigenes `style`-Tag zu setzen, während Stile ohne Datenbindung in ein anderes `style`-Tag ausgelagert werden, um eine bessere Leistung zu erzielen.
+Das `data(key)` innerhalb des `style`-Tags ersetzt im Prinzip den gesamten Inhalt des Styles. Um wiederholtes Rendern irrelevante Stile zu vermeiden, wird empfohlen, Stile mit `data(key)` in einem eigenen `style`-Tag zu platzieren, während Stile ohne Datenbindung in einen anderen `style`-Tag ausgelagert werden, um eine bessere Leistung zu erzielen.
 
 ```html
 <!-- ❌ Ein p:hover ohne data(key) wird ebenfalls aktualisiert -->
@@ -318,7 +318,7 @@ Das `data(key)` innerhalb eines `style`-Tags ersetzt prinzipiell den gesamten In
   }
 </style>
 ``````html
-<!-- ✅ Nur Stile mit data(xxx) werden neu gerendert -->
+<!-- ✅ Nur Styles mit data(xxx) werden neu gerendert -->
 <style>
   p {
     font-size: data(size);

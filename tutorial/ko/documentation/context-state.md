@@ -1,16 +1,16 @@
 # 컨텍스트 상태
 
-컨텍스트 상태는 ofa.js에서 컴포넌트 간 데이터 공유를 위한 메커니즘입니다. Provider와 Consumer 패턴을 통해 부모-자식 컴포넌트는 물론 계층을 뛰어넘는 컴포넌트 간에도 props를 한 단계씩 전달하지 않고 데이터를 전달할 수 있습니다.
+컨텍스트 상태는 ofa.js에서 컴포넌트 간 데이터 공유를 위한 메커니즘입니다. 제공자(Provider)와 소비자(Consumer) 패턴을 통해 부모-자식 컴포넌트, 계층 간 컴포넌트 간 데이터 전달을 props를 통해 계층적으로 전달하지 않고도 구현할 수 있습니다.
 
 ## 핵심 개념
 
-- **o-provider**: 데이터 제공자, 공유할 데이터를 정의합니다
-- **o-consumer**: 데이터 소비자, 가장 가까운 제공자로부터 데이터를 가져옵니다
-- **watch:xxx**: 소비자 데이터의 변경을 감지하고, 컴포넌트 또는 페이지 모듈의 속성에 바인딩합니다
+- **o-provider**: 데이터 제공자, 공유해야 할 데이터를 정의합니다.
+- **o-consumer**: 데이터 소비자, 가장 가까운 제공자로부터 데이터를 가져옵니다.
+- **watch:xxx**: 소비자 데이터의 변화를 감시하고, 컴포넌트나 페이지 모듈의 속성에 바인딩합니다.
 
 ## o-provider 제공자
 
-`o-provider` 컴포넌트는 공유 데이터의 제공자를 정의하는 데 사용됩니다. 이는 `name` 속성으로 자신의 이름을 식별하고, 속성(예: `custom-a="value"`)을 통해 공유할 데이터를 정의합니다.
+`o-provider` 컴포넌트는 공유 데이터의 제공자를 정의하는 데 사용됩니다. `name` 속성을 통해 자신의 이름을 식별하고, 속성(예: `custom-a="value"`)을 통해 공유할 데이터를 정의합니다.
 
 ```html
 <o-provider name="userInfo" custom-name="장삼" custom-age="25">
@@ -20,13 +20,13 @@
 
 ### 속성
 
-- `name`: 제공자의 고유 식별 이름으로, 소비자가 해당 제공자를 찾기 위해 사용합니다
+- `name`: 공급자의 고유 식별 이름으로, 소비자가 해당 공급자를 찾는 데 사용됩니다.
 
 ### 특성
 
-1. **자동 속성 전달**: provider상의 모든 비예약 속성은 공유 데이터로 사용됨
-2. **반응형 업데이트**: provider의 데이터가 변경되면 해당 provider의 대응 name을 소비하는 consumer는 자동으로 업데이트됨
-3. **레벨 탐색**: 소비자는 가장 가까운 상위 provider부터 대응 name의 데이터를 찾기 시작함
+1. **자동 속성 전달**: provider의 모든 비예약 속성은 공유 데이터로 전달됩니다.
+2. **반응형 업데이트**: provider의 데이터가 변경되면, 해당 provider를 소비하는 대응하는 name의 consumer가 자동으로 업데이트됩니다.
+3. **계층 검색**: consumer는 가장 가까운 상위 provider부터 해당 name의 데이터를 검색합니다.
 
 ## o-consumer 소비자
 
@@ -42,13 +42,13 @@
 
 ### 특성
 
-1. **자동 데이터 획득**: consumer는 자동으로 가장 가까운 상위 provider에서 해당 name의 데이터를 가져옵니다
-2. **속성 병합**: 만약 동일한 name을 가진 여러 provider가 특정 속성을 가지고 있다면, consumer와 가장 가까운 provider의 속성이 우선합니다
-3. **속성 감시**: `watch:xxx`를 통해 특정 속성의 변화를 감시할 수 있습니다
+1. **자동 데이터 획득**: consumer는 가장 가까운 상위 provider에서 해당 name의 데이터를 자동으로 획득합니다.
+2. **속성 병합**: 동일한 name을 가진 여러 provider가 특정 속성을 가지고 있다면, 소비자에게 가장 가까운 provider의 속성이 우선합니다.
+3. **속성 감시**: `watch:xxx`를 통해 특정 속성의 변화를 감시할 수 있습니다.
 
 ## 데이터 변경 감시
 
-`watch:xxx`를 통해 제공자 데이터의 변경을 감시할 수 있습니다:
+`watch:xxx`를 통해 제공자 데이터의 변화를 감시할 수 있습니다:
 
 ```html
 <o-consumer name="userInfo" watch:custom-age="age"></o-consumer>
@@ -64,7 +64,7 @@ export default {
 
 ## 기본 예제
 
-<o-playground name="기본 예시" style="--editor-height: 500px">
+<o-playground name="기본 예제" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="userInfo" user-id="9527">
@@ -149,12 +149,12 @@ export default {
   </code>
 </o-playground>
 
-## o-root-provider 루트 공급자
+## o-root-provider 루트 제공자
 
-`o-root-provider`는 루트 수준의 전역 제공자로, 그 스코프는 전체 문서입니다. 상위 provider가 없는 상황에서도 소비자는 루트 제공자의 데이터를 가져올 수 있습니다.
+`o-root-provider`는 루트 수준의 전역 제공자이며, 그 범위는 전체 문서입니다. 상위 provider가 없는 경우에도 소비자는 루트 제공자의 데이터를 얻을 수 있습니다.
 
 ```html
-<!-- 전역 루트 공급자 정의 -->
+<!-- 전역 루트 제공자 정의 -->
 <o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN"></o-root-provider>
 
 <!-- 페이지의 어느 위치에서나 소비 가능 -->
@@ -163,9 +163,9 @@ export default {
 
 ### 특성
 
-1. **전역 스코프**: 루트 프로바이더의 데이터는 전체 페이지에서 사용 가능
+1. **전역 스코프**: 루트 제공자의 데이터는 전체 페이지에서 사용 가능
 2. **우선순위**: 동일한 name의 provider와 root-provider가 동시에 존재할 때, 소비자에게 가장 가까운 provider가 우선
-3. **제거 가능**: root-provider를 제거하면 소비자는 다른 provider를 찾아 다시 탐색
+3. **제거 가능**: root-provider를 제거하면 소비자는 다른 provider를 찾도록 되돌아감
 
 ## root-provider 예제
 
@@ -253,7 +253,7 @@ export default {
   </code>
 </o-playground>
 
-### 우선순위 예시
+### 우선순위 예제
 
 ```html
 <o-root-provider name="test" custom-value="root"></o-root-provider>
@@ -270,9 +270,9 @@ export default {
 
 ```
 
-### 우선순위 예시 시연
+### 우선순위 예시 데모
 
-<o-playground name="우선순위 예제 시연" style="--editor-height: 500px">
+<o-playground name="우선순위 예제 데모" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-root-provider name="test" custom-value="root"></o-root-provider>
@@ -284,7 +284,7 @@ export default {
       <l-m src="./child.html"></l-m>
       <o-provider name="test" custom-value="parent">
         <div style="padding: 10px; border: 1px solid #007acc;">
-          <p>부모 Provider의 값: {{parentValue}}</p>
+          <p>상위 Provider의 값: {{parentValue}}</p>
           <child-com></child-com>
         </div>
         <o-consumer name="test" watch:custom-value="parentValue"></o-consumer>
@@ -324,7 +324,7 @@ export default {
 
 ## getProvider(name) 메서드
 
-`getProvider(name)`는 인스턴스 메서드로, 해당 name의 제공자 요소를 가져오는 데 사용됩니다. DOM을 따라 위로 올라가며 가장 가까운 상위 provider를 찾고, 찾지 못하면 root-provider를 반환합니다.
+`getProvider(name)`는 인스턴스 메서드로, 해당 name에 해당하는 제공자 요소를 가져옵니다. DOM을 따라 위쪽으로 가장 가까운 상위 provider를 찾으며, 찾지 못하면 root-provider를 반환합니다.
 
 ### 컴포넌트 또는 페이지 모듈 내에서 getProvider(name) 메서드 사용
 
@@ -334,16 +334,16 @@ export default {
 proto:{
   changeValue(){
     const provider = this.getProvider("name");
-    provider.customValue = "새 값";
+    provider.customValue = "new value";
   }
 }
 ...
 </script>
 ```
 
-## getProvider 예제
+## getProvider 예시
 
-<o-playground name="getProvider 예제" style="--editor-height: 500px">
+<o-playground name="getProvider 예시" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="userInfo" custom-name="장삼" custom-age="25">
@@ -390,29 +390,29 @@ proto:{
   </code>
 </o-playground>
 
-### 요소에서 provider 가져오기
+### 엘리먼트에서 provider 얻기
 
 ```javascript
 // 현재 요소의 상위 provider 가져오기
 const provider = $(".my-element").getProvider("userInfo");
 
 if (provider) {
-  console.log("provider 찾음:", provider.customName);
+  console.log("제공자 찾음:", provider.customName);
 }
 
-// 직접 전역 root-provider 가져오기
+// 전역 root-provider 직접 가져오기
 const globalProvider = $.getRootProvider("globalConfig");
 ```
 
 ### 사용 시나리오
 
-1. **수동으로 데이터 가져오기**: 제공자의 데이터에 직접 액세스해야 하는 시나리오에서 사용
-2. **Shadow DOM 건너뛰기**: Shadow DOM 내부에서 상위 provider 찾기
-3. **이벤트 처리**: 이벤트 콜백에서 해당 provider 가져오기
+1. **수동 데이터 수집**: 제공자 데이터에 직접 액세스해야 하는 시나리오에서 사용
+2. **Shadow DOM 간**: Shadow DOM 내부에서 상위 공급자 찾기
+3. **이벤트 처리**: 이벤트 콜백에서 해당 공급자 가져오기
 
 ## dispatch 이벤트 디스패치
 
-provider는 모든 consumer에게 이벤트를 발송할 수 있습니다:
+provider는 자신을 소비하는 모든 consumer에게 이벤트를 발송할 수 있습니다:
 
 ```html
 <o-provider name="test" id="myProvider" custom-value="Hello">
@@ -422,16 +422,16 @@ provider는 모든 consumer에게 이벤트를 발송할 수 있습니다:
 </o-provider>
 
 <script>
-// 이벤트 디스패치
+// 이벤트 전달
 $("#myProvider").dispatch("custom-event", {
   data: { message: "Hello World" }
 });
 </script>
 ```
 
-## 이벤트 디스패치 예제
+## 이벤트 디스패치 예시
 
-<o-playground name="이벤트 디스패치 예제" style="--editor-height: 500px">
+<o-playground name="이벤트 발송 예시" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="chat" custom-messages='["채팅방에 오신 것을 환영합니다"]' id="chatProvider">
@@ -513,7 +513,7 @@ $("#myProvider").dispatch("custom-event", {
           cursor: pointer;
         }
       </style>
-      <input type="text" sync:value="inputText" placeholder="메시지를 입력하세요...">
+      <input type="text" sync:value="inputText" placeholder="메시지 입력...">
       <button on:click="sendMessage">전송</button>
       <script>
         export default {
@@ -540,7 +540,7 @@ $("#myProvider").dispatch("custom-event", {
 
 ## 모범 사례
 
-1. **적절한 명명**: provider와 consumer에 의미 있는 name을 사용하여 추적과 유지보수가 용이하도록 합니다
-2. **과도한 사용 방지**: 컨텍스트 상태는 컴포넌트 간 데이터 공유에 적합하며, 일반적인 부모-자식 컴포넌트는 props 사용을 권장합니다
-3. **루트 제공자(Root Provider)를 통한 전역 설정**: 테마, 언어, 전역 상태 등은 root-provider 사용이 적합합니다
-4. **적시 정리**: provider가 제거되면 consumer는 자동으로 데이터를 정리하므로 수동 처리할 필요가 없습니다
+1. **합리적인 명명**: provider와 consumer에 의미 있는 name을 사용하여 추적과 유지보수를 용이하게 합니다.
+2. **과도한 사용 피하기**: context 상태는 컴포넌트 간 데이터 공유에 적합하며, 일반적인 부모-자식 컴포넌트에는 props 사용을 권장합니다.
+3. **루트 프로바이더는 전역 설정용**: 테마, 언어, 전역 상태 등은 root-provider를 사용하는 것이 적합합니다.
+4. **적시 정리**: provider가 제거되면 consumer는 데이터를 자동으로 제거하므로 수동 처리가 필요 없습니다.

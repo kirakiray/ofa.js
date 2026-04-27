@@ -1,18 +1,18 @@
-# Propiedades calculadas
+# Propiedades computadas
 
-Las propiedades computadas son una forma de derivar nuevos datos a partir de datos reactivos; se actualizan automáticamente cuando cambian los datos de los que dependen. En ofa.js, las propiedades computadas se definen como métodos especiales dentro del objeto `proto`, utilizando las palabras clave `get` o `set` de JavaScript.
+Las propiedades calculadas son una forma de derivar nuevos datos basados en datos reactivos, que se actualizan automáticamente según los cambios de los datos de los que dependen. En ofa.js, las propiedades calculadas son métodos especiales definidos en el objeto `proto`, utilizando las palabras clave `get` o `set` de JavaScript para definirlas.
 
 ## Características y ventajas
 
-- **Almacenamiento en caché**: el resultado de la propiedad calculada se almacena en caché y solo se recalcula cuando cambian los datos de los que depende  
-- **Reactiva**: cuando se actualizan los datos de los que depende, la propiedad calculada se actualiza automáticamente  
-- **Declarativa**: se crean relaciones de dependencia de forma declarativa, lo que hace que el código sea más claro y fácil de entender
+- **Características de caché**: El resultado de las propiedades computadas se almacena en caché y solo se recalcula cuando cambian los datos de los que depende
+- **Reactiva**: Cuando se actualizan los datos de los que depende, la propiedad computada se actualiza automáticamente
+- **Declarativa**: Se crean relaciones de dependencia de forma declarativa, lo que hace que el código sea más claro y comprensible
 
-## get Propiedad calculada
+## get propiedad computada
 
-La propiedad `get` se utiliza para derivar nuevos valores a partir de datos reactivos, no acepta parámetros y solo devuelve un valor calculado basado en otros datos.
+La propiedad computada get se utiliza para derivar nuevos valores a partir de datos reactivos. No acepta parámetros y solo devuelve valores calculados en base a otros datos.
 
-<o-playground name="get Ejemplo de propiedad calculada" style="--editor-height: 600px">
+<o-playground name="get ejemplo de propiedad computada" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -23,7 +23,7 @@ La propiedad `get` se utiliza para derivar nuevos valores a partir de datos reac
         }
       </style>
       <button on:click="clickMe">Click Me - {{count}} - {{countDouble}}</button>
-      <p>El valor de la propiedad calculada countDouble es：{{countDouble}}</p>
+      <p>El valor de la propiedad computada countDouble es: {{countDouble}}</p>
       <script>
         export default async () => {
           return {
@@ -32,7 +32,7 @@ La propiedad `get` se utiliza para derivar nuevos valores a partir de datos reac
             },
             proto: {
               get countDouble() {
-                console.log('countDouble fue accedida');
+                console.log('countDouble ha sido accedido');
                 return this.count * 2;
               },
               clickMe() {
@@ -48,9 +48,9 @@ La propiedad `get` se utiliza para derivar nuevos valores a partir de datos reac
 
 ### Ejemplos de escenarios de aplicación práctica
 
-Las propiedades computadas se utilizan comúnmente para manejar lógicas complejas de transformación de datos, como filtrar arreglos, formatear texto de visualización, etc.:
+Las propiedades computadas se utilizan a menudo para manejar lógica compleja de transformación de datos, como filtrar matrices, formatear texto mostrado, etc.:
 
-<o-playground name="Ejemplo de propiedad calculada" style="--editor-height: 500px">
+<o-playground name="Ejemplo de propiedad computada" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -79,7 +79,7 @@ Las propiedades computadas se utilizan comúnmente para manejar lógicas complej
           return {
             data: {
               filterText: '',
-              names: ['Juan', 'María', 'Carlos']
+              names: ['Zhang3', 'Li4', 'Wang54']
             },
             proto: {
               get filteredNames() {
@@ -98,11 +98,11 @@ Las propiedades computadas se utilizan comúnmente para manejar lógicas complej
   </code>
 </o-playground>
 
-## set Propiedad calculada
+## set propiedades calculadas
 
-Los `set` de las propiedades computadas te permiten modificar el estado de datos subyacente mediante operaciones de asignación. Recibe un parámetro, que generalmente se utiliza para actualizar inversamente los datos originales de los que depende.
+La propiedad computada 'set' permite modificar el estado de datos subyacente mediante una operación de asignación. Recibe un parámetro y se usa generalmente para actualizar inversamente los datos originales de los que depende.
 
-<o-playground name="set ejemplo de propiedad calculada" style="--editor-height: 700px">
+<o-playground name="ejemplo de propiedad calculada set" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -118,9 +118,9 @@ Los `set` de las propiedades computadas te permiten modificar el estado de datos
       </style>
       <div>
         <p>Valor base: {{count}}</p>
-        <p>Valor doble: {{countDouble}}</p>
-        <button on:click="resetCount">Restablecer contador</button>
-        <button on:click="setCountDouble">Establecer valor doble a 10</button>
+        <p>Valor duplicado: {{countDouble}}</p>
+        <button on:click="resetCount">Reiniciar contador</button>
+        <button on:click="setCountDouble">Establecer duplicado a 10</button>
         <button on:click="incrementCount">Incrementar valor base</button>
       </div>
       <script>
@@ -134,7 +134,7 @@ Los `set` de las propiedades computadas te permiten modificar el estado de datos
                 return this.count * 2;
               },
               set countDouble(val) {
-                this.count = Math.max(0, val / 2); // Asegura que count no sea negativo
+                this.count = Math.max(0, val / 2); // Asegurar que count no sea negativo
               },
               resetCount() {
                 this.count = 0;
@@ -153,9 +153,9 @@ Los `set` de las propiedades computadas te permiten modificar el estado de datos
   </code>
 </o-playground>
 
-## Propiedades calculadas vs métodos
+## Propiedades computadas vs Métodos
 
-Aunque los métodos también pueden lograr funcionalidades similares, las propiedades computadas tienen la característica de almacenamiento en caché y solo se recalculan cuando los datos de los que dependen cambian, lo que resulta en un mejor rendimiento.
+Aunque los métodos también pueden lograr funciones similares, las propiedades computadas tienen la característica de caché: solo se recalculan cuando cambian los datos de los que dependen, lo que ofrece un mejor rendimiento.
 
 ```javascript
 // Usar propiedades computadas (recomendado) - con caché
@@ -163,21 +163,21 @@ get fullName() {
   return this.firstName + ' ' + this.lastName;
 }
 
-// Usar un método - se ejecuta cada vez que se llama
+// Usar métodos - se ejecuta cada vez que se llama
 fullName() {
   return this.firstName + ' ' + this.lastName;
 }
 ```
 
-## Precauciones
+## Notas importantes
 
-1. **Evitar operaciones asíncronas**: Las propiedades calculadas deben mantenerse sincrónicas y sin efectos secundarios, prohibiendo llamadas asíncronas o modificaciones directas del estado del componente dentro de ellas.  
-2. **Seguimiento de dependencias**: Asegúrese de depender únicamente de datos reactivos; de lo contrario, las actualizaciones serán impredecibles.  
-3. **Protección contra errores**: Si dentro de una propiedad calculada se produce una dependencia circular o una asignación anómala, podría provocar fallos en la renderización o incluso bucles infinitos. Es crucial establecer condiciones límite de antemano y manejar adecuadamente las excepciones.
+1. **Evitar operaciones asincrónicas**: Las propiedades computadas deben mantenerse sincrónicas y sin efectos secundarios. Está prohibido realizar llamadas asincrónicas o modificar directamente el estado del componente dentro de ellas.  
+2. **Seguimiento de dependencias**: Asegúrate de depender únicamente de datos reactivos; de lo contrario, las actualizaciones serán impredecibles.  
+3. **Protección contra errores**: Si se producen dependencias circulares o asignaciones anómalas dentro de una propiedad computada, podría provocar fallos en el renderizado o incluso bucles infinitos. Es necesario establecer condiciones límite de antemano y realizar un manejo adecuado de excepciones.
 
-## Ejemplo de aplicación práctica
+## Ejemplos de aplicación práctica
 
-A continuación se muestra un ejemplo simple de validación de formularios, que demuestra la utilidad de las propiedades computadas：
+A continuación se muestra un ejemplo simple de validación de formularios, que demuestra la utilidad de las propiedades calculadas.
 
 <o-playground name="Ejemplo de validación de formulario" style="--editor-height: 600px">
   <code>
@@ -223,7 +223,7 @@ A continuación se muestra un ejemplo simple de validación de formularios, que 
                 return this.username.length >= 3;
               },
               get statusMessage() {
-                return this.isValid ? 'Nombre de usuario válido' : 'Longitud del nombre de usuario insuficiente';
+                return this.isValid ? 'Nombre de usuario válido' : 'Longitud de nombre de usuario insuficiente';
               },
             }
           };

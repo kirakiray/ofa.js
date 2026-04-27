@@ -4,16 +4,16 @@
 
 El atributo `style` se mantiene igual que el nativo.
 
-Tenga en cuenta que el atributo `style` no puede obtener el valor real del estilo, sino solo el valor establecido en el atributo `style`. Aunque el método `style` es similar al [método css](./css.md), no puede sobrescribir todos los estilos. En comparación con `css`, el método `style` tiene una mayor eficiencia de ejecución interna.
+Ten en cuenta que la propiedad `style` no puede obtener el valor real de los estilos, sino solo el valor establecido en la propiedad `style`. Aunque el método `style` es similar al [método css](./css.md), no puede realizar una sobrescritura completa de estilos. En comparación con `css`, el método `style` tiene una mayor eficiencia de ejecución interna.
 
-A continuación se presenta un ejemplo que demuestra cómo usar `style`：
+A continuación se muestra un ejemplo que demuestra cómo usar `style`:
 
 <o-playground name="style - uso directo" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target">texto original</div>
+      <div id="target">origin text</div>
       <br>
-      <h4>registrador</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = $("#target").style.color;
@@ -26,13 +26,13 @@ A continuación se presenta un ejemplo que demuestra cómo usar `style`：
   </code>
 </o-playground>
 
-Recuerda que el método `style` solo obtiene y establece los valores en el atributo `style`, no el estilo calculado real.
+Recuerda que el método `style` solo obtiene y establece los valores en el atributo `style`, no los estilos calculados reales.
 
-## Uso mediante sintaxis de plantilla
+## Uso de la sintaxis de plantillas
 
-También puedes usar la sintaxis de plantillas para establecer el estilo del elemento de destino.
+También puedes configurar el estilo del elemento objetivo mediante la sintaxis de plantilla.
 
-<o-playground name="style - Sintaxis de plantilla" style="--editor-height: 400px">
+<o-playground name="style - Sintaxis de plantillas" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./style-demo.html"></l-m>
@@ -46,7 +46,7 @@ También puedes usar la sintaxis de plantillas para establecer el estilo del ele
   </code>
   <code path="style-demo.html" active>
     <template component>
-      <div :style.color="txt">Soy el objetivo</div>
+      <div :style.color="txt">I am target</div>
       <script>
         export default {
           tag: "style-demo",

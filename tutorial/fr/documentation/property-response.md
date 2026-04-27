@@ -1,8 +1,8 @@
-# Réponse d'attributs
+# Réponse d'attribut
 
-Dans la section précédente sur la [liaison de propriétés](./property-binding.md), nous avons présenté un mécanisme simple de réactivité des propriétés, à savoir comment rendre la valeur d’une propriété du composant dans un affichage textuel.
+Dans la section précédente [Liaison de propriétés](./property-binding.md), nous avons présenté un mécanisme simple de réactivité des propriétés, à savoir comment rendre la valeur d'une propriété d'un composant dans l'affichage du texte.
 
-ofa.js supporte non seulement la réactivité des valeurs d'attributs de base, mais aussi le rendu réactif des valeurs d'attributs internes d'objets profondément imbriqués.
+ofa.js prend en charge non seulement la réactivité aux valeurs de propriétés de base, mais aussi le rendu réactif des valeurs de propriétés à l'intérieur d'objets imbriqués à plusieurs niveaux.
 
 <o-playground name="Exemple de données non réactives" style="--editor-height: 500px">
   <code>
@@ -14,8 +14,8 @@ ofa.js supporte non seulement la réactivité des valeurs d'attributs de base, m
           padding: 10px;
         }
       </style>
-      <p style="color: blue;">count : {{count}}</p>
-      <p style="color: green;">count2 : {{obj.count2}}</p>
+      <p style="color: blue;">count: {{count}}</p>
+      <p style="color: green;">count2: {{obj.count2}}</p>
       <button on:click="handleAddCount">Augmenter</button>
       <script>
         export default async () => {
@@ -39,13 +39,13 @@ ofa.js supporte non seulement la réactivité des valeurs d'attributs de base, m
   </code>
 </o-playground>
 
-Toutes les données liées aux objets d'instance d'ofa.js sont automatiquement converties en données réactives. Les données réactives ne prennent en charge que les types de données de base tels que les chaînes de caractères, les nombres, les booléens, les tableaux et les objets. Pour les types de données complexes comme les fonctions ou les instances de classes, elles doivent être stockées en tant que **propriétés non réactives**, et les changements de ces propriétés ne déclencheront pas le nouveau rendu du composant.
+Toutes les données liées aux objets d'instance d'ofa.js sont automatiquement converties en données réactives. Les données réactives ne prennent en charge que les types de données de base tels que les chaînes de caractères, les nombres, les booléens, les tableaux, les objets, etc. Pour les types de données complexes comme les fonctions, les instances de classes, etc., elles doivent être stockées en tant que **propriétés non réactives**, et les modifications de ces propriétés ne déclencheront pas le nouveau rendu du composant.
 
 ## Données non réactives
 
-Parfois, nous devons stocker des données qui ne nécessitent pas de mise à jour réactive, par exemple des instances de Promise, des objets d'expression régulière ou d'autres objets complexes. Dans ce cas, il est nécessaire d'utiliser des propriétés non réactives. Les modifications de ces propriétés ne déclenchent pas le nouveau rendu du composant et sont adaptées au stockage de données qui ne nécessitent pas de liaison avec la vue.
+Parfois, nous avons besoin de stocker des données qui ne nécessitent pas de mise à jour réactive, comme des instances de Promise, des objets d'expression régulière ou d'autres objets complexes. Dans ce cas, il est nécessaire d'utiliser des propriétés non réactives. Les modifications de ces propriétés ne déclenchent pas le re-rendu du composant, et elles sont adaptées au stockage de données qui n'ont pas besoin d'être liées à la vue.
 
-Les propriétés non réactives sont généralement préfixées d’un underscore `_` devant leur nom, afin de les distinguer des propriétés réactives.
+La dénomination des propriétés non réactives ajoute généralement un underscore `_` comme préfixe avant le nom de la propriété, afin de les distinguer des propriétés réactives.
 
 <o-playground name="Exemple de données non réactives" style="--editor-height: 500px">
   <code>
@@ -57,10 +57,10 @@ Les propriétés non réactives sont généralement préfixées d’un underscor
           padding: 10px;
         }
       </style>
-      <p style="color: blue;">compteur : {{count}}</p>
-      <p style="color: green;">compteur2 : {{_count2}}</p>
-      <button on:click="count++">Le bleu augmente</button>
-      <button on:click="_count2++">Le vert s'incrémente</button>
+      <p style="color: blue;">count: {{count}}</p>
+      <p style="color: green;">count2: {{_count2}}</p>
+      <button on:click="count++">Blue increases</button>
+      <button on:click="_count2++">Green increments</button>
       <script>
         export default async () => {
           return {
@@ -75,8 +75,8 @@ Les propriétés non réactives sont généralement préfixées d’un underscor
   </code>
 </o-playground>
 
-Lorsque vous cliquez sur le bouton `Green increments`, bien que la valeur de `_count2` ait effectivement augmenté, comme il s'agit d'une propriété non réactive, elle ne déclenche pas la mise à jour de la vue ; l'affichage à l'écran reste donc inchangé. Lorsque vous cliquez sur le bouton `Blue increases`, puisque `count` est une propriété réactive, elle déclenche le re-rendu complet du composant, ce qui met alors à jour l'affichage de Green.
+Lorsque vous cliquez sur le bouton `Green increments`, bien que la valeur de `_count2` ait en réalité augmenté, comme il s'agit d'une propriété non réactive, elle ne déclenche pas la mise à jour de la vue ; l'affichage à l'écran reste donc inchangé. Lorsque vous cliquez sur le bouton `Blue increases`, puisque `count` est une propriété réactive, elle déclenche le nouveau rendu complet du composant, ce qui synchronise alors l'affichage de Green.
 
-Les données d’objet non réactives offrent de meilleures performances que les données d’objet réactives, car elles ne déclenchent pas de nouveau rendu du composant.
+Les données d'objet non réactives offrent de meilleures performances que les données d'objet réactives, car les données non réactives ne déclenchent pas le re-rendu du composant.
 
 

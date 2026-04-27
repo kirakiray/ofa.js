@@ -4,16 +4,16 @@
 
 L’attribut `style` reste cohérent avec la version native.
 
-Veuillez noter que l'attribut `style` ne peut pas obtenir la valeur réelle du style, mais uniquement les valeurs définies sur l'attribut `style`. Bien que la méthode `style` soit similaire à la [méthode css](./css.md), elle ne permet pas de remplacer l'ensemble des styles. Par rapport à `css`, la méthode `style` a une efficacité d'exécution interne plus élevée.
+Veuillez noter que l'attribut `style` ne peut pas obtenir la valeur réelle du style, mais seulement la valeur définie dans l'attribut `style`. Bien que la méthode `style` soit similaire à la [méthode css](./css.md), elle ne peut pas effectuer une couverture complète des styles. Comparée à `css`, la méthode `style` a une efficacité d'exécution interne plus élevée.
 
-Voici un exemple montrant comment utiliser `style` :
+Voici un exemple qui montre comment utiliser `style` :
 
 <o-playground name="style - utilisation directe" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <div id="target">texte d'origine</div>
       <br>
-      <h4>journal</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = $("#target").style.color;
@@ -26,13 +26,13 @@ Voici un exemple montrant comment utiliser `style` :
   </code>
 </o-playground>
 
-N'oubliez pas que la méthode `style` ne récupère et ne définit que les valeurs de l'attribut `style`, et non les styles calculés réels.
+N’oubliez pas que la méthode `style` ne récupère et ne définit que les valeurs de l’attribut `style`, et non le style calculé réel.
 
-## Utilisation de la syntaxe de modèle
+## Utilisation via la syntaxe de modèle
 
-Vous pouvez également définir le style des éléments cibles via la syntaxe de modèle.
+Vous pouvez également définir le style de l'élément cible à l'aide de la syntaxe de modèle.
 
-<o-playground name="style - Syntaxe des templates" style="--editor-height: 400px">
+<o-playground name="style - syntaxe de modèle" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./style-demo.html"></l-m>

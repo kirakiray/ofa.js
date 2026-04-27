@@ -2,11 +2,11 @@
 
 
 
-`before`メソッドは、対象要素の直前に要素を追加するために使用されます。`before`操作を実行する前に、自動的に[$メソッド](../instance/dollar.md)の初期化操作が実行されるため、具体的な要素文字列やオブジェクトを直接記述できます。
+`before`メソッドは、対象要素の直前に要素を追加するために使用されます。`before`操作を実行する前に、[$メソッド](../instance/dollar.md)の初期化処理が自動的に行われるため、具体的な要素の文字列やオブジェクトを直接記述できます。
 
 **o-fill や o-if などのテンプレートコンポーネント内で操作しないでください。**
 
-<o-playground name="before - 前に追加" style="--editor-height: 300px">
+<o-playground name="before - 前面添加" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

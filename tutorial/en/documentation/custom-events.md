@@ -1,10 +1,10 @@
 # Custom Events
 
-In ofa.js, besides built-in DOM events, you can also create and use custom events to achieve communication between components. Custom events are an important mechanism in component-based development, allowing components to broadcast messages or state changes upward.
+In ofa.js, in addition to built-in DOM events, custom events can also be created and used to implement communication between components. Custom events are an important mechanism in component-based development, allowing components to broadcast messages or state changes upward.
 
-## emit Method - Triggering Custom Events
+## emit method - Trigger custom events
 
-The `emit` method is used to trigger custom events, notifying external listeners of state changes or user actions within the component.
+The `emit` method is used to trigger custom events, notifying external listeners of state changes or user operations inside the component.
 
 ### Basic Usage
 
@@ -15,27 +15,27 @@ this.emit('custom-event');
 // Trigger a custom event with data
 this.emit('data-changed', {
   data: {
-    // Custom data, can be structured arbitrarily based on requirements
+    // Custom data, any structure as needed
     newValue: 100,
     oldValue: 50
   }
 });
 ```
 
-### emit Method Parameters
+### emit method parameters
 
 The `emit` method accepts two parameters:
 
 1. **Event Name**: String, representing the name of the event to be triggered
-2. **Options Object** (Optional): Contains event configuration options
-   - `data`: The data to pass
-   - `bubbles`: Boolean, controls whether the event bubbles (defaults to true)
+2. **Options Object** (optional): Contains event configuration options
+   - `data`: Data to be passed
+   - `bubbles`: Boolean, controls whether the event bubbles (default is true)
    - `composed`: Boolean, controls whether the event can cross the Shadow DOM boundary
    - `cancelable`: Boolean, controls whether the event can be canceled
 
-Then the parent element can use the `on` method [(event binding)](./event-binding.md) to listen for this custom event.
+Then the parent element can use the `on` method [ (Event Binding) ](./event-binding.md) to listen to this custom event.
 
-### emit Usage Example
+### emit usage example
 
 <o-playground name="emit Usage Example" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -104,15 +104,15 @@ Then the parent element can use the `on` method [(event binding)](./event-bindin
 
 ## bubbles - Event Bubbling Mechanism
 
-The `bubbles` property controls whether an event bubbles up to parent elements. When set to `true`, the event propagates up the DOM tree. The default value is `true`. If set to `false`, the event will not bubble.
+`bubbles` property controls whether the event will bubble up to parent elements. When set to `true`, the event will propagate up the DOM tree. The default value is `true`. If set to `false`, the event will not bubble.
 
-### Detailed Explanation of the Bubble Mechanism
+### Detailed Explanation of Bubbling Mechanism
 
-- **Default behavior**: events emitted with `emit` bubble by default (`bubbles: true`)
-- **Bubble path**: the event propagates upward from the triggering element level by level
-- **Stop propagation**: calling `event.stopPropagation()` in an event handler prevents bubbling
+- **Default behavior**: Events emitted with `emit` have bubbling enabled by default (`bubbles: true`)
+- **Bubble path**: The event starts from the triggering element and propagates upward level by level
+- **Stop propagation**: Calling `event.stopPropagation()` in the event handler prevents bubbling
 
-### Bubble Sort Example
+### Bubble Example
 
 <o-playground name="Custom Event Example" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -133,9 +133,9 @@ The `bubbles` property controls whether an event bubbles up to parent elements. 
       <div on:child-event="handleChildEventFromComponent">
         <bubble-component on:child-event="handleDirectChildEvent"></bubble-component>
       </div>
-      <p>Outer Container (Listening for Bubbling Events): {{bubbledEventCount}} times</p>
-      <p>Inner Component (Listening for Direct Events): {{directEventCount}} times</p>
-      <p>Received Data: <span style="color:red;">{{result}}</span></p>
+      <p>Outer container (listening for bubbling events): {{bubbledEventCount}} times</p>
+      <p>Inner component (listening for direct events): {{directEventCount}} times</p>
+      <p>Received data: <span style="color:red;">{{result}}</span></p>
       <script>
         export default async () => {
           return {
@@ -168,15 +168,15 @@ The `bubbles` property controls whether an event bubbles up to parent elements. 
           border: 1px solid green;
         }
       </style>
-      <button on:click="triggerNonBubblingEvent">Trigger Non-Bubbling Event</button>
-      <button on:click="triggerBubblingEvent">Trigger Bubbling Event</button>
+      <button on:click="triggerNonBubblingEvent">Trigger non-bubbling event</button>
+      <button on:click="triggerBubblingEvent">Trigger bubbling event</button>
       <script>
         export default async () => {
           return {
             tag: "bubble-component",
             proto: {
               triggerNonBubblingEvent() {
-                // Non-bubbling event, only captured by direct listeners
+                // Non-bubbling event, only captured by direct listener
                 this.emit('child-event', {
                   data: { type: 'non-bubbling', message: 'Non-bubbling event triggered', timestamp: Date.now() },
                   bubbles: false
@@ -199,13 +199,13 @@ The `bubbles` property controls whether an event bubbles up to parent elements. 
 
 ## composed - Penetrates Shadow DOM boundaries
 
-The `composed` property controls whether events can cross the Shadow DOM boundary. This is particularly important for Web Components development, with a default value of `false`.
+The `composed` property controls whether events can cross Shadow DOM boundaries. This is particularly important for Web Components development, and the default value is `false`.
 
-### Detailed Explanation of Penetration Mechanics
+### Detailed Explanation of Penetration Mechanism
 
-- **Shadow DOM isolation**: By default, events cannot cross Shadow DOM boundaries  
-- **Enable propagation**: Setting `composed: true` allows events to pass through Shadow DOM boundaries  
-- **Use case**: When a component needs to dispatch events to its host environment, `composed: true` must be set
+- **Shadow DOM Isolation**:By default, events cannot cross Shadow DOM boundaries
+- **Enable Penetration**:Setting `composed: true` allows events to cross Shadow DOM boundaries
+- **Use Case**:When a component needs to send events to the host environment, `composed: true` must be set
 
 ### Penetration Example
 
@@ -228,8 +228,8 @@ The `composed` property controls whether events can cross the Shadow DOM boundar
       <div on:child-event="handleChildEventFromComponent">
         <bubble-component></bubble-component>
       </div>
-      <p>Event listened: {{bubbledEventCount}} times</p>
-      <p>Received data: <span style="color:red;">{{result}}</span></p>
+      <p>Events listened: {{bubbledEventCount}} times</p>
+      <p>Data received: <span style="color:red;">{{result}}</span></p>
       <script>
         export default async () => {
           return {
@@ -259,8 +259,8 @@ The `composed` property controls whether events can cross the Shadow DOM boundar
         }
       </style>
       <child-component on:child-event="handleChildEventFromComponent"></child-component>
-      <p>Event listened: {{bubbledEventCount}} times</p>
-      <p>Received data: <span style="color:pink;">{{result}}</span></p>
+      <p>Events listened: {{bubbledEventCount}} times</p>
+      <p>Data received: <span style="color:pink;">{{result}}</span></p>
       <script>
         export default async () => {
           return {

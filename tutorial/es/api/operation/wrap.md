@@ -2,9 +2,9 @@
 
 
 
-El método `wrap` se utiliza para envolver una capa de elemento alrededor del elemento objetivo. Antes de ejecutar la operación `wrap`, se realiza automáticamente la operación de inicialización del [método $](../instance/dollar.md), por lo que se puede proporcionar directamente la cadena de caracteres del elemento o el objeto.
+El método `wrap` se utiliza para envolver una capa de elemento alrededor del elemento objetivo. Antes de ejecutar la operación `wrap`, se ejecuta automáticamente la inicialización del método [$](../instance/dollar.md), por lo que se pueden especificar directamente cadenas de elementos u objetos concretos.
 
-<o-playground name="wrap - elemento envuelto" style="--editor-height: 440px">
+<o-playground name="wrap - elemento envolvente" style="--editor-height: 440px">
   <code path="demo.html">
     <template>
       <style> div{border: #aaa solid 1px; margin:8px; padding:8px;} </style>
@@ -22,7 +22,7 @@ El método `wrap` se utiliza para envolver una capa de elemento alrededor del el
   </code>
 </o-playground>
 
-## Precauciones
+## Notas importantes
 
 El elemento objetivo **debe tener un nodo padre**, de lo contrario la operación de envoltura fallará.
 
@@ -33,8 +33,8 @@ const $el = $(`
 </div>
 `);
 
-$el.wrap("<div>new div</div>"); // Error: sin elemento padre, no se puede envolver
-$el.$('#target').wrap("<div>new div</div>"); // Correcto: tiene elemento padre
+$el.wrap("<div>new div</div>"); // Error, no hay elemento padre, no se puede envolver
+$el.$('#target').wrap("<div>new div</div>"); // Correcto, hay elemento padre
 ```
 
-**Tenga en cuenta que no se debe operar dentro de componentes de plantilla como o-fill o o-if.**
+**Tenga en cuenta, no opere dentro de los componentes de plantilla como o-fill o o-if.**

@@ -2,9 +2,9 @@
 
 
 
-Obtenir le `dataset` de l'élément, utiliser l'attribut `data` pour rester cohérent avec le [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) natif.
+Obtenir le `dataset` de l'élément, en utilisant l'attribut `data` et en restant cohérent avec le [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) natif.
 
-<o-playground name="data - Exemple d'utilisation" style="--editor-height: 400px">
+<o-playground name="data - exemple d'utilisation" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <style>
@@ -12,9 +12,9 @@ Obtenir le `dataset` de l'élément, utiliser l'attribut `data` pour rester coh�
           color:red;
         }
       </style>
-      <div id="target" data-one="Je suis un">Texte d'origine</div>
+      <div id="target" data-one="I am one">origin text</div>
       <br>
-      <h4>Journal</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         setTimeout(()=> {

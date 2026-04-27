@@ -2,11 +2,11 @@
 
 
 
-Mit der Methode `on` können Sie Ereignis-Handler für Zielelemente registrieren. Dadurch können Sie Benutzerinteraktionen einfach erfassen und darauf reagieren.
+Mit der `on`-Methode kannst du Ereignisbehandlungsroutinen für Zielelemente registrieren. Dies ermöglicht es dir, Benutzerinteraktionen einfach zu erfassen und darauf zu reagieren.
 
-Hier ist ein Beispiel, das zeigt, wie man die `on`-Methode verwendet, um einen Klick-Event-Handler für ein Schaltflächenelement zu registrieren:
+Im Folgenden ein Beispiel, das zeigt, wie Sie mit der Methode `on` einen Klickereignis-Handler für ein Schaltflächenelement registrieren:
 
-<o-playground name="on - click Event" style="--editor-height: 300px">
+<o-playground name="on - click Ereignis" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>
@@ -23,13 +23,13 @@ Hier ist ein Beispiel, das zeigt, wie man die `on`-Methode verwendet, um einen K
   </code>
 </o-playground>
 
-In diesem Beispiel verwenden wir die `on`-Methode, um einen Klick-Event-Handler für das Schaltflächenelement hinzuzufügen. Wenn der Benutzer auf die Schaltfläche klickt, wird der Event-Handler ausgelöst, der Zähler wird erhöht und das Ergebnis wird auf der Seite angezeigt.
+In diesem Beispiel verwenden wir die `on`-Methode, um dem Button-Element einen Klickereignis-Handler hinzuzufügen. Wenn der Benutzer auf den Button klickt, wird der Ereignishandler ausgelöst, der Zähler wird erhöht und das Ergebnis wird auf der Seite angezeigt.
 
-## Verwendung auf Template-Syntax-Weise
+## Verwendung der Vorlagensyntax
 
-Sie können auch Template-Syntax verwenden, um Methoden an Zielelemente zu binden.
+Sie können auch die Vorlagensyntax verwenden, um Methoden an Zielelemente zu binden.
 
-<o-playground name="on - Template-Syntax" style="--editor-height: 400px">
+<o-playground name="on - Vorlagen-Syntax" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./on-demo.html"></l-m>
@@ -38,7 +38,7 @@ Sie können auch Template-Syntax verwenden, um Methoden an Zielelemente zu binde
   </code>
   <code path="on-demo.html" active>
     <template component>
-      <button on:click="addCount">Zähler erhöhen</button>
+      <button on:click="addCount">Add Count</button>
       <div>{{count}}</div>
       <script>
         export default {
@@ -57,18 +57,18 @@ Sie können auch Template-Syntax verwenden, um Methoden an Zielelemente zu binde
   </code>
 </o-playground>
 
-In diesem Beispiel binden wir mit `on:click` auf dem Button-Element eine Methode namens `addCount`. Wenn der Benutzer auf den Button klickt, wird diese Methode aufgerufen, der Zählerwert erhöht sich und wird auf der Seite angezeigt. Auf diese Weise kannst du Event-Handler mit Methoden der Komponente verknüpfen und komplexere Interaktionen realisieren.
+In diesem Beispiel binden wir mit `on:click` auf dem Button-Element eine Methode namens `addCount`. Wenn der Benutzer auf den Button klickt, wird diese Methode aufgerufen, der Zähler wird erhöht und der neue Wert auf der Seite angezeigt. Auf diese Weise kannst du Ereignisbehandlungen mit Methoden der Komponente verknüpfen und komplexere Interaktionen realisieren.
 
 ## event
 
 
 
-Nach der Registrierung eines Ereignisses wird die ausgelöste Funktion mit dem Event-Parameter versehen, um mit dem nativen Verhalten übereinzustimmen:
+Nach der Registrierung eines Ereignisses wird der ausgelösten Funktion das event mitgegeben, wie bei nativen Ereignissen:
 
 <o-playground name="on - event Parameter" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <button id="target">add count</button>
+      <button id="target">Zähler erhöhen</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>

@@ -1,16 +1,16 @@
 # Context Status
 
-Context state is a mechanism in ofa.js for cross-component data sharing. Through the Provider and Consumer pattern, it enables data transfer between parent-child components and across hierarchical components without the need to pass data layer by layer via props.
+Context state is the mechanism in ofa.js for cross-component data sharing. Through the Provider and Consumer pattern, data can be passed between parent and child components, as well as across different component levels, without the need for prop drilling.
 
 ## Core Concepts
 
-- **o-provider**: Data provider; defines the data to be shared.
-- **o-consumer**: Data consumer; fetches data from the nearest provider.
-- **watch:xxx**: Watches changes in consumer data and binds them to component or page module properties.
+- **o-provider**: Data provider, defines the data to be shared
+- **o-consumer**: Data consumer, retrieves data from the nearest provider
+- **watch:xxx**: Listens for changes in consumer data and binds them to properties of components or page modules
 
 ## o-provider Provider
 
-The `o-provider` component is used to define a provider of shared data. It identifies itself by the `name` attribute and defines the data to share through attributes such as `custom-a="value"`.
+`o-provider` component is used to define a provider of shared data. It identifies itself via the `name` attribute and defines the data to be shared through attributes (e.g., `custom-a="value"`).
 
 ```html
 <o-provider name="userInfo" custom-name="Zhang San" custom-age="25">
@@ -20,17 +20,17 @@ The `o-provider` component is used to define a provider of shared data. It ident
 
 ### Attributes
 
-- `name`: The unique identifier of the provider, used by consumers to locate the corresponding provider
+- `name`: The unique identifier name of the provider, used by the consumer to locate the corresponding provider
 
 ### Features
 
-1. **Automatic Attribute Passing**: All non-reserved attributes on a provider are passed as shared data.  
-2. **Reactive Updates**: When a provider’s data changes, consumers with the matching name automatically update.  
-3. **Hierarchical Lookup**: Consumers start searching for data with the given name from the nearest ancestor provider.
+1. **Automatic Property Passing**: All non-reserved properties on the provider are passed as shared data.
+2. **Reactive Updates**: When the data in the provider changes, the consumer corresponding to the same name that consumes the provider will automatically update.
+3. **Hierarchical Lookup**: The consumer starts looking for data with the corresponding name from the nearest ancestor provider.
 
 ## o-consumer Consumer
 
-The `o-consumer` component is used to consume data from a provider. It specifies the provider to consume from via the `name` attribute.
+`o-consumer` component is used to consume (use) data from a provider. It specifies the provider name to consume via the `name` attribute.
 
 ```html
 <o-consumer name="userInfo"></o-consumer>
@@ -38,24 +38,24 @@ The `o-consumer` component is used to consume data from a provider. It specifies
 
 ### Attributes
 
-- `name`: the name of the provider to consume
+- `name`: The name of the provider to be consumed
 
 ### Features
 
-1. **Automatic Data Retrieval**: The consumer automatically fetches data corresponding to the name from the nearest parent provider.
-2. **Attribute Merging**: If multiple providers with the same name have a certain attribute, the attribute from the provider closest to the consumer takes precedence.
-3. **Attribute Monitoring**: Specific attribute changes can be monitored via `watch:xxx`.
+1. **Automatic data acquisition**: the consumer automatically fetches the data of the corresponding name from the nearest ancestor provider
+2. **Attribute merging**: if several providers with the same name have a certain attribute, the attribute of the provider closest to the consumer takes precedence
+3. **Attribute watching**: changes to a specific attribute can be watched via `watch:xxx`
 
-## Monitoring Data Changes
+## Listening for Data Changes
 
-You can monitor changes in provider data via `watch:xxx`:
+Using `watch:xxx` you can listen to changes in provider data:
 
 ```html
 <o-consumer name="userInfo" watch:custom-age="age"></o-consumer>
 
 <script>
 export default {
-  data: {
+  data:{
     age: 0,
   },
 };
@@ -151,7 +151,7 @@ export default {
 
 ## o-root-provider Root Provider
 
-`o-root-provider` is a root-level global provider whose scope covers the entire document. Consumers can access the root provider’s data even when no parent provider exists.
+`o-root-provider` is a root-level global provider whose scope is the entire document. Even without a parent provider, consumers can still access the data from the root provider.
 
 ```html
 <!-- Define global root provider -->
@@ -163,9 +163,9 @@ export default {
 
 ### Features
 
-1. **Global Scope**: Data from root providers is available across the entire page.  
-2. **Precedence**: When a provider and a root-provider share the same name, the provider closest to the consumer takes precedence.  
-3. **Removability**: After a root-provider is removed, consumers fall back to searching for other providers.
+1. **Global Scope**: The data of the root provider is available throughout the entire page
+2. **Priority**: When there are both a provider and a root-provider with the same name, the provider closest to the consumer takes precedence
+3. **Removable**: After removing the root-provider, the consumer will fall back to searching for other providers
 
 ## root-provider Example
 
@@ -258,15 +258,16 @@ export default {
 ```html
 <o-root-provider name="test" custom-value="root"></o-root-provider>
 
-<o-provider name="custom-value="parent">
+<o-provider name="test" custom-value="parent">
  ...
- <!-- Here👇 the custom-value obtained is "parent" -->
+ <!-- Here👇the obtained custom-value is "parent" -->
  <o-consumer name="test"></o-consumer>
  ...
 </o-provider>
 
-<!-- Here👇 the custom-value obtained is "root" -->
+<!-- Here👇the obtained custom-value is "root" -->
 <o-consumer name="test"></o-consumer>
+
 ```
 
 ### Priority Example Demonstration
@@ -306,7 +307,7 @@ export default {
   <code path="child.html">
     <template component>
       <div style="padding: 10px;  border: 1px dashed gray;">
-        Value in child component: {{customValue}} (nearest is {{customValue}} provider)
+        Value in child component: {{customValue}} (closest is {{customValue}} provider)
       </div>
       <o-consumer name="test" watch:custom-value="customValue"></o-consumer>
       <script>
@@ -323,9 +324,9 @@ export default {
 
 ## getProvider(name) Method
 
-`getProvider(name)` is an instance method that retrieves the provider element matching the given name. It walks up the DOM to find the closest ancestor provider; if none is found, it returns the root-provider.
+`getProvider(name)` is an instance method used to get the provider element corresponding to the name. It traverses up the DOM to find the nearest ancestor provider, and returns the root-provider if not found.
 
-### Use the getProvider(name) method inside a component or page module.
+### Using the getProvider(name) method within a component or page module
 
 ```html
 <script>
@@ -369,10 +370,10 @@ proto:{
             getProviderData() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                console.log("Provider found:", provider);
+                console.log("Found Provider:", provider);
                 console.log("Name:", provider.customName);
                 console.log("Age:", provider.customAge);
-                alert(`Provider data: ${provider.customName}, ${provider.customAge} years old`);
+                alert(`Provider Data: ${provider.customName}, ${provider.customAge} years old`);
               }
             },
             updateProvider() {
@@ -389,10 +390,10 @@ proto:{
   </code>
 </o-playground>
 
-### Obtaining the Provider from an Element
+### Get provider from element
 
 ```javascript
-// Get the provider from the parent of the current element
+// Get the parent provider of the current element
 const provider = $(".my-element").getProvider("userInfo");
 
 if (provider) {
@@ -403,15 +404,15 @@ if (provider) {
 const globalProvider = $.getRootProvider("globalConfig");
 ```
 
-### Usage Scenario
+### Usage Scenarios
 
-1. **Manual Data Retrieval**: Used when direct access to provider data is required  
-2. **Cross Shadow DOM**: Locate an ancestor provider inside Shadow DOM  
-3. **Event Handling**: Obtain the corresponding provider within an event callback
+1. **Manually fetch data**: Used in scenarios where direct access to provider data is required
+2. **Cross Shadow DOM**: Find the upper-level provider inside the Shadow DOM
+3. **Event handling**: Get the corresponding provider in the event callback
 
-## Dispatch Event
+## dispatch Event Dispatch
 
-A provider can dispatch events to all consumers that consume it:
+provider can dispatch events to all consumers that consume it:
 
 ```html
 <o-provider name="test" id="myProvider" custom-value="Hello">
@@ -539,7 +540,7 @@ $("#myProvider").dispatch("custom-event", {
 
 ## Best Practices
 
-1. **Reasonable Naming**: Use meaningful names for providers and consumers to facilitate tracking and maintenance
-2. **Avoid Overuse**: Context state is suitable for sharing data across components; props are recommended for regular parent-child components
-3. **Root Provider for Global Configuration**: Themes, languages, global states, etc. are suitable for root-provider
-4. **Timely Cleanup**: When a provider is removed, consumers will automatically clean up data without manual handling
+1. **Rational Naming**: Use meaningful names for provider and consumer to facilitate tracking and maintenance.
+2. **Avoid Overuse**: Context state is suitable for sharing data across components; for ordinary parent-child components, props are recommended.
+3. **Root Provider for Global Configuration**: Themes, languages, global states, etc., are suitable for use with root-provider.
+4. **Timely Cleanup**: When a provider is removed, the consumer automatically clears data without manual handling.

@@ -2,9 +2,9 @@
 
 
 
-Usando el atributo `root` se puede obtener el nodo raíz del elemento.
+Usar la propiedad `root` puede obtener el nodo raíz del elemento.
 
-En la página, el nodo raíz de los elementos comunes es una instancia de `document`.
+En la página, el nodo raíz de los elementos normales es siempre una instancia de `document`.
 
 <o-playground name="root - nodo raíz" style="--editor-height: 320px">
   <code path="demo.html">
@@ -24,17 +24,17 @@ En la página, el nodo raíz de los elementos comunes es una instancia de `docum
 
 ## Elementos dentro de nodos de sombra
 
-Dado que los elementos dentro del componente están aislados del entorno externo, la propiedad `root` de los elementos dentro del nodo sombra es el nodo raíz sombra.
+Dado que los elementos dentro del componente están aislados del entorno externo, el atributo `root` de los elementos dentro del nodo de sombra es el nodo raíz de sombra.
 
 
-<o-playground name="root - nodo de sombra" style="--editor-height: 600px">
+<o-playground name="root - nodo sombra" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./test-root.html"></l-m>
       <test-root></test-root>
       <script>
         setTimeout(()=>{
-          $("test-root").shadow.$("#target").text = 'cambiar objetivo desde fuera - ' + new Date();
+          $("test-root").shadow.$("#target").text = 'change target from outside - ' + new Date();
         },1000);
       </script>
     </template>
@@ -42,13 +42,13 @@ Dado que los elementos dentro del componente están aislados del entorno externo
   <code path="test-root.html" active>
     <template component>
         <ul>
-            <li>elemento 1</li>
-            <li id="target">elemento 2</li>
-            <li>elemento 3</li>
+            <li>item 1</li>
+            <li id="target">item 2</li>
+            <li>item 3</li>
         </ul>
-        <h3>registrador1:</h3>
+        <h3>logger1:</h3>
         <div id="logger1" style="color:red;">{{l1}}</div>
-        <h3>registrador2:</h3>
+        <h3>logger2:</h3>
         <div id="logger2" style="color:green;">{{l2}}</div>
         <script>
             export default {

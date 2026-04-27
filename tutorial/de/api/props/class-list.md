@@ -2,9 +2,9 @@
 
 
 
-Die `classList`-Eigenschaft ist mit der nativen Implementierung identisch. Du kannst [classList](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/classList) verwenden, um Klassen hinzuzufügen, zu entfernen und umzuschalten.
+Die `classList`-Eigenschaft ist mit der nativen Implementierung identisch. Sie können [classList](https://developer.mozilla.org/de/docs/Web/API/Element/classList) verwenden, um Klassen hinzuzufügen, zu entfernen und umzuschalten.
 
-Hier ist ein Beispiel, das zeigt, wie man `classList` verwendet:
+Nachfolgend ein Beispiel, das die Verwendung von `classList` demonstriert:
 
 <o-playground name="classList - Verwendungsbeispiel" style="--editor-height: 500px">
   <code path="demo.html">
@@ -20,7 +20,7 @@ Hier ist ein Beispiel, das zeigt, wie man `classList` verwendet:
           font-size:20px;
         }
       </style>
-      <div id="target" class="t-red">Ursprungstext</div>
+      <div id="target" class="t-red">Ursprünglicher Text</div>
       <script>
         setTimeout(()=> {
           $("#target").classList.remove('t-red');
@@ -33,4 +33,4 @@ Hier ist ein Beispiel, das zeigt, wie man `classList` verwendet:
   </code>
 </o-playground>
 
-Die Eigenschaft `classList` ermöglicht es dir, Klassennamen mühelos hinzuzufügen, zu entfernen und zu wechseln, um den Stil eines Elements dynamisch zu ändern.
+`classList`-Eigenschaft ermöglicht es Ihnen, Klassennamen einfach hinzuzufügen, zu entfernen und umzuschalten, um das Styling von Elementen dynamisch zu ändern.

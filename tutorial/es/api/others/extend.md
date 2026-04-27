@@ -4,32 +4,32 @@
 
 `extend` es un método de orden superior utilizado para extender las propiedades o métodos de una instancia.
 
-> Normalmente, no se recomienda que los usuarios extiendan las propiedades o métodos de una instancia, ya que esto aumenta la curva de aprendizaje. A menos que haya un escenario especial dentro del equipo que requiera personalizar el comportamiento de la instancia, no se recomienda hacerlo.
+> Normalmente, no se recomienda que los usuarios extiendan las propiedades o métodos de la instancia, ya que esto aumenta el costo de aprendizaje. A menos que haya escenarios específicos dentro del equipo que requieran personalizar el comportamiento de la instancia, no se recomienda hacerlo.
 
-<o-playground name="extend - extender instancia" style="--editor-height: 560px">
+<o-playground name="extend - Ejemplo de extensión" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>I am 1</li>
-        <li id="target">I am target</li>
-        <li>I am 3</li>
+        <li>Soy 1</li>
+        <li id="target">Soy el objetivo</li>
+        <li>Soy 3</li>
       </ul>
-      <div id="logger">logger</div>
+      <div id="logger">registrador</div>
       <script>
         const target = $("#target");
         target.extend({
           get good(){
-            return "ofa.js is good";
+            return "ofa.js es bueno";
           },
           say(){
-            return 'hello';
+            return 'hola';
           }
         });
         setTimeout(() => {
           const target = $("#target");
           \$("#logger").html = `
-          good : ${target.good} <br>
-          say() : ${target.say()}
+          bueno : ${target.good} <br>
+          decir() : ${target.say()}
           `;
         }, 500);
       </script>
@@ -37,11 +37,11 @@
   </code>
 </o-playground>
 
-## Extensión de la capa inferior de $
+## Extender $ capa inferior
 
-De forma similar a jQuery, también puedes usar fn.extend para expandir las propiedades o métodos de la instancia base; las propiedades o métodos extendidos desde fn se aplicarán a todas las instancias.
+Similar a jQuery, también puedes extender las propiedades o métodos de la instancia subyacente mediante fn.extend; las propiedades o métodos extendidos desde fn se aplicarán a todas las instancias.
 
-<o-playground name="extend - extender el nivel inferior" style="--editor-height: 560px">
+<o-playground name="extend - extensión base" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -70,19 +70,19 @@ De forma similar a jQuery, también puedes usar fn.extend para expandir las prop
   </code>
 </o-playground>
 
-## Sintaxis de plantilla extendida
+## Sintaxis de plantilla ampliada
 
-Al extender propiedades o funciones mediante `extend`, se puede ampliar la funcionalidad de la sintaxis de plantillas e incluso proporcionar un azúcar sintáctico de plantillas exclusivo para los componentes. Sin embargo, hay que tener en cuenta que se debe intentar **no utilizar** sintaxis de plantillas no oficiales, ya que esto conlleva un cierto costo de aprendizaje para los usuarios, y el uso de una gran cantidad de azúcar sintáctico no oficial puede reducir la experiencia de desarrollo.
+Mediante la extensión de propiedades o funciones con `extend`, se pueden aumentar las funcionalidades de la sintaxis de plantillas, e incluso proporcionar azúcar sintáctico exclusivo para componentes. Pero es importante tener en cuenta que **no se debe usar** sintaxis de plantilla no oficial, ya que imponen un cierto costo de aprendizaje para los usuarios, y una gran cantidad de azúcar sintáctico no oficial puede reducir la experiencia de desarrollo.
 
-### Atributos extendidos
+### Propiedades extendidas
 
-Puedes configurar en la plantilla usando `:` a través de propiedades extendidas. A continuación, extenderemos una propiedad `red`, cuando `red` sea `true`, el color de la fuente se volverá rojo:
+Puedes usar `:` en la plantilla a través de la extensión de atributos. A continuación, extenderemos un atributo `red`. Cuando `red` sea `true`, el color de la fuente se volverá rojo:
 
 ```javascript
 $.fn.extend({
   set red(bool){
     if(bool){
-      this.css.color = "rojo";
+      this.css.color = "red";
     }else{
       this.css.color = '';
     }
@@ -90,7 +90,7 @@ $.fn.extend({
 });
 ```
 
-<o-playground name="extend - Atributos extendidos" style="--editor-height: 400px">
+<o-playground name="extend - atributo extendido" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-one.html"></l-m>
@@ -129,15 +129,15 @@ $.fn.extend({
   </code>
 </o-playground>
 
-En este ejemplo, hemos añadido un atributo `red` a la sintaxis de la plantilla. Cuando `count % 3` no sea 0, el color de la fuente cambiará a rojo.
+En este ejemplo, agregamos un atributo `red` a la sintaxis de la plantilla. Cuando `count % 3` no es igual a 0, el color de la fuente se vuelve rojo.
 
 ### Métodos de extensión
 
-También puedes hacer que esté disponible en la sintaxis de plantilla a través del método de extensión `extend`. El nombre del método es la parte anterior a los dos puntos. Aquí, hemos extendido una sintaxis de plantilla `color`, y los parámetros que le siguen se pasarán al método de extensión definido.
+También puedes hacerlo disponible en la sintaxis de plantilla mediante el método de extensión `extend`. El nombre del método es la parte antes de los dos puntos. Aquí, hemos extendido una sintaxis de plantilla `color`, y los parámetros que la siguen se pasarán al método de extensión definido.
 
-Aquí se establece el atributo `always` como `true`, lo que significa que cada vez que el componente necesite actualizar la interfaz, se llamará a este método definido. Si no se establece `always`, esta función de sintaxis de plantilla solo se ejecutará una vez.
+Aquí se ha establecido el atributo `always` como `true`, lo que significa que cada vez que el componente necesite refrescar la interfaz, se llamará a este método definido. Si no se establece `always`, esta función de sintaxis de plantilla solo se ejecutará una vez.
 
-Entre ellos, `options` proporciona más parámetros que pueden ayudarte a desarrollar una sintaxis de plantillas más personalizada:
+Entre ellos, `options` proporciona más parámetros, que pueden ayudarte a desarrollar una sintaxis de plantilla más personalizada:
 
 ```javascript
 $.fn.extend({
@@ -154,7 +154,7 @@ $.fn.extend({
 $.fn.color.always = true;
 ```
 
-<o-playground name="extend - Método de extensión" style="--editor-height: 400px">
+<o-playground name="extend - método de extensión" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-two.html"></l-m>
@@ -176,7 +176,7 @@ $.fn.color.always = true;
   </code>
   <code path="temp-two.html">
     <template component>
-      <button on:click="addCount" color:blue="count % 3">Añadir Contador</button>
+      <button on:click="addCount" color:blue="count % 3">Add Count</button>
       <div color:red="!(count % 3)">{{count}}</div>
       <script>
         export default {
@@ -195,16 +195,16 @@ $.fn.color.always = true;
   </code>
 </o-playground>
 
-## Principios de la sintaxis de plantillas
+## Principio de sintaxis de plantillas
 
-Hasta ahora, deberías haber comprendido que gran parte de la sintaxis de plantillas en ofa.js en realidad se extiende mediante `extend`:
+Hasta ahora, deberías haber entendido que muchas de las sintaxis de plantillas en ofa.js en realidad se extienden a través de `extend`:
 
-- los métodos `class`, `attr` se ejecutan cada vez que se actualiza la vista  
-- la vinculación de funciones como `on`, `one` solo se ejecuta una vez
+- Los métodos `class`, `attr` se ejecutan cada vez que se actualiza la vista
+- La vinculación de funciones como `on`, `one` solo se ejecuta una vez
 
 Puedes consultar el siguiente ejemplo para comprender mejor el principio de renderizado de plantillas de ofa.js:
 
-<o-playground name="extend - Principios de la sintaxis de plantilla" style="--editor-height: 480px">
+<o-playground name="extend - principio de la sintaxis de plantillas" style="--editor-height: 480px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./temp-three.html"></l-m>
@@ -213,9 +213,9 @@ Puedes consultar el siguiente ejemplo para comprender mejor el principio de rend
   </code>
   <code path="temp-three.html" active>
     <template component>
-      <div>class siempre => {{classalways}}</div>
-      <div>attr siempre => {{attralways}}</div>
-      <div>on siempre => {{onalways}}</div>
+      <div>class always => {{classalways}}</div>
+      <div>attr always => {{attralways}}</div>
+      <div>on always => {{onalways}}</div>
       <script>
         export default {
           tag: "temp-three",

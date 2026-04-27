@@ -1,14 +1,14 @@
-# 특성 속성 전달
+# 특징 속성 전달
 
-ofa.js에서 [특성 속성(Attribute)](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/attributes)은 컴포넌트 간 데이터 전달에 가장 많이 사용되는 방식 중 하나입니다. 컴포넌트의 `attrs` 객체에 필요한 속성을 선언하기만 하면, 컴포넌트를 사용할 때 외부 데이터를 컴포넌트 내부로 전달할 수 있습니다.
+ofa.js에서 [특성 속성(Attribute)](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/attributes)은 컴포넌트 간 데이터를 전달하는 가장 일반적인 방법 중 하나입니다. 컴포넌트의 `attrs` 객체에서 필요한 속성을 선언하기만 하면, 컴포넌트를 사용할 때 외부 데이터를 컴포넌트 내부로 전달할 수 있습니다.
 
 ## 기본 사용법
 
-### 속성 정의
+### 수신 속성 정의
 
-컴포넌트를 사용하기 전에 먼저 컴포넌트의 `attrs` 객체에서 수신해야 하는 속성을 선언해야 합니다. 속성은 기본값을 설정할 수 있습니다.
+컴포넌트를 사용하기 전에, 먼저 컴포넌트의 `attrs` 객체에 받을 속성을 선언해야 합니다. 속성에 기본값을 설정할 수 있습니다.
 
-<o-playground name="기본 사용법 예제" style="--editor-height: 500px">
+<o-playground name="기본 사용 예제" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -43,14 +43,14 @@ ofa.js에서 [특성 속성(Attribute)](https://developer.mozilla.org/zh-CN/docs
   </code>
 </o-playground>
 
-### 중요한 규칙
+### 중요 규칙
 
-1. **타입 제한**: 전달하는 attribute 값은 반드시 문자열이어야 하며, 다른 타입은 자동으로 문자열로 변환됩니다.
+1. **유형 제한**: 전달되는 `attribute` 값은 반드시 문자열이어야 하며, 다른 유형은 자동으로 문자열로 변환됩니다.
 
-2. **네이밍 변환**: HTML 속성은 대소문자를 구분하지 않으므로, 대문자를 포함한 속성을 전달할 때는 `-`로 구분하는 kebab-case 형식을 사용해야 합니다.
+2. **명명 변환**: HTML 속성은 대소문자를 구분하지 않으므로, 대문자가 포함된 속성을 전달할 때는 `-`로 구분된 이름(케밥 케이스 형식)을 사용해야 합니다.
    - 예: `fullName` → `full-name`
 
-3. **정의 필수**: 컴포넌트가 `attrs` 객체에 해당 속성을 정의하지 않으면 해당 attribute를 받을 수 없습니다. 설정한 값은 기본값이며, 기본값을 원하지 않으면 `null`로 설정하세요.
+3. **정의 필수**: 컴포넌트가 `attrs` 객체에 해당 속성을 정의하지 않은 경우, 해당 attribute를 받을 수 없습니다. 설정된 값은 기본값이며, 기본값을 원하지 않으면 `null`로 설정합니다.
 
 <o-playground name="중요 규칙 예시" style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -69,8 +69,8 @@ ofa.js에서 [특성 속성(Attribute)](https://developer.mozilla.org/zh-CN/docs
           padding: 8px;
         }
       </style>
-      <p>사용자 이름: {{userName}}</p>
-      <p>나이: {{age}}</p>
+      <p>User Name: {{userName}}</p>
+      <p>Age: {{age}}</p>
       <script>
         export default async ({ load }) => {
           return {
@@ -86,11 +86,11 @@ ofa.js에서 [특성 속성(Attribute)](https://developer.mozilla.org/zh-CN/docs
   </code>
 </o-playground>
 
-## 템플릿 구문으로 Attribute 전달
+## 템플릿 문법으로 Attribute 전달하기
 
-컴포넌트 템플릿에서는 `attr:toKey="fromKey"` 구문을 사용해 현재 컴포넌트의 `fromKey` 데이터를 자식 컴포넌트의 `toKey` 속성으로 전달할 수 있습니다.
+컴포넌트 템플릿에서는 `attr:toKey="fromKey"` 구문을 사용하여 현재 컴포넌트의 `fromKey` 데이터를 하위 컴포넌트의 `toKey` 속성으로 전달할 수 있습니다.
 
-<o-playground name="속성 전달 예제" style="--editor-height: 500px">
+<o-playground name="속성 전달 예시" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -145,13 +145,13 @@ ofa.js에서 [특성 속성(Attribute)](https://developer.mozilla.org/zh-CN/docs
   </code>
 </o-playground>
 
-## 다중 레벨 전달
+## 다단계 전달
 
-여러 계층의 중첩된 컴포넌트를 통해 속성을 계층별로 전달할 수 있습니다.
+다중 레이어 중첩 컴포넌트를 통해 속성을 단계적으로 전달할 수 있습니다.
 
-컴포넌트가 다른 컴포넌트에 의존해야 하는 경우, 해당 컴포넌트에서 다른 컴포넌트의 모듈을 불러와야 합니다.
+컴포넌트가 다른 컴포넌트에 의존해야 하는 경우, 해당 컴포넌트에서 다른 컴포넌트의 모듈을 가져와야 합니다.
 
-<o-playground name="다중 레벨 전달 예시" style="--editor-height: 700px">
+<o-playground name="다층 전달 예제" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>

@@ -1,6 +1,6 @@
-# Fentes
+# emplacement
 
-Les slots sont des emplacements dans un composant destinés à recevoir du contenu externe. Grâce aux slots, vous pouvez créer des composants réutilisables tout en permettant à ceux qui utilisent le composant de personnaliser son contenu interne.
+Les slots sont des espaces réservés dans les composants destinés à recevoir du contenu externe. En utilisant des slots, vous pouvez créer des composants réutilisables tout en permettant aux personnes qui utilisent le composant de personnaliser son contenu interne.
 
 ## Slot par défaut
 
@@ -37,19 +37,19 @@ Les slots sont des emplacements dans un composant destinés à recevoir du conte
   </code>
 </o-playground>
 
-### Contenu par défaut des slots
+### Contenu par défaut de l'emplacement
 
-Lorsque le composant parent ne fournit pas de contenu pour l'emplacement, les éléments à l'intérieur de `<slot></slot>` s'affichent comme contenu par défaut.
+Lorsque le composant parent ne fournit pas de contenu de slot, les éléments à l'intérieur de `<slot></slot>` seront affichés comme contenu par défaut.
 
-<o-playground name="Exemple de contenu par défaut de slot" style="--editor-height: 500px">
+<o-playground name="Exemple de contenu par défaut de l'emplacement" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
-      <h3>Avec contenu de slot :</h3>
+      <h3>Avec contenu de l'emplacement :</h3>
       <demo-comp>
-        <div>Ceci est du contenu personnalisé</div>
+        <div>Ceci est un contenu personnalisé</div>
       </demo-comp>
-      <h3>Sans contenu de slot (affichage du contenu par défaut) :</h3>
+      <h3>Sans contenu d'emplacement (affichage du contenu par défaut) :</h3>
       <demo-comp></demo-comp>
     </template>
   </code>
@@ -62,7 +62,7 @@ Lorsque le composant parent ne fournit pas de contenu pour l'emplacement, les é
           padding: 8px;
           margin-bottom: 10px;
         }
-      </style>Contenu du slot :
+      </style>Contenu de l'emplacement :
       <span style="color: red;">
         <slot>
           <div>Ceci est le contenu par défaut</div>
@@ -81,9 +81,9 @@ Lorsque le composant parent ne fournit pas de contenu pour l'emplacement, les é
 
 ## Slots nommés
 
-Lorsqu'un composant nécessite plusieurs emplacements de slot, des slots nommés peuvent être utilisés pour distinguer les différents slots. Un slot nommé est défini via `<slot name="xxx">`, et lors de son utilisation, l'attribut `slot="xxx"` spécifie dans quel slot le contenu doit être placé.
+Lorsqu'un composant nécessite plusieurs emplacements de slot, on peut utiliser des slots nommés pour distinguer les différents slots. On définit un slot nommé avec `<slot name="xxx">`, et lors de l'utilisation, on spécifie dans quel slot placer le contenu à l'aide de l'attribut `slot="xxx"`.
 
-<o-playground name="Exemple de slot nommé" style="--editor-height: 500px">
+<o-playground name="Exemple d’emplacement nommé" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -101,7 +101,7 @@ Lorsqu'un composant nécessite plusieurs emplacements de slot, des slots nommés
           border: 1px solid green;
           padding: 8px;
         }
-      </style>Contenu du slot :
+      </style>Contenu de l’emplacement :
       <br />
       <span style="color: red;">
         <slot></slot>
@@ -123,9 +123,9 @@ Lorsqu'un composant nécessite plusieurs emplacements de slot, des slots nommés
 
 ## Passage de slots multi-niveaux
 
-Le contenu du slot peut être transmis à travers plusieurs niveaux de composants. Lorsqu'un composant parent transmet du contenu de slot à un composant enfant, ce dernier peut continuer à transmettre ce contenu de slot à ses propres composants enfants, réalisant ainsi une transmission multi-niveaux du slot.
+Le contenu du slot peut être transmis à travers plusieurs niveaux de composants. Lorsque le composant parent transmet le contenu du slot au composant enfant, le composant enfant peut à son tour transmettre ce contenu du slot à ses propres composants enfants, réalisant ainsi une transmission multi-niveaux du slot.
 
-<o-playground name="Exemple de transmission de slot multi-niveaux" style="--editor-height: 500px">
+<o-playground name="Exemple de transmission multi-niveaux de slots" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
@@ -182,6 +182,6 @@ Le contenu du slot peut être transmis à travers plusieurs niveaux de composant
   </code>
 </o-playground>
 
-Dans l’exemple ci-dessus :- Le composant parent le plus externe définit le contenu du `slot="header"`
-- Le composant outer (outer-comp) reçoit ce contenu de slot et le transmet au composant inner (inner-comp)
-- Le composant inner rend finalement le contenu du slot provenant du composant le plus externe
+Dans l’exemple ci-dessus :- Le composant parent le plus externe définit le contenu de `slot="header"`
+- Le composant externe (outer-comp) reçoit ce contenu de slot et le transmet au composant interne (inner-comp)
+- Le composant interne rend finalement le contenu du slot provenant du composant le plus externe

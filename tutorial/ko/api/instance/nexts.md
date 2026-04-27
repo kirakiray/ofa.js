@@ -2,9 +2,9 @@
 
 
 
-`nexts` 속성을 사용하면 현재 요소 뒤에 있는 모든 인접한 요소 인스턴스를 쉽게 가져올 수 있으며, 이들은 배열 형태로 반환됩니다.
+`nexts` 속성을 사용하면 현재 요소 뒤에 있는 모든 인접한 요소 인스턴스를 손쉽게 가져올 수 있으며, 이들은 배열 형태로 반환됩니다.
 
-<o-playground name="nexts - 후속 요소" style="--editor-height: 320px">
+<o-playground name="nexts - 후행 요소" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

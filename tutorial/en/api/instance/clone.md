@@ -1,8 +1,8 @@
-# Clone
+# clone
 
-Using the `clone` method allows you to clone and generate a copy of an element instance.
+Using the `clone` method, you can clone and generate a copy of an element instance.
 
-<o-playground name="clone - Clone Element" style="--editor-height: 320px">
+<o-playground name="clone - clone element" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <div id="target" style="color:red;">I am target</div>

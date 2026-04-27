@@ -1,36 +1,36 @@
-# アプリケーション設定
+# アプリケーション構成
 
-`app-config.js` 設定ファイルは、ホームページのアドレスとページ切り替えアニメーション以外にも、アプリケーションのロード状態、エラー処理、初期化ロジック、およびナビゲーション機能を制御するためのより多くの設定オプションをサポートしています。
+`app-config.js` 設定ファイルは、トップページのアドレスやページ切り替えアニメーション以外にも、アプリケーションのローディング状態、エラー処理、初期化ロジック、ナビゲーション機能を制御するためのより多くの設定オプションをサポートしています。
 
 ```javascript
 // app-config.js
-// ロード中に表示する内容
-export const loading = () => "<div>Loading...</div>";
+// 読み込み中に表示される内容
+export const loading = () => "<div>読み込み中...</div>";
 
-// ページのロードに失敗した場合に表示するコンポーネント
-export const fail = (src, error) => `<div>Failed to load: ${src}</div>`;
+// ページの読み込みに失敗した場合に表示されるコンポーネント
+export const fail = (src, error) => `<div>読み込みに失敗しました: ${src}</div>`;
 
-// アプリケーションの初期化完了後のコールバック
+// アプリの初期化完了後のコールバック
 export const ready() {
-  console.log("App is ready!");
+  console.log("アプリの準備ができました！");
 }
 
-// アプリケーションプロトタイプに追加するメソッドとプロパティ
+// アプリのプロトタイプに追加するメソッドとプロパティ
 export const proto = {
   customMethod() {
-    console.log("Custom method called");
+    console.log("カスタムメソッドが呼ばれました");
   },
 };
 ```
 
-<o-playground name="アプリ設定の例" style="--editor-height: 500px">
+<o-playground name="アプリケーション設定例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-app src="./app-config.js"></o-app>
     </template>
   </code>
   <code path="app-config.js">
-    // アプリのホームアドレス
+    // アプリケーションのホームページアドレス
     export const home = "./home.html";
     // ページ切り替えアニメーション設定
     export const pageAnime = {
@@ -123,9 +123,9 @@ export const proto = {
   </code>
 </o-playground>
 
-## loading - 読み込み状態
+## loading - ローディング状態
 
-ページ読み込み中に表示されるコンポーネント、文字列テンプレートまたはテンプレートを返す関数にすることができます。
+ページの読み込み中に表示されるコンポーネント。文字列テンプレートまたはテンプレートを返す関数です。
 
 ```javascript
 // シンプルな文字列テンプレート
@@ -139,7 +139,7 @@ export const loading = () => {
 };
 ```
 
-以下は、美しくプロジェクトに直接コピーして使用できるローディング実装です：
+以下は、美しくてそのままプロジェクトにコピーして使用できる loading 実装です：
 
 ```javascript
 export const loading = () => {
@@ -172,7 +172,7 @@ export const loading = () => {
 
 ## fail - エラー処理
 
-ページの読み込みに失敗したときに表示されるコンポーネントで、関数は `src`（失敗したページのアドレス）と `error`（エラーメッセージ）を含むオブジェクトパラメータを受け取ります。
+ページの読み込みに失敗した場合に表示されるコンポーネント。関数はオブジェクトパラメータを受け取り、`src`（失敗したページのアドレス）と`error`（エラーメッセージ）を含みます。
 
 ```javascript
 export const fail = ({src, error}) => {
@@ -186,7 +186,7 @@ export const fail = ({src, error}) => {
 
 ## proto - プロトタイプ拡張
 
-アプリケーションインスタンスにカスタムメソッドや計算プロパティを追加し、これらのメソッドはページコンポーネント内で `this.app` を通じてアクセスできます。
+アプリケーションインスタンスにカスタムメソッドと計算プロパティを追加します。これらのメソッドはページコンポーネント内で `this.app` を通じてアクセスできます。
 
 ```javascript
 export const proto = {
@@ -205,60 +205,60 @@ export const proto = {
 
 ```html
 <template page>
-  <button on:click="app.navigateToHome()">ホームページに戻る</button>
-  <p>ホームページにいるか: {{app.isAtHome}}</p>
+  <button on:click="app.navigateToHome()">ホームに戻る</button>
+  <p>ホームにいるか: {{app.isAtHome}}</p>
 </template>
 ```
 
 ## ready - 初期化コールバック
 
-アプリケーション設定の読み込み完了後に実行されるコールバック関数。ここで初期化操作を行うことができます。`this` を通じてアプリケーションインスタンスのメソッドとプロパティにアクセスできます。
+アプリケーション設定の読み込みが完了した後に実行されるコールバック関数で、ここで初期化処理を行うことができます。`this`を通じてアプリケーションインスタンスのメソッドやプロパティにアクセスできます。
 
 ```javascript
 export const ready() {
   console.log("アプリケーションが初期化されました");
-  // this にアクセス可能（o-app 要素インスタンス）
-  console.log(this.current); // 現在のページ o-page 要素インスタンスを取得
+  // this にアクセスできます (o-app 要素インスタンス)
+  console.log(this.current); // 現在のページ o-page 要素インスタンスを取得する
   // this.someMethod();
 }
 ```
 
 ## allowForward - 前進機能
 
-ブラウザの前進機能を有効にするかどうかを制御します。`true` に設定すると、ブラウザの戻るボタンと進むボタンを使用してナビゲーションできます。
+控制是否启用浏览器前进功能。设置为 `true` 后，可以使用浏览器的后退和前进按钮进行导航。
 
 ```javascript
 export const allowForward = true;
 ```
 
-有効にすると、ユーザーはブラウザの前進/後退ボタンを使用してナビゲーションでき、アプリケーションのナビゲーションメソッド `forward()` も有効になります。
+有効にすると、ユーザーはブラウザの進む／戻るボタンでナビゲーションできるようになり、アプリケーションのナビゲーションメソッド `forward()` も有効になります。
 
 ## プログラミングによるナビゲーション
 
-`olink` を使用する以外に、JavaScript でナビゲーションメソッドを呼び出すこともできます：
+除了使用 `olink` 链接，还可以在 JavaScript 中调用导航方法：
 
 ```javascript
-// 指定ページへジャンプ（履歴に追加）
+// 指定ページに遷移（履歴に追加）
 this.goto("./about.html");
 
-// 現在のページを置換（履歴に追加しない）
+// 現在のページを置き換え（履歴に追加しない）
 this.replace("./about.html");
 
 // 前のページに戻る
 this.back();
 
-// 次のページに進む（allowForward: trueの設定が必要）
+// 次のページに進む（allowForward: true の設定が必要）
 this.forward();
 ```
 
 ## ルーティング履歴
 
-`routers` プロパティを使用すると、閲覧履歴を取得できます：
+`routers` 属性を通じてブラウジング履歴を取得できます：
 
 ```javascript
 // すべてのルーティング履歴を取得
 const history = app.routers;
-// 返却形式: [{ src: "./page1.html" }, { src: "./page2.html" }, ...]
+// 戻り値の形式: [{ src: "./page1.html" }, { src: "./page2.html" }, ...]
 
 // 現在のページを取得
 const currentPage = app.current;
@@ -266,7 +266,7 @@ const currentPage = app.current;
 
 ## ルートの変更を監視する
 
-`router-change` イベントを監視することで、ルート変更に応答できます：
+`router-change` イベントをリッスンすることで、ルートの変更に対応できます。
 
 ```javascript
 app.on("router-change", (e) => {

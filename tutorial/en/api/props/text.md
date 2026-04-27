@@ -1,12 +1,12 @@
 # text
 
-The `text` method is used to get or set the text content of an element.
+`text` method is used to get or set the text content of an element.
 
 ## Direct Use
 
 You can directly get or set the text content of an element.
 
-<o-playground name="text - direct usage" style="--editor-height: 300px">
+<o-playground name="text - Direct Usage" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <div id="target1">target 1</div>
@@ -23,9 +23,9 @@ You can directly get or set the text content of an element.
   </code>
 </o-playground>
 
-## Template Syntax Usage
+## Using Template Syntax
 
-You can also use the `:text` attribute to set the corresponding text value for the target element. This is particularly useful in component rendering.
+You can also use the `:text` attribute to set the corresponding text value for the target element. This is especially useful in component rendering.
 
 <o-playground name="text - Template Syntax" style="--editor-height: 450px">
   <code path="demo.html" preview>

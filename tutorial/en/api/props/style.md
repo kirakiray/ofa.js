@@ -1,8 +1,8 @@
 # style
 
-The `style` attribute remains consistent with the native implementation.
+`style` attribute is consistent with the native one.
 
-Note: the `style` attribute can only retrieve values explicitly set on it, not the actual computed styles. Although the `style` method resembles the [css method](./css.md), it cannot perform a full style override. Compared with `css`, the `style` method is more efficient internally.
+Please note that the `style` attribute can only retrieve the values set on the `style` attribute itself, not the actual computed styles. Although the `style` method is similar to the [css method](./css.md), it cannot perform a full style override. Compared to `css`, the `style` method has higher internal execution efficiency.
 
 Here is an example demonstrating how to use `style`:
 
@@ -24,11 +24,11 @@ Here is an example demonstrating how to use `style`:
   </code>
 </o-playground>
 
-Please remember that the `style` method only gets and sets values on the `style` attribute, not the actual computed styles.
+Please remember that the `style` method only gets and sets the values on the `style` attribute, not the actual computed styles.
 
-## Template Syntax Usage
+## Using Template Syntax
 
-You can also use template syntax to set the style of the target element.
+You can also use template syntax to style the target element.
 
 <o-playground name="style - Template Syntax" style="--editor-height: 400px">
   <code path="demo.html" preview>

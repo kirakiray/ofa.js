@@ -1,5 +1,5 @@
 index: ./index.html
-header: # Dirección de navegación que se mostrará en los headers
+header: # Direcciones de navegación que se muestran en los headers
   - name: Tutorial
     url: ./documentation/_config.yaml
   - name: API

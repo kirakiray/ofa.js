@@ -2,11 +2,11 @@
 
 
 
-Mit der `one`-Methode können Sie einen einmaligen Ereignishandler für das Zielelement registrieren, was bedeutet, dass der Ereignishandler nach dem ersten Auslösen automatisch aufgehoben wird und nicht erneut ausgelöst wird.
+Mit der `one`-Methode können Sie für ein Zielelement einen einmaligen Ereignishandler registrieren, was bedeutet, dass der Ereignishandler nach dem ersten Auslösen automatisch entbunden wird und nicht erneut ausgelöst wird.
 
-Hier ist ein Beispiel, das zeigt, wie die `one`-Methode verwendet wird, um einen Klick-Event-Handler für ein Button-Element zu registrieren:
+Hier ist ein Beispiel, das zeigt, wie die `one`-Methode verwendet wird, um einen Klick-Ereignishandler für ein Button-Element zu registrieren:
 
-<o-playground name="one - click Einmalige Ereignisse" style="--editor-height: 300px">
+<o-playground name="one - click Einmalereignis" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>
@@ -23,13 +23,13 @@ Hier ist ein Beispiel, das zeigt, wie die `one`-Methode verwendet wird, um einen
   </code>
 </o-playground>
 
-In diesem Beispiel verwenden wir die Methode `one`, um einem Button-Element einen Klick-Event-Handler hinzuzufügen. Wenn der Benutzer auf den Button klickt, wird der Event-Handler ausgelöst, danach jedoch nicht erneut, da er entfernt wurde.
+In diesem Beispiel verwenden wir die `one`-Methode, um dem Button-Element einen Klick-Ereignishandler hinzuzufügen. Wenn der Benutzer auf den Button klickt, wird der Ereignishandler ausgelöst, aber danach nicht erneut, da er entbunden wurde.
 
-## Verwendung auf Template-Syntax-Weise
+## Verwendung der Vorlagensyntax
 
-Sie können auch Vorlagensyntax verwenden, um ein einmaliges Ereignisbehandlungsprogramm an das Zielelement zu binden.
+Du kannst auch die Vorlagensyntax verwenden, um einmalige Ereignisbehandlungsprogramme an Zielelemente zu binden.
 
-<o-playground name="one - Template-Syntax" style="--editor-height: 400px">
+<o-playground name="one - Vorlagensyntax" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./one-demo.html"></l-m>
@@ -38,7 +38,7 @@ Sie können auch Vorlagensyntax verwenden, um ein einmaliges Ereignisbehandlungs
   </code>
   <code path="one-demo.html" active>
     <template component>
-      <button one:click="addCount">Zähler erhöhen</button>
+      <button one:click="addCount">Add Count</button>
       <div>{{count}}</div>
       <script>
         export default {
@@ -57,4 +57,4 @@ Sie können auch Vorlagensyntax verwenden, um ein einmaliges Ereignisbehandlungs
   </code>
 </o-playground>
 
-In diesem Beispiel binden wir mit `one:click` auf dem Button-Element eine Methode namens `addCount`. Wenn der Benutzer auf den Button klickt, wird diese Methode aufgerufen, danach aber nicht mehr ausgelöst, da es sich um einen einmaligen Event-Handler handelt.
+In diesem Beispiel binden wir mit `one:click` eine Methode namens `addCount` an das Button-Element. Wenn der Benutzer auf den Button klickt, wird diese Methode aufgerufen, aber danach nicht erneut ausgelöst, da es sich um einen einmaligen Ereignishandler handelt.

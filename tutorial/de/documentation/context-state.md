@@ -1,16 +1,16 @@
-# Kontextzustand
+# Kontextstatus
 
-Der Kontextstatus ist ein Mechanismus in ofa.js für die gemeinsame Nutzung von Daten über Komponenten hinweg. Durch das Provider-Consumer-Muster können Daten zwischen Eltern- und Kindkomponenten sowie über verschiedene Ebenen hinweg übergeben werden, ohne dass sie durch Props stufenweise weitergereicht werden müssen.
+Der Kontextstatus ist ein Mechanismus in ofa.js für die gemeinsame Nutzung von Daten über Komponenten hinweg. Durch das Provider- und Consumer-Muster kann die Datenweitergabe zwischen über- und untergeordneten Komponenten sowie über mehrere Hierarchieebenen hinweg realisiert werden, ohne dass Daten über Props schrittweise weitergegeben werden müssen.
 
 ## Kernkonzepte
 
 - **o-provider**: Datenanbieter, definiert die zu teilenden Daten
-- **o-consumer**: Datenverbraucher, ruft Daten vom nächstgelegenen Anbieter ab
-- **watch:xxx**: Überwacht Änderungen der Verbraucherdaten und bindet sie an die Eigenschaften von Komponenten oder Seitenmodulen
+- **o-consumer**: Datenkonsument, ruft Daten vom nächsten Anbieter ab
+- **watch:xxx**: Überwacht Änderungen der Konsumentendaten und bindet sie an die Eigenschaften der Komponente oder des Seitenmoduls
 
 ## o-provider Anbieter
 
-Die `o-provider`-Komponente wird verwendet, um einen Anbieter für gemeinsam genutzte Daten zu definieren. Sie identifiziert ihren eigenen Namen über das `name`-Attribut und definiert die zu teilenden Daten über Attribute (wie `custom-a="value"`).
+Die Komponente `o-provider` dient zur Definition eines Providers für gemeinsame Daten. Sie kennzeichnet sich über das Attribut `name` und definiert die bereitzustellenden Daten durch Attribute wie `custom-a="value"`.
 
 ```html
 <o-provider name="userInfo" custom-name="Zhang San" custom-age="25">
@@ -18,37 +18,37 @@ Die `o-provider`-Komponente wird verwendet, um einen Anbieter für gemeinsam gen
 </o-provider>
 ```
 
-### Attribute
+### Eigenschaften
 
-- `name`: Der eindeutige Identifikationsname des Anbieters, der für den Verbraucher zur Suche des entsprechenden Anbieters verwendet wird
+- `name`: der eindeutige Name des Anbieters, der vom Verbraucher verwendet wird, um den entsprechenden Anbieter zu finden
 
 ### Eigenschaften
 
-1. **Automatische Attributweitergabe**: Alle nicht reservierten Attribute des Providers werden als gemeinsame Daten übergeben
-2. **Reaktive Aktualisierung**: Wenn sich die Daten des Providers ändern, wird der Consumer mit dem entsprechenden Namen automatisch aktualisiert
-3. **Hierarchische Suche**: Der Consumer beginnt mit der nächsthöheren Provider-Instanz und sucht nach Daten mit dem entsprechenden Namen
+1. **Automatische Eigenschaftsweitergabe**: Alle nicht reservierten Eigenschaften des Providers werden als gemeinsame Daten weitergegeben.
+2. **Reaktive Aktualisierung**: Wenn sich die Daten des Providers ändern, wird der Consumer, der den entsprechenden Namen dieses Providers konsumiert, automatisch aktualisiert.
+3. **Hierarchische Suche**: Der Consumer beginnt die Suche nach den Daten des entsprechenden Namens beim nächstgelegenen übergeordneten Provider.
 
-## o-consumer Konsument
+## o-consumer Verbraucher
 
-Die `o-consumer`-Komponente wird verwendet, um Daten von einem Provider zu konsumieren (zu verwenden). Sie gibt über das `name`-Attribut den Namen des zu konsumierenden Providers an.
+Die Komponente `o-consumer` dient dem Verbrauch (der Nutzung) von Daten eines Providers. Sie gibt über das Attribut `name` an, welchen Provider sie beziehen möchte.
 
 ```html
 <o-consumer name="userInfo"></o-consumer>
 ```
 
-### Attribute
+### Eigenschaften
 
-- `name`: Der Name des Anbieters, der konsumiert werden soll
+- `name`: Der Name des anzusprechenden Providers
 
 ### Eigenschaften
 
-1. **Automatische Datenbeschaffung**: Der Consumer bezieht automatisch die Daten des nächsthöheren Providers mit dem entsprechenden Namen.
-2. **Attributzusammenführung**: Haben mehrere Provider mit demselben Namen ein Attribut, hat der dem Consumer am nächsten liegende Provider Vorrang.
-3. **Attributbeobachtung**: Über `watch:xxx` lassen sich Änderungen bestimmter Attribute beobachten.
+1. **Automatische Datenerfassung**: Der Consumer ruft automatisch die Daten des entsprechenden `name` vom nächstgelegenen übergeordneten Provider ab.
+2. **Eigenschaftszusammenführung**: Wenn mehrere Provider mit demselben `name` eine bestimmte Eigenschaft besitzen, hat die Eigenschaft des Providers, der dem Consumer am nächsten liegt, Vorrang.
+3. **Eigenschaftsüberwachung**: Die Änderung bestimmter Eigenschaften kann über `watch:xxx` überwacht werden.
 
 ## Datenänderungen überwachen
 
-Durch `watch:xxx` können Änderungen der Anbieterdaten überwacht werden:
+Durch `watch:xxx` können Änderungen der Daten des Providers überwacht werden:
 
 ```html
 <o-consumer name="userInfo" watch:custom-age="age"></o-consumer>
@@ -64,7 +64,7 @@ export default {
 
 ## Grundlegendes Beispiel
 
-<o-playground name="Grundlagenbeispiel" style="--editor-height: 500px">
+<o-playground name="Grundlegendes Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="userInfo" user-id="9527">
@@ -111,7 +111,7 @@ export default {
           border-radius: 50%;
         }
       </style>
-      {{userId}} Avatar
+      {{userId}}Avatar
       <o-consumer name="userInfo" watch:user-id="userId"></o-consumer>
       <script>
         export default async ()=>{
@@ -149,23 +149,23 @@ export default {
   </code>
 </o-playground>
 
-## o-root-provider Root-Anbieter
+## o-root-provider Root-Provider
 
-`o-root-provider` ist ein globaler Provider auf Root-Ebene, dessen Gültigkeitsbereich das gesamte Dokument umfasst. Auch ohne übergeordneten Provider können Consumer die Daten des Root-Providers abrufen.
+`o-root-provider` ist der globale Anbieter der Root-Ebene, dessen Geltungsbereich das gesamte Dokument ist. Selbst wenn es keinen übergeordneten Provider gibt, können Verbraucher die Daten des Root-Anbieters abrufen.
 
 ```html
-<!-- Definieren des globalen Root-Providers -->
+<!-- Definieren Sie den globalen Root-Provider -->
 <o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN"></o-root-provider>
 
-<!-- Kann an beliebiger Stelle der Seite konsumiert werden -->
+<!-- Kann an beliebiger Stelle auf der Seite konsumiert werden -->
 <o-consumer name="globalConfig" watch:custom-theme="theme"></o-consumer>
 ```
 
 ### Eigenschaften
 
-1. **Globaler Geltungsbereich**: Die Daten des Root-Providers sind auf der gesamten Seite verfügbar.
-2. **Priorität**: Wenn sowohl ein Provider als auch ein Root-Provider mit demselben Namen existieren, hat der dem Consumer nächstgelegene Provider Vorrang.
-3. **Entfernbar**: Nach dem Entfernen des Root-Providers greift der Consumer auf die Suche nach anderen Providern zurück.
+1. **Globaler Gültigkeitsbereich**: Die Daten des Root-Providers sind auf der gesamten Seite verfügbar.
+2. **Priorität**: Wenn gleichzeitig ein Provider und ein Root-Provider mit demselben Namen existieren, hat der Provider, der dem Consumer am nächsten ist, Vorrang.
+3. **Entfernbar**: Nach dem Entfernen des Root-Providers fällt der Consumer auf die Suche nach anderen Providern zurück.
 
 ## root-provider Beispiel
 
@@ -192,7 +192,7 @@ export default {
         }
       </style>
       <div class="info">
-        <div>Theme: {{theme}}</div>
+        <div>Thema: {{theme}}</div>
         <div>Sprache: {{language}}</div>
       </div>
       <header-com></header-com>
@@ -218,7 +218,7 @@ export default {
           color: white;
         }
       </style>
-      Header - Theme: {{theme}}
+      Header - Thema: {{theme}}
       <o-consumer name="globalConfig" watch:custom-theme="theme"></o-consumer>
       <script>
         export default {
@@ -260,19 +260,19 @@ export default {
 
 <o-provider name="test" custom-value="parent">
  ...
- <!-- Hier👇 ist der abgerufene custom-value "parent" -->
+ <!-- Hier👇 erhaltenes custom-value ist "parent" -->
  <o-consumer name="test"></o-consumer>
  ...
 </o-provider>
 
-<!-- Hier👇 ist der abgerufene custom-value "root" -->
+<!-- Hier👇 erhaltenes custom-value ist "root" -->
 <o-consumer name="test"></o-consumer>
 
 ```
 
-### Beispieldemonstration der Priorität
+### Prioritätsbeispiel-Demonstration
 
-<o-playground name="Prioritäts-Beispiel-Demo" style="--editor-height: 500px">
+<o-playground name="Prioritätsbeispiel-Demo" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-root-provider name="test" custom-value="root"></o-root-provider>
@@ -284,7 +284,7 @@ export default {
       <l-m src="./child.html"></l-m>
       <o-provider name="test" custom-value="parent">
         <div style="padding: 10px; border: 1px solid #007acc;">
-          <p>Wert im übergeordneten Provider: {{parentValue}}</p>
+          <p>Wert im elterlichen Provider: {{parentValue}}</p>
           <child-com></child-com>
         </div>
         <o-consumer name="test" watch:custom-value="parentValue"></o-consumer>
@@ -307,7 +307,7 @@ export default {
   <code path="child.html">
     <template component>
       <div style="padding: 10px;  border: 1px dashed gray;">
-        Wert in der Child-Komponente: {{customValue}} (am nächsten ist {{customValue}} provider)
+        Wert in der Kind-Komponente: {{customValue}} (am nächsten ist {{customValue}} provider)
       </div>
       <o-consumer name="test" watch:custom-value="customValue"></o-consumer>
       <script>
@@ -324,9 +324,9 @@ export default {
 
 ## getProvider(name) Methode
 
-`getProvider(name)` ist eine Instanzmethode, die das Provider-Element mit dem entsprechenden Namen abruft. Sie durchläuft das DOM nach oben und sucht den nächstgelegenen übergeordneten Provider; falls keiner gefunden wird, wird der root-provider zurückgegeben.
+`getProvider(name)` ist eine Instanzmethode, um das Provider-Element mit dem entsprechenden Namen zu erhalten. Es sucht entlang des DOM nach dem nächstgelegenen übergeordneten Provider. Wenn keiner gefunden wird, wird der root-provider zurückgegeben.
 
-### Verwendung der getProvider(name)-Methode innerhalb von Komponenten oder Seitenmodulen
+### In der Komponente oder im Seitenmodul die Methode getProvider(name) verwenden
 
 ```html
 <script>
@@ -346,7 +346,7 @@ proto:{
 <o-playground name="getProvider Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-provider name="userInfo" custom-name="ZhangSan" custom-age="25">
+      <o-provider name="userInfo" custom-name="Max" custom-age="25">
         <o-page src="page.html"></o-page>
       </o-provider>
     </template>
@@ -379,7 +379,7 @@ proto:{
             updateProvider() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                provider.customName = "LiSi";
+                provider.customName = "Lisa";
                 provider.customAge = 30;
               }
             },
@@ -393,29 +393,29 @@ proto:{
 ### Provider über das Element abrufen
 
 ```javascript
-// Provider der übergeordneten Ebene des aktuellen Elements abrufen
+// Den Provider des aktuellen Elements abrufen
 const provider = $(".my-element").getProvider("userInfo");
 
 if (provider) {
-  console.log("Provider gefunden:", provider.customName);
+  console.log("Anbieter gefunden:", provider.customName);
 }
 
 // Direkt den globalen Root-Provider abrufen
 const globalProvider = $.getRootProvider("globalConfig");
 ```
 
-### Anwendungsfall
+### Verwendungsszenarien
 
-1. **Manuelle Datenabfrage**: Wird in Szenarien verwendet, in denen direkter Zugriff auf die Daten des Anbieters erforderlich ist
-2. **Über Shadow DOM hinweg**: Sucht im Inneren des Shadow DOM nach dem übergeordneten Provider
-3. **Ereignisverarbeitung**: Erhalten des entsprechenden Anbieters im Ereignis-Rückruf
+1. **Manuelle Datenbeschaffung**: Verwendung in Szenarien, bei denen direkt auf die Daten des Providers zugegriffen werden muss  
+2. **Über Shadow DOM hinweg**: Suche nach einem Provider auf einer höheren Ebene innerhalb des Shadow DOM  
+3. **Ereignisbehandlung**: Abrufen des entsprechenden Providers in Ereignis-Callbacks
 
 ## dispatch Ereignisverteilung
 
-Der Provider kann Ereignisse an alle Consumer verteilen, die ihn nutzen:
+Der Provider kann Ereignisse an alle Consumer, die ihn konsumieren, senden:
 
 ```html
-<o-provider name="test" id="myProvider" custom-value="Hallo">
+<o-provider name="test" id="myProvider" custom-value="Hello">
   <o-consumer name="test" on:custom-event="handleEvent">
     <div>{{customValue}}</div>
   </o-consumer>
@@ -424,17 +424,17 @@ Der Provider kann Ereignisse an alle Consumer verteilen, die ihn nutzen:
 <script>
 // Ereignis auslösen
 $("#myProvider").dispatch("custom-event", {
-  data: { message: "Hallo Welt" }
+  data: { message: "Hello World" }
 });
 </script>
 ```
 
-## Beispiel für Event-Dispatch
+## Beispiel für die Ereignisverteilung
 
-<o-playground name="Beispiel für Ereignisverteilung" style="--editor-height: 500px">
+<o-playground name="Ereignis-Dispatch-Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-provider name="chat" custom-messages='["Willkommen im Chatroom"]' id="chatProvider">
+      <o-provider name="chat" custom-messages='["Willkommen im Chatraum"]' id="chatProvider">
         <o-page src="page.html"></o-page>
       </o-provider>
     </template>
@@ -451,7 +451,7 @@ $("#myProvider").dispatch("custom-event", {
           padding: 10px;
         }
       </style>
-      <h3>Chatroom</h3>
+      <h3>Chatraum</h3>
       <chat-list></chat-list>
       <chat-input></chat-input>
     </template>
@@ -538,9 +538,9 @@ $("#myProvider").dispatch("custom-event", {
   </code>
 </o-playground>
 
-## Best Practices
+## Beste Praktiken
 
-1. **Sinnvolle Benennung**: Verwenden Sie aussagekräftige Namen für Provider und Consumer, um Nachverfolgung und Wartung zu erleichtern  
-2. **Übermäßige Nutzung vermeiden**: Kontextstatus ist für datenübergreifende Komponenten gedacht; für gewöhnliche Eltern-Kind-Komponenten werden Props empfohlen  
-3. **Root-Provider für globale Konfiguration**: Themen, Sprache, globaler Status usw. eignen sich für die Verwendung eines Root-Providers  
-4. **Rechtzeitiges Aufräumen**: Wenn ein Provider entfernt wird, werden die Daten des Consumers automatisch gelöscht, eine manuelle Behandlung ist nicht erforderlich
+1. **Sinnvolle Benennung**: Verwenden Sie sinnvolle Namen für Provider und Consumer, um die Nachverfolgung und Wartung zu erleichtern.
+2. **Übermäßige Verwendung vermeiden**: Der Kontextstatus eignet sich für die gemeinsame Nutzung von Daten zwischen Komponenten. Für normale Eltern-Kind-Komponenten wird die Verwendung von Props empfohlen.
+3. **Root-Provider für globale Konfigurationen**: Themen, Sprachen, globale Zustände usw. eignen sich für die Verwendung des Root-Providers.
+4. **Rechtzeitige Bereinigung**: Wenn der Provider entfernt wird, löscht der Consumer automatisch die Daten, ohne dass ein manuelles Eingreifen erforderlich ist.

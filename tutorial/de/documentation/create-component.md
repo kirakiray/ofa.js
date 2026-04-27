@@ -1,14 +1,14 @@
 # Komponente erstellen
 
-In ofa.js sind Komponenten der Kernmechanismus zur Implementierung von Wiederverwendung und Modularisierung von Seiten. Im Wesentlichen ist eine Komponente ein benutzerdefiniertes Web Component, das durch die Definition von Vorlagen, Stilen und Logik wiederverwendbare UI-Elemente erstellen kann.
+In ofa.js ist die Komponente der Kernmechanismus zur Wiederverwendung und Modularisierung von Seiten. Eine Komponente ist im Wesentlichen ein benutzerdefiniertes Web Component, durch das Vorlagen, Stile und Logik definiert werden, um wiederverwendbare UI-Elemente zu erstellen.
 
-## Grundlegende Struktur der Komponente
+## Grundstruktur der Komponente
 
-Im Gegensatz zu Seitenmodulen verwendet das `<template>`-Element von Komponentenmodulen stattdessen das `component`-Attribut und deklariert das `tag`-Attribut, um den Komponententagnamen anzugeben.
+Im Unterschied zum Seitenmodul verwendet das `<template>`-Element des Komponentenmoduls stattdessen die `component`-Eigenschaft und deklariert die `tag`-Eigenschaft, um den Komponenten-Tag-Namen anzugeben.
 
-An der Stelle, an der die Komponente benötigt wird, wird das Komponentenmodul asynchron über das `l-m`-Tag geladen, und das System registriert es automatisch. Anschließend kann die Komponente direkt wie ein normales HTML-Tag verwendet werden.
+An der Stelle, an der die Komponente verwendet werden soll, wird das Komponentenmodul asynchron über das `l-m`-Tag geladen, und das System führt die Registrierung automatisch durch; danach kann die Komponente direkt wie ein normales HTML-Tag verwendet werden.
 
-<o-playground name="Grundlegendes Beispiel für Komponenten" style="--editor-height: 500px">
+<o-playground name="Komponenten-Grundbeispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -30,7 +30,7 @@ An der Stelle, an der die Komponente benötigt wird, wird das Komponentenmodul a
           return {
             tag: "demo-comp",
             data: {
-              title: "OFAJS Komponentenbeispiel",
+              title: "OFAJS Komponenten-Beispiel",
             },
           };
         };
@@ -39,25 +39,25 @@ An der Stelle, an der die Komponente benötigt wird, wird das Komponentenmodul a
   </code>
 </o-playground>
 
-## Kernkonzepte der Komponenten
+## Komponenten-Kernkonzepte
 
-### tag - Komponenten-Tagname
+### tag - Komponenten-Tag-Name
 
-`tag` ist der Tag-Name der Komponente und **muss mit dem im Gebrauch verwendeten Tag-Namen übereinstimmen**. Wenn Sie beispielsweise den `tag` Ihrer Komponente als `"demo-comp"` definieren, dann müssen Sie in der HTML-Nutzung `<demo-comp></demo-comp>` schreiben.
+`tag` ist der Tag-Name der Komponente, **muss mit dem verwendeten Tag-Namen der Komponente übereinstimmen**. Beispiel: Wenn der `tag` Ihrer Komponente als `"demo-comp"` definiert ist, dann muss im HTML `<demo-comp></demo-comp>` verwendet werden.
 
-### Komponentenmodulreferenz
+### Komponenten-Modulreferenz
 
-Durch das `l-m`-Tag werden Komponentenmodule eingebunden, die automatisch registriert werden. Dies ähnelt dem Einbinden von Skripten über das `script`-Tag, aber `l-m` ist speziell für das Laden und Registrieren von Komponentenmodulen vorgesehen.
+Durch das `l-m`-Tag wird ein Komponentenmodul eingefügt, das automatisch Komponenten registriert. Dies ähnelt der Verwendung des `script`-Tags zum Einbinden von Skripten, aber `l-m` ist speziell für das Laden und Registrieren von Komponentenmodulen vorgesehen.
 
-Beachten Sie: Das `l-m`-Referenztag ist eine **asynchrone Referenz**, die sich für das bedarfsgerechte Laden von Komponenten beim Laden der Seite eignet.
+> Hinweis: Das `l-m`-Referenz-Tag ist ein **asynchroner Verweis** und eignet sich zum bedarfsgesteuerten Laden von Komponenten beim Seitenaufruf.
 
-## Synchronisierte Referenzkomponente
+## Synchronisierungszitat-Komponente
 
-In manchen Szenarien müssen Sie möglicherweise Komponenten synchron laden (z. B. um sicherzustellen, dass eine Komponente registriert ist, bevor sie verwendet wird). In diesem Fall können Sie die `load`-Methode in Kombination mit dem `await`-Schlüsselwort verwenden, um eine synchrone Referenz zu implementieren.
+In manchen Szenarien musst du möglicherweise Komponenten synchron laden (z. B. um sicherzustellen, dass die Komponente vor der Verwendung vollständig registriert ist). In diesem Fall kannst du die `load`-Methode mit dem Schlüsselwort `await` verwenden, um einen synchronen Verweis zu implementieren.
 
-In Komponenten- und Seitenmodulen wird automatisch eine `load`-Funktion eingefügt, mit der Entwickler die benötigten Ressourcen synchron laden können.
+In Komponenten- und Seitenmodulen wird automatisch die `load`-Funktion injiziert, damit Entwickler benötigte Ressourcen synchron laden können.
 
-<o-playground name="Synchrones Referenzkomponentenbeispiel" style="--editor-height: 500px">
+<o-playground name="Beispiel für synchrones Referenzieren von Komponenten" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -111,9 +111,9 @@ In Komponenten- und Seitenmodulen wird automatisch eine `load`-Funktion eingefü
   </code>
 </o-playground>
 
-## Asynchrone Referenzen vs. Synchrone Referenzen
+## Asynchrone Referenzen vs. synchrone Referenzen
 
-| Verweisart | Schlüsselwort | Merkmal |
+| Referenzart | Stichwort | Merkmale |
 |---------|-------|------|
-| Asynchroner Verweis | `l-m` Tag | Nicht blockierendes Laden, geeignet für bedarfsweises Laden von Komponenten |
-| Synchroner Verweis | `load` Methode mit `await` Schlüsselwort | Blockierendes Laden, stellt sicher, dass die Komponente vor der Verwendung registriert ist |Das `l-m`-Tag-Referenz und die `load`-Methode können beide Komponentenmodule laden. In der Regel wird empfohlen, die `l-m`-Tags asynchron zu verwenden, um Komponenten zu referenzieren, um nicht-blockierendes Laden und bedarfsgesteuertes Laden zu erreichen.
+| Asynchrone Referenz | `l-m`-Tag | Nicht-blockierendes Laden, geeignet für bedarfsgesteuertes Laden von Komponenten |
+| Synchrone Referenz | `load`-Methode mit `await`-Schlüsselwort | Blockierendes Laden, stellt sicher, dass die Komponente vor der Verwendung registriert ist |`l-m`-Tag-Referenz und die `load`-Methode können beide Komponentenmodule laden. Im Allgemeinen wird empfohlen, den `l-m`-Tag zur asynchronen Referenzierung von Komponenten zu verwenden, um nicht blockierendes Laden und bedarfsgesteuertes Laden zu erreichen.

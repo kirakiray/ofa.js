@@ -1,14 +1,14 @@
-# Rendu de template
+# Rendu de modèle
 
-ofa.js fournit un puissant moteur de rendu de modèles, riche en syntaxe de modélisation, permettant aux développeurs de construire rapidement des applications. Commençons par présenter le rendu de texte le plus couramment utilisé.
+ofa.js fournit un moteur de rendu de modèles puissant, avec une syntaxe de modèle riche, qui aide les développeurs à créer rapidement des applications. Commençons par l'introduction du rendu de texte le plus couramment utilisé.
 
-## Liaison de données de page
+## Liaison de données de la page
 
-Dans ofa.js, chaque page a un objet `data` dans lequel vous pouvez définir les variables dont vous avez besoin dans la page. Lorsque la page commence à être rendue, les données de l'objet `data` sont automatiquement liées au modèle, puis la syntaxe `{{nom de variable}}` est utilisée dans le modèle pour rendre la valeur de la variable correspondante.
+Dans ofa.js, chaque page possède un objet `data` dans lequel vous pouvez définir les variables nécessaires à la page. Lors du rendu de la page, les données de l'objet `data` sont automatiquement liées au modèle, puis vous utilisez la syntaxe `{{nomVariable}}` dans le modèle pour afficher la valeur de la variable correspondante.
 
 ## Rendu de texte
 
-Le rendu de texte est la méthode de rendu la plus basique, vous pouvez utiliser la syntaxe `{{nom de variable}}` dans le modèle pour afficher la valeur de la variable correspondante dans l'objet `data`.
+Le rendu de texte est la méthode de rendu la plus basique. Vous pouvez utiliser la syntaxe `{{nom de variable}}` dans le modèle pour afficher la valeur de la variable correspondante dans l'objet `data`.
 
 <o-playground name="Exemple de rendu de texte" style="--editor-height: 500px">
   <code>
@@ -36,7 +36,7 @@ Le rendu de texte est la méthode de rendu la plus basique, vous pouvez utiliser
 
 ## Rendu du contenu HTML
 
-En ajoutant la directive `:html` à un élément, il est possible de parser une chaîne HTML d'une variable correspondante et de l'insérer en toute sécurité à l'intérieur de l'élément, permettant de réaliser facilement le rendu dynamique de texte enrichi ou l'intégration de fragments HTML externes.
+En ajoutant la directive `:html` à un élément, la chaîne HTML contenue dans la variable correspondante est analysée et insérée en toute sécurité à l’intérieur de l’élément, permettant ainsi de rendre facilement du texte riche dynamiquement ou d’intégrer des fragments HTML externes.
 
 <o-playground name="Exemple de rendu de contenu HTML" style="--editor-height: 500px">
   <code>

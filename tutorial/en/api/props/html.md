@@ -2,7 +2,7 @@
 
 The `html` method is used to get or set the HTML code inside the target element.
 
-<o-playground name="html - Direct Use" style="--editor-height: 400px">
+<o-playground name="html - Direct Usage" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -24,9 +24,9 @@ The `html` method is used to get or set the HTML code inside the target element.
 
 ## Notes
 
-`html` is a relatively dangerous method; if a `script` tag is injected, it will automatically execute the JavaScript code inside. Pay attention to preventing XSS when using it.
+`html` is a relatively dangerous method; when inserted into `script`, it will also automatically execute the internal JavaScript code. Be careful to prevent XSS when using it.
 
-## Template Syntax Usage
+## Using Template Syntax
 
 You can also use the `:html` attribute to set the corresponding HTML value for the target element. This is particularly useful in component rendering.
 

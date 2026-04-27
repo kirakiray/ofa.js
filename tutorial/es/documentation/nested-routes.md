@@ -1,15 +1,15 @@
-# Páginas/Rutas anidadas
+# Página/Ruta anidada
 
-En ofa.js, las páginas anidadas (también conocidas como rutas anidadas) son una función poderosa que te permite crear estructuras de páginas con relaciones jerárquicas padre-hijo. La página padre actúa como un contenedor de diseño y renderiza el contenido de las páginas hijas a través de la ranura `<slot>`.
+En ofa.js, las páginas anidadas (también conocidas como rutas anidadas) son una función poderosa que te permite crear estructuras de páginas con relaciones jerárquicas de padre e hijo. La página padre actúa como un contenedor de diseño, renderizando el contenido de la página hija a través del slot `<slot>`.
 
 ## Conceptos básicos
 
-- **Página padre (Layout)**: actúa como contenedor de diseño e incluye elementos UI comunes como la barra de navegación y la barra lateral  
-- **Página hija**: contenido específico de la página de negocio que se renderiza en la posición del `<slot>` de la página padre
+- **Página padre (Layout)**：página que actúa como contenedor de diseño, que incluye elementos de interfaz de usuario comunes como la barra de navegación, la barra lateral, etc.
+- **Página hija**：contenido específico de la página de negocio, que se renderizará en la posición del slot `<slot>` de la página padre
 
-## Cómo escribir la página padre
+## Escritura de la página padre
 
-La página padre necesita utilizar la etiqueta `<slot></slot>` para reservar un lugar de renderizado para la página hija.
+La página padre necesita usar la etiqueta `<slot></slot>` para reservar una posición de renderizado para la página hija.
 
 ```html
 <!-- layout.html -->
@@ -31,7 +31,7 @@ La página padre necesita utilizar la etiqueta `<slot></slot>` para reservar un 
 
 ## Escritura de subpáginas
 
-Las subpáginas especifican la ruta de la página principal exportando la propiedad `parent`.
+Las subpáginas especifican la ruta de la página padre exportando la propiedad `parent`.
 
 ```html
 <template page>
@@ -49,7 +49,7 @@ Las subpáginas especifican la ruta de la página principal exportando la propie
     export default async () => {
       return {
         data: {
-          val: "Hola Código de Demostración de ofa.js",
+          val: "Hello ofa.js Demo Code",
         },
       };
     };
@@ -59,7 +59,7 @@ Las subpáginas especifican la ruta de la página principal exportando la propie
 
 ## Ejemplo de página anidada
 
-Aquí hay un ejemplo completo de rutas anidadas, que incluye el diseño raíz, la página principal y las páginas secundarias:
+A continuación se muestra un ejemplo completo de enrutamiento anidado, que incluye un layout raíz, una página padre y una página hija:
 
 <o-playground name="Ejemplo de página anidada" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -68,7 +68,7 @@ Aquí hay un ejemplo completo de rutas anidadas, que incluye el diseño raíz, l
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // Dirección de la página de inicio de la aplicación
+    // Dirección de la página de inicio
     export const home = "./sub-page01.html";
     // Configuración de animación de cambio de página
     export const pageAnime = {
@@ -213,7 +213,7 @@ Aquí hay un ejemplo completo de rutas anidadas, que incluye el diseño raíz, l
   </code>
 </o-playground>
 
-## Escucha de rutas en la página padre
+## Escucha de rutas de la página principal
 
 La página padre puede escuchar los cambios de ruta mediante el gancho del ciclo de vida `routerChange`, lo cual es útil cuando necesitas actualizar el estado de navegación según la ruta actual.
 
@@ -248,16 +248,16 @@ La página padre puede escuchar los cambios de ruta mediante el gancho del ciclo
 </template>
 ```
 
-## Precauciones
+## Notas importantes
 
 - El valor del atributo `parent` puede ser una ruta relativa (como `./layout.html`) o una ruta absoluta (como `/pages/layout.html`)
-- La página padre debe contener la etiqueta `<slot></slot>`, de lo contrario, el contenido de la página secundaria no se mostrará
-- Los estilos de la página padre se heredarán a la página secundaria, y la página secundaria también puede definir sus propios estilos
-- Usar el hook `routerChange` permite escuchar los cambios de ruta y lograr funciones como el resaltado de navegación
+- La página padre debe contener la etiqueta `<slot></slot>`, de lo contrario, el contenido de la página hija no se mostrará
+- Los estilos de la página padre se heredarán en la página hija, y la página hija también puede definir sus propios estilos
+- Usar el hook `routerChange` permite escuchar los cambios de ruta, logrando funcionalidades como resaltar la navegación
 
-## Anidación multinivel
+## Anidamiento multinivel
 
-Una página padre también puede tener su propia página padre, formando una estructura multinivel anidada.
+La página padre también puede tener su propia página padre, formando una estructura de anidamiento multinivel.
 
 ```html
 <!-- Subpágina -->
@@ -273,7 +273,7 @@ Una página padre también puede tener su propia página padre, formando una est
 ```
 
 ```html
-<!-- Página principal -->
+<!-- Página padre -->
 <template page>
   <div class="layout">
     <nav>Barra de navegación</nav>
@@ -288,16 +288,16 @@ Una página padre también puede tener su propia página padre, formando una est
 </template>
 ```
 
-## Ejemplo de anidamiento multinivel
+## Ejemplo de anidamiento de múltiples niveles
 
-<o-playground name="Ejemplo completo de rutas anidadas" style="--editor-height: 500px">
+<o-playground name="Ejemplo completo de enrutamiento anidado" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // Dirección de la página de inicio de la aplicación
+    // Dirección de la página de inicio
     export const home = "./sub-page01.html";
     // Configuración de animación de cambio de página
     export const pageAnime = {
@@ -431,8 +431,8 @@ Una página padre también puede tener su propia página padre, formando una est
           padding: 10px;
         }
       </style>
-      <h1>Soy la página hija 1</h1>
-      <p>Ruta actual：{{src}}</p>
+      <h1>Soy la subpágina 1</h1>
+      <p>Ruta actual: {{src}}</p>
       <a href="./sub-page02.html" olink>Ir a la página 2</a>
       <script>
         export const parent = "./layout.html";
@@ -453,8 +453,8 @@ Una página padre también puede tener su propia página padre, formando una est
           padding: 10px;
         }
       </style>
-      <h1>Soy la página hija 2</h1>
-      <p>Ruta actual：{{src}}</p>
+      <h1>Soy la subpágina 2</h1>
+      <p>Ruta actual: {{src}}</p>
       <a href="./sub-page01.html" olink>Ir a la página 1</a>
       <script>
         export const parent = "./layout.html";

@@ -2,9 +2,9 @@
 
 
 
-`unwrap` メソッドは、ターゲット要素の外側のラッピング要素を削除するために使用されます。
+`unwrap` メソッドは、対象要素の外部ラップ層要素を削除するために使用されます。
 
-<o-playground name="unwrap - ラップを解除" style="--editor-height: 440px">
+<o-playground name="unwrap - ラッパーを削除" style="--editor-height: 440px">
   <code path="demo.html">
     <template>
       <style> div{border: #aaa solid 1px; margin:8px; padding:8px;} </style>
@@ -22,7 +22,7 @@
 
 ## 注意事項
 
-対象要素**は親ノードを持っている必要があります**、そうでないと unwrap 操作を実行できません。
+対象要素は**親ノードを持っている必要があります**、そうでなければunwrap操作を実行できません。
 
 ```javascript
 const $el = $(`
@@ -31,11 +31,11 @@ const $el = $(`
 </div>
 `);
 
-$el.unwrap(); // エラー、親要素がないため、unwrapできません
-$el.$('#target').unwrap(); // 正しい、ラップ要素を取り除きます
+$el.unwrap(); // エラー、親要素が存在しないため unwrap できない
+$el.$('#target').unwrap(); // 正しい、囲んでいる要素を取り除く
 ```
 
-ターゲット要素が他の兄弟要素を持っている場合、unwrap を実行することもできません。
+対象要素が他の兄弟要素を持っている場合も、unwrapを実行することはできません。
 
 ```javascript
 const $el = $(`
@@ -45,7 +45,7 @@ const $el = $(`
 </div>
 `);
 
-$el.$('#target').unwrap(); // エラー、他の隣接ノードが存在するため
+$el.$('#target').unwrap(); // エラー、他の隣接ノードを持っているため
 ```
 
-**o-fill や o-if などのテンプレートコンポーネント内で操作しないでください。**
+**注意点として、o-fill や o-if などのテンプレートコンポーネント内で操作しないでください。**

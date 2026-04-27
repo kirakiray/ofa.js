@@ -1,6 +1,6 @@
 # classList
 
-The `classList` property remains consistent with the native implementation. You can use [classList](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/classList) to add, remove, and toggle class names.
+`classList` property is consistent with the native implementation. You can use [classList](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList) to add, remove, and toggle class names.
 
 Here is an example demonstrating how to use `classList`:
 
@@ -31,4 +31,4 @@ Here is an example demonstrating how to use `classList`:
   </code>
 </o-playground>
 
-The `classList` property lets you easily add, remove, and toggle class names to dynamically change an element’s style.
+The `classList` property allows you to easily add, remove, and toggle class names to dynamically change an element's style.

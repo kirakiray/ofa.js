@@ -1,54 +1,54 @@
 # État du contexte
 
-L'état de contexte est le mécanisme dans ofa.js permettant le partage de données entre composants. Grâce au modèle fournisseur (Provider) et consommateur (Consumer), il est possible de transmettre des données entre composants parent-enfant ou à travers plusieurs niveaux, sans avoir à les faire passer par les props étage par étage.
+Le contexte d'état est un mécanisme de partage de données entre composants dans ofa.js. Grâce au modèle fournisseur (Provider) et consommateur (Consumer), il permet le transfert de données entre composants parents-enfants ou entre composants de différents niveaux hiérarchiques, sans avoir à transmettre les données via les props de manière séquentielle.
 
 ## Concepts clés
 
-- **o-provider** : fournisseur de données, définit les données à partager
-- **o-consumer** : consommateur de données, récupère les données du fournisseur le plus proche
-- **watch:xxx** : surveille les changements de données du consommateur et les lie aux propriétés du composant ou du module de page
+- **o-provider**: fournisseur de données, définit les données à partager
+- **o-consumer**: consommateur de données, obtient les données du fournisseur le plus proche
+- **watch:xxx**: écoute les changements des données du consommateur et les lie aux propriétés du composant ou du module de page
 
-## o-provider Fournisseur
+## o-provider fournisseur
 
-Le composant `o-provider` sert à définir un fournisseur de données partagées. Il s’identifie par l’attribut `name` et définit les données à partager via des attributs (comme `custom-a="value"`).
+Le composant `o-provider` sert à définir un fournisseur de données partagées. Il s’identifie par l’attribut `name` et définit les données à partager au moyen d’attributs (par exemple `custom-a="value"`).
 
 ```html
-<o-provider name="userInfo" custom-name="Zhang San" custom-age="25">
+<o-provider name="userInfo" custom-name="Jean Dupont" custom-age="25">
   ...
 </o-provider>
 ```
 
-### Attributs
+### Propriétés
 
-- `name` : le nom d'identification unique du fournisseur, utilisé par les consommateurs pour rechercher le fournisseur correspondant
+- `name` : le nom d'identification unique du fournisseur, utilisé par le consommateur pour trouver le fournisseur correspondant
 
 ### Caractéristiques
 
-1. **Transmission automatique des attributs** : tous les attributs non réservés du provider sont transmis comme données partagées
-2. **Mise à jour réactive** : lorsque les données du provider changent, le consumer correspondant au même name se met à jour automatiquement
-3. **Recherche hiérarchique** : le consumer commence la recherche des données correspondant au name depuis le provider le plus proche dans la hiérarchie
+1. **Transmission automatique des propriétés** : toutes les propriétés non réservées du fournisseur sont partagées en tant que données
+2. **Mise à jour réactive** : lorsque les données du fournisseur changent, le consommateur correspondant au nom spécifique de ce fournisseur se met à jour automatiquement
+3. **Recherche hiérarchique** : le consommateur commence à rechercher les données du nom correspondant à partir du fournisseur le plus proche situé au niveau supérieur
 
-## o-consumer Consommateur
+## o-consumer consommateur
 
-Le composant `o-consumer` est utilisé pour consommer (utiliser) les données d'un fournisseur. Il spécifie le nom du fournisseur à consommer via l'attribut `name`.
+Le composant `o-consumer` sert à consommer (utiliser) les données du fournisseur. Il spécifie le nom du fournisseur à consommer via l’attribut `name`.
 
 ```html
 <o-consumer name="userInfo"></o-consumer>
 ```
 
-### Attributs
+### Propriétés
 
 - `name`: Nom du fournisseur à consommer
 
 ### Caractéristiques
 
-1. **Acquisition automatique des données** : le consommateur récupère automatiquement les données correspondantes au nom le plus récemment fournies par le fournisseur parent le plus proche  
-2. **Fusion des propriétés** : si plusieurs fournisseurs portant le même nom possèdent une certaine propriété, la propriété du fournisseur le plus proche du consommateur est prioritaire  
-3. **Écoute des propriétés** : il est possible d’écouter les changements d’une propriété spécifique via `watch:xxx`
+1. **Acquisition automatique des données** : le consommateur récupère automatiquement les données du fournisseur le plus proche portant le même nom.
+2. **Fusion des propriétés** : si plusieurs fournisseurs du même nom possèdent une propriété, celle du fournisseur le plus proche du consommateur est prioritaire.
+3. **Surveillance des propriétés** : il est possible d'écouter les changements d'une propriété spécifique via `watch:xxx`.
 
-## Écouter les changements de données
+## Surveiller les changements de données
 
-En utilisant `watch:xxx`, vous pouvez écouter les changements des données du fournisseur :
+En utilisant `watch:xxx` on peut écouter les changements de données du fournisseur :
 
 ```html
 <o-consumer name="userInfo" watch:custom-age="age"></o-consumer>
@@ -111,7 +111,7 @@ export default {
           border-radius: 50%;
         }
       </style>
-      Avatar de {{userId}}
+      {{userId}} avatar
       <o-consumer name="userInfo" watch:user-id="userId"></o-consumer>
       <script>
         export default async ()=>{
@@ -133,7 +133,7 @@ export default {
           color: rgba(204, 153, 0, 1);
         }
       </style>
-      Utilisateur-{{userId}}
+      User-{{userId}}
       <o-consumer name="userInfo" watch:user-id="userId"></o-consumer>
       <script>
         export default async ()=>{
@@ -149,9 +149,9 @@ export default {
   </code>
 </o-playground>
 
-## o-root-provider Fournisseur racine
+## o-root-provider fournisseur racine
 
-`o-root-provider` est un fournisseur global au niveau racine, dont la portée s'étend à l'ensemble du document. Même en l'absence de fournisseur parent, le consommateur peut toujours accéder aux données du fournisseur racine.
+`o-root-provider` est un fournisseur global de niveau racine, dont la portée est l'ensemble du document. Même en l'absence d'un fournisseur parent, les consommateurs peuvent accéder aux données du fournisseur racine.
 
 ```html
 <!-- Définir le fournisseur racine global -->
@@ -163,13 +163,13 @@ export default {
 
 ### Caractéristiques
 
-1. **Portée globale** : Les données du fournisseur racine sont disponibles sur toute la page
-2. **Priorité** : Lorsqu'un provider et un root-provider de même nom existent simultanément, le provider le plus proche du consommateur est prioritaire
-3. **Supprimable** : Après suppression du root-provider, le consommateur revient à la recherche d'autres providers
+1. **Portée globale** : les données du fournisseur racine sont disponibles sur toute la page
+2. **Priorité** : lorsqu’un fournisseur et un fournisseur-racine portant le même name coexistent, le fournisseur le plus proche du consommateur est prioritaire
+3. **Supprimable** : après suppression du fournisseur-racine, le consommateur retombe sur la recherche d’un autre fournisseur
 
-## Exemple de root-provider
+## root-provider exemple
 
-<o-playground name="root-provider exemple" style="--editor-height: 500px">
+<o-playground name="Exemple de root-provider" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-root-provider name="globalConfig" custom-theme="dark" custom-language="zh-CN"></o-root-provider>
@@ -260,19 +260,19 @@ export default {
 
 <o-provider name="test" custom-value="parent">
  ...
- <!-- Ici 👇 la custom-value obtenue est "parent" -->
+ <!-- Ici 👇 la valeur custom-value obtenue est "parent" -->
  <o-consumer name="test"></o-consumer>
  ...
 </o-provider>
 
-<!-- Ici 👇 la custom-value obtenue est "root" -->
+<!-- Ici 👇 la valeur custom-value obtenue est "root" -->
 <o-consumer name="test"></o-consumer>
 
 ```
 
 ### Démonstration d'exemple de priorité
 
-<o-playground name="Démo d'exemple de priorité" style="--editor-height: 500px">
+<o-playground name="Exemple de priorité" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-root-provider name="test" custom-value="root"></o-root-provider>
@@ -284,7 +284,7 @@ export default {
       <l-m src="./child.html"></l-m>
       <o-provider name="test" custom-value="parent">
         <div style="padding: 10px; border: 1px solid #007acc;">
-          <p>Valeur dans le Provider parent : {{parentValue}}</p>
+          <p>Valeur du Provider parent : {{parentValue}}</p>
           <child-com></child-com>
         </div>
         <o-consumer name="test" watch:custom-value="parentValue"></o-consumer>
@@ -324,7 +324,7 @@ export default {
 
 ## Méthode getProvider(name)
 
-`getProvider(name)` est une méthode d'instance utilisée pour obtenir l'élément fournisseur correspondant au nom. Elle recherche le fournisseur parent le plus proche en remontant le DOM, et retourne le fournisseur racine si aucun n'est trouvé.
+`getProvider(name)` est une méthode d'instance qui permet d'obtenir l'élément fournisseur correspondant au nom donné. Elle remonte le DOM pour trouver le fournisseur le plus proche, et si aucun n'est trouvé, elle retourne le root-provider.
 
 ### Utiliser la méthode getProvider(name) dans un composant ou un module de page
 
@@ -334,7 +334,7 @@ export default {
 proto:{
   changeValue(){
     const provider = this.getProvider("name");
-    provider.customValue = "nouvelle valeur";
+    provider.customValue = "new value";
   }
 }
 ...
@@ -343,10 +343,10 @@ proto:{
 
 ## Exemple de getProvider
 
-<o-playground name="Exemple de getProvider" style="--editor-height: 500px">
+<o-playground name="Exemple getProvider" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
-      <o-provider name="userInfo" custom-name="Zhang San" custom-age="25">
+      <o-provider name="userInfo" custom-name="ZhangSan" custom-age="25">
         <o-page src="page.html"></o-page>
       </o-provider>
     </template>
@@ -354,8 +354,8 @@ proto:{
   <code path="page.html" active>
     <template page>
       <button on:click="getProviderData">Obtenir les données du Provider</button>
-      <div>Nom actuel: {{currentName}}</div>
-      <div>Âge actuel: {{currentAge}}</div>
+      <div>Nom actuel : {{currentName}}</div>
+      <div>Âge actuel : {{currentAge}}</div>
       <div style="margin-top: 10px;">
         <button on:click="updateProvider">Modifier les données du Provider</button>
       </div>
@@ -370,16 +370,16 @@ proto:{
             getProviderData() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                console.log("Provider trouvé:", provider);
-                console.log("Nom:", provider.customName);
-                console.log("Âge:", provider.customAge);
+                console.log("Provider trouvé :", provider);
+                console.log("Nom :", provider.customName);
+                console.log("Âge :", provider.customAge);
                 alert(`Données du Provider : ${provider.customName}, ${provider.customAge} ans`);
               }
             },
             updateProvider() {
               const provider = this.getProvider("userInfo");
               if (provider) {
-                provider.customName = "Li Si";
+                provider.customName = "LiSI";
                 provider.customAge = 30;
               }
             },
@@ -389,32 +389,33 @@ proto:{
     </template>
   </code>
 </o-playground>
+
 ### Obtenir le fournisseur à partir de l'élément
 
 ```javascript
-// Obtenir le provider parent de l'élément courant
+// Obtenir le fournisseur parent de l'élément actuel
 const provider = $(".my-element").getProvider("userInfo");
 
 if (provider) {
-  console.log("Provider trouvé :", provider.customName);
+  console.log("Fournisseur trouvé:", provider.customName);
 }
 
 // Obtenir directement le root-provider global
 const globalProvider = $.getRootProvider("globalConfig");
 ```
 
-### Cas d'utilisation
+### Scénarios d'utilisation
 
-1. **Récupération manuelle des données** : Utilisé dans les scénarios nécessitant un accès direct aux données du fournisseur
-2. **Traversée du Shadow DOM** : Recherche du fournisseur parent à l'intérieur du Shadow DOM
-3. **Gestion des événements** : Obtention du fournisseur correspondant dans les rappels d'événements
+1. **Récupération manuelle des données**: Utilisé dans les scénarios où vous devez accéder directement aux données du fournisseur.
+2. **À travers Shadow DOM**: Rechercher un fournisseur parent à l'intérieur du Shadow DOM.
+3. **Gestion des événements**: Obtenir le fournisseur correspondant dans le callback d'événement.
 
-## dispatch Distribution d'événements
+## dispatch distribution d'événements
 
-Le provider peut distribuer des événements à tous les consumers qui le consomment :
+provider peut distribuer des événements à tous les consumers qui l'utilisent :
 
 ```html
-<o-provider name="test" id="myProvider" custom-value="Bonjour">
+<o-provider name="test" id="myProvider" custom-value="Hello">
   <o-consumer name="test" on:custom-event="handleEvent">
     <div>{{customValue}}</div>
   </o-consumer>
@@ -423,14 +424,14 @@ Le provider peut distribuer des événements à tous les consumers qui le consom
 <script>
 // Émettre l'événement
 $("#myProvider").dispatch("custom-event", {
-  data: { message: "Bonjour le Monde" }
+  data: { message: "Hello World" }
 });
 </script>
 ```
 
-## Exemple de dispatch d'événement
+## Exemple de distribution d'événements
 
-<o-playground name="Exemple de dispatch d'événements" style="--editor-height: 500px">
+<o-playground name="Exemple de distribution d'événements" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-provider name="chat" custom-messages='["Bienvenue dans le salon de discussion"]' id="chatProvider">
@@ -512,7 +513,7 @@ $("#myProvider").dispatch("custom-event", {
           cursor: pointer;
         }
       </style>
-      <input type="text" sync:value="inputText" placeholder="Saisir un message...">
+      <input type="text" sync:value="inputText" placeholder="Saisissez un message...">
       <button on:click="sendMessage">Envoyer</button>
       <script>
         export default {
@@ -537,9 +538,9 @@ $("#myProvider").dispatch("custom-event", {
   </code>
 </o-playground>
 
-## Bonnes pratiques
+## Meilleures pratiques
 
-1. **Nommage raisonnable** : utilisez des noms explicites pour le provider et le consumer afin de faciliter le suivi et la maintenance  
-2. **Évitez l’usage excessif** : l’état de contexte est adapté au partage de données entre composants ; pour les composants parent-enfant simples, privilégiez les props  
-3. **Fournisseur racine pour la configuration globale** : les thèmes, langues et états globaux conviennent à un root-provider  
-4. **Nettoyage automatique** : lorsqu’un provider est supprimé, le consumer efface automatiquement les données ; aucune action manuelle n’est requise
+1. **Nommage pertinent** : utilisez des noms explicites pour les providers et consumers afin de faciliter le suivi et la maintenance  
+2. **Évitez l’usage excessif** : l’état de contexte sert au partage de données entre composants ; pour les composants parent-enfant, privilégiez les props  
+3. **Provider racine pour la configuration globale** : les thèmes, langues et états globaux conviennent à un root-provider  
+4. **Nettoyage automatique** : lorsqu’un provider est supprimé, les consumers effacent automatiquement leurs données, aucune action manuelle n’est requise

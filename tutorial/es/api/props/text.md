@@ -25,36 +25,36 @@ Puedes obtener o establecer directamente el contenido de texto de un elemento.
   </code>
 </o-playground>
 
-## Uso mediante sintaxis de plantilla
+## Uso de la sintaxis de plantillas
 
-También puedes usar el atributo `:text` para establecer el valor de texto correspondiente en el elemento de destino. Esto es especialmente útil en la representación de componentes.
+También puedes usar el atributo `:text` para establecer el valor de texto correspondiente al elemento objetivo. Esto es especialmente útil en la representación de componentes.
 
-<o-playground name="text - Sintaxis de plantilla" style="--editor-height: 450px">
+<o-playground name="text - sintaxis de plantilla" style="--editor-height: 450px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./text-demo.html"></l-m>
       <text-demo></text-demo>
       <script>
         setTimeout(()=>{
-          \$("text-demo").txt = "cambiar txt desde fuera";
+          \$("text-demo").txt = "change txt from outside";
         },1000);
       </script>
     </template>
   </code>
   <code path="text-demo.html" active>
     <template component>
-      <div>Texto renderizado:
+      <div>Rendered text:
         <span :text="txt" style="color:red;"></span>
       </div>
       <script>
         export default {
           tag: "text-demo",
           data: {
-            txt: "Soy txt"
+            txt: "I am txt"
           },
           ready(){
             setTimeout(()=>{
-              this.txt = "cambiar txt";
+              this.txt = "change txt";
             }, 500);
           }
         };

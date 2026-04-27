@@ -1,13 +1,13 @@
 # Nested Pages/Routes
 
-In ofa.js, nested pages (also known as nested routes) are a powerful feature that allows you to create page structures with parent-child hierarchies. The parent page acts as a layout container, rendering the child page's content through a `<slot>` element.
+In ofa.js, nested pages (also known as nested routes) are a powerful feature that allows you to create a page structure with parent-child hierarchy. The parent page serves as a layout container, rendering the content of the child page through the `<slot>` element.
 
 ## Basic Concepts
 
-- **Parent page (Layout)**: A page that acts as a layout container, including shared UI elements such as navigation bars and sidebars.
-- **Child page**: The actual business page content, rendered into the `<slot>` of the parent page.
+- **Parent Page (Layout)**: The page that serves as the layout container, containing common UI elements such as the navigation bar and sidebar
+- **Child Page**: The specific business page content, which will be rendered into the `<slot>` position of the parent page
 
-## How to Write a Parent Page
+## How to Write the Parent Page
 
 The parent page needs to use the `<slot></slot>` tag to reserve a rendering position for the child page.
 
@@ -29,9 +29,9 @@ The parent page needs to use the `<slot></slot>` tag to reserve a rendering posi
 </template>
 ```
 
-## How to Write Sub-pages
+## How to write subpages
 
-Sub-pages specify the parent page path by exporting the `parent` property.
+The child page specifies the parent page path by exporting the `parent` attribute.
 
 ```html
 <template page>
@@ -44,7 +44,7 @@ Sub-pages specify the parent page path by exporting the `parent` property.
   </style>
   <p>{{val}}</p>
   <script>
-    export const parent = 'layout.html'; // ⚠️ Key code
+    export const parent = 'layout.html'; // ⚠️ key code
 
     export default async () => {
       return {
@@ -59,16 +59,16 @@ Sub-pages specify the parent page path by exporting the `parent` property.
 
 ## Nested Page Example
 
-Below is a complete nested-routing example that includes a root layout, a parent page, and a child page:
+Below is a complete nested routing example, including root layout, parent page, and child page:
 
-<o-playground name="Nested Pages Example" style="--editor-height: 500px">
+<o-playground name="Nested Page Example" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // Application home page URL
+    // Application homepage URL
     export const home = "./sub-page01.html";
     // Page transition animation configuration
     export const pageAnime = {
@@ -176,9 +176,9 @@ Below is a complete nested-routing example that includes a root layout, a parent
           padding: 10px;
         }
       </style>
-      <h1>I am Sub Page 1</h1>
-      <p>Current Route: {{src}}</p>
-      <a href="./sub-page02.html" olink>Go to Page 2</a>
+      <h1>I am Sub-page 1</h1>
+      <p>Current route: {{src}}</p>
+      <a href="./sub-page02.html" olink>Jump to Page 2</a>
       <script>
         export const parent = "./layout.html";
         export default async () => {
@@ -198,9 +198,9 @@ Below is a complete nested-routing example that includes a root layout, a parent
           padding: 10px;
         }
       </style>
-      <h1>I am Sub Page 2</h1>
-      <p>Current Route: {{src}}</p>
-      <a href="./sub-page01.html" olink>Go to Page 1</a>
+      <h1>I am Sub-page 2</h1>
+      <p>Current route: {{src}}</p>
+      <a href="./sub-page01.html" olink>Jump to Page 1</a>
       <script>
         export const parent = "./layout.html";
         export default async () => {
@@ -213,9 +213,9 @@ Below is a complete nested-routing example that includes a root layout, a parent
   </code>
 </o-playground>
 
-## Parent Page Route Listener
+## Route monitoring of the parent page
 
-The parent page can listen for route changes via the `routerChange` lifecycle hook, which is useful when you need to update navigation state based on the current route.
+The parent page can listen to route changes through the `routerChange` lifecycle hook, which is very useful when you need to update the navigation state based on the current route.
 
 ```html
 <template page>
@@ -250,19 +250,19 @@ The parent page can listen for route changes via the `routerChange` lifecycle ho
 
 ## Notes
 
-- The `parent` attribute value can be a relative path (e.g., `./layout.html`) or an absolute path (e.g., `/pages/layout.html`)
+- `parent` attribute value can be a relative path (e.g., `./layout.html`) or an absolute path (e.g., `/pages/layout.html`)
 - The parent page must contain a `<slot></slot>` tag, otherwise the child page content will not be displayed
-- Styles from the parent page will be inherited by the child page, and the child page can also define its own styles
-- Using the `routerChange` hook allows you to listen for route changes and implement features like navigation highlighting
+- The parent page's styles will be inherited by the child page, and the child page can also define its own styles
+- Using the `routerChange` hook can listen to route changes, enabling functions like navigation highlighting
 
-## Multi-level nesting
+## Multi-level Nesting
 
 A parent page can also have its own parent page, forming a multi-level nested structure.
 
 ```html
-<!-- Child Page -->
+<!-- subpage -->
 <template page>
-  <p>Child page content</p>
+  <p>Subpage content</p>
   <script>
     export const parent = './parent.html';
     export default () => {
@@ -273,10 +273,10 @@ A parent page can also have its own parent page, forming a multi-level nested st
 ```
 
 ```html
-<!-- Parent Page -->
+<!-- Parent page -->
 <template page>
   <div class="layout">
-    <nav>Navigation Bar</nav>
+    <nav>Navigation bar</nav>
     <slot></slot>
   </div>
   <script>
@@ -288,16 +288,16 @@ A parent page can also have its own parent page, forming a multi-level nested st
 </template>
 ```
 
-## Multi-level Nested Example
+## Multi-level Nesting Example
 
-<o-playground name="Complete Nested Routing Example" style="--editor-height: 500px">
+<o-playground name="Nested Routing Complete Example" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // Application home page address
+    // Application home address
     export const home = "./sub-page01.html";
     // Page transition animation configuration
     export const pageAnime = {
@@ -431,8 +431,8 @@ A parent page can also have its own parent page, forming a multi-level nested st
           padding: 10px;
         }
       </style>
-      <h1>This is Sub-Page 1</h1>
-      <p>Current Route: {{src}}</p>
+      <h1>I am Sub-page 1</h1>
+      <p>Current route: {{src}}</p>
       <a href="./sub-page02.html" olink>Go to Page 2</a>
       <script>
         export const parent = "./layout.html";
@@ -453,8 +453,8 @@ A parent page can also have its own parent page, forming a multi-level nested st
           padding: 10px;
         }
       </style>
-      <h1>This is Sub-Page 2</h1>
-      <p>Current Route: {{src}}</p>
+      <h1>I am Sub-page 2</h1>
+      <p>Current route: {{src}}</p>
       <a href="./sub-page01.html" olink>Go to Page 1</a>
       <script>
         export const parent = "./layout.html";

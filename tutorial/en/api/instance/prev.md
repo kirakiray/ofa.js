@@ -1,6 +1,6 @@
 # prev
 
-Using the `prev` property, you can obtain the instance of the previous adjacent element.
+Using the `prev` property, you can obtain the previous adjacent sibling element instance of an element.
 
 <o-playground name="prev - previous element" style="--editor-height: 320px">
   <code path="demo.html">

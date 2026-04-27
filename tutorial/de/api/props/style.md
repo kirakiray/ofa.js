@@ -2,18 +2,18 @@
 
 
 
-Das `style`-Attribut bleibt mit dem nativen Stil konsistent.
+`style` Attribut bleibt konsistent mit dem nativen.
 
-Bitte beachten Sie, dass das `style`-Attribut nicht die tatsächlichen Werte des Stils abrufen kann, sondern nur die Werte, die im `style`-Attribut gesetzt wurden. Obwohl die `style`-Methode ähnlich wie die [css-Methode](./css.md) ist, kann sie keine vollständige Stilüberschreibung durchführen. Im Vergleich zu `css` ist die interne Ausführungseffizienz der `style`-Methode höher.
+Bitte beachten Sie, dass das `style`-Attribut nicht den tatsächlichen Wert eines Stils abrufen kann, sondern nur den im `style`-Attribut gesetzten Wert. Obwohl die `style`-Methode der [css-Methode](./css.md) ähnelt, kann sie keine vollständige Stilüberschreibung vornehmen. Im Vergleich zu `css` ist die interne Ausführungseffizienz der `style`-Methode höher.
 
-Nachfolgend ein Beispiel, das zeigt, wie man `style` verwendet:
+Im Folgenden ein Beispiel, das zeigt, wie `style` verwendet wird:
 
 <o-playground name="style - direkte Verwendung" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target">ursprünglicher Text</div>
+      <div id="target">origin text</div>
       <br>
-      <h4>Logger</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = $("#target").style.color;
@@ -26,13 +26,13 @@ Nachfolgend ein Beispiel, das zeigt, wie man `style` verwendet:
   </code>
 </o-playground>
 
-Bitte beachte, dass die `style`-Methode nur Werte abruft und auf dem `style`-Attribut setzt, nicht jedoch die tatsächliche berechnete Darstellung.
+Bitte beachten Sie, dass die `style`-Methode nur die Werte des `style`-Attributs abruft und setzt, nicht jedoch die tatsächlichen berechneten Stile.
 
-## Verwendung auf Template-Syntax-Weise
+## Verwendung der Vorlagensyntax
 
-Sie können auch über die Template-Syntax den Stil des Zielelements festlegen.
+Du kannst auch über die Template-Syntax die Stile des Ziel-Elements festlegen.
 
-<o-playground name="style - Template-Syntax" style="--editor-height: 400px">
+<o-playground name="style - Vorlagen-Syntax" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./style-demo.html"></l-m>
@@ -46,7 +46,7 @@ Sie können auch über die Template-Syntax den Stil des Zielelements festlegen.
   </code>
   <code path="style-demo.html" active>
     <template component>
-      <div :style.color="txt">Ich bin das Ziel</div>
+      <div :style.color="txt">I am target</div>
       <script>
         export default {
           tag: "style-demo",

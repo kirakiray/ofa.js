@@ -1,8 +1,8 @@
-# parent
+# parents
 
-Using the `parents` property, you can easily obtain all parent element instances of the current element, which will be returned as an array.
+Using the `parents` property, you can easily get all parent element instances of the current element, and these elements will be returned as an array.
 
-<o-playground name="parents - Parent Elements" style="--editor-height: 360px">
+<o-playground name="parents - parent elements" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div>

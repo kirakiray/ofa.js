@@ -2,7 +2,7 @@
 
 
 
-En utilisant la propriété `prevs`, vous pouvez facilement obtenir toutes les instances d'éléments adjacents précédant l'élément actuel, ces éléments seront retournés sous forme de tableau.
+En utilisant l'attribut `prevs`, vous pouvez facilement obtenir toutes les instances d'éléments adjacents précédant l'élément actuel, et ces éléments seront renvoyés sous forme de tableau.
 
 <o-playground name="prevs - éléments précédents" style="--editor-height: 320px">
   <code path="demo.html">

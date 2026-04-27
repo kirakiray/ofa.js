@@ -2,14 +2,14 @@
 
 
 
-Die `unwrap`-Methode wird verwendet, um das äußere umschließende Element des Zielelements zu entfernen.
+Die Methode `unwrap` dient dazu, das äußere umschließende Element des Ziel-Elements zu entfernen.
 
-<o-playground name="unwrap - Wrapper entfernen" style="--editor-height: 440px">
+<o-playground name="unwrap - Entfernen der Umhüllung" style="--editor-height: 440px">
   <code path="demo.html">
     <template>
       <style> div{border: #aaa solid 1px; margin:8px; padding:8px;} </style>
       <div style="color:red;border-color:red;">
-        <div id="target">Ich bin das Ziel</div>
+        <div id="target">I am target</div>
       </div>
       <script>
         setTimeout(()=>{
@@ -22,7 +22,7 @@ Die `unwrap`-Methode wird verwendet, um das äußere umschließende Element des 
 
 ## Hinweise
 
-Das Zielelement **muss einen übergeordneten Knoten haben**, andernfalls kann die Unwrap-Operation nicht ausgeführt werden.
+Zielelement **muss einen übergeordneten Knoten haben**, andernfalls kann die Unwrap-Operation nicht ausgeführt werden.
 
 ```javascript
 const $el = $(`
@@ -31,21 +31,21 @@ const $el = $(`
 </div>
 `);
 
-$el.unwrap(); // Fehler, kein Elternelement, unwrap nicht möglich
+$el.unwrap(); // Fehler, kein übergeordnetes Element, unwrap nicht möglich
 $el.$('#target').unwrap(); // Korrekt, umschließendes Element entfernen
 ```
 
-Wenn das Zielelement andere Geschwisterelemente hat, kann ebenfalls kein Unwrap ausgeführt werden.
+Wenn das Zielelement andere Geschwisterelemente besitzt, kann auch kein unwrap ausgeführt werden.
 
 ```javascript
 const $el = $(`
 <div>
     <div id="target"></div>
-    <div>I am siblings</div>
+    <div>Ich bin ein Geschwisterknoten</div>
 </div>
 `);
 
 $el.$('#target').unwrap(); // Fehler, da andere benachbarte Knoten vorhanden sind
 ```
 
-**Bitte beachten Sie, dass Sie nicht innerhalb von Template-Komponenten wie o-fill oder o-if operieren sollten.**
+**Bitte beachten Sie: Führen Sie keine Operationen innerhalb von Vorlagenkomponenten wie o-fill oder o-if durch.**

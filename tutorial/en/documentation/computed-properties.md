@@ -1,18 +1,18 @@
 # Computed Properties
 
-Computed properties are a way to derive new data from reactive data, automatically updating based on changes in the dependent data. In ofa.js, computed properties are defined as special methods within the `proto` object, using JavaScript's `get` or `set` keywords.
+Computed properties are a way to derive new data from reactive data; they automatically update when the dependent data changes. In ofa.js, computed properties are special methods defined in the `proto` object, using JavaScript's `get` or `set` keywords.
 
-## Features & Benefits
+## Features and Advantages
 
-- **Cached**: The result of a computed property is cached and only recalculated when its dependencies change.  
-- **Reactive**: The computed property automatically updates when its dependencies change.  
-- **Declarative**: Dependencies are declared explicitly, making the code clearer and easier to understand.
+- **Caching**: The result of a computed property is cached and only recalculated when its dependent data changes
+- **Reactivity**: When dependent data updates, the computed property automatically updates
+- **Declarative**: Dependencies are created declaratively, making the code clearer and easier to understand
 
-## get Computed Property
+## get computed property
 
-The get computed property is used to derive new values from reactive data. It does not accept parameters and only returns a value calculated based on other data.
+get computed property is used to derive a new value from reactive data, it does not accept parameters and only returns a value calculated based on other data.
 
-<o-playground name="get Computed Property Example" style="--editor-height: 600px">
+<o-playground name="get computed property example" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -23,7 +23,7 @@ The get computed property is used to derive new values from reactive data. It do
         }
       </style>
       <button on:click="clickMe">Click Me - {{count}} - {{countDouble}}</button>
-      <p>The value of computed property countDouble is: {{countDouble}}</p>
+      <p>The computed property countDouble value is: {{countDouble}}</p>
       <script>
         export default async () => {
           return {
@@ -32,7 +32,7 @@ The get computed property is used to derive new values from reactive data. It do
             },
             proto: {
               get countDouble() {
-                console.log('countDouble is accessed');
+                console.log('countDouble was accessed');
                 return this.count * 2;
               },
               clickMe() {
@@ -46,9 +46,9 @@ The get computed property is used to derive new values from reactive data. It do
   </code>
 </o-playground>
 
-### Practical Application Scenario Examples
+### Example of Practical Application Scenario
 
-Computed properties are commonly used to handle complex data transformation logic, such as filtering arrays or formatting display text.
+Computed properties are often used to handle complex data transformation logic, such as filtering arrays, formatting displayed text, etc.:
 
 <o-playground name="Computed Property Example" style="--editor-height: 500px">
   <code>
@@ -79,7 +79,7 @@ Computed properties are commonly used to handle complex data transformation logi
           return {
             data: {
               filterText: '',
-              names: ['Zhang3', 'Li4', 'Wang54']
+              names: ['Zhang 3', 'Li 4', 'Wang 54']
             },
             proto: {
               get filteredNames() {
@@ -98,9 +98,9 @@ Computed properties are commonly used to handle complex data transformation logi
   </code>
 </o-playground>
 
-## Computed Properties for Sets
+## set computed properties
 
-Setter computed properties allow you to modify the underlying data state through assignment operations. It accepts a parameter and is typically used to inversely update the original data that depends on it.
+Set computed property allows you to modify the underlying data state through assignment operations. It receives a parameter, usually used for reverse-updating the original data that depends on it.
 
 <o-playground name="set computed property example" style="--editor-height: 700px">
   <code>
@@ -121,7 +121,7 @@ Setter computed properties allow you to modify the underlying data state through
         <p>Double value: {{countDouble}}</p>
         <button on:click="resetCount">Reset count</button>
         <button on:click="setCountDouble">Set double value to 10</button>
-        <button on:click="incrementCount">Increment base value</button>
+        <button on:click="incrementCount">Increase base value</button>
       </div>
       <script>
         export default async () => {
@@ -155,15 +155,15 @@ Setter computed properties allow you to modify the underlying data state through
 
 ## Computed Properties vs Methods
 
-Although methods can achieve similar functionality, computed properties are cached and only re-evaluate when their dependencies change, resulting in better performance.
+Although methods can also achieve similar functions, computed properties have caching characteristics and will only recalculate when their dependent data changes, which makes performance better.
 
 ```javascript
-// Using a computed property (recommended) – cached
+// Using computed properties (recommended) - cached
 get fullName() {
   return this.firstName + ' ' + this.lastName;
 }
 
-// Using a method – runs every time it's called
+// Using methods - executed on each call
 fullName() {
   return this.firstName + ' ' + this.lastName;
 }
@@ -171,13 +171,13 @@ fullName() {
 
 ## Notes
 
-1. **Avoid asynchronous operations**: Computed properties must remain synchronous and side-effect-free; asynchronous calls or direct state mutation are forbidden.  
-2. **Dependency tracking**: Rely only on reactive data; otherwise updates will be unpredictable.  
-3. **Error protection**: Circular dependencies or improper assignments inside a computed property can crash rendering or trigger infinite loops—set boundary conditions and handle exceptions in advance.
+1. **Avoid Asynchronous Operations**: Computed properties should remain synchronous and side-effect-free; asynchronous calls or direct state mutations are prohibited.  
+2. **Dependency Tracking**: Rely solely on reactive data; otherwise, updates will be unpredictable.  
+3. **Error Protection**: Circular dependencies or abnormal assignments inside a computed property can cause rendering failures or even infinite loops—set boundary conditions and handle exceptions in advance.
 
-## Practical Application Example
+## Practical Application Examples
 
-Here is a simple form validation example demonstrating the utility of computed properties:
+The following is a simple form validation example that demonstrates the practicality of computed properties:
 
 <o-playground name="Form Validation Example" style="--editor-height: 600px">
   <code>
@@ -223,7 +223,7 @@ Here is a simple form validation example demonstrating the utility of computed p
                 return this.username.length >= 3;
               },
               get statusMessage() {
-                return this.isValid ? 'Username valid' : 'Username too short';
+                return this.isValid ? 'Username is valid' : 'Username is too short';
               },
             }
           };

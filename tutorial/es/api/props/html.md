@@ -4,18 +4,18 @@
 
 El método `html` se utiliza para obtener o establecer el código HTML interno del elemento objetivo.
 
-<o-playground name="html - Uso directo" style="--editor-height: 400px">
+<o-playground name="html - uso directo" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <div id="target1">
-        <span style="color:green;">objetivo 1</span>
+        <span style="color:green;">target 1</span>
       </div>
-      <div id="target2">texto original</div>
+      <div id="target2">origin text</div>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;"></div>
       <script>
         setTimeout(()=> {
-          \$('#target2').html = `<b style="color:blue;">texto nuevo</b>`;
+          \$('#target2').html = `<b style="color:blue;">new text</b>`;
           console.log($("#target1").text)
           \$("#logger").html = $("#target1").html;
         }, 500);
@@ -24,15 +24,15 @@ El método `html` se utiliza para obtener o establecer el código HTML interno d
   </code>
 </o-playground>
 
-## Precauciones
+## Notas importantes
 
-`html` es un método relativamente peligroso; incluso si se inserta `script`, ejecutará automáticamente el código JavaScript interno. Tenga cuidado para prevenir XSS al usarlo.
+`html` es un método bastante peligroso, ya que al insertarlo en `script` también ejecutará automáticamente el código JavaScript interno, así que ten cuidado al usarlo para prevenir XSS.
 
-## Uso mediante sintaxis de plantilla
+## Uso de la sintaxis de plantillas
 
-También puedes usar el atributo `:html` para establecer el valor HTML correspondiente en el elemento de destino. Esto es especialmente útil en la representación de componentes.
+También puedes usar el atributo `:html` para establecer el valor HTML correspondiente en el elemento de destino. Esto es especialmente útil en la renderización de componentes.
 
-<o-playground name="html - Sintaxis de plantilla" style="--editor-height: 500px">
+<o-playground name="html - sintaxis de plantilla" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./html-demo.html"></l-m>
@@ -46,14 +46,14 @@ También puedes usar el atributo `:html` para establecer el valor HTML correspon
   </code>
   <code path="html-demo.html" active>
     <template component>
-      <div>HTML renderizado:
+      <div>Rendered html:
         <span :html="txt" style="color:red;"></span>
       </div>
       <script>
         export default {
           tag: "html-demo",
           data: {
-            txt: "Soy txt"
+            txt: "I am txt"
           },
           ready(){
             setTimeout(()=>{

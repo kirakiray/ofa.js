@@ -4,7 +4,7 @@
 
 Über das Attribut `ofa.version` können Sie die Versionsnummer der aktuell eingebundenen ofa.js abrufen.
 
-> **Anforderung ofa.js Version ≥ 4.3.40**
+> **Erfordert ofa.js Version ≥ 4.3.40**
 
 <o-playground name="version - Version abrufen">
   <code path="demo.html">
@@ -17,4 +17,4 @@
   </code>
 </o-playground>
 
-Auf diese Weise kannst du die aktuell verwendete ofa.js-Version auf der Seite anzeigen.
+Auf diese Weise kannst du die aktuell verwendete Version von ofa.js auf der Seite anzeigen.

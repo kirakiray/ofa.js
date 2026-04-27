@@ -1,8 +1,8 @@
 # app
 
-Elements inside `o-app` — including those within the shadow DOM of an `o-page` nested inside `o-app`, or any deeper descendant components — have their `app` property pointing to the `o-app` element instance.
+Elements within `o-app`, including those inside the shadow nodes of `o-page` within `o-app`, or further nested child components, all have their `app` property pointing to this `o-app` element instance.
 
-Below is an example demonstrating how to access the `app` property within elements inside `o-app`:
+Here is an example demonstrating how to access the `app` property within elements inside `o-app`:
 
 
 <o-playground name="app - Get Application Instance" style="--editor-height: 500px">
@@ -12,9 +12,9 @@ Below is an example demonstrating how to access the `app` property within elemen
     </template>
   </code>
   <code path="app-config.js">
-    // Application home page address
+    // Home page address of the app
     export const home = "./home.html";
-    // Available methods on the application
+    // Available methods on the app
     export const proto = {
       getSomeData(){
         return "Hello ofa.js App Demo";

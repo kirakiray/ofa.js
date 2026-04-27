@@ -2,7 +2,7 @@
 
 
 
-Usando la propiedad `siblings`, puede obtener fácilmente todas las instancias de elementos adyacentes al elemento actual, que se devolverán en forma de matriz.
+Usando la propiedad `siblings`, puede obtener fácilmente todas las instancias de elementos adyacentes del elemento actual, y estos elementos serán devueltos en forma de arreglo.
 
 <o-playground name="siblings - elementos adyacentes" style="--editor-height: 360px">
   <code path="demo.html">

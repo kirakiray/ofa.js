@@ -1,43 +1,43 @@
 # カスタムイベント
 
-ofa.jsでは、組み込みのDOMイベントに加えて、カスタムイベントを作成して使用し、コンポーネント間の通信を実現することができます。カスタムイベントはコンポーネント開発における重要なメカニズムであり、コンポーネントが上位にメッセージや状態変化をブロードキャストすることを可能にします。
+ofa.jsでは、組み込みのDOMイベントに加えて、カスタムイベントを作成して使用することで、コンポーネント間の通信を実現することもできます。カスタムイベントは、コンポーネント指向開発における重要なメカニズムであり、コンポーネントがメッセージや状態の変化を上位にブロードキャストすることを可能にします。
 
-## emit メソッド - カスタムイベントをトリガーする
+## emit 方法 - カスタムイベントをトリガーする
 
-`emit` メソッドはカスタムイベントを発行し、コンポーネント内部の状態変化やユーザー操作を外部のリスナーに通知するために使用されます。
+`emit` メソッドはカスタムイベントをトリガーし、コンポーネント内部の状態変化やユーザー操作を外部のリスナーに通知するために使用されます。
 
 ### 基本的な使い方
 
 ```javascript
-// シンプルなカスタムイベントをトリガーする
+// シンプルなカスタムイベントを発火
 this.emit('custom-event');
 
-// データ付きのカスタムイベントをトリガーする
+// データ付きのカスタムイベントを発火
 this.emit('data-changed', {
   data: {
-    // カスタムデータ、必要に応じて任意の構造で設定可能
+    // カスタムデータ、必要に応じて任意の構造
     newValue: 100,
     oldValue: 50
   }
 });
 ```
 
-### emit メソッドの引数
+### emit メソッドパラメータ
 
 `emit` メソッドは2つの引数を受け取ります：
 
-1. **イベント名**：文字列、トリガーするイベントの名前を表す
-2. **オプションオブジェクト**（任意）：イベント設定オプションを含む
+1. **イベント名**：文字列。トリガーするイベントの名前を指定します。
+2. **オプションオブジェクト**（オプション）：イベント設定オプションを含む
    - `data`：渡すデータ
-   - `bubbles`：ブール値、イベントをバブリングさせるかどうか（デフォルトは true）
-   - `composed`：ブール値、イベントが Shadow DOM の境界を越えられるかどうかを制御する
-   - `cancelable`：ブール値、イベントをキャンセル可能にするかどうかを制御する
+   - `bubbles`：ブール値。イベントがバブリングするかどうかを制御します（デフォルトはtrue）
+   - `composed`：ブール値。イベントがShadow DOMの境界を越えられるかどうかを制御します
+   - `cancelable`：ブール値。イベントがキャンセル可能かどうかを制御します
 
-そして上位要素は`on`メソッド [（イベントバインディング）](./event-binding.md) を使用してこのカスタムイベントを監視できます。
+そして上位の要素は`on`メソッド[（イベントバインディング）](./event-binding.md)を使ってこのカスタムイベントをリッスンできる。
 
 ### emit 使用例
 
-<o-playground name="emit 使用示例" style="--editor-height: 500px">
+<o-playground name="emit 使用例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -80,7 +80,7 @@ this.emit('data-changed', {
           border: 1px solid #ccc;
         }
       </style>
-      <button on:click="handleClick">クリックしてイベントをトリガー</button>
+      <button on:click="handleClick">クリックしてイベントを発火</button>
       <script>
         export default async () => {
           return {
@@ -102,17 +102,17 @@ this.emit('data-changed', {
   </code>
 </o-playground>
 
-## bubbles - イベントバブリングメカニズム
+## bubbles - イベントバブリング機構
 
-`bubbles` 属性は、イベントが親要素にバブルアップするかどうかを制御します。`true` に設定すると、イベントは DOM ツリーを上方向に伝播します。デフォルト値は `true` です。`false` に設定すると、イベントはバブルしません。
+`bubbles` プロパティは、イベントが親要素へとバブリング（上方向に伝播）するかどうかを制御します。`true` に設定すると、イベントは DOM ツリーに沿って上方向に伝播します。デフォルト値は `true` です。`false` に設定すると、イベントはバブリングしません。
 
-### バブルメカニズムの詳細解説
+### バブリングメカニズム詳解
 
-- **デフォルト動作**：`emit`で発行されるイベントはデフォルトでバブリングが有効（`bubbles: true`）
-- **バブリング経路**：イベントはトリガー要素から始まり、段階的に上位へ伝播します
-- **バブリングの停止**：イベントハンドラ内で`event.stopPropagation()`を呼び出すとバブリングを停止できます
+- **デフォルトの動作**：`emit` によって発行されるイベントはデフォルトでバブリングが有効（`bubbles: true`）
+- **バブリングパス**：イベントはトリガー要素から始まり、階層を上へ伝播する
+- **バブリングの阻止**：イベントハンドラ内で `event.stopPropagation()` を呼ぶとバブリングを阻止できる
 
-### バブルソートの例
+### バブル例
 
 <o-playground name="カスタムイベント例" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -133,9 +133,9 @@ this.emit('data-changed', {
       <div on:child-event="handleChildEventFromComponent">
         <bubble-component on:child-event="handleDirectChildEvent"></bubble-component>
       </div>
-      <p>外側コンテナ（バブリングイベントを監視）: {{bubbledEventCount}} 回</p>
-      <p>内側コンポーネント（直接イベントを監視）: {{directEventCount}} 回</p>
-      <p>受信したデータ: <span style="color:red;">{{result}}</span></p>
+      <p>外側コンテナ（バブリングイベントをリッスン）: {{bubbledEventCount}} 回</p>
+      <p>内側コンポーネント（直接イベントをリッスン）: {{directEventCount}} 回</p>
+      <p>受け取ったデータ: <span style="color:red;">{{result}}</span></p>
       <script>
         export default async () => {
           return {
@@ -176,14 +176,14 @@ this.emit('data-changed', {
             tag: "bubble-component",
             proto: {
               triggerNonBubblingEvent() {
-                // 非バブリングイベント、直接リスナーのみがキャッチ
+                // 非バブリングイベント、直接のリスナーのみがキャッチ
                 this.emit('child-event', {
                   data: { type: 'non-bubbling', message: '非バブリングイベントがトリガーされました', timestamp: Date.now() },
                   bubbles: false
                 });
               },
               triggerBubblingEvent() {
-                // バブリングイベント、親要素へ伝播
+                // バブリングイベント、親要素へ伝播する
                 this.emit('child-event', {
                   data: { type: 'bubbling', message: 'バブリングイベントがトリガーされました', timestamp: Date.now() },
                   bubbles: true
@@ -197,19 +197,19 @@ this.emit('data-changed', {
   </code>
 </o-playground>
 
-## composed - Shadow DOM の境界を貫通する
+## composed - Shadow DOM 境界を貫通
 
-`composed` プロパティは、イベントが Shadow DOM の境界を通過できるかどうかを制御します。これは Web Components の開発において特に重要であり、デフォルト値は `false` です。
+`composed` 属性は、イベントが Shadow DOM の境界を越えるかどうかを制御します。これは Web Components の開発において特に重要であり、デフォルト値は `false` です。
 
 ### 貫通メカニズム詳解
 
-- **Shadow DOM 隔離**：デフォルトでは、イベントは Shadow DOM の境界を越えられない
-- **透過を有効化**：`composed: true` を設定すると、イベントが Shadow DOM の境界を越えて伝播される
-- **使用シーン**：コンポーネントがホスト環境にイベントを送信する必要がある場合、`composed: true` を設定する必要がある
+- **Shadow DOM の分離**：デフォルトでは、イベントは Shadow DOM の境界を越えられません
+- **透過の有効化**：`composed: true` を設定すると、イベントが Shadow DOM の境界を越えられるようになります
+- **使用シーン**：コンポーネントがホスト環境にイベントを送信する必要がある場合、`composed: true` を設定する必要があります
 
-### 透過サンプル
+### 透過例
 
-<o-playground name="データ付きカスタムイベントの例" style="--editor-height: 500px">
+<o-playground name="カスタムイベントとデータのサンプル" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -228,7 +228,7 @@ this.emit('data-changed', {
       <div on:child-event="handleChildEventFromComponent">
         <bubble-component></bubble-component>
       </div>
-      <p>イベント監視: {{bubbledEventCount}} 回</p>
+      <p>イベントを監視: {{bubbledEventCount}} 回</p>
       <p>受信したデータ: <span style="color:red;">{{result}}</span></p>
       <script>
         export default async () => {
@@ -259,7 +259,7 @@ this.emit('data-changed', {
         }
       </style>
       <child-component on:child-event="handleChildEventFromComponent"></child-component>
-      <p>イベント監視: {{bubbledEventCount}} 回</p>
+      <p>イベントを監視: {{bubbledEventCount}} 回</p>
       <p>受信したデータ: <span style="color:pink;">{{result}}</span></p>
       <script>
         export default async () => {
@@ -289,24 +289,24 @@ this.emit('data-changed', {
           border: 1px solid green;
         }
       </style>
-      <button on:click="triggerNonComposedEvent">非透過イベントをトリガー</button>
-      <button on:click="triggerComposedEvent">透過イベントをトリガー</button>
+      <button on:click="triggerNonComposedEvent">非貫通イベントをトリガー</button>
+      <button on:click="triggerComposedEvent">貫通イベントをトリガー</button>
       <script>
         export default async () => {
           return {
             tag: "child-component",
             proto: {
               triggerNonComposedEvent() {
-                // 非透過イベント、直接の監視者のみがキャプチャします
+                // 非貫通イベント、直接のリスナーのみキャプチャされます
                 this.emit('child-event', {
-                  data: { type: 'non-composed', message: '非透過イベントトリガー', timestamp: Date.now() },
+                  data: { type: 'non-composed', message: '非貫通イベントがトリガーされました', timestamp: Date.now() },
                   composed: false
                 });
               },
               triggerComposedEvent() {
-                // 透過イベント、Shadow DOM の境界を越えます
+                // 貫通イベント、Shadow DOM 境界を越えます
                 this.emit('child-event', {
-                  data: { type: 'composed', message: '透過イベントトリガー', timestamp: Date.now() },
+                  data: { type: 'composed', message: '貫通イベントがトリガーされました', timestamp: Date.now() },
                   composed: true
                 });
               }

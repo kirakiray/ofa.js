@@ -1,14 +1,14 @@
-# Class and Style Binding
+# Class and Style Bindings
 
-In ofa.js, you can achieve flexible UI state management by dynamically binding class names, styles, and attributes. This enables the interface to automatically adjust its appearance based on data changes.
+In ofa.js, you can achieve flexible UI state management by dynamically binding class names, styles, and attributes. This allows the interface to automatically adjust its appearance based on data changes.
 
 ## Class Binding
 
-Class binding lets you dynamically add or remove CSS classes based on data state. You can bind a specific class using the syntax `class:className="booleanExpression"`.
+Class binding allows you to dynamically add or remove CSS classes based on data state. You can bind a specific class using the syntax `class:className="booleanExpression"`.
 
-When `booleanExpression` is `true`, the class name is added to the element; when it is `false`, the class name is removed.
+When `booleanExpression` is `true`, the class name will be added to the element; when it is `false`, the class name will be removed.
 
-### Base class binding
+### Basic Class Binding
 
 <o-playground name="Basic Class Binding" style="--editor-height: 500px">
   <code>
@@ -41,7 +41,7 @@ When `booleanExpression` is `true`, the class name is added to the element; when
 
 ### Multiple Class Bindings
 
-You can also bind multiple classes at once, allowing the element to have different visual states based on different conditions.
+You can also bind multiple classes simultaneously to give elements different appearance states based on different conditions.
 
 <o-playground name="Multiple Class Bindings" style="--editor-height: 500px">
   <code>
@@ -93,7 +93,7 @@ You can also bind multiple classes at once, allowing the element to have differe
 
 ## Style Binding
 
-Style binding lets you set inline style values directly and supports dynamic updates. ofa.js offers two ways to bind styles:
+Style binding allows you to directly set the value of inline styles, supporting dynamic updates. ofa.js provides two style binding methods:
 
 ### Single Style Property Binding
 
@@ -125,7 +125,7 @@ Use the `:style.propertyName` syntax to bind a specific style property.
   </code>
 </o-playground>
 
-### Multi-style Attribute Binding
+### Multiple Style Property Binding
 
 You can also bind multiple style attributes at once:
 
@@ -165,7 +165,7 @@ You can also bind multiple style attributes at once:
   </code>
 </o-playground>
 
-## Property Binding
+## Attribute Binding
 
 In addition to class and style bindings, you can also dynamically bind other HTML attributes. ofa.js uses the `attr:attributeName` syntax to achieve attribute binding.
 
@@ -188,13 +188,13 @@ In addition to class and style bindings, you can also dynamically bind other HTM
         }
       </style>
       <p attr:bg-color="bgColor" attr:title="tooltipText">{{val}}</p>
-      <button on:click="changeColor">Change Color</button>
+      <button on:click="changeColor">Change Color</button>  
       <script>
         export default async () => {
           return {
             data: {
               bgColor: "green",
-              tooltipText: "This is a tooltip message",
+              tooltipText: "This is a tooltip",
               val: "Hover over me to see the title",
             },
             proto: {
@@ -211,7 +211,7 @@ In addition to class and style bindings, you can also dynamically bind other HTM
 
 ### Handling Boolean Attributes
 
-For Boolean attributes (such as `disabled`, `hidden`), ofa.js decides whether to add the attribute based on the truthiness of the bound value.
+For Boolean attributes (such as `disabled`, `hidden`), ofa.js determines whether to add the attribute based on the truthiness of the bound value.
 
 <o-playground name="Boolean Attribute Handling" style="--editor-height: 700px">
   <code>
@@ -260,7 +260,7 @@ For Boolean attributes (such as `disabled`, `hidden`), ofa.js decides whether to
 
 You can use `data(key)` in styles to bind component data. This is perfect for scenarios where styles need to change dynamically based on component data.
 
-<o-playground name="Data function in style tags" style="--editor-height: 500px">
+<o-playground name="Data Function in Style Tag" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -282,9 +282,9 @@ You can use `data(key)` in styles to bind component data. This is perfect for sc
           transition: all data(time)s ease;
         }
       </style>
-      Hover FontSize: <input type="number" sync:value="size" placeholder="This is a two-way bound input box" />
+      Hover FontSize: <input type="number" sync:value="size" placeholder="This is a two-way binding input box" />
       <br />
-      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="This is a two-way bound input box" />
+      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="This is a two-way binding input box" />
       <p>{{val}} - size: {{size}}</p>
       <script>
         export default async () => {
@@ -303,7 +303,7 @@ You can use `data(key)` in styles to bind component data. This is perfect for sc
 
 ## Notes
 
-`data(key)` inside the `style` tag will in principle replace the entire content of the style. To avoid redundant rendering of unrelated styles, it is recommended to place styles containing `data(key)` in a separate `style` tag, while styles that do not require data binding should be placed in another `style` tag for better performance.
+Within a `style` tag, `data(key)` in principle replaces the entire content of the style. To avoid re-rendering unrelated styles, it is recommended to place styles that include `data(key)` in a separate `style` tag, while styles that do not require data binding should be placed in another `style` tag for better performance.
 
 ```html
 <!-- ❌ p:hover without data(key) will also be refreshed -->

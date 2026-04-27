@@ -2,15 +2,15 @@
 
 
 
-Utiliser l'attribut `root` permet d'obtenir le nœud racine de l'élément.
+L'utilisation de l'attribut `root` permet d'obtenir le nœud racine de l'élément.
 
-Sur la page, le nœud racine des éléments ordinaires est l'instance `document`.
+Sur la page, le nœud racine des éléments ordinaires est toujours l'instance de `document`.
 
 <o-playground name="root - nœud racine" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>
-        <li id="target">Je suis la cible</li>
+        <li id="target">I am target</li>
       </ul>
       <div id="logger" style="padding:16px;color:green;"></div>
       <script>
@@ -22,9 +22,9 @@ Sur la page, le nœud racine des éléments ordinaires est l'instance `document`
   </code>
 </o-playground>
 
-## Éléments dans le nœud fantôme
+## Éléments dans les nœuds fantômes
 
-Étant donné que les éléments à l’intérieur du composant sont isolés de l’environnement extérieur, la propriété `root` des éléments dans le nœud fantôme est le nœud racine fantôme.
+Comme les éléments à l'intérieur du composant sont isolés de l'environnement extérieur, la propriété `root` d'un élément à l'intérieur d'un nœud fantôme est le nœud racine fantôme.
 
 
 <o-playground name="root - nœud fantôme" style="--editor-height: 600px">

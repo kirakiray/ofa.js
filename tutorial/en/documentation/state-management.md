@@ -1,16 +1,16 @@
 # State Management
 
-## What is state
+## What is State
 
-In ofa.js, **state** refers to the `data` property of a component or page module itself. This state can only be used within the current component to store and manage its internal data.
+In ofa.js, **state** refers to the `data` property of a component or page module. This state can only be used on the current component, and is used to store and manage the internal data of that component.
 
-When multiple components or pages need to share the same data, the traditional approach is to pass it through events or props layer by layer, which makes the code hard to maintain in complex applications. Therefore, **state management** is needed—by defining a shared state object, multiple components or page modules can access and modify this data, achieving state sharing.
+When multiple components or pages need to share the same data, the traditional approach is to pass it through events or props layer by layer, which makes the code hard to maintain in complex applications. Therefore, **state management** is needed—by defining a shared state object, multiple components or page modules can access and modify this data, thus achieving state sharing.
 
-> **Tip**: State management is suitable for scenarios where data needs to be shared across components and pages, such as user information, shopping carts, theme configurations, global configurations, etc.
+> **Tip**: State management is suitable for scenarios where data needs to be shared across components and pages, such as user information, shopping cart, theme configuration, global configuration, etc.
 
-## Generate State Object
+## Generating Status Object
 
-Create a reactive state object via `$.stanz({})`. This method takes a plain object as initial data and returns a reactive state proxy.
+Create a reactive state object by using `$.stanz({})`. This method accepts a plain object as initial data and returns a reactive state proxy.
 
 ### Basic Usage
 
@@ -21,9 +21,9 @@ Create a reactive state object via `$.stanz({})`. This method takes a plain obje
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // App homepage address
+    // Application home page address
     export const home = "./list.html";
-    // Page transition animation config
+    // Page transition animation configuration
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -44,15 +44,15 @@ Create a reactive state object via `$.stanz({})`. This method takes a plain obje
     list: [{
         id: 10010,
         name: "Peter",
-        info: "Every day is a new beginning, sunshine always comes after the storm.",
+        info: "Every day is a new beginning, and the sun always shines after the storm.",
     },{
         id: 10020,
         name: "Mike",
-        info: "Life is like an ocean, only those with a strong will can reach the other shore.",
+        info: "Life is like the ocean; only those with strong will can reach the other shore.",
     },{
         id: 10030,
         name: "John",
-        info: "The secret to success is sticking to your dreams and never giving up.",
+        info: "The secret of success is to hold on to your dreams and never give up.",
     }]
   });
   // await fetch("/list.api").then(e=>e.json()).then(list=>data.list = list)
@@ -158,38 +158,38 @@ Create a reactive state object via `$.stanz({})`. This method takes a plain obje
   </code>
 </o-playground>
 
-## Characteristics of State Objects
+## Characteristics of state objects
 
-### 1. Responsive Updates
+### 1. Reactive Update
 
-The state object created by `$.stanz()` is reactive. When the state data changes, all components referencing that data will automatically update.
+`$.stanz()` creates a reactive state object. When the state data changes, all components that reference the data will automatically update.
 
 ```javascript
 const store = $.stanz({ count: 0 });
 
-// in component
+// In the component
 export default {
   data: {
     store: {}
   },
-  proto: {
+  proto:{
     increment() {
-        store.count++; // all components referencing store.count update automatically
+        store.count++; // All components that reference store.count will automatically update
     }
   },
   attached() {
-    // directly reference properties of the state object
+    // Directly reference the properties of the state object
     this.store = store;
   },
-  detached() {
-    this.store = {}; // clear mounted state data when component is destroyed
+  detached(){
+    this.store = {}; // When component is destroyed, clear the mounted state data
   }
 };
 ```
 
-### 2. Deep Reactivity
+### 2. Deep Responsive
 
-The state object supports deep reactivity, and changes to nested objects and arrays will also be observed.
+The state object supports deep reactivity; changes to nested objects and arrays will also be monitored.
 
 ```javascript
 const store = $.stanz({
@@ -210,9 +210,9 @@ store.list.push({ id: 1, title: "New Task" });
 
 ## Best Practices
 
-### 1. Mount state during the component's attached phase
+### 1. Mounting state during the component's attached phase
 
-It is recommended to mount shared state in the `attached` lifecycle of a component:
+It is recommended to mount the shared state in the component's `attached` lifecycle:
 
 ```javascript
 export default {
@@ -220,32 +220,32 @@ export default {
     list: []
   },
   attached() {
-    // Mount shared state to component's data
+    // Mount the shared state onto the component's data
     this.list = data.list;
   },
   detached() {
-    // When component is destroyed, clear mounted state data to prevent memory leaks
+    // When the component is destroyed, clear the mounted state data to prevent memory leaks
     this.list = [];
   }
 };
 ```
 
-### 2. Properly Manage State Scope
+### 2. Reasonably Manage State Scope
 
-- **Global State**: Suitable for data that needs to be accessed throughout the entire application (such as user information, global configurations)  
-- **Module State**: Suitable for data shared within specific functional modules
+- **Global state**: Suitable for data that needs to be accessed by the entire application (e.g., user information, global configuration)
+- **Module state**: Suitable for data shared within a specific functional module
 
 ```javascript
 // Global call state
 export const globalStore = $.stanz({ user: null, theme: "light" });
 
-// Module-internal state
+// State used within the module
 const cartStore = $.stanz({ total: 0 });
 ```
 
-## In-Module State Management
+## Module-Level State Management
 
-<o-playground name="Module State Management Example" style="--editor-height: 500px">
+<o-playground name="Module Internal State Management Example" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -310,7 +310,7 @@ const cartStore = $.stanz({ total: 0 });
                 this.cartStore = cartStore;
             },
             detached(){
-                this.cartStore = {}; // When component is destroyed, clear the mounted state data
+                this.cartStore = {}; // Clear the mounted state data when the component is destroyed
             }
           };
         };
@@ -321,11 +321,11 @@ const cartStore = $.stanz({ total: 0 });
 
 ## Notes
 
-1. **State Cleanup**: In the `detached` lifecycle of a component, promptly clean up references to state data to avoid memory leaks.
+1. **State Cleanup**: In the component's `detached` lifecycle, promptly clean up references to state data to avoid memory leaks.
 
-2. **Avoid Circular Dependencies**: Do not create circular references between state objects, as this may cause issues in the reactive system.
+2. **Avoid Circular Dependencies**: Do not form circular references between state objects, as this may cause issues with the reactive system.
 
-3. **Large Data Structures**: For large data structures, consider using computed properties or sharding management to avoid unnecessary performance overhead.
+3. **Large Data Structures**: For large data structures, consider using computed properties or chunked management to avoid unnecessary performance overhead.
 
-4. **State Consistency**: Pay attention to state consistency during asynchronous operations. Transactions or batch updates can be used to ensure data integrity.
+4. **State Consistency**: Pay attention to state consistency in asynchronous operations, and use transactions or batch updates to ensure data integrity.
 

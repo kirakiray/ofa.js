@@ -1,15 +1,15 @@
-# Slot
+# Slots
 
-Las ranuras son espacios reservados en un componente para recibir contenido externo. Al utilizar ranuras, puedes crear componentes reutilizables y, al mismo tiempo, permitir que quien use el componente personalice su contenido interno.
+Las ranuras son marcadores de posición en los componentes que se utilizan para recibir contenido externo. Mediante el uso de ranuras, puedes crear componentes reutilizables, al mismo tiempo que permites a quienes usan el componente personalizar el contenido interno del mismo.
 
-## Slot predeterminado
+## Ranura predeterminada
 
 <o-playground name="Ejemplo de ranura predeterminada" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp>
-        <div>¡Hola, OFAJS!</div>
+        <div>Hello, OFAJS!</div>
       </demo-comp>
     </template>
   </code>
@@ -21,7 +21,7 @@ Las ranuras son espacios reservados en un componente para recibir contenido exte
           border: 1px solid green;
           padding: 8px;
         }
-      </style>Contenido de la ranura:
+      </style>Contenido de la ranura：
       <br />
       <span style="color: red;">
         <slot></slot>
@@ -41,15 +41,15 @@ Las ranuras son espacios reservados en un componente para recibir contenido exte
 
 Cuando el componente padre no proporciona contenido para el slot, los elementos dentro de `<slot></slot>` se mostrarán como contenido predeterminado.
 
-<o-playground name="Ejemplo de contenido predeterminado de slot" style="--editor-height: 500px">
+<o-playground name="Ejemplo de contenido predeterminado del slot" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
-      <h3>Con contenido de slot:</h3>
+      <h3>Con contenido en el slot:</h3>
       <demo-comp>
-        <div>Contenido personalizado</div>
+        <div>Este es contenido personalizado</div>
       </demo-comp>
-      <h3>Sin contenido de slot (muestra el contenido predeterminado):</h3>
+      <h3>Sin contenido en el slot (muestra contenido predeterminado):</h3>
       <demo-comp></demo-comp>
     </template>
   </code>
@@ -79,17 +79,17 @@ Cuando el componente padre no proporciona contenido para el slot, los elementos 
   </code>
 </o-playground>
 
-## Slots con nombre
+## Ranuras con nombre
 
-Cuando un componente necesita múltiples posiciones de slot, se pueden usar slots con nombre para distinguir diferentes slots. Para definir slots con nombre, se utiliza `<slot name="xxx">`, y al usarlos, se especifica en qué slot se coloca el contenido mediante el atributo `slot="xxx"`.
+Cuando un componente necesita múltiples posiciones de slot, se pueden usar slots con nombre para diferenciar los distintos slots. Mediante `<slot name="xxx">` se define un slot con nombre, y al usarlo, a través del atributo `slot="xxx"` se especifica en qué slot se coloca el contenido.
 
-<o-playground name="Ejemplo de ranuras con nombre" style="--editor-height: 500px">
+<o-playground name="Ejemplo de ranura con nombre" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp>
-        <div>¡Hola, OFAJS!</div>
-        <div slot="footer">Contenido del pie de página</div>
+        <div>Hello, OFAJS!</div>
+        <div slot="footer">Footer Content</div>
       </demo-comp>
     </template>
   </code>
@@ -101,7 +101,7 @@ Cuando un componente necesita múltiples posiciones de slot, se pueden usar slot
           border: 1px solid green;
           padding: 8px;
         }
-      </style>Contenido de la ranura:
+      </style>Contenido de la ranura：
       <br />
       <span style="color: red;">
         <slot></slot>
@@ -121,16 +121,16 @@ Cuando un componente necesita múltiples posiciones de slot, se pueden usar slot
   </code>
 </o-playground>
 
-## Paso de ranuras multinivel
+## Transmisión de slots multinivel
 
-El contenido de los slots puede transmitirse a través de múltiples niveles de componentes. Cuando un componente padre transmite contenido de slot a un componente hijo, este hijo puede seguir transmitiendo ese contenido de slot a sus propios componentes hijos, logrando así una propagación de slots en varias capas.
+El contenido de los slots se puede transmitir a través de múltiples niveles de componentes. Cuando un componente padre pasa contenido de slot a un componente hijo, el componente hijo puede continuar pasando este contenido de slot a sus propios componentes hijos, logrando una transmisión multicapa de slots.
 
 <o-playground name="Ejemplo de paso de slots multinivel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
       <outer-comp>
-        <div style="color: red;">Título del nivel más externo</div>
+        <div style="color: red;">Título desde la capa más externa</div>
       </outer-comp>
     </template>
   </code>
@@ -183,5 +183,5 @@ El contenido de los slots puede transmitirse a través de múltiples niveles de 
 </o-playground>
 
 En el ejemplo anterior:- El componente padre más externo define el contenido de `slot="header"`
-- El componente externo (outer-comp) recibe este contenido de slot y lo pasa al componente interno (inner-comp)
-- El componente interno finalmente renderiza el contenido del slot proveniente del nivel más externo
+- El componente externo (outer-comp) recibe este contenido del slot y lo pasa al componente interno (inner-comp)
+- El componente interno finalmente renderiza el contenido del slot proveniente del más externo

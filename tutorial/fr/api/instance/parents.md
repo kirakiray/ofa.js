@@ -2,9 +2,9 @@
 
 
 
-En utilisant l'attribut `parents`, vous pouvez facilement obtenir toutes les instances des éléments parents de l'élément actuel, qui seront retournées sous forme de tableau.
+En utilisant la propriété `parents`, vous pouvez facilement obtenir toutes les instances d'éléments parents de l'élément actuel, et ces éléments seront retournés sous forme de tableau.
 
-<o-playground name="parents - éléments parents" style="--editor-height: 360px">
+<o-playground name="parents - élément parent" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div>

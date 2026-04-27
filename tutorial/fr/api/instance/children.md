@@ -1,6 +1,6 @@
 # Élément enfant
 
-Obtenir une instance d'élément enfant est très simple : il vous suffit de traiter l'instance comme un tableau et d'accéder à l'instance de l'élément enfant via un index numérique.
+Obtenir une instance d'élément enfant est très simple, il vous suffit de traiter l'instance comme un tableau et d'obtenir l'instance de son élément enfant via un index numérique.
 
 <o-playground name="children" style="--editor-height: 380px">
   <code path="demo.html">
@@ -26,7 +26,7 @@ Obtenir une instance d'élément enfant est très simple : il vous suffit de tra
 
 
 
-Obtenir le nombre d'éléments enfants de l'élément cible, cas d'exemple comme indiqué ci-dessus：
+Obtenez le nombre d'éléments enfants de l'élément cible, comme illustré ci-dessus :
 
 ```javascript
 $("#logger1").text = $('ul').length;

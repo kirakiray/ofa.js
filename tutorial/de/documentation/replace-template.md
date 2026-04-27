@@ -1,8 +1,8 @@
 # replace-temp Komponente
 
-Wenn wir versuchen, ein Listen-Rendering in speziellen Elementen wie select oder table durchzuführen, könnte der Browser die `<x-fill>`-Komponente automatisch entfernen, was zu einem Fehler beim Listen-Rendering führt. In diesem Fall kann man die replace-temp-Methode verwenden, um dieses Problem zu lösen.
+Wenn wir versuchen, Listenrendering in speziellen Elementen wie select oder table durchzuführen, kann der Browser die `<x-fill>`-Komponente automatisch entfernen, was zum Fehlschlagen des Listenrenderings führt. In diesem Fall kann die replace-temp-Methode verwendet werden, um dieses Problem zu lösen.
 
-Die Verwendungsweise ist: Setzen Sie `is="replace-temp"` auf dem `<template>`-Tag und platzieren Sie es innerhalb eines Elements, das der Browser automatisch korrigiert.
+Die Verwendungsmethode ist: Setzen Sie `is="replace-temp"` auf dem `<template>`-Tag und platzieren Sie es innerhalb eines Elements, das der Browser automatisch korrigiert.
 
 <o-playground name="replace-temp Komponente" style="--editor-height: 500px">
   <code>

@@ -1,26 +1,26 @@
-# SSR und Isomorphic Rendering
+# SSR und isomorphes Rendering
 
-> Wenn Sie nicht wissen, was SSR ist, bedeutet das, dass Sie es derzeit nicht benötigen. Sie können dieses Kapitel überspringen und später darauf zurückkommen, wenn Sie es brauchen.
+> Wenn du nicht weißt, was SSR ist, bedeutet das, dass du es derzeit noch nicht benötigst. Du kannst dieses Kapitel überspringen und später darauf zurückkommen, wenn du es brauchst.
 
 ## Isomorphes Rendering
 
-Um sowohl das flüssige CSR-Erlebnis beizubehalten, eine bessere Erkennung durch Maschinen-Crawler (SEO) zu ermöglichen als auch eine freiere Wahl der Backend-Entwicklungssprache zu bieten, bietet ofa.js einen einzigartigen isomorphen Rendering-Modus (Symphony Client-Server Rendering).
+Um gleichzeitig die reibungslose CSR-Erfahrung, eine bessere Erkennung durch Webcrawler (SEO) und mehr Freiheit bei der Wahl der Backend-Programmiersprache zu gewährleisten, bietet ofa.js einen einzigartigen Modus für isomorphes Rendering (Symphony Client-Server Rendering).
 
-> Wenn Sie die genauen Definitionen und Unterschiede von CSR / SSR / SSG verstehen möchten, lesen Sie bitte direkt den letzten Abschnitt dieses Artikels.
+> Um die spezifischen Definitionen und Unterschiede von CSR / SSR / SSG zu verstehen, lesen Sie bitte direkt das Kapitel am Ende dieses Artikels.
 
-Die Kernidee des isomorphen Renderings ist:- Rendern Sie die ursprüngliche Seite auf dem Server, um SEO und Ladegeschwindigkeit beim ersten Bildschirm zu gewährleisten
-- Übernehmen Sie die Routing-Verarbeitung auf der Client-Seite, um ein flüssiges CSR-Benutzererlebnis zu bewahren
-- Geeignet für jede Serverumgebung, echtes isomorphes Rendering verwirklichen
+Die Kernidee des isomorphen Renderings ist:- Rendern des initialen Seiteninhalts auf dem Server, um SEO und Ladegeschwindigkeit der ersten Seite zu gewährleisten
+- Übernahme der Routenverarbeitung auf dem Client, um eine flüssige Benutzererfahrung wie bei CSR zu erhalten
+- Anwendbar in jeder Serverumgebung für echtes isomorphes Rendering
 
-### Prinzip der isomorphen Rendering-Implementierung
+### Das Prinzip der Implementierung von isomorphem Rendering
 
-Das isomorphe Render-Modell von ofa.js basiert auf folgenden Mechanismen:
+Das isomorphe Rendering-Modell von ofa.js basiert auf dem folgenden Mechanismus:
 
 1. Der Server generiert eine vollständige HTML-Seite mit einer universellen Laufzeitstruktur
 2. Der Client lädt die CSR-Laufzeit-Engine
-3. Automatische Erkennung der aktuellen Laufzeitumgebung zur Bestimmung der Rendering-Strategie
+3. Die aktuelle Laufzeitumgebung wird automatisch erkannt, um das Rendering-Verfahren zu bestimmen
 
-### Isomorphe Rendering-Code-Struktur
+### Isomorphes Rendering-Code-Struktur
 
 **Ursprüngliches CSR-Seitenmodul:**
 
@@ -32,7 +32,7 @@ Das isomorphe Render-Modell von ofa.js basiert auf folgenden Mechanismen:
       height: 100%;
     }
   </style>
-  <p>Ich bin Page</p>
+  <p>I am Page</p>
   <script>
     export default async ({ load, query }) => {
       return {
@@ -44,7 +44,7 @@ Das isomorphe Render-Modell von ofa.js basiert auf folgenden Mechanismen:
 </template>
 ```
 
-**Vollständige Seite nach der Kapselung für isomorphes Rendering:**
+**Vollständige Seite nach der Isomorphic-Rendering-Kapselung:**
 
 ```html
 <!doctype html>
@@ -73,7 +73,7 @@ Das isomorphe Render-Modell von ofa.js basiert auf folgenden Mechanismen:
 
 <body>
   <o-app src="/app-config.js">
-    <!-- Seitenmodul-Inhalt Einfügeposition ⬇️ -->
+    <!-- Einfügeposition für Seitenmodul-Inhalte ⬇️ -->
     <template page>
       <style>
         :host {
@@ -97,19 +97,19 @@ Das isomorphe Render-Modell von ofa.js basiert auf folgenden Mechanismen:
 </html>
 ```
 
-Sie können also eine beliebige Entwicklungssprache (Go, Java, PHP, Nodejs, Python usw.) und eine beliebige serverseitige Template-Rendering-Engine (z. B. Gos `html/template`, PHPs Smarty/Twig/Blade usw.) verwenden, indem Sie die isomorphe Render-Code-Struktur von ofa.js in das Template einbetten, um SSR zu erreichen.
+Du kannst also jede beliebige Entwicklungssprache (Go, Java, PHP, Nodejs, Python usw.) und jede beliebige Backend-Template-Rendering-Engine (wie Go's `html/template`, PHP's Smarty/Twig/Blade usw.) verwenden, um den isomorphen Rendering-Code-Struktur von ofa.js in das Template einzubetten, sodass SSR realisiert wird.
 
 * [Nodejs SSR Beispiel](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
 * [PHP SSR Beispiel](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
 * [Go SSR Beispiel](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
 
-### Isomorphes Rendering-Vorlagenstruktur
+### Isomorphe Rendering-Vorlagenstruktur
 
-Um das isomorphe Rendering-Modell zu implementieren, verwenden Sie auf der Serverseite einfach die folgende allgemeine Template-Struktur:
+Um den isomorphen Rendering-Modus zu implementieren, verwenden Sie einfach die folgende allgemeine Vorlagenstruktur auf der Serverseite:
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="de">
 
 <head>
   <meta charset="UTF-8" />
@@ -141,61 +141,61 @@ Um das isomorphe Rendering-Modell zu implementieren, verwenden Sie auf der Serve
 </html>
 ```
 
-**Hinweis:** Der vom Server zurückgegebene HTML-Code muss den korrekten HTTP-Header gesetzt haben: `Content-Type: text/html; charset=UTF-8`
+**Hinweis:** Der vom Server zurückgegebene HTML-Code muss den korrekten HTTP-Header setzen: `Content-Type: text/html; charset=UTF-8`
 
-`scsr.mjs` ist die von ofa.js bereitgestellte isomorphe Rendering-Laufzeit-Engine. Sie erkennt automatisch die Rendering-Strategie basierend auf dem aktuellen Seitenstatus und stellt sicher, dass in jeder Umgebung die bestmögliche Benutzererfahrung geboten wird.
+`scsr.mjs` ist die von ofa.js bereitgestellte isomorphe Rendering-Engine, die automatisch die Renderstrategie basierend auf dem aktuellen Seitenstatus bestimmt, um unter allen Umgebungen ein optimales Benutzererlebnis zu gewährleisten.
 
-Auch SSG kann diese Struktur verwenden, um statische Website-Generierung zu implementieren.
+Gleichermaßen kann SSG diese Struktur auch anwenden, um statische Websites zu generieren.
 
-## Unterschiede zwischen ofa.js, SSR und anderen Frontend-Frameworks
+## ofa.js und SSR sowie Unterschiede zu anderen Frontend-Frameworks
 
-Das Symphony Client-Server Rendering (im Folgenden SCSR) von ofa.js ist im Wesentlichen ebenfalls ein SSR-Modus.
+Die Symphony Client-Server Rendering (im Folgenden als SCSR bezeichnet) von ofa.js ist im Wesentlichen ebenfalls ein SSR-Modus.
 
-Im Vergleich zu SSR-Lösungen bestehender Frontend-Frameworks wie Vue, React und Angular liegt der größte Vorteil von ofa.js darin, **dass keine zwingende Bindung an Node.js erforderlich ist**. Das bedeutet, dass jede serverseitige Template-Rendering-Engine (wie z.B. Smarty für PHP, Jinja2 für Python, Thymeleaf für Java usw.) ofa.js problemlos integrieren kann, um SSR zu realisieren.
+Im Vergleich zu den SSR-Lösungen bestehender Frontend-Frameworks wie Vue, React, Angular usw. liegt der größte Vorteil von ofa.js darin, **dass es nicht zwingend an Node.js gebunden ist**. Dies bedeutet, dass jede beliebige Backend-Template-Engine (wie Smarty für PHP, Jinja2 für Python, Thymeleaf für Java usw.) problemlos ofa.js integrieren kann, um SSR zu realisieren.
 
-## Überblick über Webseiten-Rendering-Methoden
+## Übersicht der Webseiten-Rendering-Methoden
 
-Moderne Webanwendungen verfügen über vier Haupt-Renderverfahren: traditionelles serverseitiges Template-Engine-Rendering, CSR (Client-Side-Rendering, clientseitiges Rendern), SSR (Server-Side-Rendering, serverseitiges Rendern) und SSG (Static Site Generation, statische Website-Generierung). Jede Methode hat ihre eigenen Vorteile und Einsatzszenarien.
+Moderne Webanwendungen verwenden hauptsächlich vier Rendering-Methoden: traditionelles serverseitiges Template-Engine-Rendering, CSR (Client Side Rendering, clientseitiges Rendering), SSR (Server Side Rendering, serverseitiges Rendering) und SSG (Static Site Generation, statische Seitengenerierung). Jede Methode hat ihre Vorteile und geeigneten Anwendungsszenarien.
 
-### Traditionelle serverseitige Template-Engine-Rendering
+### Rendering mit traditionellen serverseitigen Template-Engines
 
-Unter den zahlreichen Web-Produkten ist die serverseitige Template-Engine nach wie vor das vorherrschende Mittel zur Seiten-Rendering. Back-End-Sprachen wie Go oder PHP nutzen eingebaute oder Drittanbieter-Template-Engines (z. B. Gos `html/template`, PHPs Smarty/Twig/Blade usw.), um dynamische Daten in HTML-Templates einzuspeisen, in einem Schritt eine vollständige HTML-Seite zu erzeugen und an den Client zurückzugeben.
+In zahlreichen Webprodukten sind serverseitige Template-Engines nach wie vor die gängigste Methode zur Seitendarstellung. Backend-Sprachen wie Go und PHP nutzen integrierte oder Drittanbieter-Template-Engines (z. B. Go's `html/template`, PHPs Smarty/Twig/Blade usw.), um dynamische Daten in HTML-Templates einzufügen, eine vollständige HTML-Seite zu generieren und an den Client zurückzugeben.
 
-**Vorteile:**- SEO-freundlich, schnelles Laden des ersten Bildschirms
-- Serverseitige Steuerung, hohe Sicherheit
-- Geringere Anforderungen an den Tech-Stack des Teams, Backend-Entwickler können die Entwicklung unabhängig abschließen
+**Vorteile:**- SEO-freundlich, schnelles Laden des ersten Bildschirminhalts  
+- Servergesteuert, höhere Sicherheit  
+- Geringere Anforderungen an den Technologie-Stack des Teams, Backend-Entwickler können die Entwicklung eigenständig abschließen
 
-**Nachteile:**- Schlechte Benutzererfahrung, jede Interaktion erfordert eine Seitenaktualisierung
-- Hohe Belastung des Servers
-- Hohe Kopplung zwischen Frontend und Backend, ungünstig für Arbeitsteilung und Zusammenarbeit
+**Nachteile：**- Schlechte Benutzererfahrung, bei jeder Interaktion ist ein Seiten-Refresh erforderlich
+- Hohe Serverlast
+- Hohe Kopplung zwischen Frontend und Backend, erschwert die Arbeitsteilung
 
-### CSR (Client-seitiges Rendering)
+### CSR (Client-Side Rendering)
 
-Im CSR-Modus wird der Seiteninhalt vollständig durch clientseitiges JavaScript gerendert. Die [Single-Page-Anwendung](./routes.md) von ofa.js ist eine typische CSR-Implementierung. Diese Methode bietet ein flüssiges Nutzererlebnis, bei dem alle Interaktionen ohne Seitenwechsel abgeschlossen werden können. Single-Page-Anwendungen (SPAs), die mit React oder Vue in Kombination mit den entsprechenden Routing-Bibliotheken (wie React Router oder Vue Router) entwickelt wurden, sind ebenfalls typische CSR-Implementierungen.
+Im CSR-Modus werden die Seiteninhalte vollständig vom clientseitigen JavaScript gerendert. Die [Single-Page-Anwendung](./routes.md) von ofa.js ist eine typische CSR-Implementierung. Diese Methode bietet ein flüssiges Benutzererlebnis, bei dem alle Interaktionen ohne Seitenwechsel erfolgen. Single-Page-Anwendungen (SPAs), die mit React oder Vue in Verbindung mit den entsprechenden Routing-Bibliotheken (wie React Router oder Vue Router) entwickelt wurden, sind ebenfalls typische CSR-Implementierungen.
 
-**Vorteile:**- Die Benutzererfahrung ist flüssig, Seitenwechsel erfolgen ohne Neuladen
-- Starke Client-seitige Verarbeitungsleistung, schnelle Reaktionszeiten
+**Vorteile:**- Flüssige Benutzererfahrung, Seitenwechsel ohne Neuladen
+- Starke Client-Verarbeitungsfähigkeit, schnelle Reaktion
 
-**Nachteile:**- Nachteilig für SEO, Suchmaschinen haben Schwierigkeiten, den Inhalt zu indexieren
+**Nachteile：**- nachteilig für SEO，Suchmaschinen haben Schwierigkeiten, den Inhalt zu indexieren
 
-### SSR (Server-Side Rendering)
+### SSR（Serverseitiges Rendern）
 
-Während die flüssige CSR-Erfahrung beibehalten wird, wird die Seite nun in Echtzeit vom Server gerendert: Wenn ein Benutzer eine Anfrage stellt, generiert der Server sofort vollständiges HTML und liefert es zurück, um echtes serverseitiges Rendering zu erreichen.
+Beibehaltung der flüssigen CSR-Erfahrung bei gleichzeitigem Echtzeit-Rendering der Seite auf dem Server: Sobald der Nutzer eine Anfrage stellt, erzeugt der Server sofort vollständiges HTML und sendet es zurück – echtes Server-Side Rendering.
 
-**Vorteile:**- SEO-freundlich, schnelles Laden der ersten Ansicht
+**Vorteile:**- SEO-freundlich, schnelles Laden des oberen Bildbereichs
 - Unterstützung für dynamische Inhalte
 
-**Nachteile:**- Hohe Serverbelastung
-- Erfordert in der Regel eine Node.js-Umgebung als Laufzeitumgebung oder zumindest eine Node.js-Zwischenschicht
-- Eine vollständige Interaktion erfordert immer noch eine nachfolgende Client-Aktivierung
+**Nachteile：**- Hohe Serverlast
+- In der Regel wird eine Node.js-Umgebung als Laufzeit benötigt, oder zumindest eine Node.js-Middleware-Schicht
+- Es ist dennoch eine nachfolgende Client-Aktivierung erforderlich, um vollständige Interaktion zu erreichen
 
-### SSG (Statische Seitengenerierung)
+### SSG (Static Site Generation)
 
-Alle Seiten werden in der Build-Phase als statische HTML-Dateien vorgerendert und können nach dem Deployment direkt vom Server an die Benutzer zurückgegeben werden.
+In der Build-Phase werden alle Seiten vorab als statische HTML-Dateien gerendert, die nach der Bereitstellung direkt vom Server an den Benutzer zurückgegeben werden können.
 
-**Vorteile:**-  Schnelle Ladezeit beim ersten Aufruf, SEO-freundlich
--  Geringe Serverlast, stabile Leistung
--  Hohe Sicherheit
+**Vorteile:**- Schnelle Erstladezeit, SEO-freundlich
+- Geringe Serverlast, stabile Leistung
+- Hohe Sicherheit
 
-**Nachteile:**- Schwierigkeiten bei der Aktualisierung dynamischer Inhalte
-- Die Bauzeit nimmt mit der Anzahl der Seiten zu
+**Nachteile：**- Schwierigkeiten bei der Aktualisierung dynamischer Inhalte
+- Die Build-Zeit erhöht sich mit der Anzahl der Seiten

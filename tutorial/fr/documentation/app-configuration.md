@@ -1,16 +1,16 @@
 # Configuration de l'application
 
-`app-config.js` Le fichier de configuration prend également en charge davantage d’options de configuration, en plus de l’adresse de la page d’accueil et de l’animation de changement de page, pour contrôler l’état de chargement de l’application, la gestion des erreurs, la logique d’initialisation et les fonctions de navigation.
+Le fichier de configuration `app-config.js` prend en charge, en plus de l'adresse de la page d'accueil et de l'animation de transition entre pages, d'autres options de configuration pour contrôler l'état de chargement, la gestion des erreurs, la logique d'initialisation et les fonctionnalités de navigation de l'application.
 
 ```javascript
 // app-config.js
-// Contenu affiché pendant le chargement
+// Contenu affiché lors du chargement
 export const loading = () => "<div>Loading...</div>";
 
-// Composant affiché en cas d'échec de chargement de la page
+// Composant affiché en cas d'échec du chargement de la page
 export const fail = (src, error) => `<div>Failed to load: ${src}</div>`;
 
-// Rappel une fois l'initialisation de l'application terminée
+// Callback après l'initialisation de l'application
 export const ready() {
   console.log("App is ready!");
 }
@@ -23,7 +23,7 @@ export const proto = {
 };
 ```
 
-<o-playground name="Exemple de configuration de l'application" style="--editor-height: 500px">
+<o-playground name="Exemple de configuration d'application" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-app src="./app-config.js"></o-app>
@@ -32,7 +32,7 @@ export const proto = {
   <code path="app-config.js">
     // Adresse de la page d'accueil de l'application
     export const home = "./home.html";
-    // Configuration de l'animation de transition de page
+    // Configuration de l'animation de changement de page
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -80,15 +80,15 @@ export const proto = {
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>Go to About</a>
+      <a href="./about.html" olink>Aller à À propos</a>
       <br>
       <br>
-      <button on:click="gotoAbout">Go to About Button</button>
+      <button on:click="gotoAbout">Bouton Aller à À propos</button>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Hello ofa.js App Demo",
+              val: "Démo d'application ofa.js",
             },
             proto:{
                 gotoAbout(){
@@ -108,13 +108,13 @@ export const proto = {
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">Back</button> </div>
-      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
+      <div style="padding: 8px;"> <button on:click="back()">Retour</button> </div>
+      <p> À propos de <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Hello ofa.js App Demo",
+              val: "Démo d'application ofa.js",
             },
           };
         };
@@ -125,21 +125,21 @@ export const proto = {
 
 ## loading - état de chargement
 
-Le composant affiché pendant le chargement de la page, qui peut être un template de chaîne de caractères ou une fonction retournant un template.
+Le composant affiché pendant le chargement de la page, peut être un modèle de chaîne ou une fonction retournant un modèle.
 
 ```javascript
 // Modèle de chaîne simple
-export const loading = "<div class='loading'>Chargement...</div>";
+export const loading = "<div class='loading'>Loading...</div>";
 
-// Génération dynamique avec une fonction
+// Généré dynamiquement avec une fonction
 export const loading = () => {
   return `<div class='loading'>
-    <span>Chargement...</span>
+    <span>Chargement en cours...</span>
   </div>`;
 };
 ```
 
-Voici une implémentation de loading esthétique et prête à être copiée directement dans votre projet :
+Voici une implémentation de loading belle et directement copiable dans un projet :
 
 ```javascript
 export const loading = () => {
@@ -172,21 +172,21 @@ export const loading = () => {
 
 ## fail - gestion des erreurs
 
-Composant affiché lors de l’échec du chargement de la page ; la fonction reçoit un objet paramètre contenant `src` (l’adresse de la page ayant échoué) et `error` (le message d’erreur).
+Composant affiché en cas d’échec du chargement de la page ; la fonction reçoit un paramètre objet contenant `src` (l’adresse de la page ayant échoué) et `error` (le message d’erreur).
 
 ```javascript
 export const fail = ({src, error}) => {
   return `<div class='error'>
     <p>Échec du chargement de la page</p>
-    <p>Adresse : ${src}</p>
+    <p>Adresse: ${src}</p>
     <button on:click="back()">Retour</button>
   </div>`;
 };
 ```
 
-## proto - Extension du prototype
+## proto - extension de prototype
 
-Ajoutez des méthodes et des propriétés calculées personnalisées à l’instance de l’application, accessibles dans les composants de page via `this.app`.
+Ajoutez des méthodes personnalisées et des propriétés calculées à l'instance de l'application, ces méthodes peuvent être accessibles dans les composants de page via `this.app`.
 
 ```javascript
 export const proto = {
@@ -201,57 +201,57 @@ export const proto = {
 };
 ```
 
-Dans la page, appelez :
+Appeler dans la page :
 
 ```html
 <template page>
   <button on:click="app.navigateToHome()">Retour à l'accueil</button>
-  <p>Est à l'accueil : {{app.isAtHome}}</p>
+  <p>Êtes-vous sur la page d'accueil : {{app.isAtHome}}</p>
 </template>
 ```
 
 ## ready - callback d'initialisation
 
-Fonction de rappel exécutée après le chargement de la configuration de l'application, où vous pouvez effectuer des opérations d'initialisation. Vous pouvez accéder aux méthodes et propriétés de l'instance de l'application via `this`.
+Fonction de rappel exécutée après le chargement de la configuration de l'application, vous pouvez effectuer des opérations d'initialisation ici. Vous pouvez accéder aux méthodes et propriétés de l'instance de l'application via `this`.
 
 ```javascript
 export const ready() {
   console.log("L'application est initialisée");
-  // peut accéder à this (instance de l'élément o-app)
-  console.log(this.current); // obtient l'instance de l'élément o-page de la page actuelle
+  // Peut accéder à this (instance de l'élément o-app)
+  console.log(this.current); // Obtenir l'instance de l'élément o-page de la page actuelle
   // this.someMethod();
 }
 ```
 
-## allowForward - Fonction d'avancement
+## allowForward - Fonction d'avance
 
-Contrôle l'activation de la fonction de navigation en avant du navigateur. Lorsque défini sur `true`, les boutons Précédent et Suivant du navigateur peuvent être utilisés pour naviguer.
+Contrôle si la fonction de navigation avant du navigateur est activée. Lorsqu'elle est définie sur `true`, vous pouvez utiliser les boutons de retour et d'avance du navigateur pour naviguer.
 
 ```javascript
 export const allowForward = true;
 ```
 
-Une fois activé, l'utilisateur peut naviguer à l'aide des boutons Précédent/Suivant du navigateur, et la méthode de navigation `forward()` de l'application prendra également effet.
+Lorsqu'il est activé, l'utilisateur peut naviguer à l'aide des boutons avant/arrière du navigateur, et la méthode de navigation `forward()` de l'application sera également effective.
 
 ## Navigation programmatique
 
-En plus d’utiliser des liens `olink`, vous pouvez également appeler des méthodes de navigation dans JavaScript :
+En plus d'utiliser le lien `olink`, vous pouvez également appeler la méthode de navigation en JavaScript :
 
 ```javascript
-// Aller à la page spécifiée (ajoute à l'historique)
+// Aller à la page spécifiée (ajouté à l'historique)
 this.goto("./about.html");
 
-// Remplacer la page actuelle (n'ajoute pas à l'historique)
+// Remplacer la page actuelle (non ajouté à l'historique)
 this.replace("./about.html");
 
-// Retour à la page précédente
+// Revenir à la page précédente
 this.back();
 
-// Avancer à la page suivante (nécessite allowForward: true)
+// Aller à la page suivante (nécessite de définir allowForward: true)
 this.forward();
 ```
 
-## Historique de routage
+## Historique des routes
 
 L'attribut `routers` permet d'obtenir l'historique de navigation :
 
@@ -266,12 +266,12 @@ const currentPage = app.current;
 
 ## Écouter les changements de route
 
-On peut écouter l’événement `router-change` pour réagir aux changements de route :
+Vous pouvez répondre aux changements de route en écoutant l'événement `router-change` :
 
 ```javascript
 app.on("router-change", (e) => {
   const { data } = e;
-  console.log("Changement de route :", data.name); // goto, replace, forward, back
-  console.log("Adresse de la page :", data.src);
+  console.log("Changement de route:", data.name); // goto, replace, forward, back
+  console.log("Adresse de la page:", data.src);
 });
 ```

@@ -1,10 +1,10 @@
 # extend
 
-`extend` is a higher-order method used to augment an instance with additional properties or methods.
+`extend` is a high-order method used to extend the properties or methods of an instance.
 
-> In general, it is not recommended to extend the properties or methods of an instance, as this increases the learning curve. Unless there is a specific need within the team to customize the behavior of an instance, such extensions are discouraged.
+> Under normal circumstances, it is not recommended for users to extend the properties or methods of an instance, as this increases the learning cost. Unless there is a special scenario within the team that requires customizing the behavior of the instance, it is not recommended to do so.
 
-<o-playground name="extend - Extend Instance" style="--editor-height: 560px">
+<o-playground name="extend - Extend Example" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -35,11 +35,11 @@
   </code>
 </o-playground>
 
-## Extending the $ Bottom Layer
+## Extend $ Bottom Layer
 
-Similar to jQuery, you can also use fn.extend to extend the properties or methods of the underlying instance; properties or methods extended from fn will be applied to all instances.
+Similar to jQuery, you can also extend the properties or methods of the underlying instance through fn.extend; properties or methods extended from fn will apply to all instances.
 
-<o-playground name="extend - Extend Underlying Layer" style="--editor-height: 560px">
+<o-playground name="extend - Extend the Core" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -70,11 +70,11 @@ Similar to jQuery, you can also use fn.extend to extend the properties or method
 
 ## Extended Template Syntax
 
-Using `extend` to add attributes or functions can enhance template syntax functionality and even provide component-specific syntactic sugar. However, avoid unofficial template syntaxes, as they impose learning costs and degrade the development experience when overused.
+By using `extend` to extend properties or functions, you can enhance the functionality of template syntax, and even provide exclusive template syntactic sugar for components. However, it is important to note that you should try **not to use** non-official template syntax, as they impose a certain learning cost on users, and a large amount of non-official template syntactic sugar can degrade the development experience.
 
 ### Extended Attributes
 
-You can set extended attributes in templates using `:`. Below, we extend a `red` attribute; when `red` is `true`, the text color becomes red:
+You can set extended attributes in the template using `:`. Below, we will extend a `red` attribute; when `red` is `true`, the font color turns red:
 
 ```javascript
 $.fn.extend({
@@ -88,7 +88,7 @@ $.fn.extend({
 });
 ```
 
-<o-playground name="extend - extended properties" style="--editor-height: 400px">
+<o-playground name="extend - Extended Properties" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-one.html"></l-m>
@@ -127,15 +127,15 @@ $.fn.extend({
   </code>
 </o-playground>
 
-In this example, we added a `red` attribute to the template syntax. When `count % 3` is not 0, the font color will change to red.
+In this example, we added a `red` property to the template syntax. When `count % 3` is not 0, the font color will turn red.
 
 ### Extension Methods
 
-You can also make the method available in template syntax by extending it with `extend`. The method name is the part before the colon. Here, we extend a `color` template syntax, and the following arguments will be passed to the defined extension method.
+You can also use the `extend` extension method to make it available in template syntax. The method name is the part before the colon. Here, we extended a `color` template syntax, and the following parameters will be passed to the defined extension method.
 
-Here, the `always` attribute is set to `true`, indicating that the defined method will be called every time the component needs to refresh the interface. If `always` is not set, this template syntax function will only run once.
+Here, the `always` attribute is set to `true`, which means that the defined method will be called every time the component needs to refresh the interface. If `always` is not set, this template syntax function will only run once.
 
-Among them, `options` provides additional parameters to help you develop more customized template syntax:
+Among them, `options` provides more parameters that can help you develop more customized template syntax:
 
 ```javascript
 $.fn.extend({
@@ -152,7 +152,7 @@ $.fn.extend({
 $.fn.color.always = true;
 ```
 
-<o-playground name="extend - extension methods" style="--editor-height: 400px">
+<o-playground name="extend - Extension Method" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-two.html"></l-m>
@@ -195,14 +195,14 @@ $.fn.color.always = true;
 
 ## Template Syntax Principles
 
-So far, you should have realized that many template syntax features on ofa.js are actually extended through `extend`:
+By now, you should have understood that many template syntaxes on ofa.js are actually extended through `extend`:
 
 - `class`, `attr` methods run every time the view is refreshed
-- `on`, `one` function bindings only run once
+- `on`, `one` function bindings run only once
 
-You can refer to the example below to better understand the template rendering principle of ofa.js.
+You can look at the example below to better understand the template rendering principle of ofa.js:
 
-<o-playground name="Template Syntax Principle" style="--editor-height: 480px">
+<o-playground name="extend - Template Syntax Principle" style="--editor-height: 480px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./temp-three.html"></l-m>

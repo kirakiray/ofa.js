@@ -1,12 +1,12 @@
-# Renderizado Condicional
+# Renderizado condicional
 
-En ofa.js, el renderizado condicional es una función importante que permite decidir si se renderiza un elemento o componente según el estado de los datos. ofa.js proporciona una solución de renderizado condicional basada en componentes, implementada a través de los componentes `o-if`, `o-else-if` y `o-else`.
+En ofa.js, el renderizado condicional es una función importante que permite decidir si se renderiza o no un elemento o componente según el estado de los datos. ofa.js proporciona una solución de renderizado condicional basada en componentes, implementada mediante los componentes `o-if`, `o-else-if` y `o-else`.
 
-## Componente o-if
+## componente o-if
 
-El componente `o-if` se utiliza para decidir si se renderiza su contenido según el valor verdadero o falso de una expresión. Cuando el atributo `value` enlazado es verdadero, el contenido dentro del componente se renderiza; de lo contrario, el contenido no aparece en el DOM.
+`o-if` componente se utiliza para decidir si renderizar su contenido según el valor de verdad de una expresión. Cuando el atributo `value` vinculado es verdadero, el contenido dentro del componente se renderiza; de lo contrario, el contenido no aparece en el DOM.
 
-<o-playground name="Ejemplo de funcionamiento de o-if" style="--editor-height: 500px">
+<o-playground name="Ejemplo de cómo funciona o-if" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -36,17 +36,17 @@ El componente `o-if` se utiliza para decidir si se renderiza su contenido según
 
 ### Cómo funciona o-if
 
-`o-if` renderizará el contenido en el DOM solo cuando la condición sea verdadera. Cuando la condición sea falsa, los elementos DOM dentro de `o-if` serán completamente eliminados. Esta implementación es adecuada para situaciones donde las condiciones no cambian con mucha frecuencia, ya que implica la creación y destrucción del DOM.
+`o-if` solo renderizará el contenido en el DOM cuando la condición sea verdadera; cuando la condición sea falsa, los elementos DOM dentro de `o-if` se eliminarán por completo. Este método de implementación es adecuado para situaciones donde la condición no cambia con frecuencia, ya que implica la creación y destrucción del DOM.
 
 ## Componentes o-else-if y o-else
 
-Cuando se necesitan múltiples ramas condicionales, se pueden usar los componentes `o-else-if` y `o-else` junto con `o-if` para lograr una renderización condicional de múltiples ramas.
+Cuando se necesitan múltiples ramas condicionales, se pueden utilizar los componentes `o-else-if` y `o-else` junto con `o-if` para lograr la renderización condicional de múltiples ramas.
 
-- `o-if`：componente de condición obligatorio, debe ser el primero
-- `o-else-if`：componente de condición intermedio opcional, puede haber varios
-- `o-else`：componente de condición por defecto opcional, se coloca al final
+- `o-if`: primer componente de condición obligatorio
+- `o-else-if`: componente de condición intermedio opcional, puede haber varios
+- `o-else`: componente de condición predeterminado opcional, colocado al final
 
-<o-playground name="Ejemplo de renderizado condicional de múltiples ramas" style="--editor-height: 500px">
+<o-playground name="Ejemplo de renderizado condicional con múltiples ramas" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -57,7 +57,7 @@ Cuando se necesitan múltiples ramas condicionales, se pueden usar los component
         }
       </style>
       <button on:click="num++">Toggle Display - {{num}}</button>
-      <!-- Según el resultado del módulo de num entre 3, muestra diferentes contenidos -->
+      <!-- Según el resultado de num módulo 3, cambia la visualización de diferentes contenidos -->
       <o-if :value="num % 3 === 0">
         <p>❤️ 0 / 3</p>
       </o-if>
@@ -84,7 +84,7 @@ Cuando se necesitan múltiples ramas condicionales, se pueden usar los component
 
 ### Control de permisos de usuario
 
-<o-playground name="Ejemplo de Control de Permisos de Usuario" style="--editor-height: 500px">
+<o-playground name="Ejemplo de control de permisos de usuario" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -105,23 +105,23 @@ Cuando se necesitan múltiples ramas condicionales, se pueden usar los component
         }
       </style>
       <div>
-        <button on:click="toggleUserRole">Cambiar Rol de Usuario</button>
+        <button on:click="toggleUserRole">Cambiar rol de usuario</button>
         <p>Rol actual: {{role}}</p>
         <o-if :value="role === 'admin'">
           <div class="admin-panel">
-            <h3>Panel de Administrador</h3>
-            <button>Gestionar Usuarios</button>
-            <button>Configuración del Sistema</button>
+            <h3>Panel de administración</h3>
+            <button>Gestionar usuarios</button>
+            <button>Configuración del sistema</button>
           </div>
         </o-if>
         <o-else-if :value="role === 'user'">
           <div class="user-info">
-            <h3>Información del Usuario</h3>
-            <p>¡Bienvenido {{userName}}!</p>
+            <h3>Información del usuario</h3>
+            <p>Bienvenido {{userName}}!</p>
           </div>
         </o-else-if>
         <o-else>
-          <p>Por favor, inicia sesión para ver el contenido</p>
+          <p>Inicia sesión para ver el contenido</p>
         </o-else>
       </div>
       <script>
@@ -153,7 +153,7 @@ Cuando se necesitan múltiples ramas condicionales, se pueden usar los component
 
 ### Visualización del estado de validación del formulario
 
-<o-playground name="Ejemplo de visualización del estado de validación de formularios" style="--editor-height: 500px">
+<o-playground name="Ejemplo de visualización del estado de validación del formulario" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -169,15 +169,15 @@ Cuando se necesitan múltiples ramas condicionales, se pueden usar los component
       </style>
       <div>
         <h3>Ejemplo de validación de correo electrónico</h3>
-        <input type="email" :value="email" on:input="email = $event.target.value" placeholder="Introduce la dirección de correo">
+        <input type="email" :value="email" on:input="email = $event.target.value" placeholder="Ingrese la dirección de correo electrónico">
         <o-if :value="email && isValidEmail(email)">
-          <p style="color:green;">✓ Formato de correo correcto</p>
+          <p style="color:green;">✓ Formato de correo electrónico correcto</p>
         </o-if>
         <o-else-if :value="email && !isValidEmail(email) && email.length > 0">
-          <p style="color:red;">✗ Formato de correo incorrecto</p>
+          <p style="color:red;">✗ Formato de correo electrónico incorrecto</p>
         </o-else-if>
         <o-else>
-          <p style="color:orange;">Introduce una dirección de correo para validar</p>
+          <p style="color:orange;">Por favor, ingrese una dirección de correo electrónico para validar</p>
         </o-else>
       </div>
       <script>
@@ -199,10 +199,10 @@ Cuando se necesitan múltiples ramas condicionales, se pueden usar los component
   </code>
 </o-playground>
 
-## Mejores prácticas para el renderizado condicional
+## Mejores prácticas de renderizado condicional
 
-1. **Escenarios de uso**: Cuando un elemento rara vez cambia entre diferentes condiciones, es más adecuado utilizar `o-if`, ya que permite eliminar completamente los elementos innecesarios, ahorrando memoria.
+1. **Escenario de uso**: cuando un elemento cambia raramente entre diferentes condiciones, es más apropiado usar `o-if`, porque puede eliminar completamente los elementos no deseados, ahorrando memoria.
 
-2. **Consideraciones de rendimiento**: Para elementos que cambian con frecuencia, es preferible utilizar el enlace de clases (por ejemplo, `class:hide`) en lugar del renderizado condicional, ya que este último implica la creación y destrucción del DOM.
+2. **Consideración de rendimiento**: los elementos que cambian con frecuencia son más adecuados para usar enlaces de clase (como `class:hide`) en lugar de renderizado condicional, porque el renderizado condicional implica la creación y destrucción del DOM.
 
-3. **Estructura clara**: El renderizado condicional es especialmente adecuado para alternar contenidos con estructuras diferentes, como pestañas, guías paso a paso, etc.
+3. **Estructura clara**: el renderizado condicional es especialmente adecuado para alternar contenido con diferentes estructuras, como pestañas, guías paso a paso, etc.

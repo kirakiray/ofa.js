@@ -1,28 +1,28 @@
-# Agregar o eliminar elementos secundarios
+# Agregar o eliminar elementos hijos
 
-Las instancias de elementos tienen características similares a las de un array; añadir o eliminar nodos solo requiere utilizar los métodos habituales de array. Al emplear los métodos `push`, `unshift`, `pop`, `shift` y `splice`, internamente se ejecuta automáticamente la inicialización del método [$$](../instance/dollar.md), por lo que se puede indicar directamente la cadena de elemento o el objeto concreto.
+Las instancias de elementos poseen características similares a las de los arrays. Para agregar o eliminar nodos, basta con usar los métodos de operación de arrays. Al utilizar los métodos `push`, `unshift`, `pop`, `shift` y `splice`, internamente se ejecuta automáticamente la inicialización del [$ método](../instance/dollar.md), por lo que se puede escribir directamente la cadena de elemento específico u objeto.
 
-Del mismo modo, también puede utilizar otros métodos de array, como `forEach`, `map`, `some`, etc.
+Del mismo modo, también puede usar otros métodos de arreglo, como `forEach`, `map`, `some`, etc.
 
-**Tenga en cuenta que no se deben añadir ni eliminar elementos secundarios en los elementos que tengan sintaxis de plantilla.**
+**Tenga en cuenta que no debe agregar ni eliminar elementos secundarios en elementos con sintaxis de plantilla.**
 
 ## push
 
 
 
-Agregar un elemento hijo al final.
+Añadir elementos secundarios desde el final.
 
 <o-playground name="array-like - push" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Soy 1</li>
-        <li>Soy 2</li>
-        <li>Soy 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <script>
         setTimeout(()=>{
-          \$("ul").push(`<li style="color:red;">nuevo li</li>`);
+          \$("ul").push(`<li style="color:red;">new li</li>`);
         }, 500);
       </script>
     </template>
@@ -33,7 +33,7 @@ Agregar un elemento hijo al final.
 
 
 
-Agregar un subelemento al inicio del array.
+Añadir elementos secundarios al principio de la matriz.
 
 <o-playground name="array-like - unshift" style="--editor-height: 300px">
   <code path="demo.html">
@@ -56,7 +56,7 @@ Agregar un subelemento al inicio del array.
 
 
 
-Eliminar el subelemento desde el final.
+Eliminar el último elemento hijo.
 
 <o-playground name="array-like - pop" style="--editor-height: 300px">
   <code path="demo.html">
@@ -79,15 +79,15 @@ Eliminar el subelemento desde el final.
 
 
 
-Eliminar subelementos al principio del array
+Eliminar subelementos al principio del array.
 
 <o-playground name="array-like - shift" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Soy 1</li>
-        <li>Soy 2</li>
-        <li>Soy 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <script>
         setTimeout(()=>{
@@ -102,19 +102,19 @@ Eliminar subelementos al principio del array
 
 
 
-Se pueden eliminar o reemplazar elementos secundarios existentes, también se pueden añadir nuevos elementos secundarios. Su uso es similar al método `splice` de los arrays.
+Puede eliminar o reemplazar elementos secundarios existentes, y también puede agregar nuevos elementos secundarios. Su forma de uso es similar al método `splice` de un array.
 
 <o-playground name="array-like - splice" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Soy 1</li>
-        <li>Soy 2</li>
-        <li>Soy 3</li>
+        <li>I am 1</li>
+        <li>I am 2</li>
+        <li>I am 3</li>
       </ul>
       <script>
         setTimeout(()=>{
-          \$("ul").splice(1, 2, `<li style="color:green;">nuevo li 1</li>`, `<li style="color:green;">nuevo li 2</li>`);
+          \$("ul").splice(1, 2, `<li style="color:green;">new li 1</li>`, `<li style="color:green;">new li 2</li>`);
         }, 500);
       </script>
     </template>

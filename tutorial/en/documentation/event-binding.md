@@ -1,12 +1,12 @@
 # Event Binding
 
-In ofa.js, event binding is a crucial mechanism for implementing user interaction. You can bind event handlers to elements in various ways to respond to user actions.
+In ofa.js, event binding is an important mechanism for implementing user interaction. You can bind event handlers to elements in multiple ways to respond to user actions.
 
-## Binding events from proto
+## Binding Events from proto
 
-This is the recommended way to bind events, suitable for complex event handling logic. Defining event handler functions in the `proto` object allows for better organization of code logic and facilitates maintenance and reuse.
+This is the recommended way to bind events, suitable for complex event-handling logic. Defining the event handler function in the `proto` object allows for better organization of code logic and makes maintenance and reuse easier.
 
-<o-playground name="Binding Events from proto" style="--editor-height: 500px">
+<o-playground name="Bind events from proto" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -37,7 +37,7 @@ This is the recommended way to bind events, suitable for complex event handling 
 
 ## Run the function directly
 
-For simple operations—such as incrementing a counter or toggling a state—you can write short expressions directly in the event attribute. This approach is concise and clear, ideal for handling straightforward logic.
+For simple operations (such as counter increment, state toggle, etc.), you can write short expressions directly in event properties. This approach is concise and clear, suitable for handling simple logic.
 
 <o-playground name="Run Function Directly" style="--editor-height: 500px">
   <code>
@@ -67,18 +67,18 @@ For simple operations—such as incrementing a counter or toggling a state—you
 
 ofa.js supports all standard DOM events, including but not limited to:
 
-- Mouse events: `click`, `dblclick`, `mousedown`, `mouseup`, `mouseover`, `mouseout`, etc.
-- Keyboard events: `keydown`, `keyup`, `keypress`, etc.
-- Form events: `submit`, `change`, `input`, `focus`, `blur`, etc.
-- Touch events: `touchstart`, `touchmove`, `touchend`, etc.
+- Mouse events: `click`, `dblclick`, `mousedown`, `mouseup`, `mouseover`, `mouseout` etc.
+- Keyboard events: `keydown`, `keyup`, `keypress` etc.
+- Form events: `submit`, `change`, `input`, `focus`, `blur` etc.
+- Touch events: `touchstart`, `touchmove`, `touchend` etc.
 
-ofa.js supports exactly the same event types as native DOM events; for more details, refer to the [MDN Events documentation](https://developer.mozilla.org/en-US/docs/Web/API/Event).
+The event types supported by ofa.js are exactly the same as native DOM events,more details can be referred to [MDN event documentation](https://developer.mozilla.org/zh-CN/docs/Web/API/Event).
 
 ## Passing Parameters to Event Handlers
 
-You can also pass parameters to the event handler:
+You can also pass arguments to event handlers:
 
-<o-playground name="Passing Parameters to Event Handlers" style="--editor-height: 600px">
+<o-playground name="Pass Parameters to Event Handlers" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -108,11 +108,11 @@ You can also pass parameters to the event handler:
   </code>
 </o-playground>
 
-## Accessing the Event Object
+## Access the Event Object
 
-In the event handler, you can access the native event object via the `event` parameter:
+In the event handler, you can access the native event object through the `event` parameter:
 
-<o-playground name="Accessing Event Objects" style="--editor-height: 700px">
+<o-playground name="Accessing the Event Object" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -152,18 +152,18 @@ In the event handler, you can access the native event object via the `event` par
   </code>
 </o-playground>
 
-You can also access the native event object using the `$event` parameter in expressions, for example to get the mouse click coordinates:
+You can also use the `$event` parameter in expressions to access the native event object, for example, to get the mouse click coordinates:
 
 ```html
-<div class="container" on:click="handleClick($event)">Click anywhere to see coordinates</div>
+<div class="container" on:click="handleClick($event)">Click anywhere to view coordinates</div>
 ```
 
-## Listening for Custom Events
+## Listening to Custom Events
 
-Beyond listening to native DOM events, you can also easily listen to custom events emitted by components:
+In addition to listening to native DOM events, you can also easily listen to custom events emitted by components:
 
 ```html
 <custom-comp on:custom-event="handleCustomEvent"></custom-comp>
 ```
 
-For a deeper understanding of custom events, please refer to the [Custom Events](custom-events.md) chapter. It is recommended to follow the tutorial in order, as later content will build naturally on what came before; of course, you’re also welcome to consult it at any time to learn ahead.
+For a deeper understanding of custom events, please refer to the [Custom Events](custom-events.md) chapter. It is recommended to follow the tutorial step by step; the subsequent content will unfold naturally. Of course, you are also welcome to consult it at any time to grasp it in advance.

@@ -2,14 +2,14 @@
 
 
 
-En utilisant la méthode `on`, vous pouvez enregistrer des gestionnaires d'événements pour l'élément cible. Cela vous permet de capturer et de répondre facilement aux interactions de l'utilisateur.
+En utilisant la méthode `on`, vous pouvez enregistrer des gestionnaires d'événements pour les éléments cibles. Cela vous permet de capturer et de répondre facilement aux interactions des utilisateurs.
 
-Voici un exemple montrant comment utiliser la méthode `on` pour enregistrer un gestionnaire d’événement de clic sur un élément bouton :
+Voici un exemple montrant comment utiliser la méthode `on` pour enregistrer un gestionnaire d'événements de clic pour un élément bouton :
 
 <o-playground name="événement on - click" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <button id="target">ajouter au compteur</button>
+      <button id="target">ajouter le compteur</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>
@@ -23,13 +23,13 @@ Voici un exemple montrant comment utiliser la méthode `on` pour enregistrer un 
   </code>
 </o-playground>
 
-Dans cet exemple, nous utilisons la méthode `on` pour ajouter un gestionnaire d'événement de clic à l'élément bouton. Lorsque l'utilisateur clique sur le bouton, le gestionnaire d'événement est déclenché, le compteur est incrémenté et le résultat est affiché sur la page.
+Dans cet exemple, nous utilisons la méthode `on` pour ajouter un gestionnaire d'événement de clic à un élément de bouton. Lorsque l'utilisateur clique sur le bouton, le gestionnaire d'événement est déclenché, le compteur s'incrémente et le résultat s'affiche sur la page.
 
-## Utilisation de la syntaxe de modèle
+## Utilisation via la syntaxe de modèle
 
-Vous pouvez également utiliser la syntaxe des modèles pour lier des méthodes à l’élément cible.
+Vous pouvez également utiliser la syntaxe de modèle pour lier des méthodes à des éléments cibles.
 
-<o-playground name="on - Syntaxe des modèles" style="--editor-height: 400px">
+<o-playground name="on - Syntaxe de modèle" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./on-demo.html"></l-m>
@@ -38,7 +38,7 @@ Vous pouvez également utiliser la syntaxe des modèles pour lier des méthodes 
   </code>
   <code path="on-demo.html" active>
     <template component>
-      <button on:click="addCount">Ajouter Compteur</button>
+      <button on:click="addCount">Add Count</button>
       <div>{{count}}</div>
       <script>
         export default {
@@ -57,18 +57,18 @@ Vous pouvez également utiliser la syntaxe des modèles pour lier des méthodes 
   </code>
 </o-playground>
 
-Dans cet exemple, nous avons lié une méthode appelée `addCount` à l’élément bouton à l’aide de `on:click`. Lorsque l’utilisateur clique sur le bouton, cette méthode est appelée, la valeur du compteur est incrémentée et affichée sur la page. Cette approche vous permet d’associer des gestionnaires d’événements aux méthodes du composant, réalisant ainsi des interactions plus complexes.
+Dans cet exemple, nous utilisons `on:click` sur l'élément bouton pour lier une méthode nommée `addCount`. Lorsque l'utilisateur clique sur le bouton, cette méthode est appelée, la valeur du compteur s'incrémente et s'affiche sur la page. Cette approche vous permet d'associer des gestionnaires d'événements à des méthodes de composant pour réaliser des interactions plus complexes.
 
 ## event
 
 
 
-Après l'enregistrement de l'événement, la fonction déclenchée recevra un paramètre event, ce qui est cohérent avec le comportement natif :
+Après l'enregistrement de l'événement, la fonction déclenchée recevra l'objet event, conformément au comportement natif :
 
-<o-playground name="paramètres d'événement on" style="--editor-height: 300px">
+<o-playground name="paramètre on - event" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <button id="target">ajouter le compteur</button>
+      <button id="target">add count</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>

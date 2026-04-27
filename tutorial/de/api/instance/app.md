@@ -2,9 +2,9 @@
 
 
 
-Elemente innerhalb von `o-app`, einschließlich derer in den Shadow-Knoten von `o-page` innerhalb von `o-app` oder in tieferliegenden untergeordneten Komponenten, verweisen mit ihrer `app`-Eigenschaft alle auf diese `o-app`-Elementinstanz.
+In `o-app` enthaltene Elemente, einschließlich der Elemente im Schattenknoten von `o-page` innerhalb von `o-app` oder der inneren Unterkomponenten, deren `app`-Eigenschaft auf die Elementinstanz dieses `o-app` verweist.
 
-Im Folgenden ein Beispiel, das zeigt, wie innerhalb eines Elements in `o-app` auf die `app`-Eigenschaft zugegriffen wird:
+Das Folgende ist ein Beispiel, das zeigt, wie man innerhalb eines `o-app`-Elements auf die `app`-Eigenschaft zugreift:
 
 
 <o-playground name="app - App-Instanz abrufen" style="--editor-height: 500px">
@@ -14,15 +14,15 @@ Im Folgenden ein Beispiel, das zeigt, wie innerhalb eines Elements in `o-app` au
     </template>
   </code>
   <code path="app-config.js">
-    // Startseite der App
+    // URL der App-Startseite
     export const home = "./home.html";
-    // Verfügbare Methoden der App
+    // Verfügbare Methoden in der App
     export const proto = {
       getSomeData(){
-        return "Hallo ofa.js App Demo";
+        return "Hello ofa.js App Demo";
       }
     };
-    // Konfiguration der Seitenübergangsanimation
+    // Konfiguration der Seitenwechselanimation
     export const pageAnime = {
       current: {
         opacity: 1,

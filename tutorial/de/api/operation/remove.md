@@ -2,11 +2,11 @@
 
 
 
-Die `remove`-Methode wird verwendet, um den Zielknoten zu löschen.
+Die Methode `remove` wird verwendet, um den Zielknoten zu löschen.
 
-**Bitte beachten Sie, dass Sie nicht innerhalb von Vorlagenkomponenten wie o-fill oder o-if arbeiten sollten.**
+**Bitte beachten Sie: Führen Sie keine Operationen innerhalb von Vorlagenkomponenten wie o-fill oder o-if durch.**
 
-<o-playground name="remove - Knoten entfernen" style="--editor-height: 300px">
+<o-playground name="remove - Knoten löschen" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

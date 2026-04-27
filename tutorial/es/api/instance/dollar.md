@@ -1,31 +1,31 @@
 # $
 
-`$` es la función central en ofa.js, utilizada para obtener y manipular instancias de elementos del DOM. A continuación se detallan las principales funcionalidades de `$`:
+El método `$` es la función central en ofa.js, utilizada para obtener y manipular instancias de elementos DOM. A continuación se presentan las funciones principales de `$`:
 
-## Obtener instancia de elemento
+## Obtener instancia del elemento
 
-Mediante el método `$`, puedes obtener la primera instancia de elemento en la página que coincida con un [selector CSS](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/Selectors/Selector_list) y realizar operaciones sobre él. Aquí tienes un ejemplo:
+Mediante el método `$`, puedes obtener la primera instancia de elemento que coincida con un [selector CSS](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/Selectors/Selector_list) en la página y operar sobre él. A continuación, se muestra un ejemplo:
 
 <o-playground name="$ - Obtener elemento">
   <code path="demo.html">
     <template>
-      <div id="target1">texto objetivo 1</div>
+      <div id="target1">target 1 text</div>
       <script>
         setTimeout(()=>{
-          \$("#target1").text = 'cambiar objetivo 1';
+          \$("#target1").text = 'change target 1';
         },500);
       </script>
     </template>
   </code>
 </o-playground>
 
-En el ejemplo anterior, utilizamos el símbolo `$` para seleccionar la instancia del elemento con `id` "target1", y modificamos su contenido de texto estableciendo la propiedad `text`.
+En el ejemplo anterior, usamos el símbolo `$` para seleccionar la instancia del elemento con `id` "target1", y modificamos su contenido de texto configurando la propiedad `text`.
 
-## Buscar instancias de elementos secundarios
+## Ejemplo de búsqueda de elementos secundarios
 
-La instancia también tiene el método `$`, que puede obtener la primera instancia de elemento secundario que cumpla con las condiciones a través del método `$` en la instancia.
+Las instancias también tienen el método `$`, a través del cual se puede obtener la primera instancia de elemento hijo que cumpla las condiciones.
 
-<o-playground name="$ - Buscar elementos hijos">
+<o-playground name="$ - Buscar elemento hijo">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -40,9 +40,9 @@ La instancia también tiene el método `$`, que puede obtener la primera instanc
   </code>
 </o-playground>
 
-No insertes directamente la instancia de un elemento obtenida en otro lugar, ya que esta operación afectará al elemento original. Si necesitas crear una copia, puedes utilizar el método [clone](./clone.md).
+Por favor, no insertes directamente la instancia de un elemento obtenida en otro lugar, ya que esta operación afectará al elemento original. Si necesitas crear una copia, puedes utilizar el método [clone](./clone.md).
 
-<o-playground name="$ - Características de instancia" style="--editor-height: 360px">
+<o-playground name="$ - Características de la instancia" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="pos1" style="border:red solid 1px;">
@@ -62,9 +62,9 @@ No insertes directamente la instancia de un elemento obtenida en otro lugar, ya 
   </code>
 </o-playground>
 
-## Obtener elementos secundarios dentro de nodos sombra
+## Obtener los elementos hijos dentro del nodo sombra
 
-Puedes obtener la instancia a través del atributo [shadow](./shadow.md) y luego obtener el elemento deseado mediante el método `$`:
+Se puede obtener una instancia a través de la propiedad [shadow](./shadow.md), y luego usar el método `$` para obtener el elemento deseado:
 
 ```javascript
 $('my-component').shadow.$("selector").method(xxx)
@@ -72,7 +72,7 @@ $('my-component').shadow.$("selector").method(xxx)
 
 ## Instanciación directa de elementos
 
-Puedes inicializar directamente elementos nativos como instancias de objeto `$` de la siguiente manera:
+Puedes inicializar directamente el elemento nativo como una instancia de `$` de la siguiente manera:
 
 ```javascript
 const ele = document.createElement('div');
@@ -84,15 +84,15 @@ const ele = document.querySelector('#target');
 const $ele = $(ele);
 ```
 
-De esta manera, puedes convertir convenientemente los elementos HTML existentes en instancias de `$` para operar y procesar con las funciones que proporciona `$`.
+De esta manera, puedes convertir fácilmente los elementos HTML existentes en instancias de `$` para utilizar las funciones que `$` proporciona para operar y procesar.
 
-## Generar instancias de elementos
+## Generar instancia de elemento
 
-Además de `$` para obtener instancias de elementos existentes, también se puede utilizar para crear nuevas instancias de elementos y agregarlas a la página.
+Además, `$` para obtener instancias de elementos existentes también se puede usar para crear nuevas instancias de elementos y agregarlas a la página.
 
-### Generación a través de cadenas de texto
+### Generación a través de cadenas
 
-Puedes usar la función `$` para crear nuevas instancias de elementos a partir de una cadena, de la siguiente manera:
+Puedes usar la función `$` para crear una nueva instancia de elemento a partir de una cadena, como se muestra a continuación:
 
 <o-playground name="$ - Generación de cadenas" style="--editor-height: 260px">
   <code path="demo.html">
@@ -108,13 +108,13 @@ Puedes usar la función `$` para crear nuevas instancias de elementos a partir d
   </code>
 </o-playground>
 
-En este ejemplo, utilizamos la función `$` para crear una nueva instancia de elemento con los estilos y el contenido de texto especificados, y la añadimos dentro de la instancia de elemento existente con `id` "target1".
+En este ejemplo, utilizamos la función `$` para crear una nueva instancia de elemento con el estilo y el contenido de texto especificados, y la añadimos dentro de la instancia de elemento existente con `id` "target1".
 
 ### Generación a través de objetos
 
-También puedes usar la función `$` para generar nuevas instancias de elementos a través de objetos, como se muestra a continuación:
+También puedes usar la función `$` para generar una nueva instancia de elemento mediante un objeto, como se muestra a continuación:
 
-<o-playground name="$ - Generación de objetos" style="--editor-height: 360px">
+<o-playground name="$ - generación de objetos" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -134,4 +134,42 @@ También puedes usar la función `$` para generar nuevas instancias de elementos
   </code>
 </o-playground>
 
-En este ejemplo, usamos la función `$` para definir una nueva instancia de elemento mediante un objeto, incluyendo el tipo de etiqueta, el contenido de texto y los atributos de estilo, y la agregamos a un elemento existente con id "target1".
+En este ejemplo, usamos la función `$` para definir una nueva instancia de elemento mediante un objeto, incluyendo el tipo de etiqueta, el contenido de texto y los atributos de estilo, y la agregamos dentro de una instancia de elemento existente con el `id` "target1".
+
+## Relación entre los ejemplos obtenidos y las instancias de páginas/componentes
+
+`$` método se puede utilizar para obtener la instancia del elemento de página o componente correspondiente desde el ámbito global, y su función es la misma que la referencia `this` en los métodos del ciclo de vida dentro del módulo de página o componente.
+
+```html
+<!DOCTYPE html>
+...
+<l-m src="./test-comp.html"></l-m>
+<test-comp id="target"></test-comp>
+<script type="module">
+  setTimeout(()=>{
+    console.log($('#target').title);  // => Ejemplo de componente OFAJS
+  },300);
+</script>
+```
+
+```html
+<!-- test-comp.html -->
+ <template component>
+  <div>
+    <p>{{title}}</p>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "test-comp",
+        data: {
+          title: "Ejemplo de componente OFAJS",
+        },
+        attached(){
+          console.log(this === $('#target')); // true
+        }
+      };
+    };
+  </script>
+ </template>
+```

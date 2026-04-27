@@ -1,6 +1,6 @@
 # ele
 
-Through the `ele` attribute, you can obtain the actual [Element](https://developer.mozilla.org/en-US/docs/Web/API/Element) of the instance, allowing you to use native properties or methods.
+Through the `ele` property, you can get the actual [Element](https://developer.mozilla.org/zh-CN/docs/Web/API/Element) of the instance, thus using native properties or methods.
 
 <o-playground name="ele - Get Element" style="--editor-height: 320px">
   <code path="demo.html">

@@ -1,10 +1,10 @@
 index: ./index.html
-header: # Navigation addresses to display on headers
-  - name: Tutorials
+header: # Navigation addresses displayed on headers
+  - name: Tutorial
     url: ./documentation/_config.yaml
   - name: API
     url: ./api/_config.yaml
   - name: Others
     content:
-      - name: Scenario Q&A
+      - name: Scenarios & Q&A
         url: ./scenarios/_config.yaml

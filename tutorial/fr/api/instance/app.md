@@ -2,12 +2,12 @@
 
 
 
-Dans les éléments à l’intérieur de `o-app`, y compris ceux dans les nœuds fantômes d’un `o-page` situé dans `o-app`, ou dans les composants enfants plus profonds, leur attribut `app` pointe tous vers l’instance d’élément de cet `o-app`.
+Les éléments à l'intérieur de `o-app`, y compris ceux à l'intérieur du nœud fantôme de `o-page` à l'intérieur de `o-app`, ou les composants enfants internes, leur attribut `app` pointe vers l'instance d'élément de ce `o-app`.
 
-Voici un exemple montrant comment accéder à l'attribut `app` dans un élément à l'intérieur de `o-app` :
+Voici un exemple qui montre comment accéder à la propriété `app` dans un élément à l'intérieur de `o-app` :
 
 
-<o-playground name="app - obtenir l'instance de l'application" style="--editor-height: 500px">
+<o-playground name="app - Obtenir l'instance de l'application" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>
@@ -19,7 +19,7 @@ Voici un exemple montrant comment accéder à l'attribut `app` dans un élément
     // Méthodes disponibles sur l'application
     export const proto = {
       getSomeData(){
-        return "Hello ofa.js App Demo";
+        return "Bonjour ofa.js App Demo";
       }
     };
     // Configuration de l'animation de changement de page

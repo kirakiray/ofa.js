@@ -1,15 +1,15 @@
-# Pages/Itinéraires imbriqués
+# Pages/routes imbriqués
 
-Dans ofa.js, les pages imbriquées (également appelées routes imbriquées) sont une fonctionnalité puissante qui vous permet de créer une structure de pages avec des relations parent-enfant. La page parente sert de conteneur de disposition et rend le contenu de la page enfant via l'emplacement `<slot>`.
+Dans ofa.js, les pages imbriquées (également appelées routes imbriquées) sont une fonctionnalité puissante qui vous permet de créer une structure de pages avec une hiérarchie parent-enfant. La page parent sert de conteneur de mise en page et utilise le slot `<slot>` pour afficher le contenu de la page enfant.
 
 ## Concepts de base
 
-- **Page parent (Layout)** : Page servant de conteneur de mise en page, incluant des éléments d'interface utilisateur communs tels que la barre de navigation, la barre latérale, etc.
-- **Page enfant** : Contenu spécifique de la page métier, qui sera rendu dans l'emplacement `<slot>` de la page parente
+- **Page parent (Layout)** : page servant de conteneur de mise en page, contenant les éléments d’interface communs tels que la barre de navigation et la barre latérale
+- **Page enfant** : contenu de la page métier proprement dite, qui sera rendu à l’emplacement du `<slot>` de la page parent
 
-## Écriture de la page parente
+## Écriture de la page parent
 
-La page parente doit utiliser la balise `<slot></slot>` pour réserver l’emplacement de rendu à la page enfant.
+La page parent doit utiliser la balise `<slot></slot>` pour réserver l'emplacement de rendu à la page enfant.
 
 ```html
 <!-- layout.html -->
@@ -31,7 +31,7 @@ La page parente doit utiliser la balise `<slot></slot>` pour réserver l’empla
 
 ## Écriture des sous-pages
 
-Les sous-pages spécifient le chemin de la page parente en exportant la propriété `parent`.
+La sous-page spécifie le chemin de la page parente en exportant la propriété `parent`.
 
 ```html
 <template page>
@@ -49,7 +49,7 @@ Les sous-pages spécifient le chemin de la page parente en exportant la proprié
     export default async () => {
       return {
         data: {
-          val: "Bonjour, Démo Code ofa.js",
+          val: "Hello ofa.js Code de démonstration",
         },
       };
     };
@@ -59,7 +59,7 @@ Les sous-pages spécifient le chemin de la page parente en exportant la proprié
 
 ## Exemple de page imbriquée
 
-Voici un exemple complet de routes imbriquées, comprenant une mise en page racine, une page parent et une page enfant :
+Voici un exemple complet de routage imbriqué, comprenant une disposition racine, une page parent et une page enfant :
 
 <o-playground name="Exemple de page imbriquée" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -213,9 +213,9 @@ Voici un exemple complet de routes imbriquées, comprenant une mise en page raci
   </code>
 </o-playground>
 
-## Écoute des routes de la page parent
+## Surveillance du routage de la page parente
 
-La page parent peut écouter les changements de route via le hook de cycle de vie `routerChange`, ce qui est très utile lorsque vous devez mettre à jour l’état de la navigation en fonction de la route actuelle.
+La page parente peut écouter les changements de route via le hook de cycle de vie `routerChange`, ce qui est utile lorsque vous devez mettre à jour l’état de la navigation en fonction de la route actuelle.
 
 ```html
 <template page>
@@ -248,16 +248,16 @@ La page parent peut écouter les changements de route via le hook de cycle de vi
 </template>
 ```
 
-## Remarques
+## Points d'attention
 
-- La valeur de l'attribut `parent` peut être un chemin relatif (comme `./layout.html`) ou un chemin absolu (comme `/pages/layout.html`)
-- La page parent doit contenir la balise `<slot></slot>`, sinon le contenu de la page enfant ne s'affichera pas
-- Les styles de la page parent seront hérités par la page enfant, et la page enfant peut également définir ses propres styles
-- L'utilisation du hook `routerChange` permet de surveiller les changements de route et de mettre en œuvre des fonctions telles que la mise en surbrillance de la navigation
+- La valeur de l'attribut `parent` peut être un chemin relatif (par exemple `./layout.html`) ou un chemin absolu (par exemple `/pages/layout.html`)
+- La page parente doit contenir une balise `<slot></slot>`, sinon le contenu de la page enfant ne pourra pas s'afficher
+- Les styles de la page parente sont hérités par la page enfant, et la page enfant peut également définir ses propres styles
+- Utiliser le hook `routerChange` permet d'écouter les changements de route et de réaliser des fonctionnalités comme la mise en surbrillance de la navigation
 
-## Imbrication multiniveau
+## Imbrication multiniveaux
 
-Une page parente peut également avoir sa propre page parente, formant ainsi une structure d'imbrication à plusieurs niveaux.
+La page parent peut également avoir sa propre page parent, formant une structure d'imbrication à plusieurs niveaux.
 
 ```html
 <!-- Sous-page -->
@@ -273,7 +273,7 @@ Une page parente peut également avoir sa propre page parente, formant ainsi une
 ```
 
 ```html
-<!-- Page parent -->
+<!-- Page parente -->
 <template page>
   <div class="layout">
     <nav>Barre de navigation</nav>
@@ -288,18 +288,18 @@ Une page parente peut également avoir sa propre page parente, formant ainsi une
 </template>
 ```
 
-## Exemple de structure multiniveaux
+## Exemple d'imbrication multi-niveaux
 
-<o-playground name="Exemple complet de routes imbriquées" style="--editor-height: 500px">
+<o-playground name="Exemple complet de routage imbriqué" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // URL de la page d'accueil de l'application
+    // Adresse de la page d'accueil de l'application
     export const home = "./sub-page01.html";
-    // Configuration de l'animation de transition des pages
+    // Configuration de l'animation de transition de page
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -329,7 +329,7 @@ Une page parente peut également avoir sa propre page parente, formant ainsi une
           padding: 10px;
         }
       </style>
-      <div style="text-align: center;font-weight: bold;">Mise en page racine</div>
+      <div style="text-align: center;font-weight: bold;">Root Layout</div>
       <div class="root">
         <slot></slot>
       </div>

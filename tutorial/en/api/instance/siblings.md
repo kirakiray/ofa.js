@@ -1,6 +1,6 @@
 # siblings
 
-Using the `siblings` property, you can easily obtain all adjacent element instances of the current element, which will be returned as an array.
+Using the `siblings` property, you can easily obtain all sibling element instances of the current element, which will be returned as an array.
 
 <o-playground name="siblings - adjacent elements" style="--editor-height: 360px">
   <code path="demo.html">

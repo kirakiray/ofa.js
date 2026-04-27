@@ -2,21 +2,21 @@
 
 
 
-`o-app` 안에 있는 요소들, `o-app` 안에 있는 `o-page`의 섀도 노드 안의 요소, 혹은 그 안의 하위 컴포넌트들의 `app` 속성은 모두 이 `o-app`의 요소 인스턴스를 가리킨다.
+`o-app` 내의 요소, `o-app` 내의 `o-page`의 섀도 노드 내의 요소, 또는 더 내부의 자식 컴포넌트는 모두 `app` 속성이 이 `o-app` 요소 인스턴스를 가리킵니다.
 
-다음은 `o-app` 내의 요소에서 `app` 속성에 접근하는 방법을 보여주는 예시입니다:
+다음은 `o-app` 내 요소에서 `app` 속성에 접근하는 예시입니다:
 
 
-<o-playground name="app - 앱 인스턴스 가져오기" style="--editor-height: 500px">
+<o-playground name="app - 애플리케이션 인스턴스 가져오기" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>
     </template>
   </code>
   <code path="app-config.js">
-    // 앱 홈페이지 주소
+    // 애플리케이션 홈페이지 주소
     export const home = "./home.html";
-    // 앱에서 사용 가능한 메서드
+    // 애플리케이션에서 사용 가능한 메서드
     export const proto = {
       getSomeData(){
         return "Hello ofa.js App Demo";

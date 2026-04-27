@@ -1,10 +1,10 @@
 # 리스너
 
-감시자(Watcher)는 ofa.js에서 데이터 변경을 감지하고 해당 로직을 실행하는 기능입니다. 반응형 데이터가 변경되면 감시자가 자동으로 콜백 함수를 트리거하여 데이터 변환, 부작용 작업 또는 비동기 처리 등의 작업을 수행할 수 있게 해줍니다.
+감시자(Watcher)는 ofa.js에서 데이터 변화를 감지하고 해당 로직을 실행하는 기능입니다. 반응형 데이터가 변경되면 감시자가 자동으로 콜백 함수를 트리거하여 데이터 변환, 부수 효과 작업 또는 비동기 처리 등의 작업을 수행할 수 있게 합니다.
 
 ## 기본 사용법
 
-리스너는 컴포넌트의 `watch` 객체에 정의되며, 키 이름은 감시할 데이터 속성 이름에 해당하고, 값은 데이터가 변경될 때 실행되는 콜백 함수입니다.
+감시자는 컴포넌트의 `watch` 객체에 정의되며, 키 이름은 감시할 데이터 속성 이름에 해당하고, 값은 데이터가 변경될 때 실행되는 콜백 함수입니다.
 
 <o-playground name="watchers - 기본 사용법" style="--editor-height: 700px">
   <code>
@@ -45,14 +45,14 @@
 
 ## 콜백 함수 매개변수
 
-리스너 콜백 함수는 두 개의 매개변수를 수신합니다:- `newValue`：변화 이후의 새로운 값
+리스너 콜백 함수는 두 개의 매개변수를 받습니다:- `newValue`：변화 후의 새로운 값
 - `{watchers}`：현재 컴포넌트의 모든 감시자 객체
 
-데이터 변경 후 디바운스 처리를 먼저 수행한 다음 `watch`의 콜백을 실행합니다; `watchers` 매개변수는 이번 디바운스 주기 내에 병합된 모든 변경 집합입니다.
+데이터 변경 후에는 먼저 디바운스 처리를 한 후 `watch`의 콜백을 실행합니다; `watchers` 매개변수는 이번 디바운스 주기 내에 병합된 모든 변경 집합입니다.
 
-`watch`의 함수는 컴포넌트 초기화 완료 후 즉시 호출되어 데이터 감시를 설정하는 데 사용됩니다. watchers의 길이로 최초 호출인지를 구분할 수 있습니다.
+`watch`의 함수는 컴포넌트 초기화가 완료된 후 즉시 호출되어 데이터 감시를 설정합니다. `watchers`의 길이가 있는지 확인하여 첫 번째 호출인지 구분할 수 있습니다.
 
-<o-playground name="watchers - 콜백 매개변수" style="--editor-height: 700px">
+<o-playground name="watchers - 콜백 파라미터" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -88,14 +88,14 @@
                   return;
                 }
                 const watcher = watchers[0]; // 하나 가져오기
-                this.log += `속성 "${watcher.name}"이(가) "${watcher.oldValue}"에서 "${watcher.value}"로 변경됨\n`;
+                this.log += `속성 "${watcher.name}" 이/가 "${watcher.oldValue}" 에서 "${watcher.value}" 로 변경됨\n`;
               },
               age(newVal,{watchers}) {
                 if(!watchers){
                   return;
                 }
                 const watcher = watchers[0]; // 하나 가져오기
-                this.log += `속성 "${watcher.name}"이(가) "${watcher.oldValue}"에서 "${watcher.value}"로 변경됨\n`;
+                this.log += `속성 "${watcher.name}" 이/가 "${watcher.oldValue}" 에서 "${watcher.value}" 로 변경됨\n`;
               },
             },
           };
@@ -105,11 +105,11 @@
   </code>
 </o-playground>
 
-## 깊은 감시
+## 심층 감청
 
-객체나 배열 타입의 중첩된 데이터에 대해서는 watch 내부에서 자동으로 깊은 감시를 수행합니다.
+객체나 배열 타입의 중첩 데이터에 대해，watch 내에서는 자동으로 깊은 감시가 수행됩니다.
 
-<o-playground name="watchers - 깊이 감시" style="--editor-height: 700px">
+<o-playground name="watchers - 깊은 감시" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -160,9 +160,9 @@
                 const watcher = watchers[0]; // 하나 가져오기
                 console.log("수정: ",watcher.target);
                 if(watcher.type === 'set'){
-                  this.log += `값 수정-> 속성 "${watcher.name}" "${watcher.oldValue}"에서 "${watcher.value}"(으)로 변경 <br>`;
+                  this.log += `값 수정-> 속성 "${watcher.name}" 이(가) "${watcher.oldValue}" 에서 "${watcher.value}" 로 변경됨 <br>`;
                 }else{
-                  this.log += `메서드 실행${watcher.type}-> 함수명 "${watcher.name}" 매개변수 "${watcher.args}" <br>`;
+                  this.log += `메서드 실행${watcher.type}-> 함수명 "${watcher.name}"  인자 "${watcher.args}" <br>`;
                 }
               },
             },
@@ -187,9 +187,9 @@
   </code>
 </o-playground>
 
-## 다중 데이터 소스 모니터링
+## 여러 개의 데이터 소스 감시
 
-여러 데이터의 변화를 동시에 감시하고, 콜백 함수에서 여러 데이터의 변화에 따라 해당 로직을 실행할 수 있습니다.
+여러 데이터의 변화를 동시에 감지하고, 콜백 함수에서 여러 데이터의 변화에 따라 해당 로직을 실행할 수 있습니다.
 
 <o-playground name="watchers - 다중 데이터 소스" style="--editor-height: 600px">
   <code>
@@ -233,9 +233,9 @@
 
 ## 실제 적용 시나리오
 
-### 1. 폼 검증
+### 1. 폼 유효성 검사
 
-<o-playground name="watchers - 폼 검증" style="--editor-height: 800px">
+<o-playground name="watchers - 폼 유효성 검사" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -254,7 +254,7 @@
           font-size: 12px;
         }
       </style>
-      <input sync:value="username" placeholder="사용자명（3-10자）" />
+      <input sync:value="username" placeholder="사용자명(3-10자)" />
       <span class="error">{{usernameError}}</span>
       <input sync:value="email" placeholder="이메일" />
       <span class="error">{{emailError}}</span>
@@ -270,7 +270,7 @@
             watch: {
               username(val) {
                 if (val.length < 3 || val.length > 10) {
-                  this.usernameError = "사용자명은 3-10자여야 합니다";
+                  this.usernameError = "사용자명은 3-10자여야 합니다.";
                 } else {
                   this.usernameError = "";
                 }
@@ -278,7 +278,7 @@
               email(val) {
                 const emailRegex = /^.+@.+\..+$/;
                 if (!emailRegex.test(val)) {
-                  this.emailError = "유효한 이메일 주소를 입력하세요";
+                  this.emailError = "유효한 이메일 주소를 입력하세요.";
                 } else {
                   this.emailError = "";
                 }
@@ -350,5 +350,5 @@
 
 ## 주의사항
 
-- **감시 중인 데이터 수정 피하기**: 감시자 콜백 안에서 감시 대상 데이터를 수정하면 무한 루프가 발생할 수 있습니다. 수정이 필요할 경우 적절한 조건 판단이 있는지 반드시 확인하십시오.
-- **계산된 속성 사용 권장**: 여러 데이터의 변화에 따라 새로운 값을 계산해야 한다면 감시자보다는 [계산된 속성](./computed-properties.md)을 사용하는 것이 좋습니다.
+- **수신된 데이터 수정 피하기**: 감시자 콜백에서 수신된 데이터를 수정하면 무한 루프가 발생할 수 있습니다. 수정이 필요한 경우 적절한 조건 판단을 추가하세요.
+- **계산 속성 사용 고려**: 여러 데이터의 변화에 따라 새 값을 계산해야 하는 경우, 감시자 대신 [계산 속성](./computed-properties.md)을 사용하는 것을 권장합니다.

@@ -1,10 +1,10 @@
-# 싱글 페이지 애플리케이션
+# 단일 페이지 애플리케이션
 
-싱글 페이지 애플리케이션은 `o-app` 컴포넌트를 브라우저 주소 표시줄에 바인딩하여 웹 페이지 URL과 애플리케이션 내부의 페이지 경로를 동기화합니다. 싱글 페이지 애플리케이션을 활성화하면:
+싱글 페이지 애플리케이션은 `o-app` 컴포넌트를 브라우저 주소창과 바인딩하여 웹 페이지 URL과 애플리케이션 내 페이지 경로를 동기화합니다. 싱글 페이지 애플리케이션을 활성화한 후:
 
-- 웹페이지를 새로 고침하면 현재의 라우팅 상태를 유지할 수 있습니다
-- 주소창의 URL을 복사하여 다른 브라우저나 탭에서 열면, 동일하게 애플리케이션 상태를 복원할 수 있습니다
-- 브라우저의 앞으로/뒤로 버튼을 정상적으로 사용할 수 있습니다
+- 웹페이지를 새로고침하면 현재 라우트 상태를 유지합니다
+- 주소창의 URL을 복사해 다른 브라우저나 탭에서 열면 애플리케이션 상태를 그대로 복원할 수 있습니다
+- 브라우저의 앞/뒤로 가기 버튼을 정상적으로 사용할 수 있습니다
 
 ## 기본 사용법
 
@@ -16,7 +16,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>router test</title>
+    <title>라우터 테스트</title>
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
   </head>
   <body>
@@ -38,12 +38,12 @@
 </o-router>
 ```
 
-이것은 다음 시나리오에서 특히 유용합니다：- `o-app`이 뷰포트를 완전히 채워야 합니다
-- 애플리케이션이 페이지의 유일한 콘텐츠일 때
+이는 다음 시나리오에서 특히 유용합니다:- `o-app`가 뷰포트를 완전히 채워야 함
+- 앱이 페이지의 유일한 콘텐츠일 경우
 
 ## 예시
 
-<o-playground name="싱글 페이지 애플리케이션 예제" style="--editor-height: 500px">
+<o-playground name="단일 페이지 애플리케이션 예제" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/router/dist/router.min.mjs"></l-m>
@@ -103,10 +103,10 @@
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>About으로 이동</a>
+      <a href="./about.html" olink>Go to About</a>
       <br>
       <br>
-      <button on:click="gotoAbout">About으로 이동 버튼</button>
+      <button on:click="gotoAbout">Go to About Button</button>
       <script>
         export default async () => {
           return {
@@ -148,15 +148,15 @@
 
 ## 작동 원리
 
-싱글 페이지 애플리케이션은 브라우저의 Hash 모드를 기반으로 구현됩니다:
+싱글 페이지 애플리케이션의 브라우저 기반 Hash 모드 구현:
 
-1. 앱 내에서 페이지 전환이 발생할 때, `o-router`는 주소 표시줄의 해시 값(예: `#/about.html`)을 자동으로 업데이트합니다.
-2. 사용자가 페이지를 새로고침하거나 URL로 접근할 때, `o-router`는 해시 값을 읽어 해당 페이지를 로드합니다.
-3. 브라우저의 앞/뒤 버튼은 해시 변경을 트리거하여 앱의 페이지 탐색을 제어합니다.
+1. 앱 내에서 페이지 전환이 발생하면 `o-router`가 자동으로 주소 표시줄의 해시 값을 업데이트합니다 (예: `#/about.html`)
+2. 사용자가 페이지를 새로고침하거나 URL을 통해 접근할 때 `o-router`가 해시 값을 읽고 해당 페이지를 로드합니다
+3. 브라우저의 앞으로/뒤로 버튼이 해시 변경을 트리거하여 앱의 페이지 탐색을 제어합니다
 
 ## URL 변경 예시
 
-애플리케이션에 `home.html`과 `about.html` 두 개의 페이지가 있다고 가정합니다:
+애플리케이션에 두 개의 페이지 `home.html`과 `about.html`이 있다고 가정합니다:
 
 | 사용자 작업 | 주소 표시줄 변화 |
 |---------|-----------|

@@ -1,17 +1,17 @@
 # css
 
-The `css` method is used to get or set the styles of the target element.
+The `css` method is used to get or set the style of the target element.
 
 ## Direct Use
 
-You can directly use the `css` method to get or set the style of an element.
+You can directly use the `css` method to get or set the element's styles.
 
-<o-playground name="css - Direct Use" style="--editor-height: 300px">
+<o-playground name="css - Direct Usage" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <div id="target">origin text</div>
       <br>
-      <h4>Logger</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = $("#target").css.color;
@@ -26,9 +26,9 @@ You can directly use the `css` method to get or set the style of an element.
 
 ## Full Settings
 
-With the obtained `css` object, you can directly set style values on the element.
+With the obtained `css` object, you can directly set the style value on the element.
 
-<o-playground name="css - full property setting" style="--editor-height: 400px">
+<o-playground name="css - Full Settings" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <div id="target" style="color:red">origin text</div>
@@ -49,11 +49,11 @@ With the obtained `css` object, you can directly set style values on the element
   </code>
 </o-playground>
 
-Using the `css` object feature, you can quickly adjust the styles of the target element.
+Using the features of the `css` object, you can quickly adjust the styles of the target element.
 
-## Template Syntax Usage
+## Using Template Syntax
 
-You can also use template syntax to set the style of the target element.
+You can also use template syntax to style the target element.
 
 <o-playground name="css - template syntax" style="--editor-height: 400px">
   <code path="demo.html" preview>
@@ -87,9 +87,9 @@ You can also use template syntax to set the style of the target element.
   </code>
 </o-playground>
 
-## CSS Setup Tips
+## Tips for Setting CSS
 
-You can use `$ele.css = {...$ele.css, color:'red'}` to modify a specific style property of an element without affecting other style properties. This approach allows you to modify only one property without rewriting the entire style.
+You can modify a specific style property of an element using `$ele.css = {...$ele.css, color:'red'}` without affecting other style properties. This approach allows you to change just one property without rewriting the entire style.
 
 ### Example
 
@@ -99,4 +99,4 @@ const myElement = $("#myElement");
 myElement.css = { ...myElement.css, color: 'red' };
 ```
 
-In the example above, by using `{ ...myElement.css, color: 'red' }`, we only modify the element's color style while keeping all other style properties unchanged. This is a handy trick for flexibly adjusting an element's styles.
+In the above example, by using `{ ...myElement.css, color: 'red' }`, we only modify the color style of the element while keeping other style properties unchanged. This is a convenient technique that allows flexible modification of element styles.

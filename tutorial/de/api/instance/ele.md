@@ -2,9 +2,9 @@
 
 
 
-Über das `ele`-Attribut kannst du das tatsächliche [Element](https://developer.mozilla.org/de/docs/Web/API/Element) der Instanz abrufen und somit auf native Eigenschaften oder Methoden zugreifen.
+Über das `ele`-Attribut können Sie das tatsächliche [Element](https://developer.mozilla.org/de/docs/Web/API/Element) der Instanz abrufen und so auf native Eigenschaften oder Methoden zugreifen.
 
-<o-playground name="ele - Element abrufen" style="--editor-height: 320px">
+<o-playground name="ele - Element holen" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

@@ -2,7 +2,7 @@
 
 
 
-`siblings` 属性を使用すると、現在の要素のすべての隣接要素インスタンスを簡単に取得できます。これらの要素は配列として返されます。
+`siblings` プロパティを使用すると、現在の要素のすべての隣接要素インスタンスを簡単に取得でき、これらの要素は配列として返されます。
 
 <o-playground name="siblings - 隣接要素" style="--editor-height: 360px">
   <code path="demo.html">
@@ -16,7 +16,7 @@
       </ul>
       <script>
         setTimeout(()=>{
-          \$('#target').siblings.forEach(e => e.text = 'テキストを変更');
+          \$('#target').siblings.forEach(e => e.text = 'change text');
         },500);
       </script>
     </template>

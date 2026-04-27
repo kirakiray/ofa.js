@@ -2,9 +2,9 @@
 
 
 
-`on` メソッドを使用すると、対象要素にイベントハンドラを登録できます。これにより、ユーザーのインタラクションを簡単にキャッチして応答できます。
+使用 `on` 方法，你可以为目标元素注册事件处理程序。这使你能够轻松地捕获和响应用户的交互操作。
 
-以下は、ボタン要素にクリックイベントハンドラを登録するために `on` メソッドを使用する方法を示す例です：
+以下は、`on` メソッドを使用してボタン要素にクリックイベントハンドラを登録する方法を示す例です：
 
 <o-playground name="on - click イベント" style="--editor-height: 300px">
   <code path="demo.html">
@@ -23,7 +23,7 @@
   </code>
 </o-playground>
 
-この例では、`on` メソッドを使用してボタン要素にクリックイベントハンドラを追加しました。ユーザーがボタンをクリックすると、イベントハンドラがトリガーされ、カウンターが増加し、結果がページに表示されます。
+この例では、`on` メソッドを使用してボタン要素にクリックイベントハンドラを追加しています。ユーザーがボタンをクリックすると、イベントハンドラがトリガーされ、カウンターが増加し、その結果がページに表示されます。
 
 ## テンプレート構文方式での使用
 
@@ -38,7 +38,7 @@
   </code>
   <code path="on-demo.html" active>
     <template component>
-      <button on:click="addCount">カウントを追加</button>
+      <button on:click="addCount">Add Count</button>
       <div>{{count}}</div>
       <script>
         export default {
@@ -63,12 +63,12 @@
 
 
 
-イベントを登録した後、トリガーされる関数には event が渡されます。これはネイティブと同様です：
+イベントを登録した後、トリガーされる関数にはeventが付与され、ネイティブと同様になります：
 
-<o-playground name="on - event 参数" style="--editor-height: 300px">
+<o-playground name="on - event パラメータ" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <button id="target">カウントを追加</button>
+      <button id="target">add count</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>

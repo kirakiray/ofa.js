@@ -1,14 +1,14 @@
 # シングルページアプリケーション
 
-シングルページアプリケーションは、`o-app`コンポーネントをブラウザのアドレスバーにバインディングし、WebページのURLとアプリ内のページパスを同期させます。シングルページアプリケーションを有効にすると：
+单页面应用是将 `o-app` 组件与浏览器地址栏绑定，使网页 URL 与应用内的页面路径保持同步。启用单页面应用后：
 
-- ウェブページを更新しても現在のルーティング状態が維持される
-- アドレスバーのURLをコピーして別のブラウザやタブで開いても、アプリケーションの状態を復元できる
-- ブラウザの進む/戻るボタンが正常に動作する
+- ページをリフレッシュすると、現在のルート状態を保持できます
+- アドレスバーのURLをコピーして、他のブラウザやタブで開いても、同様にアプリケーションの状態を復元できます
+- ブラウザの進む/戻るボタンは正常に使用できます
 
 ## 基本的な使い方
 
-公式の `o-router` コンポーネントで `o-app` コンポーネントを囲むだけで、シングルページアプリケーションが実現できます。
+公式の `o-router` コンポーネントで `o-app` コンポーネントをラップすると、シングルページアプリケーションを実現できます。
 
 ```html
 <!doctype html>
@@ -30,7 +30,7 @@
 
 ## fix-body 属性
 
-`fix-body` 属性を追加すると、`o-router` は自動的に `html` と `body` のスタイルをリセットし、デフォルトの margin と padding を削除します。
+`fix-body` 属性を追加すると、`o-router` は自動的に `html` および `body` のスタイルをリセットし、デフォルトの margin と padding を除去します。
 
 ```html
 <o-router fix-body>
@@ -38,12 +38,12 @@
 </o-router>
 ```
 
-これは以下のシナリオで特に便利です：- `o-app`がビューポートを完全に埋める必要がある
-- アプリケーションがページの唯一のコンテンツである場合
+これは以下のようなシナリオで特に役立ちます：- `o-app` でビューポートを完全に埋める必要があります
+- アプリがページの唯一のコンテンツである場合
 
 ## 例
 
-<o-playground name="シングルページアプリケーションの例" style="--editor-height: 500px">
+<o-playground name="単一ページアプリケーションの例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/router/dist/router.min.mjs"></l-m>
@@ -53,9 +53,9 @@
     </template>
   </code>
   <code path="app-config.js">
-    // アプリケーションのホームアドレス
+    // アプリケーションのホームページアドレス
     export const home = "./home.html";
-    // ページ切り替えアニメーションの設定
+    // ページ切り替えアニメーション設定
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -103,15 +103,15 @@
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>Aboutへ移動</a>
+      <a href="./about.html" olink>Go to About</a>
       <br>
       <br>
-      <button on:click="gotoAbout">Aboutボタンへ移動</button>
+      <button on:click="gotoAbout">Go to About Button</button>
       <script>
         export default async () => {
           return {
             data: {
-              val: "こんにちは ofa.js アプリデモ",
+              val: "Hello ofa.js App Demo",
             },
             proto:{
                 gotoAbout(){
@@ -131,13 +131,13 @@
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">戻る</button> </div>
+      <div style="padding: 8px;"> <button on:click="back()">Back</button> </div>
       <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async () => {
           return {
             data: {
-              val: "こんにちは ofa.js アプリデモ",
+              val: "Hello ofa.js App Demo",
             },
           };
         };
@@ -146,23 +146,23 @@
   </code>
 </o-playground>
 
-## 動作原理
+## 仕組み
 
-シングルページアプリケーションはブラウザのハッシュモードに基づいて実装：
+シングルページアプリケーションはブラウザのHashモードに基づいて実装されます：
 
 1. アプリ内でページが切り替わると、`o-router` は自動的にアドレスバーのハッシュ値を更新します（例：`#/about.html`）
-2. ユーザーがページを更新したり URL でアクセスしたりすると、`o-router` はハッシュ値を読み取り、対応するページを読み込みます
-3. ブラウザの進む／戻るボタンはハッシュの変化をトリガーし、アプリのページナビゲーションを制御します
+2. ユーザーがページを更新したり URL でアクセスしたりすると、`o-router` はハッシュ値を読み取り、対応するページをロードします
+3. ブラウザの進む／戻るボタンがハッシュの変化をトリガーし、アプリのページナビゲーションを制御します
 
-## URL 変化の例
+## URL変化の例
 
-アプリケーションに `home.html` と `about.html` という2つのページがあると仮定します：
+アプリケーションに `home.html` と `about.html` の2つのページがあるとします：
 
 | ユーザー操作 | アドレスバーの変化 |
-|---------|-----------|
+|-------------|-------------------|
 | アプリを開く | `index.html` → `index.html#/home.html` |
-| Aboutページに移動 | `index.html#/home.html` → `index.html#/about.html` |
-| 戻るをクリック | `index.html#/about.html` → `index.html#/home.html` |
-| ページを更新 | 現在のhashを維持 |## 使用制限
+| 概要ページへ移動 | `index.html#/home.html` → `index.html#/about.html` |
+| 戻るボタンをクリック | `index.html#/about.html` → `index.html#/home.html` |
+| ページをリフレッシュ | 現在のハッシュを維持 |## 使用制限
 
-- シングルページアプリケーションは、**1つ**の `o-app` コンポーネントとのみ連携して使用できます
+- シングルページアプリケーションは**1つ**の `o-app` コンポーネントとのみ連携できます

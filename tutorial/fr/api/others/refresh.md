@@ -4,7 +4,7 @@
 
 La méthode `refresh` est utilisée pour rafraîchir activement la vue de rendu du composant. Lorsque les données sur le composant ne sont pas mises à jour, vous pouvez utiliser cette méthode pour rafraîchir la vue du composant.
 
-Applicable to scenarios where manual refresh of [non-responsive data](../../documentation/property-response.md) is required.
+Convient aux scénarios nécessitant un rafraîchissement manuel des [données non réactives](../../documentation/property-response.md).
 
 <o-playground name="refresh - Rafraîchir la vue" style="--editor-height: 400px">
   <code path="demo.html" preview>

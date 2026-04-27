@@ -1,16 +1,16 @@
-# Requêtes de style
+# Requête de style
 
-`match-var` est un composant fonctionnel dans ofa.js utilisé pour la correspondance de styles en fonction des variables CSS. Avec `match-var`, vous pouvez dynamiquement faire correspondre et appliquer différents styles en fonction des valeurs des variables CSS du composant actuel. Cette fonctionnalité est spécifiquement conçue pour la transmission d'états de contexte liés au style, sans nécessiter l'utilisation de JavaScript, ce qui la rend plus pratique à utiliser et adaptée aux besoins de transmission de styles tels que les couleurs de thème.
+`match-var` est un composant fonctionnel d'ofa.js utilisé pour la correspondance de styles en fonction des variables CSS. Grâce à `match-var`, il est possible de faire correspondre et d'appliquer dynamiquement différents styles en fonction des valeurs des variables CSS du composant actuel. Cette fonctionnalité est spécialement conçue pour le transfert d'état contextuel lié au style, sans nécessiter l'utilisation de JavaScript, ce qui la rend plus pratique à utiliser, notamment pour le transfert de styles comme les couleurs de thème.
 
 ## Concepts clés
 
-- **match-var** : Composant de correspondance de style, qui détermine s'il faut appliquer le style interne en fonction de la valeur de la variable CSS
-- **Correspondance d'attributs** : Définir les variables CSS à faire correspondre et les valeurs attendues via les attributs du composant
-- **Application de style** : En cas de correspondance réussie, les styles de la balise `<style>` interne seront appliqués au composant
+- **match-var**: Composant de correspondance de styles, décide si les styles internes doivent être appliqués en fonction de la valeur d'une variable CSS
+- **Correspondance d'attributs**: Définit les variables CSS et les valeurs attendues via les attributs du composant
+- **Application des styles**: En cas de correspondance réussie, les styles de la balise `<style>` interne sont appliqués au composant
 
 ## Utilisation de base
 
-Le composant `match-var` définit les variables CSS à faire correspondre et les valeurs attendues via des attributs. Lorsque la valeur de la variable CSS du composant correspond à la valeur d'attribut spécifiée, les styles définis en interne sont appliqués.
+Le composant `match-var` définit les variables CSS à matcher et la valeur attendue via des attributs. Lorsque la valeur de la variable CSS du composant correspond à la valeur spécifiée dans l’attribut, le style défini en son sein est appliqué.
 
 ```html
 <match-var theme="dark">
@@ -23,15 +23,15 @@ Le composant `match-var` définit les variables CSS à faire correspondre et les
 </match-var>
 ```
 
-### Attributs
+### Propriétés
 
 Le composant `match-var` utilise des attributs arbitraires pour définir les règles de correspondance des variables CSS. Le nom de l'attribut correspond au nom de la variable CSS (sans le préfixe `--`), et la valeur de l'attribut est la valeur attendue pour la correspondance.
 
-### Comment ça marche
+### Principe de fonctionnement
 
-1. **Prise en charge du navigateur** : Si le navigateur prend en charge la requête `@container style()`, il utilisera directement la capacité native du CSS
-2. **Traitement de dégradation** : S'il n'est pas pris en charge, il détectera les changements de valeur des variables CSS par interrogation, et injectera dynamiquement les styles après une correspondance réussie
-3. **Rafraîchissement manuel** : Vous pouvez déclencher manuellement la détection de style via la méthode `$.checkMatch()`
+1. **Prise en charge des navigateurs** : si le navigateur prend en charge la requête `@container style()`, il utilise directement les capacités CSS natives.
+2. **Traitement de dégradation** : si ce n'est pas pris en charge, la détection des changements de valeurs des variables CSS se fait par interrogation périodique, et les styles sont injectés dynamiquement après correspondance.
+3. **Actualisation manuelle** : il est possible de déclencher manuellement la détection de style via la méthode `$.checkMatch()`.
 
 ## Exemple de base
 
@@ -54,7 +54,7 @@ Le composant `match-var` utilise des attributs arbitraires pour définir les rè
            --theme: data(currentTheme);
         }
       </style>
-      <button on:click="changeTheme">Basculer le thème</button> - Thème : {{currentTheme}}
+      <button on:click="changeTheme">Changer de thème</button> - Theme:{{currentTheme}}
       <div class="container">
         <theme-box>
           Afficher différents styles selon la variable CSS
@@ -126,22 +126,22 @@ Le composant `match-var` utilise des attributs arbitraires pour définir les rè
   </code>
 </o-playground>
 
-## Correspondance multicritère
+## Correspondance à conditions multiples
 
-Vous pouvez utiliser plusieurs attributs simultanément pour définir des conditions de correspondance plus complexes, et les styles ne seront appliqués que lorsque toutes les variables CSS correspondent.
+On peut utiliser plusieurs attributs simultanément pour définir des conditions de correspondance plus complexes ; le style ne sera appliqué que si toutes les variables CSS correspondent.
 
 ```html
-<match-var theme="sombre" taille="grande">
+<match-var theme="dark" size="large">
   <style>
     :host {
-      rembourrage: 20px;
-      taille-de-police: 18px;
+      padding: 20px;
+      font-size: 18px;
     }
   </style>
 </match-var>
 ```
 
-## Exemple de correspondance multi-conditions
+## Exemple de correspondance multi-condition
 
 <o-playground name="Exemple de correspondance d'attributs" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -167,7 +167,7 @@ Vous pouvez utiliser plusieurs attributs simultanément pour définir des condit
       <div>Taille : {{size}} <button on:click="changeSize">Changer la taille</button></div>
       <div class="content">
         <test-card>
-          <div>Exemple de correspondance de styles multi-conditions</div>
+          <div>Exemple de correspondance de style multi-conditions</div>
         </test-card>
       </div>
       <script>
@@ -244,24 +244,24 @@ Vous pouvez utiliser plusieurs attributs simultanément pour définir des condit
   </code>
 </o-playground>
 
-## checkMatch Actualisation manuelle
+## checkMatch actualisation manuelle
 
-Dans certains cas, les changements des variables CSS peuvent ne pas être détectés automatiquement ; vous pouvez alors appeler manuellement la méthode `$.checkMatch()` pour déclencher la détection des styles.
+Dans certains cas, les changements de variables CSS peuvent ne pas être détectés automatiquement, et il est alors possible d'appeler manuellement la méthode `$.checkMatch()` pour déclencher la détection de style.
 
-> Firefox ne prend pas encore en charge la requête `@container style()`, il est donc nécessaire d'appeler manuellement `$.checkMatch()` ; une fois que la prise en charge native sera disponible dans les navigateurs, le système détectera automatiquement les changements de variables, sans avoir besoin de les déclencher manuellement.
+> Actuellement, Firefox ne supporte pas encore la requête `@container style()`, donc il faut appeler manuellement `$.checkMatch()` ; lorsque le navigateur prendra en charge nativement cette fonctionnalité à l'avenir, le système détectera automatiquement les changements de variables, sans avoir besoin de déclenchement manuel.
 
 ```javascript
 proto: {
   updateTheme() {
     this.theme = 'dark';
-    // Déclencher manuellement la détection de style
+    // Déclencher manuellement la détection de style.
     $.checkMatch();
   }
 }
 ```
 
-## Bonnes pratiques
+## Meilleures pratiques
 
-1. **Privilégier les capacités natives de CSS** : `match-var` utilise en priorité la requête native `@container style()` du navigateur, offrant de meilleures performances dans les navigateurs modernes  
-2. **Organiser les styles de manière logique** : regrouper les styles correspondants pour faciliter la maintenance et la compréhension  
-3. **Utiliser la liaison data()** : combiner avec la directive `data()` permet de basculer les styles de manière réactive
+1. **Privilégier les capacités natives du CSS** : `match-var` utilisera en priorité la requête native `@container style()` du navigateur, offrant de meilleures performances dans les navigateurs modernes  
+2. **Organiser les styles de manière cohérente** : regrouper les styles de correspondance associés facilite la maintenance et la compréhension  
+3. **Utiliser la liaison data()** : combiner avec la directive `data()` permet de basculer les styles de façon réactive

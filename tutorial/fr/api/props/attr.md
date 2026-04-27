@@ -2,7 +2,7 @@
 
 
 
-La méthode `attr` sert à obtenir ou définir les attributs des éléments.
+`attr` méthode est utilisée pour obtenir ou définir les attributs d'un élément.
 
 ## Utilisation directe
 
@@ -19,9 +19,9 @@ Vous pouvez directement utiliser la méthode `attr` pour obtenir ou définir les
           color: green;
         }
       </style>
-      <div id="target1" test-attr="1">I am target 1</div>
-      <div id="target2">I am target 2</div>
-      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">logger</div>
+      <div id="target1" test-attr="1">Je suis la cible 1</div>
+      <div id="target2">Je suis la cible 2</div>
+      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">journal</div>
       <script>
         $("#logger").text = $("#target1").attr('test-attr');
         setTimeout(()=> {
@@ -33,11 +33,11 @@ Vous pouvez directement utiliser la méthode `attr` pour obtenir ou définir les
   </code>
 </o-playground>
 
-## Utilisation de la syntaxe de modèle
+## Utilisation via la syntaxe de modèle
 
-Vous pouvez également utiliser la syntaxe `attr:aaa="bbb"` pour définir l'attribut **aaa** de l'élément cible sur la valeur du composant **bbb**. Cette méthode est particulièrement utile pour le rendu de composants.
+Vous pouvez également utiliser la méthode `attr:aaa="bbb"` pour définir l'attribut **aaa** de l'élément cible à la valeur du composant **bbb**. Cette méthode est particulièrement utile pour le rendu des composants.
 
-<o-playground name="attr - syntaxe du template" style="--editor-height: 600px">
+<o-playground name="attr - syntaxe de modèle" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./attr-demo.html"></l-m>

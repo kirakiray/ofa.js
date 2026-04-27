@@ -1,8 +1,8 @@
 # replace-temp コンポーネント
 
-select や table などの特殊な要素内でリストレンダリングを試みると、ブラウザが `<x-fill>` コンポーネントを自動的に削除し、リストレンダリングが失敗することがあります。この問題を解決するには、replace-temp を使用できます。
+私たちが select や table などの特殊な要素内でリストレンダリングを試みると、ブラウザが自動的に `<x-fill>` コンポーネントを削除し、リストレンダリングが失敗する可能性があります。この場合は replace-temp 方式を使用してこの問題を解決できます。
 
-使用方法は：`<template>`タグに`is="replace-temp"`を設定し、それをブラウザが自動的に修正する要素の内部に配置します。
+使用方法は、`<template>` タグに `is="replace-temp"` を設定し、ブラウザが自動的に修正する要素の内部に配置することです。
 
 <o-playground name="replace-temp コンポーネント" style="--editor-height: 500px">
   <code>

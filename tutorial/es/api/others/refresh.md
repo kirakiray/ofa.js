@@ -2,11 +2,11 @@
 
 
 
-El método `refresh` se utiliza para actualizar activamente la vista de renderizado del componente. A veces, cuando los datos en el componente no se actualizan, se puede usar este método para refrescar la vista del componente.
+`refresh` método se utiliza para actualizar activamente la vista de renderizado del componente. A veces, cuando los datos del componente no se actualizan, se puede usar este método para actualizar la vista del componente.
 
-Se aplica a escenarios que requieren actualización manual de [datos no reactivos](../../documentation/property-response.md).
+Adecuado para escenarios donde se necesita actualizar manualmente [datos no reactivos](../../documentation/property-response.md).
 
-<o-playground name="refresh - actualizar vista" style="--editor-height: 400px">
+<o-playground name="refresh - Actualizar vista" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./refresh-demo.html"></l-m>

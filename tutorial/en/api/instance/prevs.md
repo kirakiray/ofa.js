@@ -1,8 +1,8 @@
 # prevs
 
-Using the `prevs` property, you can easily retrieve all preceding sibling element instances of the current element, returned as an array.
+Using the `prevs` property, you can easily obtain all preceding adjacent element instances of the current element, which will be returned as an array.
 
-<o-playground name="prevs - Previous Elements" style="--editor-height: 320px">
+<o-playground name="prevs - previous elements" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

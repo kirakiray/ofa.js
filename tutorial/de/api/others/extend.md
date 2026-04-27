@@ -2,11 +2,11 @@
 
 
 
-`extend` ist eine Higher-Order-Methode, die zum Erweitern von Eigenschaften oder Methoden einer Instanz verwendet wird.
+`extend` ist eine höhere Methode, die verwendet wird, um die Attribute oder Methoden einer Instanz zu erweitern.
 
-> In der Regel wird es nicht empfohlen, dass Benutzer die Eigenschaften oder Methoden von Instanzen erweitern, da dies die Lernkosten erhöht. Es sei denn, es gibt spezielle Szenarien innerhalb des Teams, die eine Anpassung des Verhaltens von Instanzen erfordern, wird davon abgeraten.
+> In der Regel wird es nicht empfohlen, dass Benutzer die Eigenschaften oder Methoden der Instanz erweitern, da dies die Lernkurve erhöht. Es sei denn, es gibt im Team spezielle Szenarien, in denen das Verhalten der Instanz angepasst werden muss, andernfalls ist dies nicht ratsam.
 
-<o-playground name="extend - Instanz erweitern" style="--editor-height: 560px">
+<o-playground name="extend - Erweiterungsbeispiel" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
@@ -37,31 +37,31 @@
   </code>
 </o-playground>
 
-## Erweitern Sie $ Unterbau
+## Erweitern Sie die $-Unterstützung
 
-Ähnlich wie jQuery können Sie auch die Eigenschaften oder Methoden der zugrunde liegenden Instanz über fn.extend erweitern; Eigenschaften oder Methoden, die von fn erweitert werden, werden auf alle Instanzen angewendet.
+Ähnlich wie jQuery kannst du auch mit fn.extend die Eigenschaften oder Methoden der zugrunde liegenden Instanz erweitern; die von fn erweiterten Eigenschaften oder Methoden werden auf alle Instanzen angewendet.
 
 <o-playground name="extend - Basis erweitern" style="--editor-height: 560px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Ich bin 1</li>
-        <li id="target">Ich bin das Ziel</li>
-        <li>Ich bin 3</li>
+        <li>I am 1</li>
+        <li id="target">I am target</li>
+        <li>I am 3</li>
       </ul>
-      <div id="logger">Logger</div>
+      <div id="logger">logger</div>
       <script>
         \$.fn.extend({
           get good(){
-            return "ofa.js ist gut";
+            return "ofa.js is good";
           },
           say(){
-            return 'Hallo';
+            return 'hello';
           }
         });
         setTimeout(() => {
           \$("#logger").html = `
-          target gut : ${$("#target").good} <br>
+          target good : ${$("#target").good} <br>
           logger say() : ${$("#logger").say()}
           `;
         }, 500);
@@ -72,17 +72,17 @@
 
 ## Erweiterte Vorlagensyntax
 
-Durch `extend` erweiterte Eigenschaften oder Funktionen können die Funktionalität der Template-Syntax erweitern und Komponenten sogar exklusive Template-Syntax-Sugar bieten. Es sollte jedoch beachtet werden, dass **nicht offizielle** Template-Syntax möglichst **nicht verwendet** wird, da sie für die Anwender mit einem gewissen Lernaufwand verbunden ist und eine große Menge an inoffiziellem Template-Syntax-Sugar die Entwicklungserfahrung beeinträchtigt.
+Durch das Erweitern von Eigenschaften oder Funktionen mit `extend` kann die Funktionalität der Vorlagensyntax erweitert werden, sogar bis hin zur Bereitstellung spezifischer Vorlagen-Syntaktischer Zucker für Komponenten. Es ist jedoch zu beachten, dass **nicht offizielle** Vorlagensyntax möglichst vermieden werden sollte, da sie für Benutzer einen gewissen Lernaufwand mit sich bringt und eine große Anzahl nicht offizieller Vorlagen-Syntaktischer Zucker die Entwicklungserfahrung beeinträchtigt.
 
 ### Erweiterte Attribute
 
-Sie können erweiterte Attribute verwenden, um sie in der Vorlage mit `:` festzulegen. Im Folgenden erweitern wir ein `red`-Attribut. Wenn `red` `true` ist, ändert sich die Schriftfarbe in Rot:
+Sie können über Erweiterungsattribute im Template mit `:` Einstellungen vornehmen. Im Folgenden erweitern wir ein `red`-Attribut: Wenn `red` den Wert `true` hat, wird die Schriftfarbe rot.
 
 ```javascript
 $.fn.extend({
   set red(bool){
     if(bool){
-      this.css.color = "rot";
+      this.css.color = "red";
     }else{
       this.css.color = '';
     }
@@ -90,7 +90,7 @@ $.fn.extend({
 });
 ```
 
-<o-playground name="extend - Erweiterte Eigenschaften" style="--editor-height: 400px">
+<o-playground name="extend - erweiterte Attribute" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-one.html"></l-m>
@@ -110,7 +110,7 @@ $.fn.extend({
   </code>
   <code path="temp-one.html">
     <template component>
-      <button on:click="addCount">Zähler erhöhen</button>
+      <button on:click="addCount">Add Count</button>
       <div :red="count % 3">{{count}}</div>
       <script>
         export default {
@@ -129,15 +129,15 @@ $.fn.extend({
   </code>
 </o-playground>
 
-In diesem Beispiel fügen wir der Vorlagensyntax ein `red`-Attribut hinzu, das die Schriftfarbe auf Rot setzt, wenn `count % 3` nicht 0 ist.
+In diesem Beispiel haben wir der Templatsyntax eine `red`-Eigenschaft hinzugefügt. Wenn `count % 3` nicht 0 ist, wird die Schriftfarbe rot.
 
 ### Erweiterungsmethoden
 
-Du kannst auch über die `extend`-Erweiterungsmethode dafür sorgen, dass sie in der Vorlagen-Syntax verfügbar ist. Der Methodenname ist der Teil vor dem Doppelpunkt. Hier erweitern wir eine `color`-Vorlagen-Syntax; die folgenden Parameter werden an die definierte Erweiterungsmethode übergeben.
+Du kannst sie auch durch die `extend`-Erweiterungsmethode in der Templatesyntax verfügbar machen. Der Methodenname ist der Teil vor dem Doppelpunkt. Hier haben wir eine `color`-Templatesyntax erweitert, und die nachfolgenden Parameter werden an die definierte Erweiterungsmethode übergeben.
 
-Hier wird das Attribut `always` auf `true` gesetzt, was bedeutet, dass die definierte Methode jedes Mal aufgerufen wird, wenn die Komponente die Benutzeroberfläche aktualisieren muss. Wenn `always` nicht gesetzt ist, wird diese Template-Syntax-Funktion nur einmal ausgeführt.
+Hier wurde das `always`-Attribut auf `true` gesetzt, was bedeutet, dass diese definierte Methode jedes Mal aufgerufen wird, wenn die Komponente die Oberfläche aktualisieren muss. Wenn `always` nicht gesetzt wird, wird diese Template-Syntax-Funktion nur einmal ausgeführt.
 
-Hierbei bietet `options` weitere Parameter, die Ihnen helfen können, eine stärker anpassbare Template-Syntax zu entwickeln:
+Dabei bietet `options` mehr Parameter, die Ihnen helfen, eine individuellere Vorlagensyntax zu entwickeln:
 
 ```javascript
 $.fn.extend({
@@ -154,7 +154,7 @@ $.fn.extend({
 $.fn.color.always = true;
 ```
 
-<o-playground name="extend - Erweiterungsmethode" style="--editor-height: 400px">
+<o-playground name="extend - Erweiterungsmethoden" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./temp-two.html"></l-m>
@@ -176,7 +176,7 @@ $.fn.color.always = true;
   </code>
   <code path="temp-two.html">
     <template component>
-      <button on:click="addCount" color:blue="count % 3">Zähler erhöhen</button>
+      <button on:click="addCount" color:blue="count % 3">Add Count</button>
       <div color:red="!(count % 3)">{{count}}</div>
       <script>
         export default {
@@ -195,16 +195,16 @@ $.fn.color.always = true;
   </code>
 </o-playground>
 
-## Prinzip der Template-Syntax
+## Prinzip der Vorlagen-Syntax
 
-Bisher sollten Sie verstanden haben, dass viele der Template-Syntaxen auf ofa.js tatsächlich durch `extend` erweitert werden:
+Bis jetzt solltest du bereits verstanden haben, dass viele der Template-Syntaxen auf ofa.js tatsächlich über `extend` erweitert werden:
 
-- Die Methoden `class` und `attr` werden bei jedem Aktualisieren der Ansicht ausgeführt
+- Die Methoden `class` und `attr` werden bei jedem Neuladen der Ansicht ausgeführt
 - Funktionsbindungen wie `on` oder `one` werden nur einmal ausgeführt
 
-Sie können sich das folgende Beispiel ansehen, um die Template-Render-Prinzipien von ofa.js besser zu verstehen:
+Du kannst dir das folgende Beispiel ansehen, um das Prinzip des Template-Renderings von ofa.js besser zu verstehen:
 
-<o-playground name="extend - Template-Syntax-Prinzipien" style="--editor-height: 480px">
+<o-playground name="extend - Vorlagen-Syntax-Prinzip" style="--editor-height: 480px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./temp-three.html"></l-m>

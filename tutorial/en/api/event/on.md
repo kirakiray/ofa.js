@@ -1,10 +1,10 @@
 # on
 
-Using the `on` method, you can register event handlers for target elements, making it easy to capture and respond to user interactions.
+Using the `on` method, you can register event handlers for target elements. This allows you to easily capture and respond to user interactions.
 
-Here is an example demonstrating how to use the `on` method to register a click event handler for a button element:
+Below is an example demonstrating how to use the `on` method to register a click event handler for a button element:
 
-<o-playground name="on-click event" style="--editor-height: 300px">
+<o-playground name="on - click event" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>
@@ -21,9 +21,9 @@ Here is an example demonstrating how to use the `on` method to register a click 
   </code>
 </o-playground>
 
-In this example, we use the `on` method to attach a click event handler to the button element. When the user clicks the button, the handler is triggered, the counter increments, and the result is displayed on the page.
+In this example, we use the `on` method to add a click event handler to the button element. When the user clicks the button, the event handler is triggered, the counter increments, and the result is displayed on the page.
 
-## Template Syntax Usage
+## Using Template Syntax
 
 You can also use template syntax to bind methods to target elements.
 
@@ -55,11 +55,11 @@ You can also use template syntax to bind methods to target elements.
   </code>
 </o-playground>
 
-In this example, we bind a method called `addCount` to the button element using `on:click`. When the user clicks the button, this method will be called, the counter's value will increment and be displayed on the page. This approach allows you to associate event handlers with component methods to implement more complex interactions.
+In this example, we use `on:click` on a button element to bind a method named `addCount`. When the user clicks the button, this method will be called, the counter value will increment and be displayed on the page. This approach allows you to associate event handlers with component methods, enabling more complex interactions.
 
 ## event
 
-After registering the event, the triggered function will receive the event argument, consistent with the native behavior.
+After registering an event, the triggered function will be passed an event parameter, consistent with the native behavior:
 
 <o-playground name="on - event parameter" style="--editor-height: 300px">
   <code path="demo.html">

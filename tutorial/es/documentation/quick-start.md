@@ -1,24 +1,24 @@
-# Inicio rápido
+# Introducción rápida
 
-Esta sección presentará cómo comenzar rápidamente a usar ofa.js. En los tutoriales posteriores, omitiremos el paso de crear el archivo de entrada index.html y solo mostraremos el código del archivo del módulo de página. Puede comenzar a desarrollar directamente basándose en la plantilla.
+Esta sección explicará cómo empezar rápidamente a utilizar ofa.js. En los tutoriales posteriores, omitiremos el paso de crear el archivo de entrada index.html y mostraremos únicamente el código de los archivos de módulo de página. Puede desarrollar directamente basándose en la plantilla.
 
 ## Preparar archivos básicos
 
-Para empezar rápidamente con ofa.js, simplemente cree un **módulo de página** y lo combine con el HTML de entrada, los archivos principales necesarios son los siguientes:
+Para comenzar rápidamente con ofa.js, solo necesita crear un **módulo de página** y combinarlo con un HTML de entrada. Los archivos principales necesarios son los siguientes:
 
-- `index.html`: archivo de entrada de la aplicación, encargado de cargar el framework ofa.js e importar el módulo de página
-- `demo-page.html`: archivo de módulo de página, define el contenido específico, estilos y lógica de datos de la página
+- `index.html`: Archivo de entrada de la aplicación, responsable de cargar el framework ofa.js e importar los módulos de página.
+- `demo-page.html`: Archivo de módulo de página, define el contenido específico, estilos y lógica de datos de la página.
 
-### index.html (Punto de entrada de la aplicación)
+### index.html (entrada de la aplicación)
 
 ```html
 <!-- index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ofa.js Ejemplo</title>
+    <title>Ejemplo de ofa.js</title>
     <script
       src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs"
       type="module"
@@ -30,8 +30,8 @@ Para empezar rápidamente con ofa.js, simplemente cree un **módulo de página**
 </html>
 ```
 
-La función principal de este archivo es:- Importar el framework ofa.js
-- Usar el componente `<o-page>` para cargar y renderizar módulos de página
+La función principal de este archivo es:- Introducir el framework ofa.js
+- Usar el componente `<o-page>` para cargar y renderizar el módulo de página
 
 ### demo-page.html (módulo de página)
 
@@ -53,7 +53,7 @@ La función principal de este archivo es:- Importar el framework ofa.js
     export default async () => {
       return {
         data: {
-          val: "Hola, Código Demo de ofa.js",
+          val: "Hello ofa.js Demo Code",
         },
       };
     };
@@ -61,15 +61,15 @@ La función principal de este archivo es:- Importar el framework ofa.js
 </template>
 ```
 
-Este archivo define un componente de página simple que incluye:- Etiqueta `<template page>`, define el módulo de la página
-- Estilos CSS (utilizando el selector `:host` de Shadow DOM)
-- Expresión de enlace de datos `{{val}}`
-- Lógica JavaScript, devuelve un objeto que contiene los datos iniciales
+Este archivo define un componente de página simple, que incluye:- `<template page>` etiqueta, define el módulo de página
+- Estilos CSS (usando el selector `:host` de Shadow DOM)
+- Expresión de vinculación de datos `{{val}}`
+- Lógica JavaScript, devuelve un objeto que contiene datos iniciales
 
 
 ## Demostración en línea
 
-Aquí hay un ejemplo en vivo en el editor en línea, puedes modificar el código directamente y ver el efecto:
+El siguiente es un ejemplo en vivo en el editor en línea, puede modificar el código directamente y ver el efecto:
 
 <o-playground name="Demostración en línea" style="--editor-height: 500px">
   <code>
@@ -98,10 +98,10 @@ Aquí hay un ejemplo en vivo en el editor en línea, puedes modificar el código
   </code>
 </o-playground>
 
-Definimos estilos a través de la etiqueta `<style>` dentro del componente. Estos estilos internos solo afectan al interior del componente, ofreciciendo una buena encapsulación y sin influir en otros elementos de la página.
+Definimos los estilos mediante la etiqueta `<style>` dentro del componente. Estos estilos internos solo actúan dentro del componente, ofreciendo un buen encapsulamiento y sin afectar a otros elementos de la página.
 
-El selector `:host` se utiliza para definir los estilos del elemento host del componente; aquí configuramos el componente como un elemento de bloque y añadimos un borde rojo y un relleno de 10 px.
+Donde el selector `:host` se utiliza para definir los estilos del elemento huésped del componente; aquí configuramos el componente como un elemento de bloque y añadimos un borde rojo y un relleno de 10 px.
 
-Mediante la expresión `{{key}}`, se puede renderizar en la página el valor correspondiente en los datos del componente.
+Mediante la expresión `{{key}}`, se puede renderizar el valor correspondiente de los datos del componente en la página.
 
-¡Ahora has creado con éxito tu primera aplicación de ofa.js! A continuación, profundicemos en la sintaxis de renderizado de plantillas de ofa.js y sus características avanzadas.
+Ahora has creado con éxito tu primera aplicación de ofa.js. A continuación, profundicemos en la sintaxis de renderizado de plantillas de ofa.js y sus características avanzadas.

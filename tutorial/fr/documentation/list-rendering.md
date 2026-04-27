@@ -1,22 +1,22 @@
 # Rendu de liste
 
-Dans ofa.js, le composant `o-fill` offre une puissante fonction de rendu de listes, capable de restituer efficacement des données de tableau en plusieurs éléments similaires. Il prend en charge deux modes d'utilisation principaux : le rendu direct et le rendu par modèle.
+Dans ofa.js, le composant `o-fill` offre de puissantes fonctionnalités de rendu de liste, permettant de rendre efficacement les données d'un tableau en plusieurs éléments similaires. Il prend en charge deux modes d'utilisation principaux : le rendu direct et le rendu par modèle.
 
 ## Présentation du composant o-fill
 
-`o-fill` est le composant central d'ofa.js pour le rendu des listes ; il reçoit un attribut `value` de type tableau et génère un élément DOM correspondant pour chaque élément du tableau. Lors du rendu, ofa.js suit automatiquement les changements du tableau et met à jour le DOM de manière efficace.
+`o-fill` est le composant central d'ofa.js pour le rendu des listes ; il reçoit une propriété `value` de type tableau et génère, pour chaque élément de ce tableau, l’élément DOM correspondant. Lors du rendu, ofa.js suit automatiquement les modifications du tableau et met à jour le DOM de manière efficace.
 
-### Fonctionnalités principales :
+### Caractéristiques principales :
 
-- **Mise à jour efficace** : suivi des changements de tableau par clé, mise à jour uniquement des parties nécessitant des modifications
-- **Accès à l'index** : accès à l'index de l'élément actuel via `$index`
-- **Accès aux données** : accès aux données de l'élément actuel via `$data`
-- **Accès à l'hôte** : accès à l'instance du composant actuel via `$host`, permettant d'appeler des méthodes de composant ou d'accéder aux données de composant
-- **Réutilisation de modèle** : support de modèles nommés pour le rendu de listes complexes
+- **Mise à jour efficace** : en suivant les changements du tableau par clé-valeur, seules les parties nécessaires sont mises à jour
+- **Accès par index** : accéder à l’index de l’élément courant via `$index`
+- **Accès aux données** : accéder aux données de l’élément courant via `$data`
+- **Accès à l’hôte** : accéder à l’instance du composant courant via `$host`, permettant d’appeler des méthodes ou d’accéder aux données du composant
+- **Réutilisation de modèles** : prend en charge l’utilisation de modèles nommés pour le rendu de listes complexes
 
 ## Rendu direct
 
-Le rendu direct est la méthode la plus simple : le contenu du modèle est écrit directement à l’intérieur de la balise `o-fill`. Lorsque le tableau change, `o-fill` crée automatiquement un élément correspondant pour chaque donnée.
+Le rendu direct est la méthode d'utilisation la plus simple : le contenu du modèle est écrit directement à l'intérieur de la balise `o-fill`. Lorsque le tableau change, `o-fill` crée automatiquement un élément correspondant pour chaque donnée.
 
 <o-playground name="o-fill - Rendu direct" style="--editor-height: 600px">
   <code>
@@ -26,12 +26,12 @@ Le rendu direct est la méthode la plus simple : le contenu du modèle est écri
         ul { list-style: none; padding: 0; }
         li { padding: 8px; margin: 5px 0; background: #7e7e7e; border-radius: 4px; }
       </style>
-      <h3>Liste de fruits</h3>
+      <h3>Liste des fruits</h3>
       <button on:click="addItem">Ajouter un fruit</button>
       <button on:click="removeItem">Supprimer le dernier</button>
       <ul>
         <o-fill :value="fruits">
-          <li> {{$index + 1}}. {{$data.name}} - Prix : ¥{{$data.price}} <button on:click="$host.removeItem($index)">Supprimer</button></li>
+          <li> {{$index + 1}}. {{$data.name}} - Prix: ¥{{$data.price}} <button on:click="$host.removeItem($index)">Supprimer</button></li>
         </o-fill>
       </ul>
       <script>
@@ -68,16 +68,16 @@ Le rendu direct est la méthode la plus simple : le contenu du modèle est écri
   </code>
 </o-playground>
 
-Dans cet exemple, nous pouvons voir :- `$index` représente l’index de l’élément actuel (à partir de 0)
-- `$data` représente l’objet de données de l’élément actuel
-- `$host` représente l’instance du composant actuel, permettant d’appeler des méthodes du composant ou d’accéder aux données du composant
-- Lorsque le tableau change, la liste se met à jour automatiquement
+Dans cet exemple, nous pouvons voir :- `$index` représente l'indice de l'élément actuel (commence à 0)
+- `$data` représente l'objet de données de l'élément actuel
+- `$host` représente l'instance du composant actuel, peut être utilisé pour appeler des méthodes du composant ou accéder aux données du composant
+- Lorsque le tableau change, la liste se met automatiquement à jour
 
-## Rendu de template
+## Rendu de modèle
 
-Pour des structures d’éléments de liste plus complexes, on peut utiliser des modèles nommés. Définissez le modèle dans la balise `template`, puis référencez-le dans `o-fill` via l’attribut `name`.
+Pour les structures d'éléments de liste plus complexes, vous pouvez utiliser la méthode des modèles nommés. Définissez le modèle dans la balise `template`, puis référencez-le dans `o-fill` via l'attribut `name`.
 
-<o-playground name="o-fill - Rendu de modèle" style="--editor-height: 600px">
+<o-playground name="o-fill - rendu de modèle" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -87,7 +87,7 @@ Pour des structures d’éléments de liste plus complexes, on peut utiliser des
         .product-price { color: #832c22; font-weight: bold; }
         .product-desc { color: #929292; font-size: 0.9em; margin-top: 5px; }
       </style>
-      <h3>Liste de produits</h3>
+      <h3>Liste des produits</h3>
       <button on:click="addProduct">Ajouter un produit</button>
       <div class="products-container">
         <o-fill :value="products" name="product-template"></o-fill>
@@ -97,7 +97,7 @@ Pour des structures d’éléments de liste plus complexes, on peut utiliser des
           <div class="product-name">{{$data.name}}</div>
           <div class="product-price">¥{{$data.price}}</div>
           <div class="product-desc">{{$data.description}}</div>
-          <small>Numéro : {{$index + 1}}</small>
+          <small>Index : {{$index + 1}}</small>
         </div>
       </template>
       <script>
@@ -105,15 +105,15 @@ Pour des structures d’éléments de liste plus complexes, on peut utiliser des
           data: {
             products: [
               { name: "MacBook Pro", price: 12999, description: "Ordinateur portable haute performance, adapté au travail professionnel" },
-              { name: "iPhone 15", price: 5999, description: "Dernier smartphone, excellente qualité photo" },
-              { name: "AirPods Pro", price: 1999, description: "Écouteurs sans fil à réduction de bruit, qualité sonore excellente" }
+              { name: "iPhone 15", price: 5999, description: "Dernier smartphone, excellent rendu photo" },
+              { name: "AirPods Pro", price: 1999, description: "Écouteurs sans fil à réduction de bruit, excellente qualité sonore" }
             ],
             productIndex: 0,
           },
           proto: {
             addProduct() {
               const productNames = ["iPad Air", "Apple Watch", "Magic Mouse", "Pro Display"];
-              const productDescs = ["Tablette fine et portable", "Montre connectée, surveillance de la santé", "Souris au design ergonomique", "Moniteur professionnel"];
+              const productDescs = ["Tablette légère et portable", "Montre intelligente, suivi de la santé", "Souris conçue selon l'ergonomie", "Moniteur professionnel"];
               const name = productNames[this.productIndex % productNames.length];
               const desc = productDescs[this.productIndex % productDescs.length];
               this.products.push({
@@ -130,11 +130,11 @@ Pour des structures d’éléments de liste plus complexes, on peut utiliser des
   </code>
 </o-playground>
 
-## Rendu de listes imbriquées
+## Rendu de liste imbriquée
 
-`o-fill` supporte l’imbrication et peut gérer des structures de données hiérarchiques complexes, telles que des menus arborescents, des listes de catégories, etc.
+`o-fill` prend en charge l'utilisation imbriquée et peut traiter des structures de données hiérarchiques complexes, telles que des menus arborescents, des listes de catégories, etc.
 
-<o-playground name="o-fill - Rendu de listes imbriquées" style="--editor-height: 800px">
+<o-playground name="o-fill - Rendu de liste imbriquée" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -187,28 +187,28 @@ Pour des structures d’éléments de liste plus complexes, on peut utiliser des
             data: {
               categories: [
                 {
-                  name: "Électronique",
+                  name: "Produits électroniques",
                   subcategories: [
                     {
                       name: "Téléphones",
-                      items: ["iPhone", "Téléphones Android", "Téléphones classiques"]
+                      items: ["iPhone", "Téléphones Android", "Téléphones basiques"]
                     },
                     {
                       name: "Ordinateurs",
-                      items: ["Portables", "Bureaux", "Tablettes"]
+                      items: ["Ordinateur portable", "Ordinateur de bureau", "Tablette"]
                     }
                   ]
                 },
                 {
-                  name: "Articles ménagers",
+                  name: "Articles pour la maison",
                   subcategories: [
                     {
                       name: "Ustensiles de cuisine",
-                      items: ["Batterie de cuisine", "Couverts", "Petits appareils"]
+                      items: ["Casseroles", "Vaisselle", "Petits électroménagers"]
                     },
                     {
-                      name: "Articles de chambre",
-                      items: ["Linge de lit", "Armoires", "Décorations"]
+                      name: "Literie",
+                      items: ["Linge de lit", "Armoire", "Décoration"]
                     }
                   ]
                 },
@@ -216,12 +216,12 @@ Pour des structures d’éléments de liste plus complexes, on peut utiliser des
                   name: "Vêtements et accessoires",
                   subcategories: [
                     {
-                      name: "Hommes",
-                      items: ["T-shirts", "Chemises", "Manteaux"]
+                      name: "Vêtements pour hommes",
+                      items: ["T-shirt", "Chemise", "Manteau"]
                     },
                     {
-                      name: "Femmes",
-                      items: ["Robes", "Pantalons", "Accessoires"]
+                      name: "Vêtements pour femmes",
+                      items: ["Robe", "Pantalon", "Accessoires"]
                     }
                   ]
                 }
@@ -234,23 +234,23 @@ Pour des structures d’éléments de liste plus complexes, on peut utiliser des
   </code>
 </o-playground>
 
-## Optimisation des performances et gestion des paires clé-valeur
+## Optimisation des performances et gestion des clés-valeurs
 
 Pour les listes nécessitant des mises à jour fréquentes, vous pouvez spécifier un identifiant unique via l'attribut `fill-key` afin d'améliorer les performances de rendu.
 
 ```html
-<!-- Utiliser des clés personnalisées pour améliorer les performances -->
+<!-- Utiliser une clé personnalisée pour améliorer les performances -->
 <o-fill :value="items" fill-key="id">
   <div>{{$data.name}}</div>
 </o-fill>
 ```
 
-Dans l’exemple ci-dessus, `fill-key="id"` indique à ofa.js d’utiliser la propriété `id` de chaque élément de données comme identifiant unique, afin que, même si l’ordre du tableau change, les éléments correspondants puissent être correctement identifiés et mis à jour.
+Dans l'exemple ci-dessus, `fill-key="id"` indique à ofa.js d'utiliser la propriété `id` de chaque élément de données comme identifiant unique, de sorte que même si l'ordre du tableau change, il peut correctement identifier et mettre à jour les éléments correspondants.
 
-## Meilleures pratiques de rendu de liste
+## Meilleures pratiques pour le rendu de liste
 
-1. **Gestion des événements** : lors de l’utilisation d’événements dans les éléments de la liste, notez que `$host` pointe vers l’instance du composant actuel et que `$data` pointe vers les données de l’élément actuel  
-2. **Choisir la méthode de rendu appropriée** : pour une liste simple, utilisez le rendu direct ; pour une structure complexe, utilisez le rendu par modèle  
-3. **Considérations de performance** : pour les grandes listes ou les listes mises à jour fréquemment, utilisez `fill-key` pour spécifier la clé  
-4. **Structure des données** : assurez-vous que chaque élément du tableau est un objet de données valide  
-5. **Éviter l’imbrication profonde** : bien que l’imbrication soit supportée, évitez les niveaux d’imbrication trop profonds
+1. **Gestion des événements** : lors de l'utilisation d'événements dans les éléments de liste, notez que `$host` fait référence à l'instance du composant actuel, et `$data` fait référence aux données de l'élément actuel.
+2. **Choisir le mode de rendu approprié** : pour les listes simples, utilisez le rendu direct ; pour les structures complexes, utilisez le rendu par modèle.
+3. **Considérations de performance** : pour les grandes listes ou les listes fréquemment mises à jour, utilisez `fill-key` pour spécifier la clé.
+4. **Structure des données** : assurez-vous que chaque élément du tableau est un objet de données valide.
+5. **Éviter les imbrications profondes** : bien que l'imbrication soit prise en charge, il faut éviter des niveaux d'imbrication trop profonds.

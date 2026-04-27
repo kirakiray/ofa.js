@@ -2,7 +2,7 @@
 
 
 
-`parents` プロパティを使用すると、現在の要素のすべての親要素インスタンスを簡単に取得でき、これらの要素は配列として返されます。
+`parents` プロパティを使用すると、現在の要素のすべての親要素インスタンスを簡単に取得でき、これらは配列として返されます。
 
 <o-playground name="parents - 親要素" style="--editor-height: 360px">
   <code path="demo.html">

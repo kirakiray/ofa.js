@@ -1,12 +1,12 @@
 # Create Component
 
-In ofa.js, components are the core mechanism for achieving page reuse and modularity. A component is essentially a custom Web Component that defines its own template, styles, and logic, enabling the creation of reusable UI elements.
+In ofa.js, components are the core mechanism for achieving page reuse and modularity. A component is essentially a custom Web Component; by defining its template, styles, and logic, you can create reusable UI elements.
 
-## Basic Component Structure
+## Component Basic Structure
 
-Unlike page modules, component modules use the `component` attribute in the `<template>` element and declare a `tag` attribute to specify the component tag name.
+Unlike page modules, component modules replace the `<template>` element's `page` attribute with a `component` attribute and declare a `tag` attribute to specify the component's tag name.
 
-At the location where a component needs to be used, asynchronously load the component module through the `l-m` tag, and the system will automatically complete the registration; you can then use the component directly like a regular HTML tag.
+At the location where the component is needed, asynchronously load the component module via the `l-m` tag, and the system will automatically complete the registration; the component can then be used directly like a regular HTML tag.
 
 <o-playground name="Component Basic Example" style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -39,25 +39,25 @@ At the location where a component needs to be used, asynchronously load the comp
   </code>
 </o-playground>
 
-## Component Core Concepts
+## Core Component Concepts
 
-### tag - Component tag name
+### tag - Component Tag Name
 
-`tag` is the component's tag name, **which must be consistent with the tag name used in the component**. For example, if your component's `tag` is defined as `"demo-comp"`, then when used in HTML, you must write `<demo-comp></demo-comp>`.
+`tag` is the component's tag name and **must match the tag name used for the component**. For example, if your component's `tag` is defined as `"demo-comp"`, you must use `<demo-comp></demo-comp>` in the HTML.
 
 ### Component Module Reference
 
-Use the `l-m` tag to import a component module; the component will be auto-registered. It works like a `script` tag but is dedicated to loading and registering component modules.
+Introduce component modules through the `l-m` tag, and the component modules will automatically register the components. This is similar to using the `script` tag to introduce scripts, but `l-m` is specifically used for loading and registering component modules.
 
 > Note: The `l-m` reference tag is an **asynchronous reference**, suitable for loading components on demand when the page loads.
 
-## Sync Quote Component
+## Sync Reference Component
 
-In some scenarios, you may need to load a component synchronously (e.g., to ensure it is fully registered before use). Use the `load` method with the `await` keyword to achieve synchronous referencing.
+In some scenarios, you may need to synchronously load components (e.g., to ensure that components are registered before use). In this case, you can use the `load` method with the `await` keyword to achieve synchronous reference.
 
-In both component modules and page modules, the `load` function is automatically injected to allow developers to synchronously load required resources.
+In both component modules and page modules, the `load` function is automatically injected for developers to synchronously load the required resources.
 
-<o-playground name="Synchronous Component Reference Example" style="--editor-height: 500px">
+<o-playground name="Synchronous Reference Component Example" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -113,7 +113,7 @@ In both component modules and page modules, the `load` function is automatically
 
 ## Asynchronous Reference vs Synchronous Reference
 
-| Quotation Method | Keywords | Characteristics |
-|------------------|----------|-----------------|
-| Asynchronous Reference | `l-m` tag | Non-blocking loading, suitable for on-demand component loading |
-| Synchronous Reference | `load` method with `await` keyword | Blocking loading, ensures components are registered before use |Both the `l-m` tag reference and the `load` method can load component modules; in general, it is recommended to use the `l-m` tag for asynchronous component references to achieve non-blocking and on-demand loading.
+| Citation Method | Keyword | Feature |
+|-----------------|---------|---------|
+| Asynchronous Citation | `l-m` tag | Non-blocking loading, suitable for on-demand component loading |
+| Synchronous Citation | `load` method with `await` keyword | Blocking loading, ensures component is registered before use |`l-m` tag reference and `load` method can both load component modules. In general, it is recommended to use the `l-m` tag for asynchronous component loading to achieve non-blocking and on-demand loading.

@@ -1,8 +1,8 @@
 # before
 
-The `before` method is used to insert elements before the target element. Before performing the `before` operation, the initialization of the [$ method](../instance/dollar.md) is automatically executed, so you can directly specify the specific element string or object.
+The `before` method is used to add an element before the target element. Before executing the `before` operation, the initialization of the [$ method](../instance/dollar.md) is automatically performed, so you can directly fill in the specific element string or object.
 
-**Please note: do not operate within template components like o-fill or o-if.**
+**Note: Do not operate within template components such as o-fill or o-if.**
 
 <o-playground name="before - prepend" style="--editor-height: 300px">
   <code path="demo.html">

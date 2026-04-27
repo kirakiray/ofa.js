@@ -1,10 +1,10 @@
-# Composant replace-temp
+# replace-temp composant
 
-Lorsque nous tentons de rendre une liste à l'intérieur d'éléments spéciaux comme select ou table, le navigateur peut automatiquement supprimer le composant `<x-fill>`, entraînant l'échec du rendu de la liste. On peut alors utiliser la méthode replace-temp pour résoudre ce problème.
+Lorsque nous essayons d'effectuer un rendu de liste dans des éléments spéciaux tels que `select` ou `table`, le navigateur peut automatiquement supprimer le composant `<x-fill>`, ce qui entraîne un échec du rendu de la liste. Dans ce cas, vous pouvez utiliser l'approche `replace-temp` pour résoudre ce problème.
 
-La méthode d'utilisation est : définir `is="replace-temp"` sur la balise `<template>` et la placer à l'intérieur d’un élément que le navigateur corrigera automatiquement.
+La méthode consiste à définir `is="replace-temp"` sur la balise `<template>` et à la placer à l'intérieur d'un élément que le navigateur corrige automatiquement.
 
-<o-playground name="replace-temp composant" style="--editor-height: 500px">
+<o-playground name="composant replace-temp" style="--editor-height: 500px">
   <code>
     <template page>
       <style>

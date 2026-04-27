@@ -1,6 +1,6 @@
 # data
 
-Get the element's `dataset`, using `data` attributes to keep consistent with the native [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset).
+Get the element's `dataset`, using the `data` attribute to be consistent with the native [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset).
 
 <o-playground name="data - Usage Example" style="--editor-height: 400px">
   <code path="demo.html">

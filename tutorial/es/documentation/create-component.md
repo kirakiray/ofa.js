@@ -1,14 +1,14 @@
 # Crear componente
 
-En ofa.js, los componentes son el mecanismo central para lograr la reutilización de páginas y la modularidad. Un componente esencialmente es un Web Component personalizado; mediante la definición de plantillas, estilos y lógica, se pueden crear elementos de interfaz de usuario reutilizables.
+En ofa.js, los componentes son el mecanismo central para lograr la reutilización de páginas y la modularización. Un componente es esencialmente un Web Component personalizado que, al definir plantillas, estilos y lógica, permite crear elementos de interfaz de usuario reutilizables.
 
 ## Estructura básica del componente
 
-A diferencia de los módulos de página, los módulos de componentes utilizan el atributo `component` en el elemento `<template>`, y declaran el atributo `tag` para especificar el nombre de la etiqueta del componente.
+A diferencia de los módulos de página, el elemento `<template>` del módulo de componente utiliza el atributo `component` y declara el atributo `tag` para especificar el nombre de la etiqueta del componente.
 
-En la posición donde se necesite usar el componente, a través de la etiqueta `l-m` se carga asincrónicamente el módulo del componente, y el sistema completará automáticamente el registro; posteriormente se podrá usar directamente el componente de la misma manera que una etiqueta HTML común.
+En la ubicación donde se necesita utilizar el componente, carga de forma asíncrona el módulo del componente mediante la etiqueta `l-m`; el sistema completará automáticamente el registro; después, puedes utilizar el componente directamente como una etiqueta HTML común.
 
-<o-playground name="Ejemplo Básico de Componente" style="--editor-height: 500px">
+<o-playground name="Ejemplo básico de componente" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -30,7 +30,7 @@ En la posición donde se necesite usar el componente, a través de la etiqueta `
           return {
             tag: "demo-comp",
             data: {
-              title: "Ejemplo de Componente OFAJS",
+              title: "Ejemplo de componente OFAJS",
             },
           };
         };
@@ -39,25 +39,25 @@ En la posición donde se necesite usar el componente, a través de la etiqueta `
   </code>
 </o-playground>
 
-## Conceptos centrales de componentes
+## Conceptos centrales del componente
 
-### tag - Nombre de etiqueta del componente
+### tag - nombre de la etiqueta del componente
 
-`tag` es el nombre de etiqueta del componente, **debe coincidir exactamente con la etiqueta usada al emplear el componente**. Por ejemplo, si el `tag` de tu componente se define como `"demo-comp"`, entonces al usarlo en HTML deberás escribir `<demo-comp></demo-comp>`.
+`tag` es el nombre de la etiqueta del componente, **debe coincidir con el nombre de la etiqueta utilizada para el componente**. Por ejemplo, si el `tag` de tu componente se define como `"demo-comp"`, entonces al usarlo en HTML debes escribir `<demo-comp></demo-comp>`.
 
-### Referencia del Módulo de Componentes
+### Referencia al módulo de componentes
 
-Introduce módulos de componentes a través de la etiqueta `l-m`, y los módulos de componentes se registrarán automáticamente. Esto es similar a usar la etiqueta `script` para importar scripts, pero `l-m` está dedicado específicamente a la carga y registro de módulos de componentes.
+Se introduce el módulo de componente mediante la etiqueta `l-m`, y el módulo se registra automáticamente. Es similar a incluir un script con la etiqueta `script`, pero `l-m` está diseñada específicamente para cargar y registrar módulos de componentes.
 
-> Nota: la etiqueta de referencia `l-m` es una **referencia asíncrona**, adecuada para cargar componentes bajo demanda durante la carga de la página.
+> Nota: La etiqueta de referencia `l-m` es una **referencia asíncrona**, adecuada para cargar componentes bajo demanda al cargar la página.
 
-## Componente de Referencia Sincronizada
+## Componente de referencia sincrónica
 
-En ciertos escenarios, es posible que necesites cargar componentes de manera síncrona (por ejemplo, para asegurarte de que un componente esté registrado antes de usarlo). En estos casos, puedes utilizar el método `load` junto con la palabra clave `await` para lograr una referencia síncrona.
+En ciertos escenarios, es posible que necesites cargar componentes de forma síncrona (por ejemplo, asegurarte de que el componente esté registrado antes de usarlo). En este caso, puedes usar el método `load` junto con la palabra clave `await` para lograr una referencia síncrona.
 
-En los módulos de componentes y los módulos de página, la función `load` se inyecta automáticamente para que los desarrolladores puedan cargar sincrónicamente los recursos necesarios.
+En los módulos de componentes y en los módulos de páginas, se inyecta automáticamente la función `load`, que permite a los desarrolladores cargar de forma sincrónica los recursos necesarios.
 
-<o-playground name="Ejemplo de componente de referencia síncrona" style="--editor-height: 500px">
+<o-playground name="Ejemplo de componente con referencia síncrona" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -113,7 +113,7 @@ En los módulos de componentes y los módulos de página, la función `load` se 
 
 ## Referencia asíncrona vs referencia síncrona
 
-| Método de referencia | Palabra clave | Características |
-|---------|-------|------|
-| Referencia asíncrona | Etiqueta `l-m` | Carga no bloqueante, adecuada para componentes de carga bajo demanda |
-| Referencia síncrona | Método `load` con palabra clave `await` | Carga bloqueante, asegura que el componente esté registrado antes de su uso |Las etiquetas `l-m` y el método `load` pueden cargar módulos de componentes; en general, se recomienda usar la etiqueta `l-m` para referenciar componentes de forma asíncrona, logrando así una carga no bloqueante y bajo demanda.
+| Modo de referencia | Palabra clave | Característica |
+|-------------------|---------------|----------------|
+| Referencia asíncrona | Etiqueta `l-m` | Carga no bloqueante, adecuada para cargar componentes bajo demanda |
+| Referencia síncrona | Método `load` con la palabra clave `await` | Carga bloqueante, asegura que los componentes estén registrados antes de su uso |`l-m` la referencia de etiqueta y el método `load` pueden cargar módulos de componentes. En general, se recomienda usar la etiqueta `l-m` para hacer referencia asíncrona a componentes, con el fin de lograr una carga no bloqueante y una carga bajo demanda.

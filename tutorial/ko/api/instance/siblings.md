@@ -2,7 +2,7 @@
 
 
 
-`siblings` 속성을 사용하면 현재 요소의 모든 인접한 요소 인스턴스를 쉽게 가져올 수 있으며, 이 요소들은 배열 형태로 반환됩니다.
+`siblings` 속성을 사용하면 현재 요소의 모든 인접 요소 인스턴스를 쉽게 가져올 수 있으며, 이 요소들은 배열 형태로 반환됩니다.
 
 <o-playground name="siblings - 인접 요소" style="--editor-height: 360px">
   <code path="demo.html">

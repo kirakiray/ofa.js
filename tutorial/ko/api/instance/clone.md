@@ -2,9 +2,9 @@
 
 
 
-`clone` 메서드를 사용하여 요소 인스턴스의 복사본을 복제하고 생성할 수 있습니다.
+`clone` 메서드를 사용하면 요소 인스턴스의 복사본을 복제하여 생성할 수 있습니다.
 
-<o-playground name="clone - 요소 복제" style="--editor-height: 320px">
+<o-playground name="clone - 복제 요소" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <div id="target" style="color:red;">I am target</div>
