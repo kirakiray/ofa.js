@@ -2,8 +2,8 @@
 
 <!-- 源文件内容start -->
 
+**demo.html**
 ```html
-<!-- demo.html -->
 <!doctype html>
 <html lang="zh-CN">
   <head>
@@ -31,8 +31,8 @@
 
 ```
 
+**my-counter.html**
 ```html
-<!-- my-counter.html -->
 <template component>
   <style>
     :host {
@@ -99,8 +99,8 @@
 
 ```
 
+**page.html**
 ```html
-<!-- page.html -->
 <template page>
   <l-m src="./my-counter.html"></l-m>
   <l-m src="./todo-item.html"></l-m>
@@ -288,8 +288,8 @@
 
 ```
 
+**todo-item.html**
 ```html
-<!-- todo-item.html -->
 <template component>
   <style>
     :host {

@@ -18,7 +18,7 @@ async function main() {
   for (const file of files) {
     const filePath = join(assetsDir, file);
     const content = await readFile(filePath, "utf-8");
-    fileContents.push(`\`\`\`html\n<!-- ${file} -->\n${content}\n\`\`\``);
+    fileContents.push(`**${file}**\n\`\`\`html\n${content}\n\`\`\``);
   }
 
   const newContent = fileContents.join("\n\n");
