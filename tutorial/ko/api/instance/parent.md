@@ -2,7 +2,7 @@
 
 
 
-`parent` 속성을 사용하면 인스턴스의 부모 요소 인스턴스를 가져올 수 있습니다.
+`parent` 속성을 사용하면 인스턴스의 부모 요소 인스턴스를 얻을 수 있습니다.
 
 <o-playground name="parent - 부모 요소" style="--editor-height: 320px">
   <code path="demo.html">

@@ -1,10 +1,10 @@
 # off
 
-Using the `off` method can unregister an event handler that has been registered, thereby canceling the listening to the event.
+Using the `off` method can unregister an already-registered event handler to stop listening for the event.
 
-Below is an example demonstrating how to use the `off` method to remove an event listener:
+Below is an example demonstrating how to use the `off` method to remove event listeners:
 
-<o-playground name="off - Remove Event Listener" style="--editor-height: 400px">
+<o-playground name="off - remove event listener" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>
@@ -25,4 +25,4 @@ Below is an example demonstrating how to use the `off` method to remove an event
   </code>
 </o-playground>
 
-In this example, we registered a click event handler `f`. When the button is clicked, the event handler displays the click count in `#logger`. Using the `off` method, we removed the event listener when the click count reaches 3.
+In this example, we register a click event handler `f`. When the button is clicked, the event handler displays the click count in `#logger`. Using the `off` method, we cancel the event listener when the click count reaches 3.

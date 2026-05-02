@@ -1,6 +1,6 @@
-# Mini App
+# Micro App
 
-Use `o-app` for application encapsulation; this tag represents a micro-app. It will load the `app-config.js` configuration file, which defines the app's home page URL and page transition animation settings.
+Use `o-app` for appification, this tag represents a micro-application, it will load the `app-config.js` configuration file, which defines the home page address and page transition animation configuration.
 
 ```html
 <o-app src="./app-config.js"></o-app>
@@ -8,7 +8,7 @@ Use `o-app` for application encapsulation; this tag represents a micro-app. It w
 
 ```javascript
 // app-config.js
-// Application home page URL
+// Application home page address
 export const home = "./home.html";
 
 // Page transition animation configuration
@@ -35,7 +35,7 @@ export const pageAnime = {
     </template>
   </code>
   <code path="app-config.js">
-    // Home page URL of the app
+    // Home page address of the app
     export const home = "./home.html";
     // Page transition animation configuration
     export const pageAnime = {
@@ -101,7 +101,7 @@ export const pageAnime = {
   </code>
 </o-playground>
 
-## home - Homepage address
+## home - Homepage URL
 
 Specifies the path to the home page module loaded when the app starts; both relative and absolute paths are supported.
 
@@ -109,15 +109,15 @@ Specifies the path to the home page module loaded when the app starts; both rela
 export const home = "./pages/home.html";
 ```
 
-## pageAnime - Page Transition Animation
+## pageAnime - Page Switch Animation
 
-Control the transition animation effects when switching pages, including three states:
+Control the transition animation effect when switching pages, including three states:
 
-| State | Description |
-|-------|-------------|
-| `current` | The style after the current page animation ends |
-| `next` | The starting style when the new page enters |
-| `previous` | The target style when the old page leaves |```javascript
+| Status | Description |
+|------|------|
+| `current` | Styles after the current page animation ends |
+| `next` | Initial styles when the new page enters |
+| `previous` | Target styles when the old page exits |```javascript
 export const pageAnime = {
   current: {
     opacity: 1,
@@ -134,19 +134,19 @@ export const pageAnime = {
 };
 ```
 
-## Parameter passing methods
+## Parameter Passing Methods
 
-In `o-app`, page navigation supports passing parameters through URL Query, and the target page receives them through the `query` parameter of the module function.
+In `o-app`, page navigation supports passing parameters via URL Query, and the target page receives them through the `query` parameter of the module function.
 
 ## Page Navigation
 
-Within the o-app, each page module can use an `<a>` tag with the `olink` attribute for page navigation. This tag triggers the application's route switching, includes transition animations, and does not refresh the entire page.
+Within the o-app, each page module can use an `<a>` tag with the `olink` attribute to switch pages. This tag triggers the application's route switching, includes a transition animation, and does not refresh the entire page.
 
 ```html
 <a href="./about.html" olink>Go to About page</a>
 ```
 
-In page components, you can use the `back()` method to return to the previous page:
+In the page component, you can use the `back()` method to go back to the previous page:
 
 ```html
 <template page>

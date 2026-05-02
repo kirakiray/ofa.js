@@ -1,15 +1,15 @@
 # 중첩 페이지/라우트
 
-ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능으로, 부모-자식 계층 관계를 가진 페이지 구조를 만들 수 있게 해줍니다. 부모 페이지는 레이아웃 컨테이너 역할을 하며, `<slot>` 슬롯을 통해 자식 페이지의 콘텐츠를 렌더링합니다.
+ofa.js에서 중첩 페이지(중첩 라우팅이라고도 함)는 강력한 기능으로, 부모-자식 계층 관계를 가진 페이지 구조를 만들 수 있게 합니다. 부모 페이지는 레이아웃 컨테이너 역할을 하며, `<slot>` 슬롯을 통해 자식 페이지의 콘텐츠를 렌더링합니다.
 
 ## 기본 개념
 
-- **부모 페이지(Layout)** : 레이아웃 컨테이너 역할을 하는 페이지로, 네비게이션 바, 사이드바 등 공통 UI 요소를 포함합니다
-- **자식 페이지** : 구체적인 비즈니스 페이지 콘텐츠로, 부모 페이지의 `<slot>` 슬롯 위치에 렌더링됩니다
+- **부모 페이지 (Layout)**：레이아웃 컨테이너 역할을 하는 페이지로, 내비게이션 바, 사이드바 등의 공통 UI 요소를 포함합니다.
+- **자식 페이지**：구체적인 비즈니스 페이지 콘텐츠로, 부모 페이지의 `<slot>` 슬롯 위치에 렌더링됩니다.
 
-## 상위 페이지 작성 방법
+## 부모 페이지의 작성법
 
-부모 페이지는 `<slot></slot>` 태그를 사용하여 자식 페이지에 렌더링할 위치를 예약해야 합니다.
+부모 페이지는 `<slot></slot>` 태그를 사용하여 자식 페이지를 위한 렌더링 위치를 예약해야 합니다.
 
 ```html
 <!-- layout.html -->
@@ -49,7 +49,7 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
     export default async () => {
       return {
         data: {
-          val: "Hello ofa.js Demo Code",
+          val: "Hello ofa.js 데모 코드",
         },
       };
     };
@@ -59,9 +59,9 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
 
 ## 중첩 페이지 예시
 
-다음은 루트 레이아웃, 부모 페이지 및 자식 페이지를 포함하는 완전한 중첩 라우팅 예시입니다:
+다음은 완전한 중첩 라우팅 예제로, 루트 레이아웃, 부모 페이지 및 자식 페이지를 포함합니다:
 
-<o-playground name="중첩 페이지 예제" style="--editor-height: 500px">
+<o-playground name="중첩 페이지 예시" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
@@ -129,10 +129,10 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
           <nav>
             <ul>
               <li class:active="active1">
-                <a href="./sub-page01.html" olink>페이지1</a>
+                <a href="./sub-page01.html" olink>페이지 1</a>
               </li>
               <li class:active="active2">
-                <a href="./sub-page02.html" olink>페이지2</a>
+                <a href="./sub-page02.html" olink>페이지 2</a>
               </li>
             </ul>
           </nav>
@@ -176,9 +176,9 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
           padding: 10px;
         }
       </style>
-      <h1>나는 하위 페이지 1</h1>
-      <p>현재 라우트：{{src}}</p>
-      <a href="./sub-page02.html" olink>페이지2로 이동</a>
+      <h1>저는 하위 페이지 1입니다</h1>
+      <p>현재 라우트: {{src}}</p>
+      <a href="./sub-page02.html" olink>페이지 2로 이동</a>
       <script>
         export const parent = "./layout.html";
         export default async () => {
@@ -198,9 +198,9 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
           padding: 10px;
         }
       </style>
-      <h1>나는 하위 페이지 2</h1>
-      <p>현재 라우트：{{src}}</p>
-      <a href="./sub-page01.html" olink>페이지1로 이동</a>
+      <h1>저는 하위 페이지 2입니다</h1>
+      <p>현재 라우트: {{src}}</p>
+      <a href="./sub-page01.html" olink>페이지 1로 이동</a>
       <script>
         export const parent = "./layout.html";
         export default async () => {
@@ -213,9 +213,9 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
   </code>
 </o-playground>
 
-## 부모 페이지의 라우트 감시
+## 부모 페이지의 라우트 모니터링
 
-부모 페이지는 `routerChange` 라이프사이클 훅을 통해 라우팅 변경을 감지할 수 있으며, 이는 현재 라우트에 따라 네비게이션 상태를 업데이트해야 할 때 매우 유용합니다.
+상위 페이지는 `routerChange` 생명주기 훅을 통해 라우트 변경을 모니터링할 수 있습니다. 이는 현재 라우트에 따라 네비게이션 상태를 업데이트해야 할 때 매우 유용합니다.
 
 ```html
 <template page>
@@ -250,19 +250,19 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
 
 ## 주의사항
 
-- `parent` 속성값은 상대 경로(예: `./layout.html`) 또는 절대 경로(예: `/pages/layout.html`)일 수 있습니다.
-- 부모 페이지는 반드시 `<slot></slot>` 태그를 포함해야 하며, 그렇지 않으면 자식 페이지 콘텐츠가 표시되지 않습니다.
-- 부모 페이지의 스타일이 자식 페이지에 상속되며, 자식 페이지도 자체 스타일을 정의할 수 있습니다.
-- `routerChange` 훅을 사용하면 라우트 변경을 감지하여 내비게이션 하이라이트 등의 기능을 구현할 수 있습니다.
+- `parent` 속성값은 상대 경로(예: `./layout.html`)나 절대 경로(예: `/pages/layout.html`)가 될 수 있습니다.
+- 부모 페이지는 `<slot></slot>` 태그를 반드시 포함해야 하며, 그렇지 않으면 자식 페이지의 내용이 표시되지 않습니다.
+- 부모 페이지의 스타일은 자식 페이지에 상속되며, 자식 페이지도 자신만의 스타일을 정의할 수 있습니다.
+- `routerChange` 훅을 사용하면 라우트 변화를 감지하여 네비게이션 하이라이트 등의 기능을 구현할 수 있습니다.
 
 ## 다단계 중첩
 
-부모 페이지는 자체적으로 또 다른 부모 페이지를 가질 수 있어, 다단계 중첩 구조를 형성한다.
+부모 페이지도 자신의 부모 페이지를 가질 수 있어 다중 계층 중첩 구조를 형성합니다.
 
 ```html
-<!-- 하위 페이지 -->
+<!-- 서브 페이지 -->
 <template page>
-  <p>하위 페이지 내용</p>
+  <p>서브 페이지 내용</p>
   <script>
     export const parent = './parent.html';
     export default () => {
@@ -276,7 +276,7 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
 <!-- 부모 페이지 -->
 <template page>
   <div class="layout">
-    <nav>내비게이션 바</nav>
+    <nav>네비게이션 바</nav>
     <slot></slot>
   </div>
   <script>
@@ -288,9 +288,9 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
 </template>
 ```
 
-## 다단 중첩 예시
+## 다단계 중첩 예시
 
-<o-playground name="중첩 라우트 완전한 예제" style="--editor-height: 500px">
+<o-playground name="중첩 라우트 완전 예제" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
@@ -329,7 +329,7 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
           padding: 10px;
         }
       </style>
-      <div style="text-align: center;font-weight: bold;">루트 레이아웃</div>
+      <div style="text-align: center;font-weight: bold;">Root Layout</div>
       <div class="root">
         <slot></slot>
       </div>
@@ -431,7 +431,7 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
           padding: 10px;
         }
       </style>
-      <h1>하위 페이지 1</h1>
+      <h1>저는 서브 페이지 1입니다</h1>
       <p>현재 라우트：{{src}}</p>
       <a href="./sub-page02.html" olink>페이지 2로 이동</a>
       <script>
@@ -453,7 +453,7 @@ ofa.js에서 중첩 페이지(중첩 라우트라고도 함)는 강력한 기능
           padding: 10px;
         }
       </style>
-      <h1>하위 페이지 2</h1>
+      <h1>저는 서브 페이지 2입니다</h1>
       <p>현재 라우트：{{src}}</p>
       <a href="./sub-page01.html" olink>페이지 1로 이동</a>
       <script>

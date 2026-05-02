@@ -4,7 +4,7 @@
 
 La propiedad `classList` se mantiene idéntica a la nativa. Puedes utilizar [classList](https://developer.mozilla.org/es/docs/Web/API/Element/classList) para añadir, eliminar y alternar clases.
 
-A continuación se muestra un ejemplo que demuestra cómo usar `classList`：
+A continuación se muestra un ejemplo que demuestra cómo usar `classList`:
 
 <o-playground name="classList - Ejemplo de uso" style="--editor-height: 500px">
   <code path="demo.html">
@@ -20,7 +20,7 @@ A continuación se muestra un ejemplo que demuestra cómo usar `classList`：
           font-size:20px;
         }
       </style>
-      <div id="target" class="t-red">texto original</div>
+      <div id="target" class="t-red">origin text</div>
       <script>
         setTimeout(()=> {
           $("#target").classList.remove('t-red');
@@ -33,4 +33,4 @@ A continuación se muestra un ejemplo que demuestra cómo usar `classList`：
   </code>
 </o-playground>
 
-La propiedad `classList` te permite agregar, eliminar y alternar nombres de clase fácilmente para cambiar dinámicamente los estilos de un elemento.
+La propiedad `classList` te permite agregar, eliminar y alternar nombres de clase fácilmente para cambiar dinámicamente el estilo de un elemento.

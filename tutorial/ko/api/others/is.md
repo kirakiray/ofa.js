@@ -2,7 +2,7 @@
 
 
 
-`is` 메소드는 요소가 표현식과 일치하는지 확인하는 데 사용됩니다.
+`is` 메서드는 요소가 표현식과 일치하는지 확인하는 데 사용됩니다.
 
 <o-playground name="is - 요소 감지" style="--editor-height: 400px">
   <code path="demo.html">

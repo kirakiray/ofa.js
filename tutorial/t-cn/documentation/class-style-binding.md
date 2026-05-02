@@ -276,11 +276,11 @@
   </code>
 </o-playground>
 
-## 樣式標籤內的數據函數
+## data() 函數
 
 
 
-可以在樣式中使用 `data(xxx)` 來綁定組件數據。這非常適閤需要根據組件數據動態改變樣式的場景。
+可以在樣式中使用 `data(key)` 來綁定組件數據。這非常適閤需要根據組件數據動態改變樣式的場景。
 
 <o-playground name="樣式標籤內的數據函數" style="--editor-height: 500px">
   <code>
@@ -291,18 +291,20 @@
           border: 1px solid red;
           padding: 10px;
         }
-        p:hover{
+        p {
+          font-size: 10px;
           color:red;
+          transition: all .3s ease;
         }
       </style>
       <style>
-        p {
+        p:hover {
           font-size: data(size);
-          color:green;
+          color: green;
           transition: all data(time)s ease;
         }
       </style>
-      FontSize: <input type="number" sync:value="size" placeholder="這是一個雙向綁定的輸入框" />
+      Hover FontSize: <input type="number" sync:value="size" placeholder="這是一個雙向綁定的輸入框" />
       <br />
       TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="這是一個雙向綁定的輸入框" />
       <p>{{val}} - size: {{size}}</p>
@@ -325,10 +327,10 @@
 
 
 
-`style` 內的 `data(xxx)` 原理上是替換整個 style 的內容，所以最好隻把 data 相關的樣式寫在 style 內，不需要 data 的放到另一個 style 上，這樣性能更好。
+`style` 標籤內的 `data(key)` 在原理上會替換整個 style 的內容。爲避免重復渲染無關樣式，建議將包含 `data(key)` 的樣式單獨放在一個 `style` 標籤中，而不需要數據綁定的樣式則放到另一個 `style` 標籤裏，以獲得更好的性能錶現。
 
 ```html
-<!-- ❌ 不帶有 data(xxx) 的 p:hover 也會被刷新 -->
+<!-- ❌ 不帶有 data(key) 的 p:hover 也會被刷新 -->
 <style>
   p {
     font-size: data(size);

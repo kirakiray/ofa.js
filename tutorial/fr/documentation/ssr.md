@@ -1,26 +1,26 @@
 # SSR et rendu isomorphe
 
-> Si vous ne savez pas ce qu'est le SSR, cela signifie que vous n'en avez pas besoin pour l'instant. Vous pouvez passer ce chapitre et revenir l'étudier plus tard lorsque vous en aurez besoin.
+> Si vous ne savez pas ce qu’est le SSR, cela signifie que vous n’en avez pas encore besoin ; vous pouvez sauter ce chapitre pour le moment et revenir l’étudier plus tard, quand vous en ressentirez la nécessité.
 
 ## Rendu isomorphe
 
-Afin de conserver simultanément l’expérience fluide du CSR, une meilleure reconnaissance par les robots d’indexation (SEO) et un choix plus libre du langage de développement backend, ofa.js propose un mode de rendu isomorphe unique (Symphony Client-Server Rendering).
+Afin de préserver simultanément l’expérience fluide du CSR, une meilleure reconnaissance par les robots d’indexation (SEO) et un choix plus libre du langage de développement backend, ofa.js propose un mode de rendu isomorphe unique (Symphony Client-Server Rendering).
 
-> Pour connaître les définitions et les différences précises entre CSR / SSR / SSG, veuillez lire directement la dernière section de cet article.
+> Pour connaître les définitions et différences spécifiques entre CSR / SSR / SSG, veuillez directement lire la section à la fin de cet article.
 
-Le concept central du rendu isomorphe est :- Rendu initial du contenu côté serveur, garantissant le SEO et la vitesse de chargement de la première page
-- Prise en charge du routage côté client, préservant l’expérience utilisateur fluide du CSR
-- Compatible avec tout environnement serveur, réalisant un rendu isomorphique véritable
+Le concept central du rendu isomorphe est :- Rendre le contenu initial de la page côté serveur pour garantir le SEO et la vitesse de chargement initiale
+- Prendre en charge le traitement des itinéraires côté client pour maintenir l'expérience utilisateur fluide du CSR
+- S'appliquer à tout environnement serveur pour une véritable rendu isomorphe
 
-### Principe de mise en œuvre du rendu isomorphe
+### Les principes de mise en œuvre du rendu isomorphe
 
-Le mode de rendu isomorphe d'ofa.js repose sur les mécanismes suivants :
+Le mode de rendu isomorphe d'ofa.js est basé sur le mécanisme suivant :
 
 1. Le serveur génère une page HTML complète avec une structure d'exécution universelle
 2. Le client charge le moteur d'exécution CSR
-3. Reconnaissance automatique de l'environnement d'exécution actuel pour déterminer la stratégie de rendu
+3. Identifie automatiquement l'environnement d'exécution actuel et détermine la stratégie de rendu
 
-### Structure du code de rendu isomorphique
+### Structure de code de rendu isomorphe
 
 **Module de page CSR original :**
 
@@ -32,7 +32,7 @@ Le mode de rendu isomorphe d'ofa.js repose sur les mécanismes suivants :
       height: 100%;
     }
   </style>
-  <p>I am Page</p>
+  <p>Je suis Page</p>
   <script>
     export default async ({ load, query }) => {
       return {
@@ -44,16 +44,16 @@ Le mode de rendu isomorphe d'ofa.js repose sur les mécanismes suivants :
 </template>
 ```
 
-**Page complète après encapsulation du rendu isomorphique :**
+**Page complète après encapsulation du rendu isomorphe :**
 
 ```html
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Titre de la Page</title>
+  <title>Page Title</title>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs#debug" type="module"></script>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
@@ -81,7 +81,7 @@ Le mode de rendu isomorphe d'ofa.js repose sur les mécanismes suivants :
           height: 100%;
         }
       </style>
-      <p>Je suis la Page</p>
+      <p>Je suis la page</p>
       <script>
         export default async ({ load, query }) => {
           return {
@@ -97,15 +97,15 @@ Le mode de rendu isomorphe d'ofa.js repose sur les mécanismes suivants :
 </html>
 ```
 
-Ainsi, vous pouvez utiliser n'importe quel langage de développement (Go, Java, PHP, Nodejs, Python, etc.), n'importe quel moteur de rendu de templates backend (comme `html/template` de Go, Smarty/Twig/Blade de PHP, etc.), pour intégrer la structure de code de rendu isomorphe d'ofa.js dans le template, et ainsi réaliser le SSR.
+Donc, vous pouvez utiliser n'importe quel langage de développement (Go, Java, PHP, Nodejs, Python, etc.), n'importe quel moteur de rendu de templates côté serveur (comme `html/template` pour Go, Smarty/Twig/Blade pour PHP, etc.), et intégrer la structure de code de rendu isomorphe de ofa.js dans le template pour réaliser le SSR.
 
-* [Exemple SSR Nodejs](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
-* [Exemple SSR PHP](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
-* [Exemple SSR Go](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
+* [Cas SSR Node.js](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
+* [Cas SSR PHP](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
+* [Cas SSR Go](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
 
-### Structure de modèle de rendu isomorphe
+### Structure du modèle de rendu isomorphe
 
-Pour implémenter le mode de rendu isomorphe, il suffit d’utiliser la structure de modèle universelle suivante côté serveur :
+Pour réaliser le mode de rendu isomorphe, il suffit d'utiliser la structure de modèle générique suivante côté serveur :
 
 ```html
 <!doctype html>
@@ -114,7 +114,7 @@ Pour implémenter le mode de rendu isomorphe, il suffit d’utiliser la structur
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Titre de la Page</title>
+  <title>Titre de la page</title>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs#debug" type="module"></script>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
@@ -134,68 +134,68 @@ Pour implémenter le mode de rendu isomorphe, il suffit d’utiliser la structur
 
 <body>
   <o-app src="/app-config.js">
-    <!-- Contenu du module de page correspondant inséré dynamiquement -->
+    <!-- Insère dynamiquement le contenu du module de page correspondant -->
   </o-app>
 </body>
 
 </html>
 ```
 
-**Note :** Le HTML renvoyé par le serveur doit définir le bon en-tête HTTP : `Content-Type: text/html; charset=UTF-8`
+**Attention :** Le HTML renvoyé par le serveur doit inclure l'en-tête HTTP correct : `Content-Type: text/html; charset=UTF-8`
 
-`scsr.mjs` est le moteur d’exécution de rendu isomorphe fourni par ofa.js ; il détermine automatiquement la stratégie de rendu en fonction de l’état d’exécution de la page actuelle, garantissant ainsi la meilleure expérience utilisateur dans n’importe quel environnement.
+`scsr.mjs` est le moteur de rendu isomorphe fourni par ofa.js ; il détermine automatiquement la stratégie de rendu selon l’état d’exécution de la page actuelle, garantissant ainsi la meilleure expérience utilisateur dans n’importe quel environnement.
 
-De la même manière, SSG peut également appliquer cette structure pour générer des sites statiques.
+De même, SSG peut également appliquer cette structure pour générer des sites statiques.
 
-## Différences entre ofa.js et SSR ainsi que d'autres frameworks front-end
+## Différences entre ofa.js, SSR et autres frameworks front-end
 
-Le rendu client-serveur Symphony (ci-après SCSR) de ofa.js est essentiellement un mode SSR.
+Le Symphony Client-Server Rendering (ci-après dénommé SCSR) de ofa.js est essentiellement également un mode SSR.
 
-Comparé aux solutions SSR existantes des frameworks front-end comme Vue, React, Angular, le plus grand avantage d'ofa.js est qu'il **ne nécessite pas de liaison obligatoire à Node.js**. Cela signifie que n'importe quel moteur de rendu de templates backend (comme Smarty pour PHP, Jinja2 pour Python, Thymeleaf pour Java, etc.) peut facilement intégrer ofa.js pour réaliser le SSR.
+Comparé aux solutions SSR des frameworks front-end existants tels que Vue, React, Angular, etc., le plus grand avantage d'ofa.js est qu'il **ne nécessite pas de lier obligatoirement Node.js**. Cela signifie que n'importe quel moteur de rendu de template côté serveur (comme Smarty pour PHP, Jinja2 pour Python, Thymeleaf pour Java, etc.) peut facilement intégrer ofa.js pour réaliser le SSR.
 
-## Vue d'ensemble des méthodes de rendu de pages web
+## Aperçu des méthodes de rendu de pages web
 
-Les applications web modernes utilisent principalement quatre méthodes de rendu : le rendu côté serveur avec moteur de gabarits traditionnel, le CSR (Client Side Rendering, rendu côté client), le SSR (Server Side Rendering, rendu côté serveur) et le SSG (Static Site Generation, génération de site statique). Chaque méthode présente ses avantages et ses scénarios d’utilisation adaptés.
+Les applications web modernes utilisent principalement quatre méthodes de rendu : le rendu traditionnel par moteur de templates côté serveur, le CSR (Client Side Rendering, rendu côté client), le SSR (Server Side Rendering, rendu côté serveur) et le SSG (Static Site Generation, génération de sites statiques). Chaque méthode a ses avantages et ses cas d'utilisation appropriés.
 
-### Rendu par moteur de template côté serveur traditionnel
+### Rendu de moteur de template côté serveur traditionnel
 
-Parmi les nombreux produits Web, les moteurs de templates côté serveur restent le moyen de rendu de pages le plus répandu. Les langages backend comme Go et PHP utilisent des moteurs de templates intégrés ou tiers (tels que `html/template` pour Go, Smarty/Twig/Blade pour PHP, etc.) pour injecter des données dynamiques dans des templates HTML, générer des pages HTML complètes en une seule fois et les retourner au client.
+Parmi de nombreux produits Web, les moteurs de templates côté serveur restent les moyens de rendu de page les plus répandus. Les langages backend comme Go et PHP utilisent des moteurs de templates intégrés ou tiers (tels que `html/template` pour Go, Smarty/Twig/Blade pour PHP) pour injecter des données dynamiques dans les templates HTML, générer une page HTML complète en une seule fois et la renvoyer au client.
 
-**Avantages :**- SEO friendly, chargement rapide de la première page
-- Contrôle côté serveur, sécurité relativement élevée
-- Faibles exigences pour la pile technologique de l'équipe, les développeurs backend peuvent effectuer le développement de manière indépendante
+**Avantages：**- Convivial SEO, chargement rapide de la première écran
+- Contrôle côté serveur, sécurité renforcée
+- Exigences faibles sur la stack technique de l’équipe, les développeurs back-end peuvent réaliser seuls le développement
 
-**Inconvénients :**- Mauvaise expérience utilisateur : chaque interaction nécessite un rafraîchissement de la page
-- Forte pression sur le serveur
-- Couplage élevé entre le front-end et le back-end, défavorable à la collaboration et à la division du travail
+**Inconvénients :**- L'expérience utilisateur est médiocre, chaque interaction nécessite un rechargement de la page.
+- Forte pression sur le serveur.
+- Le couplage entre le front-end et le back-end est élevé, ce qui n'est pas propice à la division du travail et à la collaboration.
 
 ### CSR (rendu côté client)
 
-En mode CSR, le contenu de la page est entièrement rendu par JavaScript côté navigateur, et l'[application à page unique](./routes.md) d'ofa.js en est une mise en œuvre typique. Cette approche offre une expérience utilisateur fluide, permettant de réaliser toutes les interactions sans nécessiter de rechargement de page. Les applications monopages (SPA) développées avec React ou Vue et leurs bibliothèques de routage correspondantes (comme React Router ou Vue Router) sont toutes des exemples classiques de mise en œuvre CSR.
+En mode CSR, le contenu de la page est entièrement rendu par JavaScript côté navigateur. L'[application monopage](./routes.md) d'ofa.js en est une implémentation typique de CSR. Cette approche offre une expérience utilisateur fluide, permettant toutes les interactions sans avoir besoin de recharger la page. Les applications monopages (SPA) développées avec React ou Vue et leurs routeurs associés (tels que React Router ou Vue Router) sont des implémentations typiques de CSR.
 
-**Avantages :**- Expérience utilisateur fluide, changement de page sans rafraîchissement
-- Forte capacité de traitement côté client, réponse rapide
+**Avantages：**- Expérience utilisateur fluide, transitions de page sans rechargement
+- Capacité de traitement côté client puissante, réponses rapides
 
-**Inconvénients :**- N'est pas favorable au SEO, les moteurs de recherche ont du mal à indexer le contenu
+**Inconvénients :**- Nuisible au SEO, les moteurs de recherche ont du mal à indexer le contenu.
 
-### SSR（Rendu côté serveur）
+### SSR（rendu côté serveur）
 
-En conservant l'expérience fluide du CSR, le rendu des pages est assurée par le serveur en temps réel : lorsque l'utilisateur fait une requête, le serveur génère instantanément le HTML complet et le renvoie, réalisant ainsi un véritable rendu côté serveur.
+En conservant l'expérience fluide du CSR, la page est désormais rendue en temps réel par le serveur : lorsque l'utilisateur envoie une requête, le serveur génère immédiatement le HTML complet et le renvoie, réalisant ainsi un véritable rendu côté serveur.
 
-**Avantages :**- Convivial pour le SEO, chargement rapide de la première écran
+**Avantages：**- Convivial SEO, chargement rapide de la première écran  
 - Prise en charge du contenu dynamique
 
-**Inconvénients :**- Forte charge sur le serveur
+**Inconvénients :**- Serveur soumis à une forte pression
 - Nécessite généralement un environnement Node.js comme runtime, ou au moins une couche intermédiaire Node.js
-- Nécessite encore une activation côté client ultérieure pour une interaction complète
+- Nécessite encore une activation côté client ultérieure pour obtenir une interaction complète
 
-### GSS (Génération de Site Statique)
+### GSS (Génération de site statique)
 
-À la phase de construction, toutes les pages sont pré-rendues en fichiers HTML statiques et, après déploiement, peuvent être directement renvoyées aux utilisateurs par le serveur.
+Pendant la phase de construction, toutes les pages sont pré-rendues en fichiers HTML statiques, qui peuvent être directement renvoyés aux utilisateurs par le serveur après le déploiement.
 
-**Avantages :**- Chargement initial rapide, convivial pour le SEO
-- Faible charge serveur, performance stable
+**Avantages：**- Vitesse de chargement initiale rapide, SEO-friendly  
+- Faible charge du serveur, performances stables  
 - Haute sécurité
 
-**Inconvénients :**- Difficulté de mise à jour du contenu dynamique
-- Temps de construction augmentant avec le nombre de pages
+**Inconvénients :**- Mise à jour du contenu dynamique difficile
+- Le temps de construction augmente avec le nombre de pages

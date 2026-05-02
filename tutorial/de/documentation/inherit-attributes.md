@@ -1,20 +1,20 @@
-# Attribute übergeben
+# Übergabe von Feature-Attributen
 
-In ofa.js sind [Attribut-Eigenschaften (Attribute)](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/attributes) eine der gebräuchlichsten Methoden zur Datenübertragung zwischen Komponenten. Man muss nur die erforderlichen Attribute im `attrs`-Objekt der Komponente deklarieren, dann können beim Verwenden der Komponente externe Daten in die Komponente übergeben werden.
+In ofa.js sind [Attribute](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/attributes) eine der am häufigsten verwendeten Methoden zur Datenübertragung zwischen Komponenten. Deklarieren Sie einfach die erforderlichen Attribute im `attrs`-Objekt der Komponente, um externe Daten in die Komponente zu übertragen, wenn Sie die Komponente verwenden.
 
 ## Grundlegende Verwendung
 
-### Empfangsattribute definieren
+### Definition der Empfangseigenschaften
 
-Bevor Sie eine Komponente verwenden, müssen Sie die gewünschten Eigenschaften im `attrs`-Objekt der Komponente deklarieren. Eigenschaften können Standardwerte erhalten.
+Bevor Sie eine Komponente verwenden, müssen Sie zuerst die zu empfangenden Attribute im `attrs`-Objekt der Komponente deklarieren. Attribute können Standardwerte festlegen.
 
 <o-playground name="Grundlegende Verwendungsbeispiele" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
-      <demo-comp first="OFA" full-name="OFA Komponentenbeispiel"></demo-comp>
+      <demo-comp first="OFA" full-name="OFA-Komponentenbeispiel"></demo-comp>
       <br>
-      <demo-comp first="NoneOS" full-name="NoneOS Anwendungsfall"></demo-comp>
+      <demo-comp first="NoneOS" full-name="NoneOS-Anwendungsfall"></demo-comp>
     </template>
   </code>
   <code path="demo-comp.html" active>
@@ -26,8 +26,8 @@ Bevor Sie eine Komponente verwenden, müssen Sie die gewünschten Eigenschaften 
           padding: 8px;
         }
       </style>
-      <p>Vorname: {{first}}</p>
-      <p>Vollständiger Name: {{fullName}}</p>
+      <p>First: {{first}}</p>
+      <p>Full Name: {{fullName}}</p>
       <script>
         export default async ({ load }) => {
           return {
@@ -47,12 +47,12 @@ Bevor Sie eine Komponente verwenden, müssen Sie die gewünschten Eigenschaften 
 
 1. **Typbeschränkung**: Der übergebene Attributwert muss ein String sein; andere Typen werden automatisch in Strings umgewandelt.
 
-2. **Namenskonvertierung**: Da HTML-Attribute Groß- und Kleinschreibung ignorieren, müssen Attribute mit Großbuchstaben im Namen durch `-` getrennt (kebab-case) übergeben werden.
+2. **Namenskonvertierung**: Da HTML-Attribute nicht zwischen Groß- und Kleinschreibung unterscheiden, muss bei der Übergabe von Attributen, die Großbuchstaben enthalten, die Benennung mit `-` getrennt werden (Kebab-Case-Format).
    - Beispiel: `fullName` → `full-name`
 
-3. **Definition erforderlich**: Kann das entsprechende Attribut nicht im `attrs`-Objekt der Komponente gefunden werden, wird das Attribut nicht empfangen. Der gesetzte Wert ist der Standardwert; wenn kein Standardwert gewünscht ist, muss `null` gesetzt werden.
+3. **Muss definiert sein**: Wenn die Komponente das entsprechende Attribut nicht im `attrs`-Objekt definiert hat, kann dieses Attribut nicht empfangen werden. Der gesetzte Wert ist der Standardwert; wenn kein Standardwert gewünscht wird, setzen Sie ihn auf `null`.
 
-<o-playground name="Beispiel für wichtige Regeln" style="--editor-height: 500px">
+<o-playground name="Beispiel wichtiger Regeln" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -86,11 +86,11 @@ Bevor Sie eine Komponente verwenden, müssen Sie die gewünschten Eigenschaften 
   </code>
 </o-playground>
 
-## Vorlagensyntax zum Weitergeben von Attributen
+## Vorlagensyntax zur Weitergabe von Attributen
 
-In der Komponentenvorlage kann mit der Syntax `attr:toKey="fromKey"` das `fromKey`-Datenfeld der aktuellen Komponente an das `toKey`-Attribut der untergeordneten Komponente übergeben werden.
+In der Komponentenvorlage kann mit der Syntax `attr:toKey="fromKey"` das `fromKey`-Datum der aktuellen Komponente an das `toKey`-Attribut der untergeordneten Komponente übergeben werden.
 
-<o-playground name="Eigenschaftsübergabe Beispiel" style="--editor-height: 500px">
+<o-playground name="Eigenschaftsübergabe-Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -130,7 +130,7 @@ In der Komponentenvorlage kann mit der Syntax `attr:toKey="fromKey"` das `fromKe
           padding: 8px;
         }
       </style>
-      <p>Vollständiger Name: {{fullName}}</p>
+      <p>Full Name: {{fullName}}</p>
       <script>
         export default async ({ load }) => {
           return {
@@ -145,13 +145,13 @@ In der Komponentenvorlage kann mit der Syntax `attr:toKey="fromKey"` das `fromKe
   </code>
 </o-playground>
 
-## Mehrstufige Weitergabe
+## Mehrstufige Übertragung
 
-Attribute können durch mehrschichtige verschachtelte Komponenten weitergegeben werden.
+Es ist möglich, Attribute durch mehrfach verschachtelte Komponenten schichtweise weiterzugeben.
 
-Wenn eine Komponente von anderen Komponenten abhängig ist, muss das Modul der anderen Komponenten in der Komponente importiert werden.
+Wenn eine Komponente von anderen Komponenten abhängt, muss das Modul der anderen Komponenten in der Komponente importiert werden.
 
-<o-playground name="Mehrebenen-Übergabebeispiel" style="--editor-height: 700px">
+<o-playground name="Beispiel für mehrstufige Übergabe" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>

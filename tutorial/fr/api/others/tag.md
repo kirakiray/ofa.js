@@ -2,11 +2,11 @@
 
 
 
-L'attribut `tag` est utilisé pour obtenir la balise d'un élément, renvoyant une chaîne de caractères en minuscules.
+La propriété `tag` est utilisée pour obtenir l'étiquette de l'élément, et retourne une chaîne en minuscules.
 
-Dans l'exemple ci-dessous, nous démontrons comment utiliser la méthode `tag` pour obtenir la balise d'un élément :
+Dans l'exemple ci-dessous, nous montrons comment utiliser la méthode `tag` pour obtenir la balise d'un élément :
 
-<o-playground name="tag - obtenir le tag">
+<o-playground name="tag - obtenir l'étiquette">
   <code path="demo.html">
     <template>
       <div id="logger">logger</div>

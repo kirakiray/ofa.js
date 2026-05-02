@@ -2,9 +2,9 @@
 
 
 
-`refresh` メソッドは、能動的にコンポーネントのレンダリングビューを更新するために使用されます。コンポーネント上のデータが更新されない場合、このメソッドを使用してコンポーネントのビューを更新することができます。
+`refresh` メソッドは、コンポーネントのレンダリングビューを能動的にリフレッシュするために使用されます。コンポーネント上のデータが更新されていない場合、このメソッドを使用してコンポーネントのビューをリフレッシュすることができます。
 
-[非応答性データ](../../documentation/property-response.md)を手動で更新する必要があるシナリオに適用されます。
+手動での更新が必要な[非レスポンシブデータ](../../documentation/property-response.md)のシナリオに適用されます。
 
 <o-playground name="refresh - ビューを更新" style="--editor-height: 400px">
   <code path="demo.html" preview>
@@ -16,7 +16,7 @@
   <code path="refresh-demo.html" active>
     <template component>
       <div>{{_count}}</div>
-      <button on:click="refresh()">更新</button>
+      <button on:click="refresh()">リフレッシュ</button>
       <script>
         export default {
           tag: "refresh-demo",

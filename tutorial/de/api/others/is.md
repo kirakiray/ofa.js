@@ -2,7 +2,7 @@
 
 
 
-Die `is`-Methode wird verwendet, um zu prüfen, ob ein Element einem Ausdruck entspricht.
+`is` Methode wird verwendet, um zu prüfen, ob ein Element einem Ausdruck entspricht.
 
 <o-playground name="is - Element prüfen" style="--editor-height: 400px">
   <code path="demo.html">
@@ -17,10 +17,10 @@ Die `is`-Methode wird verwendet, um zu prüfen, ob ein Element einem Ausdruck en
         setTimeout(() => {
           const target = $("#target");
           \$("#logger").html = `
-          Ist li: ${target.is('li')} <br>
-          Ist div: ${target.is('div')} <br>
-          Hat id: ${target.is('[id]')} <br>
-          Hat Klasse: ${target.is('[class]')} <br>
+          Is li: ${target.is('li')} <br>
+          Is div: ${target.is('div')} <br>
+          Have id: ${target.is('[id]')} <br>
+          Have class: ${target.is('[class]')} <br>
           `;
         }, 500);
       </script>

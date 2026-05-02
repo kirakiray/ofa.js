@@ -4,7 +4,7 @@
   content:
     - name: スクリプト参照
       url: ./script-reference.md
-    - name: 最初のアプリケーションを作成
+    - name: 最初のアプリを作成
       url: ./create-first-app.md
 - name: クイックスタート
   url: ./quick-start.md
@@ -34,11 +34,11 @@
   content:
     - name: コンポーネント作成
       url: ./create-component.md
-    - name: フィーチャープロパティの受け渡し
+    - name: 属性の継承
       url: ./inherit-attributes.md
     - name: スロット
       url: ./slots.md
-    - name: ディーププロパティバインディングを理解する
+    - name: ディーププロパティバインディング
       url: ./deep-property-binding.md
     - name: カスタムイベント
       url: ./custom-events.md

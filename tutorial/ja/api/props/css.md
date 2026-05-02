@@ -2,18 +2,18 @@
 
 
 
-`css` メソッドは、ターゲット要素のスタイルを取得または設定するために使用されます。
+`css` メソッドは、対象要素のスタイルを取得または設定するために使用されます。
 
 ## 直接使用
 
-`css` メソッドを直接使用して要素のスタイルを取得または設定できます。
+あなたは直接 `css` メソッドを使用して、要素のスタイルを取得または設定できます。
 
 <o-playground name="css - 直接使用" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target">origin text</div>
+      <div id="target">元のテキスト</div>
       <br>
-      <h4>logger</h4>
+      <h4>ロガー</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = $("#target").css.color;
@@ -28,14 +28,14 @@
 
 ## 全量設定
 
-取得した `css` オブジェクトを通じて、要素上の style 値を直接設定できます。
+取得した `css` オブジェクトを使って、要素に直接 style 値を設定することができます。
 
 <o-playground name="css - 全量設定" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
-      <div id="target" style="color:red">元のテキスト</div>
+      <div id="target" style="color:red">origin text</div>
       <br>
-      <h4>ロガー</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = Object.keys($("#target").css);
@@ -51,11 +51,11 @@
   </code>
 </o-playground>
 
-`css` オブジェクトの特性を使用すると、ターゲット要素のスタイルを素早く調整できます。
+`css`オブジェクトの特性を利用することで、ターゲット要素のスタイルを素早く調整できます。
 
 ## テンプレート構文方式での使用
 
-あなたはテンプレート構文を使用してターゲット要素のスタイルを設定することもできます。
+テンプレート構文を使用して、ターゲット要素のスタイルを設定することもできます。
 
 <o-playground name="css - テンプレート構文" style="--editor-height: 400px">
   <code path="demo.html" preview>
@@ -89,9 +89,9 @@
   </code>
 </o-playground>
 
-## CSSを設定するコツ
+## CSS設定のコツ
 
-`$ele.css = {...$ele.css, color:'red'}` という方法で、要素の特定のスタイル属性を他のスタイル属性に影響を与えることなく変更できます。この方法により、スタイル全体を書き換えることなく、一部のプロパティだけを変更できます。
+`$ele.css = {...$ele.css, color:'red'}` という方法で、要素の特定のスタイルプロパティを変更でき、他のスタイルプロパティに影響を与えません。この方法では、スタイル全体を書き換えずに、1つのプロパティのみを変更できます。
 
 ### 例
 
@@ -101,4 +101,4 @@ const myElement = $("#myElement");
 myElement.css = { ...myElement.css, color: 'red' };
 ```
 
-上記の例では、`{ ...myElement.css, color: 'red' }` を使用することで、要素の色スタイルのみを変更し、他のスタイルプロパティはそのまま保持しました。これは要素のスタイルを柔軟に変更する際に非常に便利なテクニックです。
+上の例では、`{ ...myElement.css, color: 'red' }` を使用することで、要素の色のスタイルのみを変更し、他のスタイルプロパティはそのままにしています。これは便利なテクニックで、要素のスタイルを柔軟に変更できます。

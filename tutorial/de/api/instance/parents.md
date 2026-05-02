@@ -2,20 +2,20 @@
 
 
 
-Mit der `parents`-Eigenschaft können Sie ganz einfach alle Elternelement-Instanzen des aktuellen Elements abrufen, die als Array zurückgegeben werden.
+Mit der Eigenschaft `parents` können Sie problemlos alle übergeordneten Elementinstanzen des aktuellen Elements abrufen. Diese Elemente werden als Array zurückgegeben.
 
-<o-playground name="parents - Elternelemente" style="--editor-height: 360px">
+<o-playground name="parents - Elternelement" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div>
         <ul>
-          <li>Ich bin 1</li>
-          <li id="target">Ich bin das Ziel</li>
-          <li>Ich bin 3</li>
+          <li>I am 1</li>
+          <li id="target">I am target</li>
+          <li>I am 3</li>
         </ul>
       </div>
       <div>
-        Protokoll: <span id="logger"></span>
+        logger: <span id="logger"></span>
       </div>
       <script>
         setTimeout(()=>{

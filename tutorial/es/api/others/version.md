@@ -2,9 +2,9 @@
 
 
 
-A través de la propiedad `ofa.version`, puedes obtener el número de versión de ofa.js que se ha introducido actualmente.
+A través de la propiedad `ofa.version`, puedes obtener el número de versión de ofa.js actualmente importado.
 
-> **Requiere ofa.js versión ≥ 4.3.40**
+> **Requiere versión de ofa.js ≥ 4.3.40**
 
 <o-playground name="version - obtener versión">
   <code path="demo.html">
@@ -17,4 +17,4 @@ A través de la propiedad `ofa.version`, puedes obtener el número de versión d
   </code>
 </o-playground>
 
-De esta manera, puedes mostrar en la página la versión actual de ofa.js que estás utilizando.
+De esta manera, puedes mostrar en la página la versión actual de ofa.js que se está utilizando.

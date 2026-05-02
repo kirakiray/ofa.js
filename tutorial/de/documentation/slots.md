@@ -1,15 +1,15 @@
 # Slots
 
-Slots sind Platzhalter in Komponenten, um externe Inhalte zu empfangen. Durch die Verwendung von Slots kannst du wiederverwendbare Komponenten erstellen und gleichzeitig den Personen, die die Komponente verwenden, ermöglichen, deren Inhalt anzupassen.
+Slots sind Platzhalter in Komponenten, die zum Empfangen externer Inhalte dienen. Durch die Verwendung von Slots kannst du wiederverwendbare Komponenten erstellen und gleichzeitig den Nutzern der Komponenten ermöglichen, den Inhalt innerhalb der Komponente anzupassen.
 
 ## Standard-Slot
 
-<o-playground name="Standard-Beispiel für Slot" style="--editor-height: 500px">
+<o-playground name="Standard-Slot-Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp>
-        <div>Hallo, OFAJS!</div>
+        <div>Hello, OFAJS!</div>
       </demo-comp>
     </template>
   </code>
@@ -21,7 +21,7 @@ Slots sind Platzhalter in Komponenten, um externe Inhalte zu empfangen. Durch di
           border: 1px solid green;
           padding: 8px;
         }
-      </style>Slot-Inhalt：
+      </style>Slot-Inhalt:
       <br />
       <span style="color: red;">
         <slot></slot>
@@ -37,11 +37,11 @@ Slots sind Platzhalter in Komponenten, um externe Inhalte zu empfangen. Durch di
   </code>
 </o-playground>
 
-### Standardinhalt für Slots
+### Standard-Slot-Inhalt
 
-Wenn das übergeordnete Element keinen Slot-Inhalt bereitstellt, werden die Elemente innerhalb von `<slot></slot>` als Standardinhalt angezeigt.
+Wenn die übergeordnete Komponente keinen Slot-Inhalt bereitstellt, werden die Elemente innerhalb von `<slot></slot>` als Standardinhalt angezeigt.
 
-<o-playground name="Slot-Standardinhalt-Beispiel" style="--editor-height: 500px">
+<o-playground name="Beispiel für Standardinhalte des Slots" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -49,7 +49,7 @@ Wenn das übergeordnete Element keinen Slot-Inhalt bereitstellt, werden die Elem
       <demo-comp>
         <div>Dies ist benutzerdefinierter Inhalt</div>
       </demo-comp>
-      <h3>Ohne Slot-Inhalt (zeigt Standardinhalt an):</h3>
+      <h3>Ohne Slot-Inhalt (Standardinhalt wird angezeigt):</h3>
       <demo-comp></demo-comp>
     </template>
   </code>
@@ -65,7 +65,7 @@ Wenn das übergeordnete Element keinen Slot-Inhalt bereitstellt, werden die Elem
       </style>Slot-Inhalt:
       <span style="color: red;">
         <slot>
-          <div>Dies ist Standardinhalt</div>
+          <div>Dies ist der Standardinhalt</div>
         </slot>
       </span>
       <script>
@@ -81,15 +81,15 @@ Wenn das übergeordnete Element keinen Slot-Inhalt bereitstellt, werden die Elem
 
 ## Benannte Slots
 
-Wenn eine Komponente mehrere Slot-Positionen benötigt, können benannte Slots verwendet werden, um verschiedene Slots zu unterscheiden. Benannte Slots werden durch `<slot name="xxx">` definiert, und bei der Verwendung wird durch das Attribut `slot="xxx"` angegeben, in welchen Slot der Inhalt eingefügt wird.
+Wenn eine Komponente mehrere Slot-Positionen benötigt, können benannte Slots verwendet werden, um verschiedene Slots zu unterscheiden. Definiere einen benannten Slot mit `<slot name="xxx">` und gib beim Gebrauch über das Attribut `slot="xxx"` an, in welchen Slot der Inhalt eingefügt werden soll.
 
 <o-playground name="Beispiel für benannte Slots" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp>
-        <div>Hallo, OFAJS!</div>
-        <div slot="footer">Footer-Inhalt</div>
+        <div>Hello, OFAJS!</div>
+        <div slot="footer">Footer Content</div>
       </demo-comp>
     </template>
   </code>
@@ -123,14 +123,14 @@ Wenn eine Komponente mehrere Slot-Positionen benötigt, können benannte Slots v
 
 ## Mehrstufige Slot-Übergabe
 
-Slot-Inhalte können über mehrere Komponentenebenen hinweg weitergegeben werden. Nachdem eine Elternkomponente Slot-Inhalte an eine Kindkomponente übermittelt hat, kann die Kindkomponente diese Slot-Inhalte weiter an ihre eigenen Kindkomponenten weitergeben, wodurch eine mehrschichtige Durchreichung der Slots ermöglicht wird.
+Slot-Inhalte können über mehrere Komponentenebenen hinweg weitergegeben werden. Wenn eine übergeordnete Komponente Slot-Inhalte an eine untergeordnete Komponente übergibt, kann die untergeordnete Komponente diese Slot-Inhalte wiederum an ihre eigenen untergeordneten Komponenten weitergeben, wodurch eine mehrschichtige Durchleitung der Slots realisiert wird.
 
-<o-playground name="Beispiel für mehrstufige Slot-Übergabe" style="--editor-height: 500px">
+<o-playground name="Mehrstufiges Slot-Passing-Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
       <outer-comp>
-        <div style="color: red;">Überschrift von der äußersten Ebene</div>
+        <div style="color: red;">Titel von der äußersten Ebene</div>
       </outer-comp>
     </template>
   </code>
@@ -184,4 +184,4 @@ Slot-Inhalte können über mehrere Komponentenebenen hinweg weitergegeben werden
 
 Im obigen Beispiel:- Die äußerste Elternkomponente definiert den Inhalt von `slot="header"`
 - Die äußere Komponente (outer-comp) empfängt diesen Slot-Inhalt und leitet ihn an die innere Komponente (inner-comp) weiter
-- Die innere Komponente rendert schließlich den Slot-Inhalt aus der äußersten Ebene
+- Die innere Komponente rendert schließlich den Slot-Inhalt der äußersten Ebene

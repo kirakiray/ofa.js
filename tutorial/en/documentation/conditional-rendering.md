@@ -1,12 +1,12 @@
 # Conditional Rendering
 
-In ofa.js, conditional rendering is an important feature that allows deciding whether to render a certain element or component based on the data state. ofa.js provides a component-based conditional rendering solution, implemented through the `o-if`, `o-else-if`, and `o-else` components.
+In ofa.js, conditional rendering is an important feature that allows deciding whether to render an element or component based on data state. ofa.js provides a component-based conditional rendering solution, implemented through the `o-if`, `o-else-if`, and `o-else` components.
 
 ## o-if Component
 
-The `o-if` component is used to conditionally render its content based on the truthiness of an expression. When the bound `value` attribute is a truthy value, the content inside the component will be rendered; otherwise, the content will not appear in the DOM.
+The `o-if` component is used to decide whether to render its content based on the truthiness of an expression. When the bound `value` attribute is truthy, the content inside the component will be rendered; otherwise, the content will not appear in the DOM.
 
-<o-playground name="o-if Work Principle Demo" style="--editor-height: 500px">
+<o-playground name="Example of o-if working principle" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -34,19 +34,19 @@ The `o-if` component is used to conditionally render its content based on the tr
   </code>
 </o-playground>
 
-### How o-if Works
+### Working Principle of o-if
 
-`o-if` renders content into the DOM only when the condition is true. When the condition is false, the DOM elements inside `o-if` are completely removed. This implementation is suitable for situations where conditions do not change frequently, as it involves the creation and destruction of DOM elements.
+`o-if` renders content into the DOM only when the condition is true. When the condition is false, the DOM elements inside `o-if` are completely removed. This implementation is suitable for scenarios where the condition does not change frequently, as it involves the creation and destruction of DOM elements.
 
 ## o-else-if and o-else Components
 
 When multiple conditional branches are needed, you can use the `o-else-if` and `o-else` components together with `o-if` to implement multi-branch conditional rendering.
 
-- `o-if`: The mandatory first conditional component
-- `o-else-if`: Optional intermediate conditional components, which can be multiple
-- `o-else`: Optional default conditional component, placed at the end
+- `o-if`: The first conditional component that must be present
+- `o-else-if`: Optional intermediate conditional component, multiple allowed
+- `o-else`: Optional default conditional component, placed last
 
-<o-playground name="Multi-Branch Conditional Rendering Example" style="--editor-height: 500px">
+<o-playground name="Multi-branch Conditional Rendering Example" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -57,7 +57,7 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
         }
       </style>
       <button on:click="num++">Toggle Display - {{num}}</button>
-      <!-- Switch between different content based on the remainder of num divided by 3 -->
+      <!-- According to the result of num modulo 3, switch to display different content -->
       <o-if :value="num % 3 === 0">
         <p>❤️ 0 / 3</p>
       </o-if>
@@ -80,7 +80,7 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
   </code>
 </o-playground>
 
-## Real-world Application Scenarios
+## Practical Application Scene Examples
 
 ### User Permission Control
 
@@ -105,7 +105,7 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
         }
       </style>
       <div>
-        <button on:click="toggleUserRole">Switch User Role</button>
+        <button on:click="toggleUserRole">Toggle User Role</button>
         <p>Current Role: {{role}}</p>
         <o-if :value="role === 'admin'">
           <div class="admin-panel">
@@ -121,7 +121,7 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
           </div>
         </o-else-if>
         <o-else>
-          <p>Please login to view content</p>
+          <p>Please log in to view content</p>
         </o-else>
       </div>
       <script>
@@ -135,7 +135,7 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
               toggleUserRole() {
                 if (this.role === 'guest') {
                   this.role = 'user';
-                  this.userName = 'John';
+                  this.userName = 'Zhang San';
                 } else if (this.role === 'user') {
                   this.role = 'admin';
                 } else {
@@ -171,10 +171,10 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
         <h3>Email Validation Example</h3>
         <input type="email" :value="email" on:input="email = $event.target.value" placeholder="Enter email address">
         <o-if :value="email && isValidEmail(email)">
-          <p style="color:green;">✓ Email format is correct</p>
+          <p style="color:green;">✓ Email format is valid</p>
         </o-if>
         <o-else-if :value="email && !isValidEmail(email) && email.length > 0">
-          <p style="color:red;">✗ Email format is incorrect</p>
+          <p style="color:red;">✗ Email format is invalid</p>
         </o-else-if>
         <o-else>
           <p style="color:orange;">Please enter an email address for validation</p>
@@ -199,10 +199,10 @@ When multiple conditional branches are needed, you can use the `o-else-if` and `
   </code>
 </o-playground>
 
-## Best Practices for Conditional Rendering
+## Conditional Rendering Best Practices
 
-1. **Use case**: Use `o-if` when an element rarely changes under different conditions, as it completely removes unnecessary elements and saves memory.
+1. **Usage Scenarios**: When elements rarely switch between different conditions, using `o-if` is more appropriate because it completely removes unnecessary elements, saving memory.
 
-2. **Performance**: For frequently toggled elements, prefer class binding (e.g., `class:hide`) over conditional rendering, which creates and destroys DOM nodes.
+2. **Performance Considerations**: Frequently switching elements are better suited for using class bindings (such as `class:hide`) rather than conditional rendering, as conditional rendering involves DOM creation and destruction.
 
-3. **Clear structure**: Conditional rendering is ideal for switching between content with different structures, such as tabs or step-by-step guides.
+3. **Clear Structure**: Conditional rendering is particularly suitable for content switching with different structures, such as tabs, step guides, etc.

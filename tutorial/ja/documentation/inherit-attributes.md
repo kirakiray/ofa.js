@@ -1,18 +1,18 @@
 # 特徴属性の受け渡し
 
-ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/attributes)は、コンポーネント間でデータを渡す最も一般的な方法の一つです。コンポーネントの `attrs` オブジェクトで必要な属性を宣言するだけで、コンポーネントを使用する際に外部データをコンポーネント内部に渡すことができます。
+ofa.jsにおいて、[特徴属性（Attribute）](https://developer.mozilla.org/ja/docs/Web/API/Element/attributes)はコンポーネント間でデータを渡す最も一般的な方法の一つです。コンポーネントの `attrs` オブジェクトに必要な属性を宣言するだけで、コンポーネントを使用するときに外部データをコンポーネント内部に渡すことができます。
 
 ## 基本的な使い方
 
 ### 受信プロパティの定義
 
-コンポーネントを使用する前に、まずコンポーネントの `attrs` オブジェクト内で受け取る属性を宣言する必要があります。属性にはデフォルト値を設定することができます。
+コンポーネントを使用する前に、まずコンポーネントの `attrs` オブジェクト内で受け取る必要のある属性を宣言する必要があります。属性にはデフォルト値を設定できます。
 
-<o-playground name="基本的な使い方の例" style="--editor-height: 500px">
+<o-playground name="基本使用例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
-      <demo-comp first="OFA" full-name="OFA コンポーネントの例"></demo-comp>
+      <demo-comp first="OFA" full-name="OFA コンポーネント例"></demo-comp>
       <br>
       <demo-comp first="NoneOS" full-name="NoneOS 使用例"></demo-comp>
     </template>
@@ -43,21 +43,21 @@ ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-C
   </code>
 </o-playground>
 
-### 重要なルール
+### 重要ルール
 
-1. **型制限**：渡される attribute の値は文字列でなければならず、他の型は自動的に文字列に変換されます。
+1. **型制限**：渡される attribute の値は文字列でなければならず、他の型は自動的に文字列に変換される。
 
-2. **命名変換**：HTML属性は大文字と小文字を区別しないため、大文字を含む属性を渡す場合は、`-` で区切った命名（kebab-case 形式）を使用する必要があります。
+2. **命名変換**：HTML 属性は大文字・小文字を区別しないため、大文字を含む属性を渡す際は `-` で区切った名前（kebab-case 形式）を用いる。
    - 例：`fullName` → `full-name`
 
-3. **必須定義**：コンポーネントが `attrs` オブジェクトに対応する属性を定義していない場合、その attribute を受け取ることができません。設定された値はデフォルト値であり、デフォルト値が必要ない場合は `null` に設定します。
+3. **定義必須**：コンポーネントが `attrs` オブジェクトに対応する属性を定義していない場合、その attribute を受け取ることはできない。設定された値はデフォルト値であり、デフォルト値を不要とする場合は `null` を設定する。
 
-<o-playground name="重要规则示例" style="--editor-height: 500px">
+<o-playground name="重要なルール例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp></demo-comp>
-      <demo-comp user-name="张三" age="25"></demo-comp>
+      <demo-comp user-name="山田太郎" age="25"></demo-comp>
     </template>
   </code>
   <code path="demo-comp.html" active>
@@ -76,7 +76,7 @@ ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-C
           return {
             tag: "demo-comp",
             attrs: {
-              userName: "デフォルト名",
+              userName: "デフォルトの名前",
               age: "0"
             },
           };
@@ -86,11 +86,11 @@ ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-C
   </code>
 </o-playground>
 
-## テンプレート構文による Attribute の受け渡し
+## テンプレート構文の属性受け渡し
 
-コンポーネントのテンプレート内では、`attr:toKey="fromKey"` 構文を使用して、現在のコンポーネントの `fromKey` データを子コンポーネントの `toKey` 属性に渡すことができます。
+コンポーネントのテンプレートでは、`attr:toKey="fromKey"` という構文を使って、現在のコンポーネントの `fromKey` データを子コンポーネントの `toKey` プロパティに渡すことができます。
 
-<o-playground name="属性伝達例" style="--editor-height: 500px">
+<o-playground name="属性受け渡し例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -130,7 +130,7 @@ ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-C
           padding: 8px;
         }
       </style>
-      <p>フルネーム: {{fullName}}</p>
+      <p>Full Name: {{fullName}}</p>
       <script>
         export default async ({ load }) => {
           return {
@@ -145,17 +145,17 @@ ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-C
   </code>
 </o-playground>
 
-## マルチレベル伝達
+## マルチレベルの伝達
 
-複数の階層にネストされたコンポーネントを通じて、属性を段階的に渡すことができます。
+多層ネストされたコンポーネントを通じて、attributeを層ごとに渡すことができます。
 
-コンポーネントが他のコンポーネントに依存する場合、コンポーネント内で他のコンポーネントのモジュールをインポートする必要があります。
+コンポーネントが他のコンポーネントに依存する必要がある場合、コンポーネント内で他のコンポーネントのモジュールを導入する必要があります。
 
-<o-playground name="多階層受け渡しの例" style="--editor-height: 700px">
+<o-playground name="多階層渡しの例" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
-      <outer-comp user-name="トップレベルデータ"></outer-comp>
+      <outer-comp user-name="トップデータ"></outer-comp>
     </template>
   </code>
   <code path="outer-comp.html" active>
@@ -169,7 +169,7 @@ ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-C
           margin-bottom: 8px;
         }
       </style>
-      <p>外層コンポーネント受信: {{userName}}</p>
+      <p>外部コンポーネント受信: {{userName}}</p>
       <inner-comp attr:user-name="userName"></inner-comp>
       <script>
         export default async ({ load }) => {
@@ -193,7 +193,7 @@ ofa.js では、[特徴属性（Attribute）](https://developer.mozilla.org/zh-C
           margin-left: 20px;
         }
       </style>
-      <p>内層コンポーネント受信: {{userName}}</p>
+      <p>内部コンポーネント受信: {{userName}}</p>
       <script>
         export default async ({ load }) => {
           return {

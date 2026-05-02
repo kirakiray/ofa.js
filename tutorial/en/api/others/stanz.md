@@ -1,14 +1,14 @@
-# Instance Data Characteristics
+# Instance Data Features
 
-Instances obtained or created via `$` possess the full data capabilities of stanz, because the `$` instance inherits from stanz. This means you can use stanz’s data manipulation methods and features to operate on and observe the instance’s data.
+Instance objects obtained or created through `$` possess complete stanz data characteristics, because `$` instances are inherited from stanz. This means you can utilize the data manipulation methods and features provided by `stanz` to operate on and listen to the data of the instance object.
 
-> The following examples use regular elements because custom components typically come with pre-registered data, whereas regular elements usually contain only tag information, making them more suitable for demonstration purposes.
+> The following example uses regular elements, because custom components usually come with pre-registered data, whereas regular elements typically contain only tag information and are therefore more suitable for demonstration.
 
 ## watch
 
-Instances can monitor value changes via the `watch` method; even if a nested property of an object is modified, the change is still detected in the object's `watch` method.
+Instances can listen for value changes through the `watch` method; even if the value of a sub-object of an object is modified, the change can be detected in the object's `watch` method.
 
-Here is an example demonstrating how to use the `$` instance and the `watch` method:
+Below is an example showing how to use the `$` instance and the `watch` method:
 
 <o-playground name="stanz - watch" style="--editor-height: 480px">
   <code path="demo.html">
@@ -40,13 +40,13 @@ Here is an example demonstrating how to use the `$` instance and the `watch` met
   </code>
 </o-playground>
 
-In this example, we first create a `$` instance named `target`, then use the `watch` method to observe its changes. Even when we modify a nested property such as `target.bbb.child.val`, the `watch` method detects the change and updates the content of the `logger` element. This demonstrates the powerful feature of the `$` instance, allowing you to effortlessly monitor object mutations.
+In this example, we first create a `$` instance object `target`, and then use the `watch` method to monitor its changes. Even if we modify the value of a sub-object of the object, such as the value of `target.bbb.child.val`, the `watch` method can detect these changes and update the content of the `logger` element. This demonstrates the powerful features of the `$` instance object, allowing you to easily monitor changes in objects.
 
-## Watch Tick
+## watchTick
 
-`watchTick` behaves similarly to `watch`, but it internally throttles execution to once per single thread, making it more efficient for monitoring data changes in performance-critical scenarios.
+`watchTick` is similar to the `watch` method in functionality, but `watchTick` has a throttling operation inside, which executes once in a single thread, so in some scenarios with higher performance requirements, it can monitor data changes more effectively.
 
-Here is an example demonstrating how to use the `watchTick` method on a `$` instance:
+Below is an example demonstrating how to use the `watchTick` method of the `$` instance:
 
 <o-playground name="stanz - watchTick" style="--editor-height: 480px">
   <code path="demo.html">
@@ -77,13 +77,13 @@ Here is an example demonstrating how to use the `watchTick` method on a `$` inst
   </code>
 </o-playground>
 
-In this example, we first create a `$` instance named `target`. Then we use the `watch` and `watchTick` methods to observe changes to the object. `watch` runs immediately when data changes, whereas `watchTick` executes once per tick under a single thread, thus throttling the frequency of observation. You can choose either `watch` or `watchTick` according to your needs.
+In this example, we first create a `$` instance object `target`. Then, we use the `watch` method and the `watchTick` method to listen for changes in the object. The `watch` method runs immediately when the data changes, whereas the `watchTick` method executes once under a single thread, thus limiting the frequency of the listening operation. You can choose to use either the `watch` or the `watchTick` method to listen for data changes according to your needs.
 
 ## unwatch
 
-The `unwatch` method is used to cancel data monitoring and can revoke previously registered `watch` or `watchTick` listeners.
+`unwatch` method is used to cancel the monitoring of data, and can revoke the previously registered `watch` or `watchTick` listeners.
 
-Below is an example demonstrating how to use the `unwatch` method on a `$` instance:
+Here is an example demonstrating how to use the `unwatch` method of a `$` instance:
 
 <o-playground name="stanz - unwatch" style="--editor-height: 480px">
   <code path="demo.html">
@@ -113,17 +113,17 @@ Below is an example demonstrating how to use the `unwatch` method on a `$` insta
   </code>
 </o-playground>
 
-In this example, we first create a `$` instance object named `target`, then register two listeners using the `watch` and `watchTick` methods. Later, we revoke these two listeners by passing the previously saved listener return values `tid1` and `tid2` to the `unwatch` method. This means that the property change in the first `setTimeout` will not trigger any listener, because the listeners have been revoked.
+In this example, we first create a `$` instance object `target`, and then use the `watch` method and the `watchTick` method to register two listeners respectively. After that, we pass the previously saved listener return values `tid1` and `tid2` to the `unwatch` method to revoke these two listeners. This means that the property change in the first `setTimeout` will not trigger any listener, because the listeners have been revoked.
 
-## unmonitored values
+## Values that are not listened to
 
-In a `$` instance, property names that start with an underscore `_` indicate values that will not be observed by the `watch` or `watchTick` methods. This is useful for temporary or private properties, letting you change them freely without triggering any watchers.
+In the `$` instance, property names starting with an underscore `_` indicate that these values will not be watched by the `watch` or `watchTick` methods. This is useful for temporary or private properties, allowing you to modify them freely without triggering watchers.
 
-Within templates, this is referred to as [non-reactive data](../../documentation/state-management.md).
+Inside the template, this is called [non-reactive data](../../documentation/state-management.md).
 
-Here's an example showing how to use underscore-prefixed property values to avoid being watched:
+Below is an example demonstrating how to use attribute values starting with an underscore to avoid being listened to:
 
-<o-playground name="stanz - non-reactive data" style="--editor-height: 480px">
+<o-playground name="stanz - Non-reactive data" style="--editor-height: 480px">
   <code path="demo.html">
     <template>
       <div id="target"></div>
@@ -146,11 +146,11 @@ Here's an example showing how to use underscore-prefixed property values to avoi
   </code>
 </o-playground>
 
-In this example, we create a `$` instance object named `target` and use the `watch` method to listen for changes in property values. Inside `setTimeout`, we attempt to modify the `_aaa` property, but this change does not trigger the listener. This is useful when you need to update a property without triggering the watch.
+In this example, we create a `$` instance object `target`, and then use the `watch` method to listen for changes to property values. In `setTimeout`, we attempt to change the `_aaa` property value, but this change will not trigger the listener. This is very useful for situations where you need to update property values without triggering a listener.
 
 ## Basic Features
 
-Object data set on an instance will be converted to a Stanz instance, which allows listening.
+Object data set on the instance will be converted into a Stanz instance, and this Stanz instance allows for monitoring.
 
 ```javascript
 const obj = {
@@ -162,7 +162,7 @@ console.log($("#target").obj.val === obj.val);
 console.log($("#target").obj === obj);
 ```
 
-We can also use `$.stanz` to create a Stanz data that is not bound to an instance.
+We can also use `$.stanz` to create a Stanz data object that is not bound to an instance.
 
 ```javascript
 const data = $.stanz({
@@ -176,6 +176,6 @@ data.watch(() => {
 data.val = "change val";
 ```
 
-These examples demonstrate the basic characteristics of setting object data as Stanz instances for listening.
+These examples demonstrate the basic feature of setting object data as a Stanz instance for monitoring.
 
 For more complete features, please refer to [stanz](https://github.com/ofajs/stanz).

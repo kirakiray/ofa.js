@@ -8,13 +8,13 @@
   <code path="demo.html">
     <template>
       <ul>
-        <li id="target">나는 대상입니다</li>
+        <li id="target">I am target</li>
       </ul>
       <div id="logger" style="color:red;"></div>
       <script>
         setTimeout(()=>{
           var ele = $("#target").ele;
-          ele.innerHTML = '<b>대상 변경</b>';
+          ele.innerHTML = '<b>change target</b>';
           \$("#logger").text = ele.clientWidth;
         },500);
       </script>

@@ -2,20 +2,20 @@
 
 
 
-Die `html`-Methode wird verwendet, um den HTML-Code innerhalb des Zielelements abzurufen oder festzulegen.
+`html` Methode wird verwendet, um den HTML-Code innerhalb des Zielelements abzurufen oder festzulegen.
 
-<o-playground name="html - Direkte Verwendung" style="--editor-height: 400px">
+<o-playground name="html - direkte Verwendung" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <div id="target1">
-        <span style="color:green;">Ziel 1</span>
+        <span style="color:green;">target 1</span>
       </div>
-      <div id="target2">Originaltext</div>
+      <div id="target2">origin text</div>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;"></div>
       <script>
         setTimeout(()=> {
-          \$('#target2').html = `<b style="color:blue;">neuer Text</b>`;
+          \$('#target2').html = `<b style="color:blue;">new text</b>`;
           console.log($("#target1").text)
           \$("#logger").html = $("#target1").html;
         }, 500);
@@ -26,13 +26,13 @@ Die `html`-Methode wird verwendet, um den HTML-Code innerhalb des Zielelements a
 
 ## Hinweise
 
-`html` ist eine relativ gefährliche Methode; wird `script` hineingeschoben, wird auch der darin enthaltene JavaScript-Code automatisch ausgeführt. Achten Sie beim Gebrauch auf XSS-Prävention.
+`html` ist eine eher gefährliche Methode; wird `script` hineingesteckt, wird das enthaltene JavaScript automatisch ausgeführt. Achten Sie bei der Verwendung auf XSS-Schutz.
 
-## Verwendung auf Template-Syntax-Weise
+## Verwendung der Vorlagensyntax
 
-Du kannst auch das `:html`-Attribut verwenden, um dem Ziel-Element den entsprechenden HTML-Wert zuzuweisen. Dies ist besonders bei der Darstellung von Komponenten nützlich.
+Du kannst auch das Attribut `:html` verwenden, um dem Zielelement den entsprechenden HTML-Wert zuzuweisen. Dies ist besonders nützlich beim Rendern von Komponenten.
 
-<o-playground name="html - Vorlagensyntax" style="--editor-height: 500px">
+<o-playground name="html - Vorlagen-Syntax" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./html-demo.html"></l-m>

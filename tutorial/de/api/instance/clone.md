@@ -2,13 +2,13 @@
 
 
 
-Mithilfe der `clone`-Methode können Sie eine Kopie einer Elementinstanz klonen und erstellen.
+Mit der Methode `clone` kann man eine Kopie einer Elementinstanz klonen und erstellen.
 
-<o-playground name="clone - Element klonen" style="--editor-height: 320px">
+<o-playground name="Klon - Element klonen" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
-      <div id="target" style="color:red;">Ich bin das Ziel</div>
-      <div>Logger:</div>
+      <div id="target" style="color:red;">I am target</div>
+      <div>logger:</div>
       <div id="logger"></div>
       <script>
         setTimeout(()=>{

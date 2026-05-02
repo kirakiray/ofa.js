@@ -2,9 +2,9 @@
 
 
 
-Mit der `host`-Eigenschaft kann man die Host-Komponenten-Instanz eines Elements abrufen. Das ist sehr nützlich, um innerhalb einer Komponente auf Daten und Methoden ihrer Host-Komponente zuzugreifen.
+Mit der Eigenschaft `host` kann man die Instanz der Host-Komponente eines Elements abrufen. Das ist sehr nützlich, um innerhalb einer Komponente auf Daten und Methoden ihrer Host-Komponente zuzugreifen.
 
-Hier ist ein Beispiel, das zeigt, wie Sie mit dem `host`-Attribut eine Instanz der Host-Komponente abrufen können:
+Hier ist ein Beispiel, das zeigt, wie man mit der `host`-Eigenschaft eine Instanz der Host-Komponente abruft:
 
 <o-playground name="host - Host abrufen" style="--editor-height: 700px">
   <code path="demo.html" preview>
@@ -63,16 +63,16 @@ Hier ist ein Beispiel, das zeigt, wie Sie mit dem `host`-Attribut eine Instanz d
   </code>
 </o-playground>
 
-In diesem Beispiel haben wir eine benutzerdefinierte Komponente `user-card` erstellt und innerhalb der Komponente über `this.host` auf die Methode `sayHi` der Host-Komponente (Seite) zugegriffen, um die Interaktion zwischen Komponente und Host zu realisieren.
+In diesem Beispiel erstellen wir eine benutzerdefinierte Komponente `user-card` und greifen innerhalb der Komponente über `this.host` auf die Methode `sayHi` der Host-Komponente (Seite) zu, wodurch eine Interaktion zwischen der Komponente und dem Host realisiert wird.
 
-Wenn sich das Element nicht innerhalb einer Komponente oder Seitenmoduls befindet, ist der Wert von `host` `null`. Beispiel:
+Wenn sich das Element nicht innerhalb einer Komponente oder eines Seitenmoduls befindet, ist der Wert von `host` `null`. Zum Beispiel:
 
-<o-playground name="host - Kein Host-Fall" style="--editor-height: 300px">
+<o-playground name="host - Kein Host" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
         <li id="target">
-          Ich bin das Ziel
+          I am target
         </li>
       </ul>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>
@@ -85,4 +85,4 @@ Wenn sich das Element nicht innerhalb einer Komponente oder Seitenmoduls befinde
   </code>
 </o-playground>
 
-In diesem Beispiel befindet sich das `#target`-Element direkt unter body und nicht innerhalb einer Komponente oder Seite, daher ist der Wert von `$("#target").host` `null`.
+In diesem Beispiel befindet sich das `#target`-Element im body, nicht innerhalb einer Komponente oder Seite, daher ist der Wert von `$("#target").host` `null`.

@@ -1,22 +1,22 @@
 # Application à page unique
 
-Une application à page unique lie le composant `o-app` à la barre d'adresse du navigateur, afin de synchroniser l'URL de la page avec le chemin des pages au sein de l'application. Après avoir activé l'application à page unique :
+Une application monopage lie le composant `o-app` à la barre d’adresse du navigateur, synchronisant ainsi l’URL de la page avec le chemin des pages au sein de l’application. Après l’activation de l’application monopage :
 
-- Rafraîchir la page permet de conserver l’état actuel de la route
-- Copier l’URL de la barre d’adresse et l’ouvrir dans un autre navigateur ou onglet restaure également l’état de l’application
+- Actualiser la page web permet de conserver l’état actuel de la route
+- Copier l’URL de la barre d’adresse et l’ouvrir dans un autre navigateur ou onglet permet également de restaurer l’état de l’application
 - Les boutons Précédent/Suivant du navigateur fonctionnent normalement
 
 ## Utilisation de base
 
-Utilisez le composant officiel `o-router` pour envelopper le composant `o-app`, afin de réaliser une application à page unique.
+Enveloppez le composant `o-app` avec le composant officiel `o-router` pour réaliser une application à page unique.
 
 ```html
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>test de routeur</title>
+    <title>router test</title>
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
   </head>
   <body>
@@ -28,9 +28,9 @@ Utilisez le composant officiel `o-router` pour envelopper le composant `o-app`, 
 </html>
 ```
 
-## Attribut fix-body
+## fix-body attribut
 
-Après l’ajout de l’attribut `fix-body`, `o-router` réinitialise automatiquement les styles de `html` et `body`, éliminant les marges et les rembourrages par défaut.
+Après avoir ajouté l'attribut `fix-body`, `o-router` réinitialisera automatiquement les styles de `html` et `body`, éliminant les marges et le padding par défaut.
 
 ```html
 <o-router fix-body>
@@ -38,12 +38,10 @@ Après l’ajout de l’attribut `fix-body`, `o-router` réinitialise automatiqu
 </o-router>
 ```
 
-Cela est particulièrement utile dans les cas suivants :- nécessite que `o-app` remplisse entièrement la fenêtre
-- lorsque l’application est le seul contenu de la page
+Ceci est particulièrement utile dans les scénarios suivants：- nécessite que `o-app` remplisse complètement le viewport
+- lorsque l'application constitue le seul contenu de la page
 
 ## Exemple
-
-
 
 <o-playground name="Exemple d'application monopage" style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -55,9 +53,9 @@ Cela est particulièrement utile dans les cas suivants :- nécessite que `o-app`
     </template>
   </code>
   <code path="app-config.js">
-    // URL de la page d'accueil de l'application
+    // Adresse de la page d'accueil
     export const home = "./home.html";
-    // Configuration de l'animation de transition des pages
+    // Configuration de l'animation de transition de page
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -105,15 +103,15 @@ Cela est particulièrement utile dans les cas suivants :- nécessite que `o-app`
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>Aller à À propos</a>
+      <a href="./about.html" olink>Go to About</a>
       <br>
       <br>
-      <button on:click="gotoAbout">Bouton Aller à À propos</button>
+      <button on:click="gotoAbout">Go to About Button</button>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Bonjour Démo d'application ofa.js",
+              val: "Hello ofa.js App Demo",
             },
             proto:{
                 gotoAbout(){
@@ -133,13 +131,13 @@ Cela est particulièrement utile dans les cas suivants :- nécessite que `o-app`
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">Retour</button> </div>
-      <p> À propos de <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
+      <div style="padding: 8px;"> <button on:click="back()">Back</button> </div>
+      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Bonjour Démo d'application ofa.js",
+              val: "Hello ofa.js App Demo",
             },
           };
         };
@@ -150,21 +148,21 @@ Cela est particulièrement utile dans les cas suivants :- nécessite que `o-app`
 
 ## Principe de fonctionnement
 
-Applications à page unique implémentées via le mode Hash du navigateur :
+Implémentation du mode Hash basé sur le navigateur pour une application monopage :
 
-1. Lorsqu’un changement de page se produit dans l’application, `o-router` met automatiquement à jour la valeur de hash dans la barre d’adresse (par exemple `#/about.html`)
-2. Lorsque l’utilisateur actualise la page ou y accède via l’URL, `o-router` lit la valeur de hash et charge la page correspondante
-3. Les boutons Précédent/Suivant du déclenchent une modification du hash, contrôlant ainsi la navigation dans l’application
+1. Lors du changement de page dans l'application, `o-router` met automatiquement à jour la valeur de hash dans la barre d'adresse (par exemple `#/about.html`)
+2. Lorsque l'utilisateur actualise la page ou y accède via l'URL, `o-router` lit la valeur de hash et charge la page correspondante
+3. Les boutons Précédent/Suivant du déclenchent un changement de hash, contrôlant ainsi la navigation dans l'application
 
-## Exemple de changement d'URL
+## Exemples de changements d'URL
 
-Supposons que l'application comporte deux pages `home.html` et `about.html` :
+Supposons que l'application ait deux pages `home.html` et `about.html` :
 
-| Opération utilisateur | Changement dans la barre d’adresse |
-|---------|-----------|
-| Ouvrir l’application | `index.html` → `index.html#/home.html` |
-| Naviguer vers la page À propos | `index.html#/home.html` → `index.html#/about.html` |
+| Action utilisateur | Changement de la barre d'adresse |
+|-------------------|-----------------------------------|
+| Ouvrir l'application | `index.html` → `index.html#/home.html` |
+| Aller à la page À propos | `index.html#/home.html` → `index.html#/about.html` |
 | Cliquer sur Retour | `index.html#/about.html` → `index.html#/home.html` |
-| Actualiser la page | Conserver le hash actuel |## Limites d'utilisation
+| Actualiser la page | Conserver le hash actuel inchangé |## Limites d'utilisation
 
-- Une application monopage ne peut être utilisée qu'avec **un** seul composant `o-app`
+- Une application monopage ne peut fonctionner qu’avec **un seul** composant `o-app`

@@ -2,9 +2,9 @@
 
 
 
-Abrufen des `dataset` eines Elements, verwendet das `data`-Attribut und bleibt mit dem nativen [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) konsistent.
+Holen Sie das `dataset` des Elements, verwenden Sie das `data`-Attribut und halten Sie es mit dem nativen [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) konsistent.
 
-<o-playground name="data - Nutzungsbeispiel" style="--editor-height: 400px">
+<o-playground name="data - Anwendungsbeispiel" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <style>

@@ -1,10 +1,10 @@
 # one
 
-Using the `one` method, you can register a one-time event handler for a target element, meaning the handler will automatically unbind after the first trigger and will not fire again.
+Using the `one` method, you can register a one-time event handler for the target element, which means the event handler will automatically unbind after the first trigger and will not be triggered again.
 
-Below is an example demonstrating how to use the `one` method to register a click event handler for a button element:
+Below is an example showing how to use the `one` method to register a click event handler for a button element:
 
-<o-playground name="one - click one-time event" style="--editor-height: 300px">
+<o-playground name="one-click one-time event" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <button id="target">add count</button>
@@ -21,9 +21,9 @@ Below is an example demonstrating how to use the `one` method to register a clic
   </code>
 </o-playground>
 
-In this example, we use the `one` method to add a click event handler to the button element. When the user clicks the button, the event handler triggers but will not fire again afterward because it has been unbound.
+In this example, we use the `one` method to add a click event handler to the button element. When the user clicks the button, the event handler is triggered, but it will not be triggered again because it has been unbound.
 
-## Template Syntax Usage
+## Using Template Syntax
 
 You can also use template syntax to bind a one-time event handler to the target element.
 
@@ -55,4 +55,4 @@ You can also use template syntax to bind a one-time event handler to the target 
   </code>
 </o-playground>
 
-In this example, we bind a method named `addCount` to the button element using `one:click`. When the user clicks the button, this method will be called, but it will not trigger again afterward because it is a one-time event handler.
+In this example, we use `one:click` on a button element to bind a method named `addCount`. When the user clicks the button, this method will be called, but it will not be triggered again because it is a one-time event handler.

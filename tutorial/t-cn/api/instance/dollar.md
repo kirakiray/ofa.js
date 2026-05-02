@@ -151,3 +151,43 @@ const $ele = $(ele);
 </o-playground>
 
 在這個示例中，我們使用 `$` 函數通過對象的方式定義瞭一個新元素實例，包括標籤類型、文本內容和樣式屬性，並將其添加到具有 `id` 爲 "target1" 的現有元素實例內。
+
+## 獲取的示例和頁面/組件實例的關系
+
+
+
+`$` 方法可用於從全侷獲取對應頁面或組件元素的實例，其功能與頁面或組件模塊內生命周期方法中的 `this` 指向相衕。
+
+```html
+<!DOCTYPE html>
+...
+<l-m src="./test-comp.html"></l-m>
+<test-comp id="target"></test-comp>
+<script type="module">
+  setTimeout(()=>{
+    console.log($('#target').title);  // => OFAJS 組件示例
+  },300);
+</script>
+```
+
+```html
+<!-- test-comp.html -->
+ <template component>
+  <div>
+    <p>{{title}}</p>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "test-comp",
+        data: {
+          title: "OFAJS 組件示例",
+        },
+        attached(){
+          console.log(this === $('#target')); // true
+        }
+      };
+    };
+  </script>
+ </template>
+```

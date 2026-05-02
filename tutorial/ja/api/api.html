@@ -9,13 +9,14 @@
 <article><h1>API ドキュメント</h1>
 
 <p>
-    ofa.jsはテンプレート構文のサポートだけでなく、DOMを直接操作するための豊富なAPIも提供します。
+    ofa.js はテンプレート構文をサポートするだけでなく、DOMを直接操作するための豊富なAPIも提供します。
     <a href="https://jquery.com/">jQuery</a>
-    のように、長いネイティブJavaScriptの代わりに简洁なofa.js構文を使用して、気軽にDOM操作を完了できます。
+    と同様に、簡潔なofa.jsの構文で冗長なネイティブJavaScriptを置き換え、DOM操作を簡単に行えます。
   </p>
 
 <p>
-    コンポーネントやページモジュールのライフサイクル関数やカスタムメソッド内では、ofa.jsが提供するAPIをいつでも呼び出して、DOM要素を柔軟かつ効率的に操作することができます。
+    コンポーネントやページモジュールのライフサイクル関数やカスタムメソッドの中で、いつでもofa.jsが提供する
+    API、を呼び出してDOM要素を柔軟かつ効率的に操作できます。
   </p>
 
 <api-container>
@@ -23,207 +24,207 @@
       <h3>インスタンス関連</h3>
       <api-item>
         <a href="./instance/dollar.md">$(selector)</a>
-        <p>ofa.js の中核となる関数で、DOM 要素インスタンスの取得と操作に使用</p>
+        <p>ofa.jsのコア関数で、DOM要素インスタンスを取得・操作するために使用します</p>
       </api-item>
       <api-item>
         <a href="./instance/all.md">all</a>
-        <p>現在の要素のすべての子要素インスタンスを取得</p>
+        <p>現在の要素のすべての子要素インスタンスを取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/shadow.md">shadow</a>
-        <p>現在の要素の shadow root を取得</p>
+        <p>現在の要素のシャドウルートを取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/prev.md">prev</a>
-        <p>現在の要素の前の兄弟要素を取得</p>
+        <p>現在の要素の前の兄弟要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/prevs.md">prevs</a>
-        <p>現在の要素より前のすべての兄弟要素を取得</p>
+        <p>現在の要素より前のすべての兄弟要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/next.md">next</a>
-        <p>現在の要素の次の兄弟要素を取得</p>
+        <p>現在の要素の次の兄弟要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/nexts.md">nexts</a>
-        <p>現在の要素より後のすべての兄弟要素を取得</p>
+        <p>現在の要素より後のすべての兄弟要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/siblings.md">siblings</a>
-        <p>現在の要素のすべての兄弟要素を取得</p>
+        <p>現在の要素のすべての兄弟要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/parent.md">parent</a>
-        <p>現在の要素の親要素を取得</p>
+        <p>現在の要素の親要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/parents.md">parents</a>
-        <p>現在の要素のすべての祖先要素を取得</p>
+        <p>現在の要素のすべての祖先要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/clone.md">clone</a>
-        <p>現在の要素とその子要素を複製</p>
+        <p>現在の要素とその子要素を複製します</p>
       </api-item>
       <api-item>
         <a href="./instance/ele.md">ele</a>
-        <p>現在の要素の子要素インスタンスを取得</p>
+        <p>現在の要素の子要素インスタンスを取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/root.md">root</a>
-        <p>現在の要素が属するルートインスタンスを取得</p>
+        <p>現在の要素が属するルートインスタンスを取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/children.md">子要素</a>
-        <p>現在の要素のすべての子要素を取得</p>
+        <p>現在の要素のすべての子要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/host.md">host</a>
-        <p>現在の要素が所属する web component ホスト要素を取得</p>
+        <p>現在の要素が属するウェブコンポーネントのホスト要素を取得します</p>
       </api-item>
       <api-item>
         <a href="./instance/app.md">app</a>
-        <p>現在の要素が所属する o-app コンポーネントインスタンスを取得</p>
+        <p>現在の要素が属するo-appコンポーネントインスタンスを取得します</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>ノード操作</h3>
       <api-item>
         <a href="./operation/array-like.md">push</a>
-        <p>現在の要素に子要素を追加</p>
+        <p>現在の要素に子要素を追加します</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=11">pop</a>
-        <p>現在の要素の最後の子要素を削除</p>
+        <p>現在の要素の最後の子要素を削除します</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=14">shift</a>
-        <p>現在の要素の最初の子要素を削除</p>
+        <p>現在の要素の最初の子要素を削除します</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=8">unshift</a>
-        <p>現在の要素の最初に子要素を追加</p>
+        <p>現在の要素の最初の子要素として追加します</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=17">splice</a>
-        <p>現在の要素の子要素を追加または削除</p>
+        <p>現在の要素の子要素を追加または削除します</p>
       </api-item>
       <api-item>
         <a href="./operation/before.md">before</a>
-        <p>現在の要素の前に子要素を追加</p>
+        <p>現在の要素の前に子要素を追加します</p>
       </api-item>
       <api-item>
         <a href="./operation/after.md">after</a>
-        <p>現在の要素の後に子要素を追加</p>
+        <p>現在の要素の後に子要素を追加します</p>
       </api-item>
       <api-item>
         <a href="./operation/remove.md">remove</a>
-        <p>現在の要素を削除</p>
+        <p>現在の要素を削除します</p>
       </api-item>
       <api-item>
         <a href="./operation/wrap.md">wrap</a>
-        <p>現在の要素を指定要素で包む</p>
+        <p>現在の要素を指定した要素でラップします</p>
       </api-item>
       <api-item>
         <a href="./operation/unwrap.md">unwrap</a>
-        <p>現在の要素の親要素のラップを解除</p>
+        <p>現在の要素の親要素によるラップを解除します</p>
       </api-item>
     </api-list>
     <api-list>
-      <h3>属性操作</h3>
+      <h3>プロパティ操作</h3>
       <api-item>
         <a href="./props/text.md">text</a>
-        <p>要素のテキストコンテンツを取得または設定</p>
+        <p>要素のテキストコンテンツを取得または設定します</p>
       </api-item>
       <api-item>
         <a href="./props/html.md">html</a>
-        <p>要素の HTML コンテンツを取得または設定</p>
+        <p>要素のHTMLコンテンツを取得または設定します</p>
       </api-item>
       <api-item>
         <a href="./props/attr.md">attr</a>
-        <p>要素の属性を取得または設定</p>
+        <p>要素の属性を取得または設定します</p>
       </api-item>
       <api-item>
         <a href="./props/css.md">css</a>
-        <p>要素のスタイルを取得または設定</p>
+        <p>要素のスタイルを取得または設定します</p>
       </api-item>
       <api-item>
         <a href="./props/style.md">style</a>
-        <p>要素の style オブジェクトを取得</p>
+        <p>要素のstyleオブジェクトを取得します</p>
       </api-item>
       <api-item>
         <a href="./props/class-list.md">classList</a>
-        <p>要素のクラス名リストを取得</p>
+        <p>要素のクラス名リストを取得します</p>
       </api-item>
       <api-item>
         <a href="./props/data.md">data</a>
-        <p>要素の data 属性を取得または設定</p>
+        <p>要素のdata属性を取得または設定します</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>イベント関連</h3>
       <api-item>
         <a href="./event/on.md">on</a>
-        <p>要素にイベントリスナーを追加</p>
+        <p>要素にイベントリスナーを追加します</p>
       </api-item>
       <api-item>
         <a href="./event/one.md">one</a>
-        <p>要素に一度だけ実行されるイベントリスナーを追加</p>
+        <p>要素に一度だけ実行されるイベントリスナーを追加します</p>
       </api-item>
       <api-item>
         <a href="./event/emit.md">emit</a>
-        <p>要素のカスタムイベントをトリガー</p>
+        <p>要素のカスタムイベントを発火します</p>
       </api-item>
       <api-item>
         <a href="./event/off.md">off</a>
-        <p>要素のイベントリスナーを削除</p>
+        <p>要素のイベントリスナーを削除します</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>その他</h3>
       <api-item>
         <a href="./others/app.md">o-appコンポーネント</a>
-        <p>ofa.js アプリケーションのルートコンポーネントで、アプリケーション状態とルーティングを管理</p>
+        <p>ofa.jsアプリケーションのルートコンポーネントで、アプリケーションの状態とルーティングを管理するために使用します</p>
       </api-item>
       <api-item>
         <a href="./others/page.md">o-pageコンポーネント</a>
-        <p>ofa.js のページコンポーネントで、シングルページアプリケーションのページを作成</p>
+        <p>ofa.jsのページコンポーネントで、シングルページアプリケーションのページを作成するために使用します</p>
       </api-item>
       <api-item>
         <a href="./others/form-data.md">formData</a>
-        <p>フォームデータを取得</p>
+        <p>フォームデータを取得します</p>
       </api-item>
       <api-item>
         <a href="./others/tag.md">tag</a>
-        <p>要素のタグ名を取得</p>
+        <p>要素のタグ名を取得します</p>
       </api-item>
       <api-item>
         <a href="./others/index.md">index</a>
-        <p>要素が親要素内でのインデックスを取得</p>
+        <p>要素の親要素内でのインデックスを取得します</p>
       </api-item>
       <api-item>
         <a href="./others/is.md">is</a>
-        <p>要素が指定セレクタに一致するかを判定</p>
+        <p>要素が指定されたセレクタに一致するかどうかを判定します</p>
       </api-item>
       <api-item>
         <a href="./others/refresh.md">refresh</a>
-        <p>現在のコンポーネントまたはページをリフレッシュ</p>
+        <p>現在のコンポーネントまたはページをリフレッシュします</p>
       </api-item>
       <api-item>
         <a href="./others/path.md">PATH</a>
-        <p>現在のページパスを取得</p>
+        <p>現在のページのパスを取得します</p>
       </api-item>
       <api-item>
         <a href="./others/extend.md">extend</a>
-        <p>ofa.js の機能を拡張</p>
+        <p>ofa.jsの機能を拡張します</p>
       </api-item>
       <api-item>
         <a href="./others/version.md">version</a>
-        <p>ofa.js のバージョン番号を取得</p>
+        <p>ofa.jsのバージョン番号を取得します</p>
       </api-item>
       <api-item>
-        <a href="./others/stanz.md">インスタンスデータ特徴</a>
-        <p>Stanz は ofa.js のリアクティブデータ特徴で、データの自動更新をサポート</p>
+        <a href="./others/stanz.md">インスタンスデータ機能</a>
+        <p>Stanzはofa.jsのリアクティブデータ機能で、データの自動更新をサポートします</p>
       </api-item>
     </api-list>
   </api-container>

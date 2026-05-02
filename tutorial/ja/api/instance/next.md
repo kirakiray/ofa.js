@@ -2,9 +2,9 @@
 
 
 
-`next` プロパティを使用すると、要素の次の隣接する要素インスタンスを取得できます。
+`next` 属性を使用すると、要素の次の隣接する要素インスタンスを取得できます。
 
-<o-playground name="next - 後の要素" style="--editor-height: 320px">
+<o-playground name="next - 次の要素" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

@@ -2,14 +2,14 @@
 
 
 
-`off` メソッドを使用すると、登録済みのイベントハンドラを解除し、イベントのリスニングをキャンセルできます。
+使用 `off` メソッドを使用すると、登録されたイベントハンドラを解除して、イベントの監視をキャンセルできます。
 
-以下は、`off` メソッドを使用してイベントリスナーを解除する方法の例です：
+以下は、`off` メソッドを使用してイベントリスナーを解除する例です：
 
-<o-playground name="off - イベントリスナーの削除" style="--editor-height: 400px">
+<o-playground name="off - イベントリスナー削除" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
-      <button id="target">カウントを追加</button>
+      <button id="target">add count</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>
@@ -27,4 +27,4 @@
   </code>
 </o-playground>
 
-この例では、クリックイベントハンドラ `f` を登録し、ボタンがクリックされるとイベントハンドラが `#logger` にクリック回数を表示します。`off` メソッドを使って、クリック回数が3に達したときにイベントのリスニングを解除しました。
+この例では、クリックイベントハンドラ `f` を登録し、ボタンがクリックされると、イベントハンドラが `#logger` にクリック回数を表示します。`off` メソッドを使用して、クリック回数が3に達したときにイベントのリスニングを解除します。

@@ -1,6 +1,6 @@
-# Slot
+# Slots
 
-A slot is a placeholder within a component for receiving external content. By using slots, you can create reusable components while allowing the component user to customize the content inside.
+Slots are placeholders in components for receiving external content. By using slots, you can create reusable components while allowing the person using the component to customize its internal content.
 
 ## Default Slot
 
@@ -21,8 +21,7 @@ A slot is a placeholder within a component for receiving external content. By us
           border: 1px solid green;
           padding: 8px;
         }
-      </style>
-      Slot content:
+      </style>Slot Content：
       <br />
       <span style="color: red;">
         <slot></slot>
@@ -50,7 +49,7 @@ When the parent component provides no slot content, the elements inside `<slot><
       <demo-comp>
         <div>This is custom content</div>
       </demo-comp>
-      <h3>Without slot content (shows default):</h3>
+      <h3>Without slot content (showing default content):</h3>
       <demo-comp></demo-comp>
     </template>
   </code>
@@ -82,7 +81,7 @@ When the parent component provides no slot content, the elements inside `<slot><
 
 ## Named Slots
 
-When a component requires multiple slot positions, named slots can be used to distinguish between different slots. Define named slots using `<slot name="xxx">`, and when using them, specify which slot the content should be placed into with the `slot="xxx"` attribute.
+When a component needs multiple slot positions, named slots can be used to distinguish different slots. Define named slots with `<slot name="xxx">`, and when using them, specify which slot the content goes into with the `slot="xxx"` attribute.
 
 <o-playground name="Named Slot Example" style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -102,7 +101,7 @@ When a component requires multiple slot positions, named slots can be used to di
           border: 1px solid green;
           padding: 8px;
         }
-      </style>Slot Content:
+      </style>Slot content:
       <br />
       <span style="color: red;">
         <slot></slot>
@@ -124,9 +123,9 @@ When a component requires multiple slot positions, named slots can be used to di
 
 ## Multi-level Slot Passing
 
-Slot content can be passed across multiple component layers. After a parent component passes slot content to a child component, the child can forward that slot content to its own children, enabling multi-level slot propagation.
+Slot content can be passed across multiple layers of components. When a parent component passes slot content to a child component, the child component can further pass this slot content to its own child components, enabling multi-layer transparent transmission of slots.
 
-<o-playground name="Multi-level Slot Forwarding Example" style="--editor-height: 500px">
+<o-playground name="Multi-level Slot Passing Example" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
@@ -183,6 +182,6 @@ Slot content can be passed across multiple component layers. After a parent comp
   </code>
 </o-playground>
 
-In the example above:- The outermost parent component defines the content for `slot="header"`
-- The outer component (outer-comp) receives this slot content and passes it on to the inner component (inner-comp)
-- The inner component finally renders the slot content originating from the outermost layer
+In the example above:- The outermost parent component defines the content with `slot="header"`
+- After receiving this slot content, the outer component (outer-comp) passes it on to the inner component (inner-comp)
+- The inner component finally renders the slot content from the outermost layer

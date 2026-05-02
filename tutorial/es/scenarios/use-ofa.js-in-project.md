@@ -1,26 +1,26 @@
-# Guía de prompts de IA para usar ofa.js en proyectos
+# Uso de los prompts de IA de ofa.js en el proyecto
 
-Debido a que ofa.js aún no se ha convertido en un framework ampliamente conocido, los principales modelos de IA aún no tienen la capacidad de utilizar ofa.js directamente. Por ello, hemos preparado cuidadosamente indicaciones especializadas para ayudar a la IA a aprender y consultar los métodos de uso de ofa.js.
+Debido a que ofa.js aún no es un marco ampliamente conocido, los modelos de IA convencionales aún no tienen la capacidad de usar ofa.js directamente. Por ello, hemos preparado cuidadosamente indicaciones especiales para ayudar a la IA a aprender y consultar cómo usar ofa.js.
 
-Proporcionamos dos versiones de la indicación:
+Proporcionamos dos versiones de las instrucciones:
 
-## Indicaciones simplificadas
+## Versión simplificada del prompt
 
-Esta es una versión concentrada y optimizada, diseñada para minimizar el consumo de tokens de entrada iniciales, adecuada para la mayoría de los escenarios:
+Esta es una versión optimizada y condensada, diseñada para minimizar el consumo de tokens de entrada previa, adecuada para la mayoría de los escenarios:
 
 ```
 https://raw.githubusercontent.com/ofajs/ofa.js/main/llms/tiny/start.md
 ```
 
-Con este prompt, la IA puede desarrollar eficientemente componentes o módulos de página para ofa.js.
+Usando este prompt, la IA puede desarrollar de manera eficiente los componentes o módulos de página de ofa.js.
 
-## Prompt completo
+## Versión completa del prompt
 
-Si el modelo de IA que estás utilizando es relativamente menos inteligente, puedes intentar usar la versión completa y sin condensar del prompt. Aunque ocupará más tokens durante la inicialización, es posible que obtengas mejores resultados:
+Si el modelo de IA que utiliza no es lo suficientemente inteligente, puede intentar usar la versión completa no concentrada de las indicaciones. Aunque la inicialización consumirá más tokens, es posible que obtenga mejores resultados:
 
 ```
 https://raw.githubusercontent.com/ofajs/ofa.js/main/llms/origin/start.md
 ```
 
-Al proporcionar estos prompts, esperamos ayudar a los desarrolladores a utilizar de manera más conveniente las herramientas de IA para el desarrollo de proyectos de ofa.js, mejorando así la eficiencia del desarrollo.
+Al proporcionar estas indicaciones, esperamos ayudar a los desarrolladores a utilizar las herramientas de IA de manera más conveniente para el desarrollo de proyectos de ofa.js y mejorar la eficiencia del desarrollo.
 

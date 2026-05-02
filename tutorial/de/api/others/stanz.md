@@ -1,16 +1,16 @@
-# Merkmale der Beispieldaten
+# Beispieldatenmerkmale
 
-Durch `$` abgerufene oder erstellte Instanzobjekte verfügen über vollständige stanz-Datenmerkmale, da `$`-Instanzen von stanz erben. Das bedeutet, dass Sie die von `stanz` bereitgestellten Datenoperationen und Merkmale nutzen können, um die Daten von Instanzobjekten zu manipulieren und zu überwachen.
+Die durch `$` abgerufenen oder erstellten Instanzobjekte besitzen vollständige stanz-Dateneigenschaften, da die `$`-Instanz von stanz abgeleitet ist. Dies bedeutet, dass Sie die von `stanz` bereitgestellten Datenoperationsmethoden und -eigenschaften nutzen können, um die Daten der Instanzobjekte zu manipulieren und zu überwachen.
 
-> Die folgenden Beispiele verwenden reguläre Elemente, da benutzerdefinierte Komponenten in der Regel bereits registrierte Daten mitbringen, während reguläre Elemente normalerweise nur Tag-Informationen enthalten und daher besser für die Demonstration geeignet sind.
+> Die folgenden Beispiele verwenden reguläre Elemente, da benutzerdefinierte Komponenten normalerweise bereits registrierte Daten enthalten, während reguläre Elemente meist nur Tag-Informationen enthalten und daher besser für die Demonstration geeignet sind.
 
 ## watch
 
 
 
-Instanzen können Änderungen von Werten über die `watch`-Methode beobachten; selbst wenn der Wert eines Unterobjekts des Objekts geändert wird, kann die Änderung in der `watch`-Methode des Objekts wahrgenommen werden.
+Instanzen können mithilfe der `watch`-Methode Änderungen von Werten überwachen; selbst wenn ein Wert eines Unterobjekts geändert wird, kann die Änderung in der `watch`-Methode des Objekts erfasst werden.
 
-Im Folgenden finden Sie ein Beispiel, das zeigt, wie man die `$`-Instanz und die `watch`-Methode verwendet:
+Unten ist ein Beispiel, das die Verwendung der `$`-Instanz und der `watch`-Methode demonstriert:
 
 <o-playground name="stanz - watch" style="--editor-height: 480px">
   <code path="demo.html">
@@ -25,32 +25,32 @@ Im Folgenden finden Sie ein Beispiel, das zeigt, wie man die `$`-Instanz und die
           \$("#logger").text = target;
         });
         setTimeout(() => {
-          target.aaa = "Ich bin aaa";
+          target.aaa = "I am aaa";
         }, 600);
         setTimeout(() => {
           target.bbb = {
             child: {
-              val: "Ich bin bbb child val",
+              val: "I am bbb child val",
             },
           };
         }, 1200);
         setTimeout(() => {
-          target.bbb.child.val = "ändere bbb child val";
+          target.bbb.child.val = "change bbb child val";
         }, 1800);
       </script>
     </template>
   </code>
 </o-playground>
 
-In diesem Beispiel erstellen wir zunächst eine `$`-Instanz `target` und verwenden dann die Methode `watch`, um ihre Änderungen zu überwachen. Selbst wenn wir Werte in untergeordneten Objekten ändern, z. B. den Wert von `target.bbb.child.val`, werden diese Änderungen von der Methode `watch` erkannt und der Inhalt des `logger`-Elements aktualisiert. Dies zeigt die leistungsstarke Funktionalität der `$`-Instanz und ermöglicht es dir, Objektänderungen mühelos zu überwachen.
+In diesem Beispiel erstellen wir zunächst eine `$`-Instanz namens `target` und verwenden dann die Methode `watch`, um Änderungen daran zu überwachen. Selbst wenn wir Werte in untergeordneten Objekten ändern, z. B. den Wert von `target.bbb.child.val`, werden diese Änderungen von der Methode `watch` erkannt und der Inhalt des `logger`-Elements entsprechend aktualisiert. Dies zeigt die leistungsstarke Funktionalität der `$`-Instanz und ermöglicht es dir, Änderungen an Objekten mühelos zu überwachen.
 
 ## watchTick
 
 
 
-`watchTick` und die `watch`-Methode haben ähnliche Funktionen, aber `watchTick` führt intern eine Drosselung durch und wird in einem einzelnen Thread nur einmal ausgeführt, daher kann es in Szenarien mit höheren Leistungsanforderungen effizienter Datenänderungen überwachen.
+`watchTick` und die `watch`-Methode haben eine ähnliche Funktionalität, aber `watchTick` verfügt intern über eine Drosselungsoperation, die in einem einzelnen Thread einmal ausgeführt wird. Daher kann es in Szenarien mit höheren Leistungsanforderungen effektiver auf Datenänderungen überwachen.
 
-Nachfolgend ein Beispiel, das zeigt, wie die `watchTick`-Methode einer `$`-Instanz verwendet wird:
+Hier ist ein Beispiel, das zeigt, wie man die `watchTick`-Methode einer `$`-Instanz verwendet:
 
 <o-playground name="stanz - watchTick" style="--editor-height: 480px">
   <code path="demo.html">
@@ -64,12 +64,12 @@ Nachfolgend ein Beispiel, das zeigt, wie die `watchTick`-Methode einer `$`-Insta
         let count1 = 0;
         target.watch(() => {
           count1++;
-          \$("#logger1").text = 'watch Anzahl der Ausführungen:' + count1;
+          \$("#logger1").text = 'watch-Läufe：' + count1;
         });
         let count2 = 0;
         target.watchTick(()=>{
           count2++;
-          \$("#logger2").text = 'watchTick Anzahl der Ausführungen:' + count2;
+          \$("#logger2").text = 'watchTick-Läufe：' + count2;
         });
         setTimeout(() => {
           target.aaa = "I am aaa";
@@ -81,15 +81,15 @@ Nachfolgend ein Beispiel, das zeigt, wie die `watchTick`-Methode einer `$`-Insta
   </code>
 </o-playground>
 
-In diesem Beispiel erstellen wir zunächst eine `$`-Instanz namens `target`. Danach verwenden wir die Methoden `watch` und `watchTick`, um Änderungen am Objekt zu überwachen. Die Methode `watch` wird sofort bei Datenänderungen ausgeführt, während `watchTick` innerhalb eines einzelnen Threads nur einmal läuft und dadurch die Häufigkeit der Überwachungsoperationen begrenzt. Du kannst je nach Bedarf `watch` oder `watchTick` wählen, um Datenänderungen zu überwachen.
+In diesem Beispiel erstellen wir zunächst eine `$`-Instanz `target`. Danach nutzen wir die Methoden `watch` und `watchTick`, um Änderungen am Objekt zu überwachen. Die Methode `watch` wird sofort bei einer Datenänderung ausgeführt, während `watchTick` innerhalb eines einzelnen Threads nur einmal läuft und dadurch die Häufigkeit der Überwachungsoperationen begrenzt. Je nach Bedarf kannst du `watch` oder `watchTick` wählen, um Datenänderungen zu beobachten.
 
 ## unwatch
 
 
 
-Die `unwatch`-Methode wird verwendet, um die Überwachung von Daten aufzuheben und kann zuvor registrierte `watch`- oder `watchTick`-Überwachungen widerrufen.
+Die `unwatch`-Methode wird verwendet, um die Datenüberwachung abzubrechen, und kann zuvor registrierte `watch`- oder `watchTick`-Überwachungen widerrufen.
 
-Hier ist ein Beispiel, das zeigt, wie man die `unwatch`-Methode der `$`-Instanz verwendet:
+Hier ist ein Beispiel, das zeigt, wie die `unwatch`-Methode der `$`-Instanz verwendet wird:
 
 <o-playground name="stanz - unwatch" style="--editor-height: 480px">
   <code path="demo.html">
@@ -121,13 +121,13 @@ Hier ist ein Beispiel, das zeigt, wie man die `unwatch`-Methode der `$`-Instanz 
 
 In diesem Beispiel erstellen wir zunächst eine `$`-Instanz `target` und registrieren dann mit der `watch`-Methode und der `watchTick`-Methode jeweils einen Listener. Anschließend widerrufen wir diese beiden Listener, indem wir der `unwatch`-Methode die zuvor gespeicherten Rückgabewerte `tid1` und `tid2` übergeben. Das bedeutet, dass die Attributänderung im ersten `setTimeout` keinen Listener auslöst, da die Listener bereits widerrufen wurden.
 
-## Nicht überwachte Werte
+## Der nicht überwachte Wert
 
-In `$` Instanzen zeigen Attributnamen, die mit einem Unterstrich `_` beginnen, an, dass diese Werte nicht von den Methoden `watch` oder `watchTick` überwacht werden. Dies ist sehr nützlich für temporäre oder private Attribute, die du beliebig ändern kannst, ohne eine Überwachung auszulösen.
+In der `$`-Instanz zeigen Eigenschaftsnamen, die mit einem Unterstrich `_` beginnen, an, dass diese Werte nicht von den Methoden `watch` oder `watchTick` überwacht werden. Dies ist sehr nützlich für temporäre oder private Eigenschaften, bei denen Sie sie nach Belieben ändern können, ohne eine Überwachung auszulösen.
 
 In der Vorlage wird dies als [nicht-reaktive Daten](../../documentation/state-management.md) bezeichnet.
 
-Hier ist ein Beispiel, das zeigt, wie man Eigenschaftswerte mit Unterstrich am Anfang verwendet, um Abhörversuche zu vermeiden:
+Im Folgenden finden Sie ein Beispiel, das zeigt, wie Sie einen Attributwert, der mit einem Unterstrich beginnt, verwenden können, um das Abhören zu vermeiden:
 
 <o-playground name="stanz - Nicht-reaktive Daten" style="--editor-height: 480px">
   <code path="demo.html">
@@ -145,22 +145,22 @@ Hier ist ein Beispiel, das zeigt, wie man Eigenschaftswerte mit Unterstrich am A
           target._aaa = "Ich bin aaa";
         }, 600);
         setTimeout(() => {
-          target._aaa = "ändere aaa";
+          target._aaa = "Ändere aaa";
         }, 1200);
       </script>
     </template>
   </code>
 </o-playground>
 
-In diesem Beispiel erstellen wir eine `$`-Instanz `target` und verwenden die `watch`-Methode, um Änderungen von Eigenschaftswerten zu überwachen. In `setTimeout` versuchen wir, den Wert der Eigenschaft `_aaa` zu ändern, diese Änderung löst jedoch keine Überwachung aus. Dies ist sehr nützlich für Fälle, in denen Eigenschaftswerte aktualisiert werden sollen, ohne eine Überwachung auszulösen.
+In diesem Beispiel erstellen wir eine `$`-Instanz `target` und überwachen mit der Methode `watch` Änderungen von Eigenschaftswerten. Innerhalb von `setTimeout` versuchen wir, den Wert der Eigenschaft `_aaa` zu ändern; diese Änderung löst jedoch keine Überwachung aus. Das ist besonders nützlich, wenn Eigenschaftswerte aktualisiert werden sollen, ohne dabei die Überwachung auszulösen.
 
-## Grundmerkmale
+## Grundlegende Merkmale
 
-Objektdaten, die auf der Instanz gesetzt werden, werden in eine Stanz-Instanz konvertiert, und diese Stanz-Instanz ermöglicht das Abhören.
+Auf der Instanz gesetzte Objektdaten werden in Stanz-Instanzen konvertiert, die das Abhören ermöglichen.
 
 ```javascript
 const obj = {
-  val: "Ich bin obj"
+  val: "I am obj"
 };
 
 $("#target").obj = obj;
@@ -179,9 +179,9 @@ data.watch(() => {
   console.log(data.val);
 });
 
-data.val = "val ändern";
+data.val = "ändere val";
 ```
 
-Diese Beispiele zeigen grundlegende Merkmale beim Setzen von Objektdaten als Stanz-Instanz zum Lauschen.
+Diese Beispiele zeigen die grundlegenden Merkmale des Setzens von Objektdaten als Stanz-Instanz zum Abhören.
 
 Weitere vollständige Funktionen finden Sie unter [stanz](https://github.com/ofajs/stanz).

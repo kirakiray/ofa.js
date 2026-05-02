@@ -1,14 +1,14 @@
 # Add or remove child elements
 
-Element instances behave like arrays; nodes can be added or removed with the usual array methods. When using `push`, `unshift`, `pop`, `shift`, or `splice`, the internal [$ method](../instance/dollar.md) is automatically invoked for initialization, so you can pass element strings or objects directly.
+Element instances have array-like characteristics. Adding or removing nodes only requires using the array manipulation methods. When using `push`, `unshift`, `pop`, `shift`, and `splice` methods, the internal [$ method](../instance/dollar.md) initialization is automatically executed, so you can directly fill in the specific element strings or objects.
 
-Likewise, you can use other array methods such as `forEach`, `map`, `some`, and so on.
+Similarly, you can also use other array methods, such as `forEach`, `map`, `some`, etc.
 
-**Please note: Do not add or remove child elements on elements with template syntax.**
+**Please note: do not add or remove child elements on elements with template syntax.**
 
 ## push
 
-Add child element at the end
+Append child elements from the end.
 
 <o-playground name="array-like - push" style="--editor-height: 300px">
   <code path="demo.html">
@@ -29,7 +29,7 @@ Add child element at the end
 
 ## unshift
 
-Add a child element to the beginning of the array.
+Add child elements at the beginning of the array.
 
 <o-playground name="array-like - unshift" style="--editor-height: 300px">
   <code path="demo.html">
@@ -50,7 +50,7 @@ Add a child element to the beginning of the array.
 
 ## pop
 
-Delete child elements from the end.
+Remove child elements from the end.
 
 <o-playground name="array-like - pop" style="--editor-height: 300px">
   <code path="demo.html">
@@ -71,7 +71,7 @@ Delete child elements from the end.
 
 ## shift
 
-Remove sub-elements from the beginning of the array.
+Remove child elements from the beginning of the array.
 
 <o-playground name="array-like - shift" style="--editor-height: 300px">
   <code path="demo.html">
@@ -92,7 +92,7 @@ Remove sub-elements from the beginning of the array.
 
 ## splice
 
-You can delete or replace existing child elements, or add new child elements. Its usage is similar to the `splice` method of arrays.
+You can delete or replace existing child elements, or add new child elements. Its usage is similar to the array's `splice` method.
 
 <o-playground name="array-like - splice" style="--editor-height: 300px">
   <code path="demo.html">

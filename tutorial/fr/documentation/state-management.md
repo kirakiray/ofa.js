@@ -2,15 +2,15 @@
 
 ## Qu'est-ce que l'état
 
-Dans ofa.js, **l'état** fait référence à la propriété `data` propre à un composant ou à un module de page. Cet état ne peut être utilisé que sur le composant actuel et sert à stocker et gérer les données internes de ce composant.
+Dans ofa.js, **l'état** désigne l'attribut `data` propre au composant ou au module de page. Cet état ne peut être utilisé que dans le composant actuel, pour stocker et gérer les données internes de ce composant.
 
-Lorsque plusieurs composants ou pages doivent partager les mêmes données, la méthode traditionnelle consiste à les transmettre par événements ou à travers plusieurs niveaux de props, ce qui rend le code difficile à maintenir dans les applications complexes. Il est donc nécessaire d’avoir recours à la **gestion d’état** — en définissant un objet d’état partagé, plusieurs composants ou modules de page peuvent accéder à ces données et les modifier, réalisant ainsi le partage de l’état.
+Lorsque plusieurs composants ou pages doivent partager les mêmes données, l'approche traditionnelle consiste à les transmettre via des événements ou des props de manière hiérarchique, ce qui, dans les applications complexes, rend le code difficile à maintenir. Il est donc nécessaire d'utiliser une **gestion d'état** — en définissant un objet d'état partagé, permettant à plusieurs composants ou modules de page d'accéder et de modifier ces données, réalisant ainsi le partage de l'état.
 
-> **Astuce** : La gestion d'état est adaptée aux scénarios où des données doivent être partagées entre composants et pages, comme les informations utilisateur, le panier, la configuration du thème, la configuration globale, etc.
+> **Indice** : La gestion d'état est adaptée aux scénarios nécessitant le partage de données entre composants et pages, tels que les informations utilisateur, le panier d'achat, la configuration du thème, la configuration globale, etc.
 
 ## Générer un objet d'état
 
-En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode reçoit un objet ordinaire comme données initiales et renvoie un proxy d'état réactif.
+Créez un objet d'état réactif via `$.stanz({})`. Cette méthode prend un objet ordinaire comme données initiales et renvoie un proxy d'état réactif.
 
 ### Utilisation de base
 
@@ -23,7 +23,7 @@ En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode
   <code path="app-config.js" unimportant>
     // Adresse de la page d'accueil de l'application
     export const home = "./list.html";
-    // Configuration de l'animation de transition de page
+    // Configuration de l'animation de changement de page
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -43,12 +43,12 @@ En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode
   export const contacts = $.stanz({
     list: [{
         id: 10010,
-        name: "Peter",
-        info: "Chaque jour est un nouveau départ, le soleil brille toujours après la tempête.",
+        name: "Pete",
+        info: "Chaque jour est un nouveau début, le soleil brille toujours après l'orage.",
     },{
         id: 10020,
         name: "Mike",
-        info: "La vie est comme l'océan, seuls ceux qui ont une volonté ferme peuvent atteindre l'autre rive.",
+        info: "La vie est comme l'océan, seuls les hommes à la volonté forte atteignent l'autre rive.",
     },{
         id: 10030,
         name: "John",
@@ -65,11 +65,11 @@ En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode
           padding: 10px;
         }
       </style>
-      <h2>Contacts</h2>
+      <h2>Carnet d'adresses</h2>
       <ul>
         <o-fill :value="list">
           <li>
-          Nom: {{$data.name}} <button on:click="$host.gotoDetail($data)">Détail</button>
+          Nom : {{$data.name}} <button on:click="$host.gotoDetail($data)">Détail</button>
           </li>
         </o-fill>
       </ul>
@@ -124,7 +124,7 @@ En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode
       <div class="user-info">
         <div class="avatar">Avatar</div>
         <div style="font-size: 24px;">
-        Nom d'utilisateur: 
+        Nom d'utilisateur : 
           <o-if :value="editorMode">
             <input type="text" sync:value="userData.name"/>
             <button on:click="editorMode = false">✅</button>
@@ -134,7 +134,7 @@ En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode
             <button on:click="editorMode = true">🖊️</button>
           </o-else>
         </div>
-        <div style="font-size: 16px;">ID utilisateur: {{userData.id}}</div>
+        <div style="font-size: 16px;">ID utilisateur : {{userData.id}}</div>
         <p style="font-size: 14px;">{{userData.info}}</p>
       </div>
       <script>
@@ -158,11 +158,11 @@ En utilisant `$.stanz({})` pour créer un objet d'état réactif. Cette méthode
   </code>
 </o-playground>
 
-## Caractéristiques de l'objet d'état
+## Propriétés de l'objet d'état
 
-### 1. Mise à jour réactive
+### 1. Mises à jour réactives
 
-Les objets d'état créés par `$.stanz()` sont réactifs. Lorsque les données d'état changent, tous les composants qui référencent ces données se mettent à jour automatiquement.
+`$.stanz()` crée un objet d'état réactif. Lorsque les données d'état changent, tous les composants qui référencent ces données sont automatiquement mis à jour.
 
 ```javascript
 const store = $.stanz({ count: 0 });
@@ -174,11 +174,11 @@ export default {
   },
   proto:{
     increment() {
-        store.count++; // Tous les composants qui référencent store.count seront automatiquement mis à jour
+        store.count++; // Tous les composants qui référencent store.count seront mis à jour automatiquement
     }
   },
   attached() {
-    // Référence directe aux propriétés de l'objet d'état
+    // Référencez directement la propriété de l'objet d'état
     this.store = store;
   },
   detached(){
@@ -189,12 +189,12 @@ export default {
 
 ### 2. Réactivité en profondeur
 
-L'objet d'état prend en charge la réactivité en profondeur ; les changements des objets et tableaux imbriqués sont également surveillés.
+L'objet d'état prend en charge la réactivité profonde, les changements dans les objets imbriqués et les tableaux sont également surveillés.
 
 ```javascript
 const store = $.stanz({
   user: {
-    name: "Jean Dupont",
+    name: "ZhangShan",
     settings: {
       theme: "dark"
     }
@@ -202,17 +202,17 @@ const store = $.stanz({
   list: []
 });
 
-// La modification des propriétés imbriquées déclenchera également la mise à jour
-store.user.name = "Pierre Martin";
+// La modification de propriétés imbriquées déclenche également la mise à jour
+store.user.name = "LiSi";
 store.user.settings.theme = "light";
 store.list.push({ id: 1, title: "Nouvelle tâche" });
 ```
 
-## Bonnes pratiques
+## Meilleures pratiques
 
-### 1. Monter l'état lors de la phase attached du composant
+### 1. Montage de l'état dans la phase attached du composant
 
-Il est recommandé de monter l’état partagé dans le cycle de vie `attached` du composant :
+Il est recommandé de monter l'état partagé dans le cycle de vie `attached` du composant :
 
 ```javascript
 export default {
@@ -220,20 +220,20 @@ export default {
     list: []
   },
   attached() {
-    // Monter l'état partagé sur les data du composant
+    // Attacher l'état partagé aux données du composant
     this.list = data.list;
   },
   detached() {
-    // Lors de la destruction du composant, vider les données d'état montées pour éviter les fuites mémoire
+    // Lors de la destruction du composant, vider les données d'état attachées pour éviter les fuites mémoire
     this.list = [];
   }
 };
 ```
 
-### 2. Gestion raisonnée de la portée des états
+### 2. Gérer raisonnablement la portée de l'état
 
-- **État global** : Convient aux données accessibles par toute l'application (comme les informations utilisateur, la configuration globale)
-- **État de module** : Convient aux données partagées en interne par un module fonctionnel spécifique
+- **État global** : convient pour les données auxquelles toute l’application doit accéder (comme les informations utilisateur, la configuration globale)
+- **État du module** : convient pour les données partagées à l’intérieur d’un module fonctionnel spécifique
 
 ```javascript
 // État d'appel global
@@ -319,13 +319,13 @@ const cartStore = $.stanz({ total: 0 });
   </code>
 </o-playground>
 
-## Remarques
+## Points d'attention
 
-1. **Nettoyage d'état** : Dans le cycle de vie `detached` du composant, nettoyez en temps opportun les références aux données d'état pour éviter les fuites de mémoire.
+1. **Nettoyage de l'état** : Dans le cycle de vie `detached` du composant, nettoyez rapidement les références aux données d'état pour éviter les fuites de mémoire.
 
-2. **Éviter les dépendances circulaires** : Les objets d'état ne doivent pas former de références circulaires entre eux, cela pourrait entraîner des problèmes dans le système réactif.
+2. **Éviter les dépendances circulaires** : Ne formez pas de références circulaires entre les objets d'état, cela pourrait causer des problèmes dans le système réactif.
 
-3. **Structures de données volumineuses** : Pour les structures de données volumineuses, envisagez d'utiliser des propriétés calculées ou une gestion par tranches pour éviter des surcoûts de performance inutiles.
+3. **Structures de données volumineuses** : Pour les grandes structures de données, envisagez d'utiliser des propriétés calculées ou une gestion par fragments pour éviter des surcoûts de performance inutiles.
 
-4. **Cohérence de l'état** : Faites attention à la cohérence de l'état lors des opérations asynchrones, vous pouvez utiliser des transactions ou des mises à jour par lots pour garantir l'intégrité des données.
+4. **Cohérence de l'état** : Dans les opérations asynchrones, faites attention à la cohérence de l'état, vous pouvez utiliser des transactions ou des mises à jour par lots pour garantir l'intégrité des données.
 

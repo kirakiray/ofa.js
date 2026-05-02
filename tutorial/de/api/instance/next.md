@@ -2,7 +2,7 @@
 
 
 
-Mit dem `next`-Attribut kannst du die nächste benachbarte Elementinstanz des Elements abrufen.
+Mit der Eigenschaft `next` können Sie die nächste benachbarte Elementinstanz abrufen.
 
 <o-playground name="next - nächstes Element" style="--editor-height: 320px">
   <code path="demo.html">

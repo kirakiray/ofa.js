@@ -1,16 +1,16 @@
 # Template-Rendering
 
-ofa.js bietet eine leistungsstarke Template-Rendering-Engine mit einer umfangreichen Template-Syntax, die Entwicklern hilft, Anwendungen schnell zu erstellen. Zunächst beginnen wir mit der Einführung des am häufigsten verwendeten Text-Renderings.
+ofa.js bietet eine leistungsfähige Template-Rendering-Engine mit reicher Templatesyntax, die Entwicklern hilft, Anwendungen schnell zu erstellen. Beginnen wir mit der am häufigsten verwendeten Textwiedergabe.
 
-## Seitendatenbindung
+## Seiten-Datenbindung
 
-In ofa.js hat jede Seite ein `data`-Objekt, in dem Sie Variablen definieren können, die auf der Seite verwendet werden sollen. Wenn das Rendering der Seite beginnt, werden die Daten aus dem `data`-Objekt automatisch mit der Vorlage verknüpft. Anschließend können Sie in der Vorlage die Syntax `{{Variablenname}}` verwenden, um den Wert der entsprechenden Variable zu rendern.
+In ofa.js hat jede Seite ein `data`-Objekt, in dem du die Variablen definieren kannst, die auf der Seite benötigt werden. Wenn die Seite gerendert wird, werden die Daten aus dem `data`-Objekt automatisch mit der Vorlage gebunden, und in der Vorlage wird die Syntax `{{Variablenname}}` verwendet, um den Wert der entsprechenden Variablen zu rendern.
 
 ## Text-Rendering
 
-Text-Rendering ist die grundlegendste Rendering-Methode. Sie können in der Vorlage die Syntax `{{Variablenname}}` verwenden, um den Wert der entsprechenden Variable im `data`-Objekt anzuzeigen.
+Text-Rendering ist die grundlegendste Render-Methode; du kannst in der Vorlage die Syntax `{{Variablenname}}` verwenden, um den Wert der entsprechenden Variablen im `data`-Objekt anzuzeigen.
 
-<o-playground name="Text-Rendering-Beispiel" style="--editor-height: 500px">
+<o-playground name="Textwiedergabe-Beispiel" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -34,11 +34,11 @@ Text-Rendering ist die grundlegendste Rendering-Methode. Sie können in der Vorl
   </code>
 </o-playground>
 
-## HTML-Inhalt rendern
+## Rendern von HTML-Inhalten
 
-Durch Hinzufügen der `:html`-Direktive zu einem Element kann der entsprechende HTML-String aus einer Variable geparst und sicher in das Element eingefügt werden, wodurch die dynamische Darstellung von Rich-Text oder das Einbetten externer HTML-Fragmente erleichtert wird.
+Durch das Hinzufügen der `:html`-Anweisung zu einem Element kann die HTML-Zeichenkette aus der entsprechenden Variable sicher geparst und innerhalb des Elements eingefügt werden, wodurch die dynamische Darstellung von Rich-Text oder das Einbetten externer HTML-Segmente mühelos ermöglicht wird.
 
-<o-playground name="Beispiel für das Rendern von HTML-Inhalten" style="--editor-height: 500px">
+<o-playground name="Beispiel zum Rendern von HTML-Inhalten" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -54,7 +54,7 @@ Durch Hinzufügen der `:html`-Direktive zu einem Element kann der entsprechende 
           return {
             data: {
               val: '<span style="color:green;">Hallo ofa.js Demo Code</span>',
-            },
+            };
           };
         };
       </script>

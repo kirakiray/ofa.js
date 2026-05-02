@@ -1,8 +1,8 @@
 # after
 
-The `after` method is used to insert elements after the target element. Before performing the `after` operation, the initialization of the [$ method](../instance/dollar.md) is automatically executed, so you can directly provide a specific element string or object.
+`after` method is used to add elements after the target element. Before executing the `after` operation, the initialization of the [$ method](../instance/dollar.md) is automatically performed, so you can directly fill in specific element strings or objects.
 
-**Please note: do not operate within template components like o-fill or o-if.**
+**Note: Do not operate within template components such as o-fill or o-if.**
 
 <o-playground name="after - add after" style="--editor-height: 300px">
   <code path="demo.html">

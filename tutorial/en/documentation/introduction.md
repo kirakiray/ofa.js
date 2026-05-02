@@ -1,46 +1,46 @@
 # Introduction
 
-## What is ofa.js?
+## What is ofa.js？
 
-ofa.js is an easy-to-use web front-end framework, specifically designed for building web applications, aiming to improve development efficiency and lower the development barrier.
+ofa.js is an easy-to-use Web frontend framework, designed specifically for building Web applications, aiming to improve development efficiency and lower the barrier to entry.
 
-> If you are already **basically familiar** with HTML, CSS, and JavaScript, then ofa.js is an excellent choice.
+> If you are **already basically familiar** with HTML, CSS, and JavaScript, then ofa.js is a very good choice.
 
-## Why I Developed ofa.js
+## Why I developed ofa.js
 
-The original intention of ofa.js is simple: to solve the **engineering** problems of Web development without relying on compilation tools.
+The original design intention of ofa.js is simple: to solve the **engineering** problems of Web development without relying on build tools.
 
 > Engineering refers to the systematic integration of specifications, processes, tools, and methods in the software development process to improve development efficiency, code quality, and maintainability.
 
-Over the past decade, front-end Web development has evolved from early-stage wild growth to gradual engineering. Drawing on the experience of traditional application development, this process has solved the engineering challenges of large-scale projects by introducing Node.js and build workflows.
+Over the past decade, front-end Web development has evolved from its early wild growth to a gradual engineering process. Drawing on the experience of traditional application development, this process has solved the engineering challenges of large-scale projects by introducing Node.js and a compilation workflow.
 
-However, as the project grew larger, the drawbacks of this model gradually became apparent, leading to the **monolithic application** problem faced in traditional development, making the project difficult to maintain and hindering the iteration of interactive requirements.
+However, as the project grows, the drawbacks of this pattern gradually surface, and the **monolithic application** problem faced in traditional development emerges, making the project difficult to maintain and iterations of interaction requirements challenging.
 
-> A monolithic application refers to a large, tightly coupled single application where all functional modules are concentrated in a single codebase. Changing one part affects the whole, making independent development and deployment difficult.
+> Monolithic Application refers to a large and tightly coupled single application where all functional modules are centralized in a single codebase. A change in one part affects the whole, making it difficult to develop and deploy independently.
 
-At this point, the project needs to be broken down and micro-frontend-ized, just like **microservices**. However, due to compilation processing, micro-frontends become difficult and cumbersome; independent deployment of frontend modules requires compiling each small module, which is extremely hard, causing the development of Web frontend technology to almost stall.
+At this point, it is necessary to break down the project and implement micro-frontends, much like **microservices**. However, due to compilation processes, micro-frontends become difficult and cumbersome. Independent deployment of frontend modules requires compiling each small module individually, which is very challenging, causing the development of web frontend technology to face near stagnation.
 
-Microservices is a software architectural style that breaks down large, complex applications into multiple fine-grained, independently deployable, and runnable small services.
+> Microservices is a software architecture style that decomposes large, complex applications into multiple fine-grained, independently deployed and operated small services.
 
-At this moment, I began to ponder: traditional programming languages need to adapt to different hardware and operating systems, so they must rely on compilation to achieve cross-platform uniformity. However, web development is different. It is based on browsers and inherently does not require compilation; it can run and deploy independently, naturally adopting a micro-frontend architecture. Then I realized that it is the compilation process that actually complicates things.
+At this point, I began to think: traditional programming languages need to cope with different hardware and operating systems, so they must be compiled to achieve platform-independent uniformity. However, web development is different—it is based on browsers and inherently does not require compilation, can run and deploy independently, and is naturally a micro-frontend pattern. So I realized that it is the compilation process that actually complicates things.
 
-That is to say, as long as the engineering issues are resolved and the necessary compilation step is removed, front-end development becomes very suitable for building large-scale applications, which is inherently a micro-frontend pattern. Thus, ofa.js was born.
+That is to say, as long as the engineering problems are solved, and the necessary step of compilation is removed, front-end development becomes very suitable for developing large applications, and this is the natural micro-frontend pattern. Hence, ofa.js came into being.
 
-## Core Strengths
+## Core Advantages
 
-### Zero Threshold, Ready to Use Out of the Box
+### Zero threshold, out-of-the-box
 
-No need to set up a development environment, install dependencies, or configure scaffolding. Simply open the official build tool through your browser and select a local directory to start development. All computation, data, and storage operations are performed locally without relying on cloud services.
+No need to set up a development environment, install dependencies, or configure a scaffolding tool—open the official builder in your browser, select a local directory, and start developing right away. All computation, data handling, and storage run locally, with no reliance on cloud services.
 
-### AI-Friendly, Easy to Verify
+### AI-friendly, easy to verify
 
-No compilation black box, AI-generated code can be quickly deployed and self-verified; reducing intermediate layers, bypassing the compilation process, making code easier to locate issues and fix.
+No compilation black box, AI-generated code can be quickly deployed and self-verified; reducing intermediate layers and skipping the compilation process makes it easier to locate and fix issues in the code.
 
-### Native Micro-Frontend Support
+### Micro Frontend Native Support
 
-ofa.js allows Web front-end development to be split into multiple independent modules, just like microservices, each of which can be developed and deployed independently. Once the traditional boundaries of Web front-end are broken, front-end technology will gradually transcend the limitations of server-side technology.
+ofa.js enables Web front-end development to be split into multiple independent modules, just like micro-services, each of which can be developed and deployed independently. Once the boundaries of traditional Web front-end are broken, front-end technologies will gradually transcend the limitations of server technologies.
 
 ## Getting Started
 
-- If you have some development background, you can start with [Script Introduction](./script-reference.md).
-- If you are a beginner, it is recommended to start with [Creating Your First Application](./create-first-app.md).
+- If you have some development experience, you can start from [script introduction](./script-reference.md).
+- If you are a beginner, we recommend starting from [Create your first app](./create-first-app.md).

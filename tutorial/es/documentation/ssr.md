@@ -1,23 +1,23 @@
-# SSR y Renderizado Isomórfico
+# SSR y renderizado isomórfico
 
-Si no tienes claro qué es el SSR, significa que actualmente no lo necesitas, así que puedes saltarte este capítulo y volver a él cuando lo necesites en el futuro.
+> Si no sabes qué es SSR, significa que actualmente no lo necesitas. Puedes saltarte este capítulo y volver a aprenderlo cuando lo necesites en el futuro.
 
-## Renderizado isomórfico
+## Renderizado isomorfo
 
-Para mantener la experiencia fluida de CSR, una mejor identificación por parte de los rastreadores web (SEO) y una mayor libertad en la elección del lenguaje de desarrollo del backend, ofa.js ofrece un modo único de renderizado isomórfico (Symphony Client-Server Rendering).
+Para mantener la experiencia fluida de CSR, un mejor reconocimiento de los bots de rastreo (SEO) y una mayor libertad en la elección del lenguaje de desarrollo del backend, ofa.js ofrece un modo único de renderizado isomórfico (Symphony Client-Server Rendering).
 
-Si desea conocer las definiciones específicas y las diferencias de CSR / SSR / SSG, lea directamente la sección al final de este artículo.
+> Para conocer las definiciones específicas y diferencias de CSR / SSR / SSG, lea directamente la sección al final de este artículo.
 
-El concepto central del renderizado isomórfico es:- Renderizar el contenido inicial de la página en el servidor para garantizar SEO y velocidad de carga de la primera pantalla
-- Gestionar el enrutamiento en el lado del cliente para mantener una experiencia de usuario fluida como en CSR
-- Aplicable a cualquier entorno de servidor, logrando una renderización isomórfica real
+El concepto central del renderizado isomorfo es:- Renderice el contenido inicial de la página en el lado del servidor para garantizar el SEO y la velocidad de carga de la primera pantalla
+- El cliente asume el enrutamiento para mantener la experiencia de usuario fluida de CSR
+- Adecuado para cualquier entorno de servidor, logrando una representación verdaderamente isomórfica
 
-### Principio de implementación del renderizado isomórfico
+### Principio de implementación de renderizado isomórfico
 
-El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismos:
+El modo de renderización isomórfica de ofa.js se basa en el siguiente mecanismo:
 
-1. El lado del servidor genera una página HTML completa con una estructura de ejecución universal
-2. El lado del cliente carga el motor de ejecución CSR
+1. El servidor genera una página HTML completa con una estructura de ejecución universal
+2. El cliente carga el motor de ejecución CSR
 3. Identifica automáticamente el entorno de ejecución actual y decide la estrategia de renderizado
 
 ### Estructura del código de renderizado isomórfico
@@ -32,7 +32,7 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
       height: 100%;
     }
   </style>
-  <p>Soy Page</p>
+  <p>Soy Página</p>
   <script>
     export default async ({ load, query }) => {
       return {
@@ -44,16 +44,16 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
 </template>
 ```
 
-**Página completa después del renderizado isomórfico encapsulado:**
+**Página completa encapsulada con renderizado isomorfo：**
 
 ```html
 <!doctype html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Título de la Página</title>
+  <title>Page Title</title>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs#debug" type="module"></script>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
@@ -73,7 +73,7 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
 
 <body>
   <o-app src="/app-config.js">
-    <!-- Ubicación de inserción del contenido del módulo de página ⬇️ -->
+    <!-- Posición de inserción del contenido del módulo de página ⬇️ -->
     <template page>
       <style>
         :host {
@@ -81,7 +81,7 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
           height: 100%;
         }
       </style>
-      <p>Soy Página</p>
+      <p>I am Page</p>
       <script>
         export default async ({ load, query }) => {
           return {
@@ -97,24 +97,24 @@ El modo de renderizado isomórfico de ofa.js se basa en los siguientes mecanismo
 </html>
 ```
 
-Por lo tanto, puedes utilizar cualquier lenguaje de desarrollo (Go, Java, PHP, Nodejs, Python, etc.) y cualquier motor de renderizado de plantillas backend (como `html/template` de Go, Smarty/Twig/Blade de PHP, etc.) para incrustar la estructura de código de renderizado isomórfico de ofa.js en la plantilla y así lograr SSR.
+Por lo tanto, puedes usar cualquier lenguaje de desarrollo (Go, Java, PHP, Nodejs, Python, etc.), cualquier motor de renderizado de plantillas del backend (como `html/template` de Go, Smarty/Twig/Blade de PHP, etc.), e incrustar la estructura de código de renderizado isomórfico de ofa.js en la plantilla para lograr SSR.
 
 * [Caso SSR de Nodejs](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/node)
 * [Caso SSR de PHP](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/php)
 * [Caso SSR de Go](https://github.com/ofajs/ofa.js/tree/main/test/ssr-case/go)
 
-### Estructura de la plantilla de renderizado isomórfico
+### Estructura de plantilla de renderizado isomórfico
 
-Para implementar el modo de renderizado isomórfico, solo necesitas usar la siguiente estructura de plantilla genérica en el lado del servidor:
+Para implementar el modo de renderizado isomorfo, solo necesita usar la siguiente estructura de plantilla general en el lado del servidor:
 
 ```html
 <!doctype html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Título de la página</title>
+  <title>Page Title</title>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs#debug" type="module"></script>
   <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/scsr/dist/scsr.min.mjs" type="module"></script>
   <style>
@@ -141,61 +141,61 @@ Para implementar el modo de renderizado isomórfico, solo necesitas usar la sigu
 </html>
 ```
 
-**Nota:** El HTML devuelto por el servidor debe establecer las cabeceras HTTP correctas: `Content-Type: text/html; charset=UTF-8`
+**Nota:** El HTML devuelto por el servidor debe establecer el encabezado HTTP correcto: `Content-Type: text/html; charset=UTF-8`
 
-`scsr.mjs` es el motor de renderizado isomórfico proporcionado por ofa.js. Determina automáticamente la estrategia de renderizado según el estado de ejecución de la página actual, garantizando la mejor experiencia de usuario en cualquier entorno.
+`scsr.mjs` es el motor de ejecución de renderizado isomórfico proporcionado por ofa.js, que determina automáticamente la estrategia de renderizado según el estado de ejecución de la página actual, asegurando la mejor experiencia de usuario en cualquier entorno.
 
 Del mismo modo, SSG también puede aplicar esta estructura para lograr la generación de sitios estáticos.
 
-## ofa.js y SSR y las diferencias con otros frameworks de frontend
+## Diferencias entre ofa.js, SSR y otros frameworks frontend
 
-La representación Cliente-Servidor de Symphony de ofa.js (en adelante, SCSR) es esencialmente también un modo SSR.
+El Symphony Client-Server Rendering (en adelante SCSR) de ofa.js también es fundamentalmente un modo SSR.
 
-Comparado con las soluciones SSR de frameworks frontend existentes como Vue, React y Angular, la mayor ventaja de ofa.js radica en que **no requiere un acoplamiento obligatorio con Node.js**. Esto significa que cualquier motor de renderizado de plantillas backend (como Smarty de PHP, Jinja2 de Python, Thymeleaf de Java, etc.) puede integrar fácilmente ofa.js para implementar SSR.
+En comparación con las soluciones SSR de frameworks front-end existentes como Vue, React, Angular, la mayor ventaja de ofa.js es que **no necesita vincularse obligatoriamente a Node.js**. Esto significa que cualquier motor de renderizado de plantillas de backend (como Smarty de PHP, Jinja2 de Python, Thymeleaf de Java, etc.) puede integrar fácilmente ofa.js para implementar SSR.
 
-## Descripción general de los métodos de renderizado de páginas web
+## Resumen de métodos de renderización web
 
-Las aplicaciones web modernas principalmente utilizan cuatro métodos de renderizado: renderizado tradicional con motor de plantillas del lado del servidor, CSR (Client Side Rendering, renderizado del lado del cliente), SSR (Server Side Rendering, renderizado del lado del servidor) y SSG (Static Site Generation, generación de sitios estáticos). Cada método tiene sus ventajas y escenarios de aplicación.
+Las aplicaciones web modernas tienen principalmente cuatro métodos de renderizado: el renderizado tradicional basado en plantillas del lado del servidor, CSR (Client Side Rendering, renderizado del lado del cliente), SSR (Server Side Rendering, renderizado del lado del servidor) y SSG (Static Site Generation, generación de sitios estáticos). Cada método tiene sus ventajas y escenarios de aplicación adecuados.
 
 ### Renderizado tradicional de motor de plantillas del lado del servidor
 
-En numerosos productos web, los motores de plantillas del lado del servidor siguen siendo el método principal de renderizado de páginas. Lenguajes de backend como Go, PHP, entre otros, utilizan motores de plantillas integrados o de terceros (como `html/template` de Go, o Smarty/Twig/Blade de PHP, etc.) para inyectar datos dinámicos en plantillas HTML, generando así una página HTML completa de una sola vez y enviándola al cliente.
+Entre los muchos productos web, el motor de plantillas del lado del servidor sigue siendo el método más común para la renderización de páginas. Lenguajes de backend como Go y PHP, mediante motores de plantillas integrados o de terceros (como el `html/template` de Go, Smarty/Twig/Blade de PHP, etc.), inyectan datos dinámicos en plantillas HTML, generan una página HTML completa de una sola vez y la devuelven al cliente.
 
-**Ventajas:**- Amigable con SEO, carga rápida en la primera pantalla
-- Control del lado del servidor, mayor seguridad
-- Requisitos bajos para el stack tecnológico del equipo; los desarrolladores backend pueden completar el desarrollo por sí solos
+**Ventajas:**- SEO amigable, carga rápida en la primera pantalla
+- Control del lado del servidor, alta seguridad
+- Requisitos de pila tecnológica bajos para el equipo, los desarrolladores de backend pueden completar el desarrollo de forma independiente
 
-**Desventaja:**- La experiencia de usuario es deficiente, cada interacción requiere una actualización de la página
-- El servidor está bajo mucha presión
-- El frontend y el backend tienen un alto acoplamiento, lo que no favorece la colaboración en la división del trabajo
+**Desventajas:**- La experiencia del usuario es deficiente, ya que cada interacción requiere una recarga de la página.
+- La presión del servidor es alta.
+- El acoplamiento entre el frontend y el backend es alto, lo que no favorece la división del trabajo y la colaboración.
 
-### CSR (Renderizado del lado del cliente)
+### CSR（renderizado del lado del cliente）
 
-En el modo CSR, el contenido de la página se renderiza completamente mediante JavaScript del lado del navegador; la [aplicación de página única](./routes.md) de ofa.js es un ejemplo típico de implementación CSR. Este enfoque ofrece una experiencia de usuario fluida, permitiendo completar todas las interacciones sin necesidad de saltos de página. Las aplicaciones de página única (SPA) desarrolladas con React o Vue junto con sus respectivas bibliotecas de enrutamiento (como React Router o Vue Router) son implementaciones CSR típicas.
+En el modo CSR, el contenido de la página se renderiza completamente mediante JavaScript del lado del navegador. La [aplicación de página única](./routes.md) de ofa.js es un ejemplo típico de implementación de CSR. Este método proporciona una experiencia de usuario fluida, permitiendo todas las interacciones sin necesidad de cambiar de página. Las aplicaciones de página única (SPA) desarrolladas con React o Vue junto con sus bibliotecas de enrutamiento correspondientes (como React Router o Vue Router) son implementaciones típicas de CSR.
 
-**Ventajas:**- Experiencia de usuario fluida, cambio de páginas sin recarga
-- Alta capacidad de procesamiento del cliente, respuesta rápida
+**Ventajas:**- Experiencia de usuario fluida, cambios de página sin recarga
+- Fuerte capacidad de procesamiento del cliente, respuesta rápida
 
-**Desventaja:**- No es favorable para el SEO, los motores de búsqueda tienen dificultades para indexar el contenido
+**Desventajas:**- No es favorable para el SEO, los motores de búsqueda tienen dificultades para indexar el contenido
 
-### SSR (Renderizado del lado del servidor)
+### SSR（renderizado del lado del servidor）
 
-Al mismo tiempo que se mantiene la experiencia fluida de CSR, cambiar para que el servidor renderice las páginas en tiempo real: cuando el usuario realiza una solicitud, el servidor genera inmediatamente el HTML completo y lo devuelve, logrando una verdadera renderización del lado del servidor.
+Manteniendo la experiencia fluida de CSR, se pasa a renderizar la página en tiempo real desde el servidor: cuando el usuario realiza una solicitud, el servidor genera instantáneamente el HTML completo y lo devuelve, logrando un verdadero renderizado del lado del servidor.
 
-**Ventajas:**- Amigable con SEO, carga rápida en la primera pantalla
-- Admite contenido dinámico
+**Ventajas:**- SEO friendly, carga rápida en la primera pantalla
+- Soporta contenido dinámico
 
-**Desventaja:**- Alta carga en el servidor
-- Generalmente requiere un entorno Node.js como entorno de ejecución, o al menos una capa intermedia Node.js
-- Todavía se requiere la activación del cliente posterior para lograr una interacción completa
+**Desventajas:**- La presión del servidor es alta
+- Normalmente se necesita un entorno Node.js como tiempo de ejecución, o al menos una capa intermedia de Node.js
+- Todavía se necesita la activación posterior del cliente para lograr una interacción completa
 
-### SSG (Generación de Sitios Estáticos)
+### SSG（Generación de Sitios Estáticos）
 
-Durante la fase de construcción, pre-renderiza todas las páginas en archivos HTML estáticos; después del despliegue, el servidor puede devolverlos directamente al usuario.
+Durante la fase de construcción, todas las páginas se prerenderizan como archivos HTML estáticos, que pueden ser devueltos directamente por el servidor al usuario después del despliegue.
 
-**Ventajas:**- Carga rápida en la primera visita, amigable con SEO
+**Ventajas:**- Velocidad de carga inicial rápida, SEO amigable
 - Baja carga del servidor, rendimiento estable
 - Alta seguridad
 
-**Desventaja:**- Dificultad para actualizar contenido dinámico
-- El tiempo de compilación aumenta con el número de páginas
+**Desventajas:**- Dificultad para actualizar contenido dinámico
+- El tiempo de construcción aumenta con la cantidad de páginas

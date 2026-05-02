@@ -2,9 +2,9 @@
 
 
 
-Die Methode `refresh` wird verwendet, um die Rendering-Ansicht der Komponente aktiv zu aktualisieren. Manchmal, wenn die Daten auf der Komponente nicht aktualisiert werden, kann diese Methode verwendet werden, um die Ansicht der Komponente zu aktualisieren.
+`refresh`-Methode dient dazu, die Renderansicht einer Komponente aktiv zu aktualisieren. Wenn die Daten einer Komponente nicht aktualisiert werden, kann diese Methode verwendet werden, um die Ansicht der Komponente zu aktualisieren.
 
-Geeignet für Szenarien, in denen eine manuelle Aktualisierung von [nicht-reaktiven Daten](../../documentation/property-response.md) erforderlich ist.
+Geeignet für Szenarien, in denen [nicht-reaktive Daten](../../documentation/property-response.md) manuell aktualisiert werden müssen.
 
 <o-playground name="refresh - Ansicht aktualisieren" style="--editor-height: 400px">
   <code path="demo.html" preview>

@@ -1,12 +1,12 @@
-# Transférer les attributs de caractéristiques
+# Transmettre les attributs des caractéristiques
 
-Dans ofa.js, les [attributs (Attribute)](https://developer.mozilla.org/fr/docs/Web/API/Element/attributes) sont l'un des moyens les plus couramment utilisés pour transmettre des données entre les composants. Il suffit de déclarer les attributs nécessaires dans l'objet `attrs` du composant pour pouvoir transmettre des données externes à l'intérieur du composant lors de l'utilisation du composant.
+Dans ofa.js, les [attributs (Attribute)](https://developer.mozilla.org/fr/docs/Web/API/Element/attributes) sont l’un des moyens les plus courants de transmettre des données entre composants. Il suffit de déclarer les attributs requis dans l’objet `attrs` du composant pour que les données externes soient transmises à l’intérieur du composant lors de son utilisation.
 
 ## Utilisation de base
 
 ### Définir les propriétés de réception
 
-Avant d'utiliser un composant, il est nécessaire de déclarer les attributs à recevoir dans l'objet `attrs` du composant. Les attributs peuvent avoir des valeurs par défaut.
+Avant d'utiliser un composant, il est nécessaire de déclarer dans l'objet `attrs` du composant les propriétés à recevoir. Les propriétés peuvent avoir des valeurs par défaut.
 
 <o-playground name="Exemple d'utilisation de base" style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -26,7 +26,7 @@ Avant d'utiliser un composant, il est nécessaire de déclarer les attributs à 
           padding: 8px;
         }
       </style>
-      <p>Prénom : {{first}}</p>
+      <p>First : {{first}}</p>
       <p>Nom complet : {{fullName}}</p>
       <script>
         export default async ({ load }) => {
@@ -45,19 +45,19 @@ Avant d'utiliser un composant, il est nécessaire de déclarer les attributs à 
 
 ### Règles importantes
 
-1. **Restrictions de type** : la valeur de l’attribut transmise doit être une chaîne de caractères ; les autres types seront automatiquement convertis en chaîne.
+1. **Restriction de type** : La valeur d'attribut transmise doit être une chaîne de caractères, les autres types sont automatiquement convertis en chaîne.
 
-2. **Conversion de nommage** : comme les attributs HTML ne tiennent pas compte de la casse, lorsqu’un attribut contient des majuscules, il faut utiliser la séparation par `-` (format kebab-case).
+2. **Conversion de nom** : Étant donné que les attributs HTML ne sont pas sensibles à la casse, lors de la transmission d'attributs contenant des lettres majuscules, il faut utiliser `-` pour séparer les noms (format kebab-case).
    - Exemple : `fullName` → `full-name`
 
-3. **Définition obligatoire** : si le composant ne définit pas l’attribut correspondant dans l’objet `attrs`, il ne peut pas recevoir cet attribut. La valeur définie est la valeur par défaut ; pour ne pas avoir de valeur par défaut, définir `null`.
+3. **Définition obligatoire** : Si le composant n'a pas défini l'attribut correspondant dans l'objet `attrs`, il ne peut pas recevoir cet attribut. La valeur définie est la valeur par défaut ; si on ne veut pas de valeur par défaut, on la définit à `null`.
 
-<o-playground name="Exemple de règles importantes" style="--editor-height: 500px">
+<o-playground name="Exemple de règle importante" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
       <demo-comp></demo-comp>
-      <demo-comp user-name="Zhang San" age="25"></demo-comp>
+      <demo-comp user-name="ZhangShan" age="25"></demo-comp>
     </template>
   </code>
   <code path="demo-comp.html" active>
@@ -69,8 +69,8 @@ Avant d'utiliser un composant, il est nécessaire de déclarer les attributs à 
           padding: 8px;
         }
       </style>
-      <p>User Name: {{userName}}</p>
-      <p>Age: {{age}}</p>
+      <p>Nom d'utilisateur : {{userName}}</p>
+      <p>Âge : {{age}}</p>
       <script>
         export default async ({ load }) => {
           return {
@@ -86,9 +86,9 @@ Avant d'utiliser un composant, il est nécessaire de déclarer les attributs à 
   </code>
 </o-playground>
 
-## Transmission d'Attribut en Syntaxe de Modèle
+## Syntaxe du modèle pour passer les attributs
 
-Dans le template du composant, vous pouvez utiliser la syntaxe `attr:toKey="fromKey"` pour transmettre les données `fromKey` du composant actuel à l'attribut `toKey` du composant enfant.
+Dans le modèle du composant, vous pouvez utiliser la syntaxe `attr:toKey="fromKey"` pour transmettre les données `fromKey` du composant actuel à la propriété `toKey` du sous-composant.
 
 <o-playground name="Exemple de transmission d'attributs" style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -147,15 +147,15 @@ Dans le template du composant, vous pouvez utiliser la syntaxe `attr:toKey="from
 
 ## Transmission multi-niveaux
 
-Vous pouvez transmettre des attributs couche par couche via des composants imbriqués sur plusieurs niveaux.
+Les attributs peuvent être transmis couche par couche via des composants imbriqués à plusieurs niveaux.
 
-Si un composant dépend d'autres composants, il est nécessaire d'importer les modules des autres composants dans le composant.
+Si un composant doit dépendre d'autres composants, il est nécessaire d'importer les modules des autres composants dans le composant.
 
 <o-playground name="Exemple de transmission multi-niveaux" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
-      <outer-comp user-name="Données de niveau supérieur"></outer-comp>
+      <outer-comp user-name="Donnée du niveau supérieur"></outer-comp>
     </template>
   </code>
   <code path="outer-comp.html" active>

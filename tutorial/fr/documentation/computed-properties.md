@@ -1,16 +1,16 @@
 # Propriétés calculées
 
-Les propriétés calculées sont un moyen de dériver de nouvelles données à partir de données réactives, elles se mettent à jour automatiquement en fonction des changements des données dont elles dépendent. Dans ofa.js, les propriétés calculées sont des méthodes spéciales définies dans l'objet `proto`, utilisant les mots-clés `get` ou `set` de JavaScript pour leur définition.
+Les propriétés calculées constituent un moyen de dériver de nouvelles données à partir de données réactives ; elles se mettent automatiquement à jour lorsque les données dont elles dépendent changent. Dans ofa.js, les propriétés calculées sont des méthodes spéciales définies dans l’objet `proto`, en utilisant les mots-clés `get` ou `set` de JavaScript.
 
 ## Caractéristiques et avantages
 
-- **Mise en cache** : le résultat d’une propriété calculée est mis en cache et n’est recalculé que lorsque ses données dépendantes changent
-- **Réactivité** : lorsque les données dépendantes sont mises à jour, la propriété calculée se met à jour automatiquement
-- **Déclaratif** : les dépendances sont créées de manière déclarative, rendant le code plus clair et plus lisible
+- **Mise en cache** : Le résultat des propriétés calculées est mis en cache, et n'est recalculé que lorsque les données dont elles dépendent changent.
+- **Réactivité** : Les propriétés calculées se mettent automatiquement à jour lorsque les données dépendantes sont mises à jour.
+- **Déclaratif** : Déclarer les dépendances de manière déclarative rend le code plus clair et plus facile à comprendre.
 
 ## get propriété calculée
 
-La propriété calculée get sert à dériver une nouvelle valeur à partir de données réactives ; elle n’accepte aucun paramètre et ne renvoie qu’une valeur calculée à partir d’autres données.
+get propriété calculée sert à dériver une nouvelle valeur à partir de données réactives ; elle n’accepte aucun paramètre et ne retourne qu’une valeur calculée à partir d’autres données.
 
 <o-playground name="exemple de propriété calculée get" style="--editor-height: 600px">
   <code>
@@ -32,7 +32,7 @@ La propriété calculée get sert à dériver une nouvelle valeur à partir de d
             },
             proto: {
               get countDouble() {
-                console.log('countDouble a été accédé');
+                console.log('countDouble est accédé');
                 return this.count * 2;
               },
               clickMe() {
@@ -46,9 +46,9 @@ La propriété calculée get sert à dériver une nouvelle valeur à partir de d
   </code>
 </o-playground>
 
-### Exemples de scénarios d'application réels
+### Exemple de scénario d'application pratique
 
-Les propriétés calculées sont souvent utilisées pour gérer des logiques de transformation de données complexes, telles que filtrer des tableaux, formater le texte affiché, etc. :
+Les propriétés calculées sont souvent utilisées pour gérer des logiques complexes de transformation de données, comme filtrer un tableau, formater le texte affiché, etc. :
 
 <o-playground name="Exemple de propriété calculée" style="--editor-height: 500px">
   <code>
@@ -79,7 +79,7 @@ Les propriétés calculées sont souvent utilisées pour gérer des logiques de 
           return {
             data: {
               filterText: '',
-              names: ['Zhang3', 'Li4', 'Wang54']
+              names: ['Sophie 3', 'Lucas 4', 'Emma 54']
             },
             proto: {
               get filteredNames() {
@@ -100,7 +100,7 @@ Les propriétés calculées sont souvent utilisées pour gérer des logiques de 
 
 ## set propriété calculée
 
-set Les propriétés calculées vous permettent de modifier l’état des données sous-jacentes via une opération d’assignation. Elles reçoivent un paramètre, généralement utilisé pour mettre à jour en retour les données d’origine dont elles dépendent.
+La propriété calculée set vous permet de modifier l'état des données sous-jacentes par une opération d'affectation. Elle accepte un paramètre, généralement utilisé pour mettre à jour en sens inverse les données originales dont elle dépend.
 
 <o-playground name="Exemple de propriété calculée set" style="--editor-height: 700px">
   <code>
@@ -134,7 +134,7 @@ set Les propriétés calculées vous permettent de modifier l’état des donné
                 return this.count * 2;
               },
               set countDouble(val) {
-                this.count = Math.max(0, val / 2); // assure que count ne soit pas négatif
+                this.count = Math.max(0, val / 2); // s'assure que count n'est pas négatif
               },
               resetCount() {
                 this.count = 0;
@@ -153,31 +153,31 @@ set Les propriétés calculées vous permettent de modifier l’état des donné
   </code>
 </o-playground>
 
-## Propriétés calculées vs Méthodes
+## Propriétés calculées vs méthodes
 
-Bien que les méthodes puissent également réaliser des fonctions similaires, les propriétés calculées ont une caractéristique de mise en cache : elles ne sont réévaluées que lorsque les données dont elles dépendent changent, ce qui offre de meilleures performances.
+Bien que les méthodes puissent également réaliser des fonctions similaires, les propriétés calculées possèdent une caractéristique de mise en cache : elles ne sont réévaluées que lorsque les données dont elles dépendent changent, ce qui offre de meilleures performances.
 
 ```javascript
-// Utiliser une propriété calculée (recommandé) - avec mise en cache
+// Utiliser une propriété calculée (recommandé) - avec cache
 get fullName() {
   return this.firstName + ' ' + this.lastName;
 }
 
-// Utiliser une méthode - s'exécute à chaque appel
+// Utiliser une méthode - exécutée à chaque appel
 fullName() {
   return this.firstName + ' ' + this.lastName;
 }
 ```
 
-## Remarques
+## Points d'attention
 
-1. **Éviter les opérations asynchrones** : Les propriétés calculées doivent rester synchrones et sans effets secondaires, il est interdit d'effectuer des appels asynchrones ou de modifier directement l'état du composant à l'intérieur.  
+1. **Éviter les opérations asynchrones** : Les propriétés calculées doivent rester synchrones et sans effet secondaire. Il est interdit d'y effectuer des appels asynchrones ou de modifier directement l'état du composant.  
 2. **Suivi des dépendances** : Veillez à ne dépendre que de données réactives, sinon les mises à jour seront imprévisibles.  
-3. **Protection contre les erreurs** : Si une dépendance circulaire ou une affectation anormale survient à l'intérieur d'une propriété calculée, cela peut entraîner un échec de rendu, voire une boucle infinie. Il est essentiel de définir des conditions limites à l'avance et de bien gérer les exceptions.
+3. **Protection contre les erreurs** : Si une propriété calculée présente une dépendance cyclique ou une affectation anormale, cela peut entraîner un échec du rendu, voire une boucle infinie. Assurez-vous donc de définir à l'avance des conditions limites et de gérer correctement les exceptions.
 
 ## Exemples d'applications pratiques
 
-Voici un exemple simple de validation de formulaire qui illustre l’utilité des propriétés calculées :
+Voici un exemple simple de validation de formulaire qui montre l'utilité des propriétés calculées :
 
 <o-playground name="Exemple de validation de formulaire" style="--editor-height: 600px">
   <code>
@@ -208,9 +208,9 @@ Voici un exemple simple de validation de formulaire qui illustre l’utilité de
         }
       </style>
       <h3>Exemple de validation simple</h3>
-      <input type="text" sync:value="username" placeholder="Entrez un nom d'utilisateur (au moins 3 caractères)">
+      <input type="text" sync:value="username" placeholder="Saisir le nom d'utilisateur (au moins 3 caractères)">
       <p class="status" class:valid="isValid" class:invalid="!isValid">
-        Statut: {{statusMessage}}
+        Statut : {{statusMessage}}
       </p>
       <script>
         export default async () => {
@@ -223,7 +223,7 @@ Voici un exemple simple de validation de formulaire qui illustre l’utilité de
                 return this.username.length >= 3;
               },
               get statusMessage() {
-                return this.isValid ? 'Nom d'utilisateur valide' : 'Le nom d'utilisateur est trop court';
+                return this.isValid ? 'Nom d\'utilisateur valide' : 'Longueur du nom d\'utilisateur insuffisante';
               },
             }
           };

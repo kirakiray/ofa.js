@@ -1,39 +1,39 @@
 # Eventos personalizados
 
-En ofa.js, además de los eventos DOM integrados, también se pueden crear y utilizar eventos personalizados para lograr la comunicación entre componentes. Los eventos personalizados son un mecanismo importante en el desarrollo basado en componentes, ya que permiten a los componentes difundir mensajes o cambios de estado hacia arriba.
+En ofa.js, además de los eventos DOM incorporados, también se pueden crear y usar eventos personalizados para lograr la comunicación entre componentes. Los eventos personalizados son un mecanismo importante en el desarrollo basado en componentes, ya que permiten que un componente transmita mensajes o cambios de estado hacia arriba.
 
-## método emit - desencadenar evento personalizado
+## Método emit - Disparar eventos personalizados
 
-El método `emit` se utiliza para disparar eventos personalizados, notificando a los oyentes externos sobre los cambios de estado internos del componente o las acciones del usuario.
+El método `emit` se utiliza para disparar eventos personalizados, notificando a los oyentes externos sobre cambios de estado internos del componente o acciones del usuario.
 
 ### Uso básico
 
 ```javascript
-// Dispara un evento personalizado simple
+// Desencadenar un evento personalizado simple
 this.emit('custom-event');
 
-// Dispara un evento personalizado con datos
+// Desencadenar un evento personalizado con datos
 this.emit('data-changed', {
   data: {
-    // Datos personalizados, estructura libre según necesidad
+    // Datos personalizados, pueden tener cualquier estructura según necesidad
     newValue: 100,
     oldValue: 50
   }
 });
 ```
 
-### Parámetros del método emit
+### parámetros del método emit
 
-El método `emit` acepta dos argumentos:
+`emit` método acepta dos parámetros:
 
-1. **Nombre del evento**: cadena, que indica el nombre del evento a desencadenar
+1. **Nombre del evento**: cadena, el nombre del evento que se va a disparar
 2. **Objeto de opciones** (opcional): contiene las opciones de configuración del evento
-   - `data`: datos a transmitir
-   - `bubbles`: valor booleano, controla si el evento burbujea (por defecto es true)
-   - `composed`: valor booleano, controla si el evento puede atravesar los límites del Shadow DOM
-   - `cancelable`: valor booleano, controla si el evento puede ser cancelado
+   - `data`: los datos a pasar
+   - `bubbles`: booleano, controla si el evento se propaga (por defecto true)
+   - `composed`: booleano, controla si el evento puede cruzar los límites de Shadow DOM
+   - `cancelable`: booleano, controla si el evento puede ser cancelado
 
-Luego, el elemento de nivel superior puede usar el método `on` [(enlace de eventos)](./event-binding.md) para escuchar este evento personalizado.
+Entonces el elemento superior puede usar el método `on` [（vinculación de eventos）](./event-binding.md) para escuchar este evento personalizado.
 
 ### Ejemplo de uso de emit
 
@@ -80,7 +80,7 @@ Luego, el elemento de nivel superior puede usar el método `on` [(enlace de even
           border: 1px solid #ccc;
         }
       </style>
-      <button on:click="handleClick">Haga clic para activar el evento</button>
+      <button on:click="handleClick">Haz clic para disparar el evento</button>
       <script>
         export default async () => {
           return {
@@ -89,7 +89,7 @@ Luego, el elemento de nivel superior puede usar el método `on` [(enlace de even
               handleClick() {
                 this.emit('button-clicked', {
                   data: {
-                    message: 'El botón fue clicado',
+                    message: 'El botón ha sido clicado',
                     timestamp: Date.now()
                   },
                 });
@@ -104,17 +104,17 @@ Luego, el elemento de nivel superior puede usar el método `on` [(enlace de even
 
 ## bubbles - Mecanismo de propagación de eventos
 
-La propiedad `bubbles` controla si el evento se propagará hacia arriba a los elementos padres. Cuando se establece en `true`, el evento se propaga por el árbol DOM hacia arriba. El valor predeterminado es `true`. Si se establece en `false`, el evento no burbujea.
+La propiedad `bubbles` controla si el evento se propaga hacia arriba a elementos padre. Cuando se establece en `true`, el evento se propaga hacia arriba a lo largo del árbol DOM. El valor predeterminado es `true`. Si se establece en `false`, el evento no burbujeará.
 
 ### Explicación detallada del mecanismo de burbujeo
 
-- **Comportamiento predeterminado**: los eventos emitidos con `emit` tienen propagación activada por defecto (`bubbles: true`)
-- **Ruta de propagación**: el evento se propaga hacia arriba, nivel por nivel, desde el elemento que lo desencadena
-- **Detener propagación**: invocar `event.stopPropagation()` en el manejador del evento detiene la propagación
+- **Comportamiento predeterminado**: los eventos emitidos con `emit` tienen burbujeo habilitado de forma predeterminada (`bubbles: true`)
+- **Ruta de burbujeo**: el evento se propaga hacia arriba desde el elemento que lo desencadena, nivel por nivel
+- **Detener el burbujeo**: se puede detener el burbujeo llamando a `event.stopPropagation()` en el manejador de eventos
 
 ### Ejemplo de burbuja
 
-<o-playground name="Ejemplo de Eventos Personalizados" style="--editor-height: 500px">
+<o-playground name="Ejemplo de evento personalizado" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -133,7 +133,7 @@ La propiedad `bubbles` controla si el evento se propagará hacia arriba a los el
       <div on:child-event="handleChildEventFromComponent">
         <bubble-component on:child-event="handleDirectChildEvent"></bubble-component>
       </div>
-      <p>Contenedor externo (escucha eventos de burbuja): {{bubbledEventCount}} veces</p>
+      <p>Contenedor externo (escucha eventos burbujeantes): {{bubbledEventCount}} veces</p>
       <p>Componente interno (escucha eventos directos): {{directEventCount}} veces</p>
       <p>Datos recibidos: <span style="color:red;">{{result}}</span></p>
       <script>
@@ -176,14 +176,14 @@ La propiedad `bubbles` controla si el evento se propagará hacia arriba a los el
             tag: "bubble-component",
             proto: {
               triggerNonBubblingEvent() {
-                // Evento no burbujeante, solo será capturado por oyentes directos
+                // Evento no burbujeante, solo será capturado por el oyente directo
                 this.emit('child-event', {
                   data: { type: 'non-bubbling', message: 'Evento no burbujeante disparado', timestamp: Date.now() },
                   bubbles: false
                 });
               },
               triggerBubblingEvent() {
-                // Evento burbujeante, se propagará hacia arriba a elementos padre
+                // Evento burbujeante, se propaga hacia el elemento padre
                 this.emit('child-event', {
                   data: { type: 'bubbling', message: 'Evento burbujeante disparado', timestamp: Date.now() },
                   bubbles: true
@@ -197,15 +197,15 @@ La propiedad `bubbles` controla si el evento se propagará hacia arriba a los el
   </code>
 </o-playground>
 
-## composed - atraviesa los límites del Shadow DOM
+## composed - atraviesa los límites de Shadow DOM
 
-El atributo `composed` controla si el evento puede cruzar el límite del Shadow DOM. Esto es especialmente importante para el desarrollo de Web Components, el valor predeterminado es `false`.
+La propiedad `composed` controla si el evento puede atravesar los límites del Shadow DOM. Esto es especialmente importante para el desarrollo de Web Components, y su valor predeterminado es `false`.
 
-### Mecanismo de penetración explicado en detalle
+### Explicación detallada del mecanismo de penetración
 
-- **Aislamiento de Shadow DOM**: por defecto, los eventos no pueden cruzar los límites del Shadow DOM
-- **Habilitar la propagación**: establecer `composed: true` permite que el evento atraviese los límites del Shadow DOM
-- **Casos de uso**: cuando un componente necesita enviar eventos al entorno anfitrión, debe establecer `composed: true`
+- **Aislamiento de Shadow DOM**: Por defecto, los eventos no pueden cruzar los límites del Shadow DOM
+- **Habilitar penetración**: Establecer `composed: true` permite que los eventos atraviesen los límites del Shadow DOM
+- **Escenario de uso**: Cuando un componente necesita enviar eventos al entorno anfitrión, es necesario establecer `composed: true`
 
 ### Ejemplo de penetración
 
@@ -228,7 +228,7 @@ El atributo `composed` controla si el evento puede cruzar el límite del Shadow 
       <div on:child-event="handleChildEventFromComponent">
         <bubble-component></bubble-component>
       </div>
-      <p>Escuchando eventos: {{bubbledEventCount}} veces</p>
+      <p>Evento escuchado: {{bubbledEventCount}} veces</p>
       <p>Datos recibidos: <span style="color:red;">{{result}}</span></p>
       <script>
         export default async () => {
@@ -259,7 +259,7 @@ El atributo `composed` controla si el evento puede cruzar el límite del Shadow 
         }
       </style>
       <child-component on:child-event="handleChildEventFromComponent"></child-component>
-      <p>Escuchando eventos: {{bubbledEventCount}} veces</p>
+      <p>Evento escuchado: {{bubbledEventCount}} veces</p>
       <p>Datos recibidos: <span style="color:pink;">{{result}}</span></p>
       <script>
         export default async () => {
@@ -289,24 +289,24 @@ El atributo `composed` controla si el evento puede cruzar el límite del Shadow 
           border: 1px solid green;
         }
       </style>
-      <button on:click="triggerNonComposedEvent">Activar evento no composed</button>
-      <button on:click="triggerComposedEvent">Activar evento composed</button>
+      <button on:click="triggerNonComposedEvent">Disparar evento no compuesto</button>
+      <button on:click="triggerComposedEvent">Disparar evento compuesto</button>
       <script>
         export default async () => {
           return {
             tag: "child-component",
             proto: {
               triggerNonComposedEvent() {
-                // Evento no composed, solo será capturado por el oyente directo
+                // Evento no compuesto, solo lo captura el oyente directo
                 this.emit('child-event', {
-                  data: { type: 'non-composed', message: 'Evento no composed activado', timestamp: Date.now() },
+                  data: { type: 'non-composed', message: 'Evento no compuesto disparado', timestamp: Date.now() },
                   composed: false
                 });
               },
               triggerComposedEvent() {
-                // Evento composed, cruzará el límite del Shadow DOM
+                // Evento compuesto, atraviesa el límite de Shadow DOM
                 this.emit('child-event', {
-                  data: { type: 'composed', message: 'Evento composed activado', timestamp: Date.now() },
+                  data: { type: 'composed', message: 'Evento compuesto disparado', timestamp: Date.now() },
                   composed: true
                 });
               }

@@ -1,16 +1,16 @@
 - name: Introduction
   url: ./introduction.md
-- name: Commencer
+- name: Pour commencer
   content:
-    - name: Référence du script
+    - name: Référence de script
       url: ./script-reference.md
     - name: Créer votre première application
       url: ./create-first-app.md
 - name: Démarrage rapide
   url: ./quick-start.md
-- name: Syntaxe des modèles
+- name: Syntaxe du modèle
   content:
-    - name: Rendu de contenu
+    - name: Rendu du contenu
       url: ./content-rendering.md
     - name: Liaison d'événements
       url: ./event-binding.md
@@ -18,11 +18,11 @@
       url: ./property-response.md
     - name: Liaison de propriétés
       url: ./property-binding.md
-    - name: Liaison de classes et styles
+    - name: Liaison de classes et de styles
       url: ./class-style-binding.md
     - name: Rendu conditionnel
       url: ./conditional-rendering.md
-    - name: Rendu de liste
+    - name: Rendu de listes
       url: ./list-rendering.md
     - name: Propriétés calculées
       url: ./computed-properties.md
@@ -34,23 +34,23 @@
   content:
     - name: Créer un composant
       url: ./create-component.md
-    - name: Transmission d'attributs
+    - name: Transmettre les attributs hérités
       url: ./inherit-attributes.md
     - name: Slots
       url: ./slots.md
-    - name: Liaison de propriétés profondes
+    - name: Liaison profonde des propriétés
       url: ./deep-property-binding.md
     - name: Événements personnalisés
       url: ./custom-events.md
-- name: Applications et mise à l'échelle
+- name: Application et passage à l'échelle
   content:
-    - name: Micro-applications
+    - name: Micro-application
       url: ./micro-app.md
     - name: Configuration de l'application et fonctions associées
       url: ./app-configuration.md
-    - name: Applications monopages
+    - name: Application monopage
       url: ./routes.md
-    - name: Routes/pages imbriquées
+    - name: Pages/ Routes imbriquées
       url: ./nested-routes.md
     - name: SSR
       url: ./ssr.md
@@ -58,17 +58,17 @@
   content:
     - name: Qu'est-ce que la gestion d'état
       url: ./state-management.md
-    - name: État du contexte
+    - name: État contextuel
       url: ./context-state.md
-    - name: Requêtes de style
+    - name: Requête de style
       url: ./match-var.md
 - name: Production et déploiement
   url: ./build-app.md
 - name: Autres composants
   content:
-    - name: Injection de styles hôtes
+    - name: Injecter le style hôte
       url: ./inject-host-style.md
-    - name: Composants non explicites
+    - name: Composant non explicite
       url: ./non-explicit-component.md
-    - name: Composant replace-template
+    - name: Composant replace-temp
       url: ./replace-template.md

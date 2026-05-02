@@ -1,15 +1,15 @@
 # Verschachtelte Seiten/Routen
 
-In ofa.js sind verschachtelte Seiten (auch als verschachtelte Routen bezeichnet) eine leistungsstarke Funktion, die es dir ermöglicht, Seitenstrukturen mit Eltern-Kind-Hierarchien zu erstellen. Die übergeordnete Seite fungiert als Layout-Container und rendert den Inhalt der untergeordneten Seite über ein `<slot>`-Element.
+In ofa.js sind verschachtelte Seiten (auch als verschachtelte Routen bezeichnet) eine leistungsfähige Funktion, die es dir erlaubt, Seitenstrukturen mit Eltern-Kind-Hierarchien zu erstellen. Die Elternseite dient als Layout-Container und rendert den Inhalt der untergeordneten Seite über einen `<slot>`-Platzhalter.
 
-## Grundlegende Konzepte
+## Grundbegriffe
 
-- **Übergeordnete Seite (Layout)**: Eine Seite, die als Layout-Container dient und gemeinsame UI-Elemente wie Navigationsleiste, Seitenleiste usw. enthält
-- **Untergeordnete Seite**: Der konkrete Inhalt einer Geschäftsseite, der in den `<slot>`-Steckplatz der übergeordneten Seite gerendert wird
+- **Elternseite (Layout)**: Die Seite, die als Layout-Container dient und gemeinsame UI-Elemente wie Navigationsleiste und Seitenleiste enthält
+- **Unterseite**: Der spezifische Inhalt der Geschäftsseite, der im `<slot>`-Bereich der Elternseite gerendert wird
 
-## Schreibweise der Übersichtsseite
+## Schreiben der übergeordneten Seite
 
-Die übergeordnete Seite muss das `<slot></slot>`-Tag verwenden, um einen Renderplatz für die untergeordnete Seite vorzusehen.
+Die übergeordnete Seite muss das `<slot></slot>`-Tag verwenden, um einen Renderplatz für die untergeordnete Seite zu reservieren.
 
 ```html
 <!-- layout.html -->
@@ -29,9 +29,9 @@ Die übergeordnete Seite muss das `<slot></slot>`-Tag verwenden, um einen Render
 </template>
 ```
 
-## Schreibweise von Unter-Seiten
+## Schreiben von Unterseiten
 
-Untergeordnete Seiten geben den Pfad der übergeordneten Seite durch den Export der Eigenschaft `parent` an.
+Untergeordnete Seiten geben den Pfad der übergeordneten Seite an, indem sie die `parent`-Eigenschaft exportieren.
 
 ```html
 <template page>
@@ -49,7 +49,7 @@ Untergeordnete Seiten geben den Pfad der übergeordneten Seite durch den Export 
     export default async () => {
       return {
         data: {
-          val: "Hello ofa.js Demo Code",
+          val: "Hallo ofa.js Demo-Code",
         },
       };
     };
@@ -57,9 +57,9 @@ Untergeordnete Seiten geben den Pfad der übergeordneten Seite durch den Export 
 </template>
 ```
 
-## Beispiel für verschachtelte Seiten
+## Beispiel für eine verschachtelte Seite
 
-Im Folgenden finden Sie ein vollständiges Beispiel für verschachtelte Routen, einschließlich Root-Layout, übergeordneter Seite und untergeordneter Seite:
+Hier ist ein vollständiges Beispiel für verschachtelte Routen, das das Root-Layout, die übergeordnete Seite und die untergeordnete Seite enthält:
 
 <o-playground name="Beispiel für verschachtelte Seiten" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -68,9 +68,9 @@ Im Folgenden finden Sie ein vollständiges Beispiel für verschachtelte Routen, 
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // Startseiten-Adresse der Anwendung
+    // Startseitenadresse der Anwendung
     export const home = "./sub-page01.html";
-    // Konfiguration für Seitenwechsel-Animation
+    // Konfiguration für Seitenübergangsanimationen
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -215,7 +215,7 @@ Im Folgenden finden Sie ein vollständiges Beispiel für verschachtelte Routen, 
 
 ## Überwachung der Routing-Ereignisse der übergeordneten Seite
 
-Die übergeordnete Seite kann den Lebenszyklus-Hook `routerChange` verwenden, um Änderungen der Route zu überwachen, was nützlich ist, wenn du den Navigationszustand basierend auf der aktuellen Route aktualisieren musst.
+Die übergeordnete Seite kann über den Lifecycle-Hook `routerChange` auf Routenänderungen hören, was sehr nützlich ist, wenn du den Navigationsstatus basierend auf der aktuellen Route aktualisieren musst.
 
 ```html
 <template page>
@@ -250,19 +250,19 @@ Die übergeordnete Seite kann den Lebenszyklus-Hook `routerChange` verwenden, um
 
 ## Hinweise
 
-- Der Wert der Eigenschaft `parent` kann ein relativer Pfad sein (z. B. `./layout.html`) oder ein absoluter Pfad (z. B. `/pages/layout.html`)
-- Die übergeordnete Seite muss das Tag `<slot></slot>` enthalten, andernfalls kann der Inhalt der untergeordneten Seite nicht angezeigt werden
-- Die Stile der übergeordneten Seite werden auf die untergeordnete Seite vererbt; die untergeordnete Seite kann jedoch auch eigene Stile definieren
-- Mit dem Hook `routerChange` können Router-Änderungen überwacht werden, um Funktionen wie Navigations-Hervorhebung zu realisieren
+- Der Wert des Attributs `parent` kann ein relativer Pfad (z.B. `./layout.html`) oder ein absoluter Pfad (z.B. `/pages/layout.html`) sein.
+- Die übergeordnete Seite muss das `<slot></slot>`-Tag enthalten, da sonst der Inhalt der Unterseite nicht angezeigt werden kann.
+- Die Styles der übergeordneten Seite werden an die Unterseite vererbt, die Unterseite kann aber auch eigene Styles definieren.
+- Mit dem `routerChange`-Hook können Router-Änderungen überwacht werden, um Funktionen wie Navigationshervorhebung zu implementieren.
 
 ## Mehrstufige Verschachtelung
 
-Eine übergeordnete Seite kann ebenfalls ihre eigene übergeordnete Seite haben und so eine mehrstufige verschachtelte Struktur bilden.
+Eine übergeordnete Seite kann auch ihre eigene übergeordnete Seite haben und so eine mehrstufige Verschachtelungsstruktur bilden.
 
 ```html
 <!-- Unterseite -->
 <template page>
-  <p>Unterseiteninhalt</p>
+  <p>Inhalt der Unterseite</p>
   <script>
     export const parent = './parent.html';
     export default () => {
@@ -273,7 +273,7 @@ Eine übergeordnete Seite kann ebenfalls ihre eigene übergeordnete Seite haben 
 ```
 
 ```html
-<!-- Elternseite -->
+<!-- Übergeordnete Seite -->
 <template page>
   <div class="layout">
     <nav>Navigationsleiste</nav>
@@ -288,18 +288,18 @@ Eine übergeordnete Seite kann ebenfalls ihre eigene übergeordnete Seite haben 
 </template>
 ```
 
-## Beispiel für mehrstufige Verschachtelung
+## Mehrstufige Verschachtelungsbeispiele
 
-<o-playground name="Vollständiges Beispiel für verschachtelte Routen" style="--editor-height: 500px">
+<o-playground name="Vollständiges Beispiel für verschachtelte Routing" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js" style="height:96%;"></o-app>
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // Startseiten-URL der Anwendung
+    // Startseite der Anwendung
     export const home = "./sub-page01.html";
-    // Konfiguration für Seitenwechselanimationen
+    // Konfiguration für Seitenwechsel-Animation
     export const pageAnime = {
       current: {
         opacity: 1,

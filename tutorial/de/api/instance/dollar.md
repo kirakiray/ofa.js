@@ -1,10 +1,10 @@
 # $
 
-Die `$`-Methode ist die Kernfunktion in ofa.js, die zum Abrufen und Manipulieren von DOM-Elementinstanzen verwendet wird. Im Folgenden werden die Hauptfunktionen von `$` im Detail erläutert:
+`$` ist die Kernfunktion in ofa.js, die zum Abrufen und Manipulieren von DOM-Elementinstanzen verwendet wird. Im Folgenden werden die Hauptfunktionen von `$` im Detail beschrieben:
 
-## Instanz eines Elements abrufen
+## Elementinstanz abrufen
 
-Mit der `$`-Methode können Sie die erste Elementinstanz auf der Seite abrufen, die mit einem [CSS-Selektor](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/Selectors/Selector_list) übereinstimmt, und sie bearbeiten. Hier ist ein Beispiel:
+Mit der `$`-Methode kannst du die erste Elementinstanz auf der Seite abrufen, die dem [CSS-Selektor](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/Selectors/Selector_list) entspricht, und sie bearbeiten. Hier ist ein Beispiel:
 
 <o-playground name="$ - Element abrufen">
   <code path="demo.html">
@@ -19,38 +19,38 @@ Mit der `$`-Methode können Sie die erste Elementinstanz auf der Seite abrufen, 
   </code>
 </o-playground>
 
-Im obigen Beispiel haben wir mit dem `$`-Symbol eine Instanz des Elements mit der `id` "target1" ausgewählt und durch Setzen der `text`-Eigenschaft seinen Textinhalt geändert.
+Im obigen Beispiel haben wir mit dem `$`-Symbol das Element mit der `id` "target1" ausgewählt und dessen Textinhalt durch Setzen der `text`-Eigenschaft geändert.
 
-## Beispiel zum Finden von Unterelementen
+## Beispiel zum Auffinden von untergeordneten Elementen
 
-Die Instanz besitzt ebenfalls die `$`-Methode; über die `$`-Methode der Instanz kann man die erste passende untergeordnete Elementinstanz abrufen.
+Instanzen haben auch die `$`-Methode, mit der über die `$`-Methode auf der Instanz die erste untergeordnete Elementinstanz abgerufen werden kann, die den Bedingungen entspricht.
 
-<o-playground name="$ - Unterelemente finden">
+<o-playground name="$ - Unterelemente suchen">
   <code path="demo.html">
     <template>
       <div id="target1">
         <h3>target</h3>
-        <p>Ich bin target1</p>
+        <p>I am target1</p>
       </div>
       <script>
         const tar = $("#target1");
-        tar.$('h3').text = 'Titel des Ziels ändern';
+        tar.$('h3').text = 'change target title';
       </script>
     </template>
   </code>
 </o-playground>
 
-Bitte fügen Sie die erhaltene Elementinstanz nicht direkt an anderen Stellen ein, da dies das ursprüngliche Element beeinflussen kann. Wenn Sie eine Kopie erstellen müssen, können Sie die [clone](./clone.md)-Methode verwenden.
+Bitte fügen Sie die abgerufene Elementinstanz nicht direkt an anderer Stelle ein; eine solche Operation wirkt sich auf das ursprüngliche Element aus. Wenn Sie eine Kopie erstellen möchten, können Sie die Methode [clone](./clone.md) verwenden.
 
-<o-playground name="$ - Instanz-Eigenschaften" style="--editor-height: 360px">
+<o-playground name="$ - Instanzeigenschaften" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="pos1" style="border:red solid 1px;">
-        <h3>Position 1</h3>
+        <h3>position 1</h3>
         <p id="target1" style="color:green">I am target1</p>
       </div>
       <div id="pos2" style="border:blue solid 1px;margin:8px;">
-        <h3>Position 2</h3>
+        <h3>position 2</h3>
       </div>
       <script>
         setTimeout(()=>{
@@ -62,17 +62,17 @@ Bitte fügen Sie die erhaltene Elementinstanz nicht direkt an anderen Stellen ei
   </code>
 </o-playground>
 
-## Untergeordnete Elemente innerhalb eines Shadow-Knotens abrufen
+## Unterelemente im Shadow-Knoten abrufen
 
-Sie können die Instanz über das [shadow](./shadow.md)-Attribut abrufen und dann das gewünschte Element über die `$`-Methode erhalten:
+Man kann nach dem Abrufen der Instanz über die [shadow](./shadow.md)-Eigenschaft dann mit der `$`-Methode das gewünschte Element erhalten:
 
 ```javascript
 $('my-component').shadow.$("selector").method(xxx)
 ```
 
-## Direkte Instanziierung von Elementen
+## Direktes Instanziieren von Elementen
 
-Sie können native Elemente direkt als `$`-Instanzobjekte initialisieren durch:
+Sie können native Elemente direkt wie folgt in eine `$`-Instanz initialisieren:
 
 ```javascript
 const ele = document.createElement('div');
@@ -84,15 +84,15 @@ const ele = document.querySelector('#target');
 const $ele = $(ele);
 ```
 
-Auf diese Weise können Sie vorhandene HTML-Elemente bequem in `$`-Instanzen umwandeln, um die von `$` bereitgestellten Funktionen zur Manipulation und Verarbeitung zu nutzen.
+So kannst du bestehende HTML-Elemente bequem in `$`-Instanzen umwandeln, um die von `$` bereitgestellten Funktionen zum Manipulieren und Verarbeiten zu nutzen.
 
-## Instanz eines Erzeugniselements
+## Generieren von Elementinstanzen
 
-Außer, `$` kann nicht nur verwendet werden, um vorhandene Elementinstanzen abzurufen, sondern auch um neue Elementinstanzen zu erstellen und sie zur Seite hinzuzufügen.
+Außer, `$` kann verwendet werden, um bestehende Elementinstanzen zu erhalten, und auch neue Elementinstanzen zu erstellen und sie der Seite hinzuzufügen.
 
-### Generierung über String
+### Generierung über Zeichenkette
 
-Sie können mit der `$`-Funktion neue Elementinstanzen aus Zeichenketten erstellen, wie unten gezeigt:
+Du kannst die `$`-Funktion verwenden, um neue Elementinstanzen aus einem String zu erstellen, wie folgt:
 
 <o-playground name="$ - String-Generierung" style="--editor-height: 260px">
   <code path="demo.html">
@@ -108,13 +108,13 @@ Sie können mit der `$`-Funktion neue Elementinstanzen aus Zeichenketten erstell
   </code>
 </o-playground>
 
-In diesem Beispiel verwenden wir die `$`-Funktion, um eine neue Elementinstanz mit den angegebenen Stilen und dem Textinhalt zu erstellen und sie in eine bestehende Elementinstanz mit der `id` „target1“ einzufügen.
+In diesem Beispiel erstellen wir eine neue Elementinstanz mit dem angegebenen Stil und Textinhalt mithilfe der `$`-Funktion und fügen sie in die vorhandene Elementinstanz mit der `id` "target1" ein.
 
-### Durch Objekte generieren
+### Generierung durch Objekte
 
-Sie können auch die `$`-Funktion verwenden, um neue Elementinstanzen auf objektorientierte Weise zu generieren, wie folgt:
+Du kannst auch die `$`-Funktion verwenden, um über ein Objekt neue Element-Instanzen zu erzeugen, wie folgt:
 
-<o-playground name="$ - Objektgenerierung" style="--editor-height: 360px">
+<o-playground name="$ - Objekterzeugung" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -123,7 +123,7 @@ Sie können auch die `$`-Funktion verwenden, um neue Elementinstanzen auf objekt
       <script>
         const newEl = $({
           tag: "div",
-          text: "Text zu target1 hinzufügen",
+          text: "add target 1 text",
           css: {
             color: "red"
           }
@@ -134,4 +134,42 @@ Sie können auch die `$`-Funktion verwenden, um neue Elementinstanzen auf objekt
   </code>
 </o-playground>
 
-In diesem Beispiel verwenden wir die `$`-Funktion, um eine neue Elementinstanz über ein Objekt zu definieren, einschließlich des Tag-Typs, des Textinhalts und der Stilattribute, und fügen sie innerhalb der vorhandenen Elementinstanz mit der `id` "target1" hinzu.
+In diesem Beispiel verwenden wir die `$`-Funktion, um eine neue Elementinstanz durch ein Objekt zu definieren, einschließlich Tag-Typ, Textinhalt und Stilattributen, und fügen sie der vorhandenen Elementinstanz mit der `id` "target1" hinzu.
+
+## Beziehung zwischen abgerufenen Beispielen und Seiten-/Komponenteninstanzen
+
+`$`-Methode kann verwendet werden, um von globaler Ebene eine Instanz des entsprechenden Seiten- oder Komponentenelements abzurufen. Ihre Funktion entspricht dem `this`-Verweis in den Lebenszyklusmethoden innerhalb des Seiten- oder Komponentenmoduls.
+
+```html
+<!DOCTYPE html>
+...
+<l-m src="./test-comp.html"></l-m>
+<test-comp id="target"></test-comp>
+<script type="module">
+  setTimeout(()=>{
+    console.log($('#target').title);  // => OFAJS Komponentenbeispiel
+  },300);
+</script>
+```
+
+```html
+<!-- test-comp.html -->
+ <template component>
+  <div>
+    <p>{{title}}</p>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "test-comp",
+        data: {
+          title: "OFAJS Komponentenbeispiel",
+        },
+        attached(){
+          console.log(this === $('#target')); // true
+        }
+      };
+    };
+  </script>
+ </template>
+```

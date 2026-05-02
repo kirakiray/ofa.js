@@ -1,24 +1,24 @@
 # List Rendering
 
-In ofa.js, the `o-fill` component offers powerful list-rendering capabilities, efficiently turning array data into multiple similar elements. It supports two main usage modes: direct rendering and template rendering.
+In ofa.js, the `o-fill` component provides powerful list rendering capabilities, efficiently rendering array data into multiple similar elements. It supports two main usage methods: direct rendering and template rendering.
 
-## o-fill Component Introduction
+## Introduction to o-fill Component
 
-`o-fill` is the core component in ofa.js for list rendering; it accepts an array-typed `value` property and generates a corresponding DOM element for each item. During rendering, ofa.js automatically tracks array changes and updates the DOM efficiently.
+`o-fill` is a core component in ofa.js for list rendering, it accepts a `value` property of array type and generates corresponding DOM elements for each item in the array. During rendering, ofa.js automatically tracks changes to the array and efficiently updates the DOM.
 
-### Key Features:
+### Main Features:
 
-- **Efficient updates**: Track array changes by key and update only what has changed.  
-- **Index access**: Use `$index` to get the current item’s index.  
-- **Data access**: Use `$data` to get the current item’s data.  
-- **Host access**: Use `$host` to reach the host component instance, call its methods, or read its data.  
-- **Template reuse**: Support named templates for complex list rendering.
+- **Efficient Updates**: Track array changes via key values, only update the parts that need to change
+- **Index Access**: Access the index of the current item via `$index`
+- **Data Access**: Access the data of the current item via `$data`
+- **Host Access**: Access the current component instance via `$host`, allowing calls to component methods or access to component data
+- **Template Reuse**: Support complex list rendering using named templates
 
 ## Direct Rendering
 
-Direct rendering is the simplest way to use it: place the template content directly inside the `o-fill` tag. When the array changes, `o-fill` automatically creates a corresponding element for each data item.
+Direct rendering is the simplest way to use it—write the template content directly inside the `o-fill` tag. When the array changes, `o-fill` automatically creates the corresponding element for each data item.
 
-<o-playground name="o-fill - Direct Rendering" style="--editor-height: 600px">
+<o-playground name="o-fill - direct rendering" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -68,14 +68,14 @@ Direct rendering is the simplest way to use it: place the template content direc
   </code>
 </o-playground>
 
-In this example, we can see that:- `$index` represents the index of the current item (starting from 0)
+In this example, we can see:- `$index` represents the index of the current item (starting from 0)
 - `$data` represents the data object of the current item
 - `$host` represents the current component instance, which can be used to call component methods or access component data
-- The list automatically updates when the array changes
+- When the array changes, the list updates automatically
 
 ## Template Rendering
 
-For more complex list-item structures, use named templates: define the template inside a `template` tag and reference it in `o-fill` via the `name` attribute.
+For more complex list-item structures, you can use named templates. Define the template inside a `template` tag and reference it in `o-fill` via the `name` attribute.
 
 <o-playground name="o-fill - Template Rendering" style="--editor-height: 600px">
   <code>
@@ -97,23 +97,23 @@ For more complex list-item structures, use named templates: define the template 
           <div class="product-name">{{$data.name}}</div>
           <div class="product-price">¥{{$data.price}}</div>
           <div class="product-desc">{{$data.description}}</div>
-          <small>Index: {{$index + 1}}</small>
+          <small>No.: {{$index + 1}}</small>
         </div>
       </template>
       <script>
         export default async () => ({
           data: {
             products: [
-              { name: "MacBook Pro", price: 12999, description: "High-performance laptop suitable for professional work" },
+              { name: "MacBook Pro", price: 12999, description: "High-performance laptop, suitable for professional work" },
               { name: "iPhone 15", price: 5999, description: "Latest smartphone with excellent camera performance" },
-              { name: "AirPods Pro", price: 1999, description: "Wireless noise-canceling headphones with excellent sound quality" }
+              { name: "AirPods Pro", price: 1999, description: "Wireless noise-cancelling headphones with excellent sound quality" }
             ],
             productIndex: 0,
           },
           proto: {
             addProduct() {
               const productNames = ["iPad Air", "Apple Watch", "Magic Mouse", "Pro Display"];
-              const productDescs = ["Lightweight and portable tablet", "Smartwatch with health monitoring", "Ergonomically designed mouse", "Professional-grade monitor"];
+              const productDescs = ["Lightweight and portable tablet", "Smartwatch, health monitoring", "Ergonomic mouse", "Professional-grade monitor"];
               const name = productNames[this.productIndex % productNames.length];
               const desc = productDescs[this.productIndex % productDescs.length];
               this.products.push({
@@ -132,9 +132,9 @@ For more complex list-item structures, use named templates: define the template 
 
 ## Nested List Rendering
 
-`o-fill` supports nested usage and can handle complex hierarchical data structures, such as tree menus and category lists.
+`o-fill` supports nested usage and can handle complex hierarchical data structures, such as tree menus, category lists, etc.
 
-<o-playground name="o-fill - Nested List Rendering" style="--editor-height: 800px">
+<o-playground name="o-fill - nested list rendering" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -190,25 +190,25 @@ For more complex list-item structures, use named templates: define the template 
                   name: "Electronics",
                   subcategories: [
                     {
-                      name: "Phones",
-                      items: ["iPhone", "Android Phone", "Feature Phone"]
+                      name: "Mobile Phones",
+                      items: ["iPhone", "Android Phones", "Feature Phones"]
                     },
                     {
                       name: "Computers",
-                      items: ["Laptop", "Desktop", "Tablet"]
+                      items: ["Laptops", "Desktops", "Tablets"]
                     }
                   ]
                 },
                 {
-                  name: "Home Goods",
+                  name: "Home & Living",
                   subcategories: [
                     {
                       name: "Kitchenware",
-                      items: ["Cookware", "Tableware", "Small Appliances"]
+                      items: ["Pots & Pans", "Tableware", "Small Appliances"]
                     },
                     {
-                      name: "Bedroom Goods",
-                      items: ["Bedding", "Wardrobe", "Decor"]
+                      name: "Bedroom Supplies",
+                      items: ["Bedding", "Wardrobes", "Decorations"]
                     }
                   ]
                 },
@@ -216,12 +216,12 @@ For more complex list-item structures, use named templates: define the template 
                   name: "Clothing & Accessories",
                   subcategories: [
                     {
-                      name: "Men's Wear",
-                      items: ["T-Shirt", "Shirt", "Jacket"]
+                      name: "Men's Clothing",
+                      items: ["T-shirts", "Shirts", "Outerwear"]
                     },
                     {
-                      name: "Women's Wear",
-                      items: ["Dress", "Pants", "Accessories"]
+                      name: "Women's Clothing",
+                      items: ["Dresses", "Pants", "Accessories"]
                     }
                   ]
                 }
@@ -239,7 +239,7 @@ For more complex list-item structures, use named templates: define the template 
 For lists that require frequent updates, you can specify a unique identifier through the `fill-key` attribute to improve rendering performance.
 
 ```html
-<!-- Use custom key values to improve performance -->
+<!-- Use custom key to improve performance -->
 <o-fill :value="items" fill-key="id">
   <div>{{$data.name}}</div>
 </o-fill>
@@ -247,10 +247,10 @@ For lists that require frequent updates, you can specify a unique identifier thr
 
 In the example above, `fill-key="id"` tells ofa.js to use the `id` property of each data item as the unique identifier, so that even if the order of the array changes, the corresponding elements can still be correctly identified and updated.
 
-## List Rendering Best Practices
+## Best Practices for List Rendering
 
-1. **Event Handling**: When using events in list items, note that `$host` refers to the current component instance and `$data` to the current item’s data.  
-2. **Choose the Appropriate Rendering Method**: Use direct rendering for simple lists and template rendering for complex structures.  
-3. **Performance Considerations**: For large or frequently updated lists, specify a key with `fill-key`.  
-4. **Data Structure**: Ensure every item in the array is a valid data object.  
-5. **Avoid Deep Nesting**: Although nesting is supported, overly deep levels should be avoided.
+1. **Event Handling**: When using events in list items, note that `$host` points to the current component instance and `$data` points to the current item data.
+2. **Choose the Appropriate Rendering Method**: Use direct rendering for simple lists and template rendering for complex structures.
+3. **Performance Considerations**: For large lists or lists that update frequently, use `fill-key` to specify a key value.
+4. **Data Structure**: Ensure that every item in the array is a valid data object.
+5. **Avoid Deep Nesting**: Although nesting is supported, excessively deep nesting levels should be avoided.

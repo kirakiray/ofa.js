@@ -1,16 +1,16 @@
-# Enlace de Clases y Estilos
+# Enlace de clases y estilos
 
-En ofa.js, puedes lograr una gestión flexible del estado de la UI mediante el enlace dinámico de nombres de clase, estilos y atributos. Esto permite que la interfaz se ajuste automáticamente a los cambios en los datos.
+En ofa.js, puedes lograr una gestión flexible del estado de la interfaz de usuario mediante la vinculación dinámica de nombres de clase, estilos y atributos. Esto permite que la interfaz se ajuste automáticamente a los cambios en los datos.
 
-## Enlace de Clases
+## Enlace de clases
 
-El enlace de clases te permite agregar o eliminar clases CSS dinámicamente según el estado de los datos. Puedes usar la sintaxis `class:className="booleanExpression"` para enlazar una clase específica.
+El enlace de clases te permite agregar o eliminar dinámicamente clases CSS según el estado de los datos. Puedes usar la sintaxis `class:className="booleanExpression"` para enlazar una clase específica.
 
-Cuando `booleanExpression` es `true`, el nombre de la clase se agrega al elemento; cuando es `false`, el nombre de la clase se elimina.
+Cuando `booleanExpression` es `true`, el nombre de la clase se añade al elemento; cuando es `false`, el nombre de la clase se elimina.
 
 ### Enlace de clases básicas
 
-<o-playground name="Clase de enlace básica" style="--editor-height: 500px">
+<o-playground name="Enlace de clases básico" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -30,7 +30,7 @@ Cuando `booleanExpression` es `true`, el nombre de la clase se agrega al element
           return {
             data: {
               isHide: false,
-              val: "Hola, código de demostración de ofa.js",
+              val: "Código de demostración de ofa.js",
             },
           };
         };
@@ -41,9 +41,9 @@ Cuando `booleanExpression` es `true`, el nombre de la clase se agrega al element
 
 ### Enlace de múltiples clases
 
-También puedes vincular múltiples clases simultáneamente, permitiendo que el elemento tenga diferentes estados de apariencia según distintas condiciones.
+También puedes vincular varias clases al mismo tiempo, para que el elemento tenga diferentes estados de apariencia según diferentes condiciones.
 
-<o-playground name="Múltiples enlaces de clases" style="--editor-height: 500px">
+<o-playground name="Enlaces de múltiples clases" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -93,13 +93,13 @@ También puedes vincular múltiples clases simultáneamente, permitiendo que el 
 
 ## Enlace de estilos
 
-La vinculación de estilos te permite establecer directamente los valores de estilos en línea, admitiendo actualizaciones dinámicas. ofa.js proporciona dos métodos de vinculación de estilos:
+La vinculación de estilos te permite establecer directamente los valores de los estilos en línea, soportando actualizaciones dinámicas. ofa.js proporciona dos formas de vinculación de estilos:
 
-### Enlace de un solo atributo de estilo
+### Enlace de propiedad de estilo único
 
 Utiliza la sintaxis `:style.propertyName` para enlazar propiedades de estilo específicas.
 
-<o-playground name="Enlace de atributo de estilo único" style="--editor-height: 500px">
+<o-playground name="Enlace de propiedad de estilo único" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -110,13 +110,13 @@ Utiliza la sintaxis `:style.propertyName` para enlazar propiedades de estilo esp
         }
       </style>
       <p class="green" :style.color="isGreen ? 'green' : 'red'">{{val}}</p>
-      <button on:click="isGreen = !isGreen">Cambiar Color</button>
+      <button on:click="isGreen = !isGreen">Toggle Color</button>
       <script>
         export default async () => {
           return {
             data: {
               isGreen: false,
-              val: "Hola de Demo Code ofa.js",
+              val: "Hola código de ejemplo de ofa.js",
             },
           };
         };
@@ -125,11 +125,11 @@ Utiliza la sintaxis `:style.propertyName` para enlazar propiedades de estilo esp
   </code>
 </o-playground>
 
-### Vinculación de atributos de múltiples estilos
+### Enlace de atributos de múltiples estilos
 
-También puedes enlazar varias propiedades de estilo a la vez:
+También puedes vincular múltiples atributos de estilo a la vez:
 
-<o-playground name="Vinculación de atributos de estilo múltiple" style="--editor-height: 500px">
+<o-playground name="Vinculación de estilos múltiples" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -140,9 +140,9 @@ También puedes enlazar varias propiedades de estilo a la vez:
         }
       </style>
       <p :style.color="textColor" :style.fontSize="fontSize + 'px'" :style.backgroundColor="bgColor">
-        Ejemplo de Estilos Dinámicos
+        Dynamic Styling Example
       </p>
-      <button on:click="changeStyles">Cambiar Estilos</button>
+      <button on:click="changeStyles">Change Styles</button>
       <script>
         export default async () => {
           return {
@@ -167,11 +167,11 @@ También puedes enlazar varias propiedades de estilo a la vez:
 
 ## Enlace de atributos
 
-Además de la vinculación de clases y estilos, también puedes vincular dinámicamente otros atributos HTML. ofa.js utiliza la sintaxis `attr:attributeName` para realizar la vinculación de atributos.
+Además de la vinculación de clases y estilos, también puedes vincular dinámicamente otros atributos HTML. ofa.js usa la sintaxis `attr:attributeName` para implementar la vinculación de atributos.
 
-### Enlace de atributos básicos
+### Vinculación de atributos básicos
 
-<o-playground name="Enlace de atributos básicos" style="--editor-height: 700px">
+<o-playground name="Enlace de propiedades básicas" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -194,8 +194,8 @@ Además de la vinculación de clases y estilos, también puedes vincular dinámi
           return {
             data: {
               bgColor: "green",
-              tooltipText: "Esta es un mensaje de información",
-              val: "Pasa el cursor sobre mí para ver el título",
+              tooltipText: "Este es un mensaje de información",
+              val: "Hover over me to see the title",
             },
             proto: {
               changeColor() {
@@ -211,7 +211,7 @@ Además de la vinculación de clases y estilos, también puedes vincular dinámi
 
 ### Manejo de atributos booleanos
 
-Para atributos de tipo booleano (como `disabled`, `hidden`), ofa.js decide si añadir el atributo según el valor verdadero o falso del dato enlazado.
+Para atributos de tipo booleano (como `disabled`, `hidden`), ofa.js decide si añadir o no el atributo en función del valor verdadero o falso del dato enlazado.
 
 <o-playground name="Manejo de atributos booleanos" style="--editor-height: 700px">
   <code>
@@ -223,9 +223,9 @@ Para atributos de tipo booleano (como `disabled`, `hidden`), ofa.js decide si a�
           padding: 10px;
         }
       </style>
-      <input type="text" attr:disabled="isDisabled" placeholder="Escriba aquí..." />
+      <input type="text" attr:disabled="isDisabled" placeholder="Escribe aquí..." />
       <br /><br />
-      <button attr:disabled="isButtonDisabled" on:click="handleButtonClick">Haz clic en mí</button>
+      <button attr:disabled="isButtonDisabled" on:click="handleButtonClick">Haz clic</button>
       <br /><br />
       <label>
         <input type="checkbox" on:change="toggleAll" /> Alternar todos los estados
@@ -256,11 +256,11 @@ Para atributos de tipo booleano (como `disabled`, `hidden`), ofa.js decide si a�
   </code>
 </o-playground>
 
-## Funciones de datos dentro de etiquetas de estilo
+## Función data()
 
-Puedes usar `data(xxx)` en los estilos para enlazar datos del componente. Esto es muy adecuado para escenarios en los que los estilos deben cambiar dinámicamente según los datos del componente.
+Se puede usar `data(key)` en los estilos para vincular datos del componente. Esto es muy adecuado para escenarios donde se necesita cambiar dinámicamente el estilo según los datos del componente.
 
-<o-playground name="Función de datos dentro de etiquetas de estilo" style="--editor-height: 500px">
+<o-playground name="Función de datos dentro de la etiqueta de estilo" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -269,28 +269,30 @@ Puedes usar `data(xxx)` en los estilos para enlazar datos del componente. Esto e
           border: 1px solid red;
           padding: 10px;
         }
-        p:hover{
+        p {
+          font-size: 10px;
           color:red;
+          transition: all .3s ease;
         }
       </style>
       <style>
-        p {
+        p:hover {
           font-size: data(size);
-          color:green;
+          color: green;
           transition: all data(time)s ease;
         }
       </style>
-      TamañoFuente: <input type="number" sync:value="size" placeholder="Este es un campo de entrada con enlace bidireccional" />
+      Hover FontSize: <input type="number" sync:value="size" placeholder="Esta es una entrada de enlace bidireccional" />
       <br />
-      TiempoTransición: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Este es un campo de entrada con enlace bidireccional" />
-      <p>{{val}} - tamaño: {{size}}</p>
+      TransitionTime: <input type="number" step="0.3" min="0" sync:value="time" placeholder="Esta es una entrada de enlace bidireccional" />
+      <p>{{val}} - size: {{size}}</p>
       <script>
         export default async () => {
           return {
             data: {
               size: 16,
               time: 0.3,
-              val: "Código de demostración de ofa.js",
+              val: "Hello ofa.js Demo Code",
             }
           };
         };
@@ -299,24 +301,24 @@ Puedes usar `data(xxx)` en los estilos para enlazar datos del componente. Esto e
   </code>
 </o-playground>
 
-## Precauciones
+## Notas importantes
 
-Lo que está dentro de `style` en `data(xxx)` técnicamente reemplaza todo el contenido de style, por lo que es mejor escribir solo los estilos relacionados con data dentro de style, y poner los que no necesitan data en otro style, así el rendimiento es mejor.
+`data(key)` dentro de la etiqueta `style` en principio reemplazará todo el contenido del estilo. Para evitar renderizados repetidos de estilos no relacionados, se recomienda colocar los estilos que contienen `data(key)` en una etiqueta `style` separada, mientras que los estilos que no requieren enlace de datos se colocan en otra etiqueta `style`, para lograr un mejor rendimiento.
 
 ```html
-<!-- ❌ El p:hover sin data(xxx) también será actualizado -->
+<!-- ❌ El p:hover sin data(key) también se actualizará -->
 <style>
   p {
     font-size: data(size);
-    color: green;
+    color:green;
     transition: all data(time)s ease;
   }
-  p:hover {
-    color: red;
+  p:hover{
+    color:red;
   }
 </style>
 ``````html
-<!-- ✅ Solo los estilos que contienen data(xxx) serán re-renderizados -->
+<!-- ✅ Solo los estilos con data(xxx) serán renderizados nuevamente -->
 <style>
   p {
     font-size: data(size);

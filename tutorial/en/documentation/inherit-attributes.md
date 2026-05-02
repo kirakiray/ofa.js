@@ -1,12 +1,12 @@
 # Passing Feature Attributes
 
-In ofa.js, [attributes](https://developer.mozilla.org/en-US/docs/Web/API/Element/attributes) are one of the most common ways to pass data between components. Simply declare the required attributes in the component's `attrs` object, and external data can be passed into the component when it is used.
+In ofa.js, [attributes](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/attributes) are one of the most common ways to pass data between components. Simply declare the required attributes in the component's `attrs` object, and external data can be passed into the component when using it.
 
 ## Basic Usage
 
 ### Define Receiving Attributes
 
-Before using a component, you need to declare the attributes you want to receive in the component's `attrs` object. Default values can be set for these attributes.
+Before using a component, you need to declare the properties to be received in the component's `attrs` object. Properties can have default values.
 
 <o-playground name="Basic Usage Example" style="--editor-height: 500px">
   <code path="demo.html" preview>
@@ -45,14 +45,14 @@ Before using a component, you need to declare the attributes you want to receive
 
 ### Important Rules
 
-1. **Type restriction**: The passed attribute value must be a string; other types are automatically converted to strings.
+1. **Type Restriction**: The passed attribute value must be a string; other types will be automatically converted to strings.
 
-2. **Naming conversion**: Because HTML attributes are case-insensitive, attributes containing uppercase letters must be written in kebab-case with hyphens.
-   - Example: `fullName` → `full-name`
+2. **Naming Convention**: Since HTML attributes are case-insensitive, when passing attributes containing uppercase letters, you need to use a `-` separated naming (kebab-case format).
+   - For example: `fullName` → `full-name`
 
-3. **Must be defined**: If the component does not declare the corresponding property in the `attrs` object, it cannot receive that attribute. The assigned value becomes the default; set it to `null` if no default is desired.
+3. **Must Be Defined**: If the component does not define the corresponding attribute in the `attrs` object, it cannot receive that attribute. The set value is the default value; if you do not want a default value, set it to `null`.
 
-<o-playground name="Important Rule Example" style="--editor-height: 500px">
+<o-playground name="Important Rules Example" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -86,11 +86,11 @@ Before using a component, you need to declare the attributes you want to receive
   </code>
 </o-playground>
 
-## Passing Attributes via Template Syntax
+## Template Syntax Passing Attributes
 
-In a component's template, you can use the `attr:toKey="fromKey"` syntax to pass the current component's `fromKey` data to the child component's `toKey` property.
+In the component's template, you can use the `attr:toKey="fromKey"` syntax to pass the `fromKey` data of the current component to the `toKey` attribute of the child component.
 
-<o-playground name="Props Passing Example" style="--editor-height: 500px">
+<o-playground name="Attribute Passing Example" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-page src="page1.html"></o-page>
@@ -145,17 +145,17 @@ In a component's template, you can use the `attr:toKey="fromKey"` syntax to pass
   </code>
 </o-playground>
 
-## Multi-level Transfer
+## Multi-level Propagation
 
-Attributes can be passed through multiple levels of nested components.
+Attributes can be passed layer by layer through multi-layer nested components.
 
-If a component depends on other components, it needs to import the modules of those other components within the component.
+If a component needs to depend on other components, it must import the modules of those other components within the component.
 
 <o-playground name="Multi-level Passing Example" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
-      <outer-comp user-name="Top-level Data"></outer-comp>
+      <outer-comp user-name="Top-level data"></outer-comp>
     </template>
   </code>
   <code path="outer-comp.html" active>
@@ -169,7 +169,7 @@ If a component depends on other components, it needs to import the modules of th
           margin-bottom: 8px;
         }
       </style>
-      <p>Outer Component Receives: {{userName}}</p>
+      <p>Outer component received: {{userName}}</p>
       <inner-comp attr:user-name="userName"></inner-comp>
       <script>
         export default async ({ load }) => {
@@ -193,7 +193,7 @@ If a component depends on other components, it needs to import the modules of th
           margin-left: 20px;
         }
       </style>
-      <p>Inner Component Receives: {{userName}}</p>
+      <p>Inner component received: {{userName}}</p>
       <script>
         export default async ({ load }) => {
           return {

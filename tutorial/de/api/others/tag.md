@@ -2,9 +2,9 @@
 
 
 
-Das `tag`-Attribut wird verwendet, um das Tag eines Elements abzurufen und gibt einen Kleinbuchstaben-String zurück.
+`tag`-Attribut wird verwendet, um das Tag eines Elements zu erhalten und gibt eine Zeichenkette in Kleinbuchstaben zurück.
 
-Im folgenden Beispiel zeigen wir, wie man mit der `tag`-Methode das Tag eines Elements abruft:
+Im folgenden Beispiel zeigen wir, wie man die `tag`-Methode verwendet, um das Tag eines Elements zu erhalten:
 
 <o-playground name="tag - Tag abrufen">
   <code path="demo.html">

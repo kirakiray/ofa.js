@@ -1,8 +1,8 @@
-# Injecter les styles de l'hôte
+# Injecter le style de l'hôte
 
-Dans les Web Components, en raison des limitations des `slot`, il est impossible de définir directement les styles des éléments multi-niveaux à l’intérieur d’un slot. Pour résoudre ce problème, ofa.js fournit le composant `<inject-host>`, qui permet d’injecter des styles dans l’élément hôte depuis l’intérieur du composant, afin de contrôler les styles des éléments multi-niveaux dans le contenu du slot.
+Dans les Web Components, en raison des limitations des slots, il n'est pas possible de définir directement le style des éléments à plusieurs niveaux à l'intérieur d'un slot. Pour résoudre ce problème, ofa.js fournit le composant `<inject-host>`, qui permet d'injecter des styles dans l'élément hôte depuis l'intérieur du composant, permettant ainsi de contrôler le style des éléments à plusieurs niveaux dans le contenu du slot.
 
-> Attention, il est recommandé d’utiliser en priorité le sélecteur [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) pour styliser le contenu des slots. N’utilisez le composant `<inject-host>` que si ce dernier ne répond pas à vos besoins.
+> Remarque : il est recommandé d'utiliser d'abord le sélecteur [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) pour styliser le contenu du slot. Utilisez le composant `<inject-host>` uniquement si cela ne répond pas aux besoins.
 
 ## Utilisation de base
 
@@ -14,7 +14,7 @@ Dans les Web Components, en raison des limitations des `slot`, il est impossible
             border: 1px solid #007acc;
             padding: 10px;
         }
-        /* Définir le style des éléments enfants directs */
+        /* Définit le style des éléments enfants directs */
         /* ::slotted(user-list-item) {
             background-color: aqua;
         } */
@@ -24,7 +24,7 @@ Dans les Web Components, en raison des limitations des `slot`, il est impossible
             user-list user-list-item {
                 background-color: aqua;
             }
-            /* Il est également possible de définir des styles pour les imbrications multi-niveaux */
+            /* Il est également possible de définir des styles pour plusieurs niveaux d'imbrication */
             user-list user-list-item .user-list-item-content {
                 color: red;
             }
@@ -43,9 +43,9 @@ Dans les Web Components, en raison des limitations des `slot`, il est impossible
 
 ## Cas
 
-L'exemple ci-dessous montre comment utiliser `<inject-host>` pour définir le style des éléments imbriqués dans un slot. Nous créons deux composants : le composant `user-list` comme conteneur de liste et le composant `user-list-item` comme élément de liste. Grâce à `<inject-host>`, nous pouvons définir le style de `user-list-item` et de ses éléments internes dans le composant `user-list`.
+L'exemple ci-dessous montre comment utiliser `<inject-host>` pour styliser les éléments imbriqués dans un emplacement. Nous créons deux composants : le composant `user-list` comme conteneur de liste, et le composant `user-list-item` comme élément de liste. Grâce à `<inject-host>`, nous pouvons dans le composant `user-list` définir le style de `user-list-item` et de ses éléments internes.
 
-<o-playground name="Injection de styles hôte" style="--editor-height: 500px">
+<o-playground name="Injecter le style hôte" style="--editor-height: 500px">
   <code path="index.html" preview>
     <template>
       <l-m src="./user-list.html"></l-m>
@@ -104,7 +104,7 @@ L'exemple ci-dessous montre comment utiliser `<inject-host>` pour définir le st
       </style>
       <slot></slot>
       <div class="item-age">
-        Âge: <slot name="age"></slot>
+        Âge : <slot name="age"></slot>
       </div>
       <script>
         export default async () => {
@@ -117,28 +117,28 @@ L'exemple ci-dessous montre comment utiliser `<inject-host>` pour définir le st
   </code>
 </o-playground>
 
-On peut voir dans les résultats d'exécution :- La couleur de fond du composant `user-list-item` est aqua (définie via le `<inject-host>` du composant `user-list`)
-- La couleur du texte du nom est rouge (définie via le `<inject-host>` du composant `user-list` pour le style `user-list-item .item-name`)
+On peut voir dans les résultats d'exécution :- La couleur de fond du composant `user-list-item` est aqua (définie via `<inject-host>` du composant `user-list`)
+- La couleur du texte du nom est rouge (définie via `<inject-host>` du composant `user-list` en appliquant le style `user-list-item .item-name`)
 
 ## Principe de fonctionnement
 
-Le composant `<inject-host>` injecte le contenu des balises `<style>` qu’il contient dans l’élément hôte du composant. Ainsi, les règles de style injectées peuvent franchir la frontière du composant et s’appliquer aux éléments à l’intérieur des slots.
+`<inject-host>` composant injecte le contenu de la balise `<style>` qu'il contient dans l'élément hôte du composant. Ainsi, les règles de style injectées peuvent traverser les limites du composant et s'appliquer aux éléments à l'intérieur des slots.
 
-De cette façon, vous pouvez :- Appliquer des styles aux éléments à n'importe quelle profondeur dans le contenu des slots
-- Utiliser des chemins de sélecteurs complets pour garantir que les styles s'appliquent uniquement aux éléments cibles
-- Maintenir l'encapsulation des styles du composant tout en permettant une perforation flexible des styles
+De cette manière, vous pouvez :- Définir le style des éléments à n'importe quelle profondeur dans le contenu d'un emplacement (slot)
+- Utiliser un chemin de sélecteur complet pour garantir que le style ne s'applique qu'à l'élément cible
+- Maintenir l'encapsulation des styles des composants tout en réalisant une pénétration de style flexible
 
-## Remarques
+## Points d'attention
 
-⚠️ **Risque de pollution de style** : les styles injectés s’appliquent au scope de l’élément hôte et peuvent affecter des éléments d’autres composants. Lors de l’utilisation, respectez impérativement les principes suivants :
+⚠️ **Risque de pollution de styles** : puisque les styles injectés s’appliquent au scope de l’élément hôte, ils peuvent affecter des éléments dans d’autres composants. Lors de l’utilisation, respectez impérativement les principes suivants :
 
-1. **Utiliser des sélecteurs spécifiques** : préférez un chemin complet de balises de composants et évitez les sélecteurs trop larges  
-2. **Ajouter un préfixe d’espace de noms** : ajoutez un préfixe unique à vos classes de styles pour réduire les risques de conflit avec d’autres composants  
-3. **Éviter les sélecteurs universels de balise** : utilisez plutôt des sélecteurs de classe ou d’attribut à la place des sélecteurs de balise  
-4. **Réfléchir à la conception du composant** : envisagez d’optimiser la conception du composant pour éviter l’utilisation de `<inject-host>`. Par exemple, combiner sur le composant enfant le sélecteur [::slotted()](https://developer.mozilla.org/fr/docs/Web/CSS/Reference/Selectors/::slotted) est souvent plus élégant.
+1. **Utiliser des sélecteurs spécifiques** : Essayez d'utiliser des chemins de composants complets et évitez les sélecteurs trop génériques.
+2. **Ajouter un préfixe d'espace de noms** : Ajoutez un préfixe unique à vos classes de style pour réduire les risques de conflit avec d'autres composants.
+3. **Éviter d'utiliser des sélecteurs d'étiquettes génériques** : Préférez les sélecteurs de classes ou d'attributs aux sélecteurs d'étiquettes.
+4. **Reconsidérer la conception du composant** : Réfléchissez à la possibilité d'éviter l'utilisation de `<inject-host>` en optimisant la conception du composant. Par exemple, l'utilisation de la combinaison du sélecteur [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) sur les composants enfants est souvent plus élégante.
 
 ```html
-<!-- Recommandé ✅ : Utiliser des sélecteurs spécifiques -->
+<!-- Recommandé ✅ : Utiliser un sélecteur spécifique -->
 <inject-host>
     <style>
         user-list .list-item-content {
@@ -147,7 +147,7 @@ De cette façon, vous pouvez :- Appliquer des styles aux éléments à n'importe
     </style>
 </inject-host>
 
-<!-- Non recommandé ❌ : Utiliser des sélecteurs trop génériques -->
+<!-- Non recommandé ❌ : Utiliser un sélecteur trop générique -->
 <inject-host>
     <style>
         .content {  /* Risque de conflit avec d'autres composants */
@@ -157,7 +157,7 @@ De cette façon, vous pouvez :- Appliquer des styles aux éléments à n'importe
 </inject-host>
 ```
 
-### Conseils de performance
+### Astuces de performance
 
-Étant donné que `<inject-host>` déclenche la réinjection des styles de l'hôte, ce qui peut entraîner un reflow ou un repaint du composant, veuillez l'utiliser avec prudence dans des scénarios de mises à jour fréquentes.  
-Si vous avez uniquement besoin de définir des styles pour les éléments de premier niveau à l'intérieur du slot, privilégiez l'utilisation du sélecteur de pseudo-classe [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted). Cela permet d'éviter les coûts de rendu supplémentaires liés à l'injection de type "percée", offrant ainsi de meilleures performances.
+Étant donné que `<inject-host>` déclenche une réinjection des styles de l'hôte, ce qui peut entraîner un réordonnancement ou un repeint des composants, veuillez l'utiliser avec prudence dans les scénarios où les mises à jour sont fréquentes.  
+Si vous avez uniquement besoin de styliser les éléments de premier niveau dans le slot, privilégiez le sélecteur de pseudo-classe [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted), ce qui permet d'éviter les surcoûts de rendu supplémentaires liés à une injection pénétrante et d'obtenir de meilleures performances.

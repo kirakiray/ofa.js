@@ -1,60 +1,60 @@
 # Lebenszyklus
 
-ofa.js Komponenten verfügen über vollständige Lifecycle-Hook-Funktionen, die es Ihnen ermöglichen, spezifische Logik in verschiedenen Phasen der Komponente auszuführen. Diese Hook-Funktionen ermöglichen es Ihnen, in kritischen Momenten wie der Erstellung, dem Mounting, der Aktualisierung und der Zerstörung der Komponente einzugreifen und entsprechende Operationen auszuführen.
+Die ofa.js-Komponenten verfügen über vollständige Lifecycle-Hook-Funktionen, mit denen Sie in verschiedenen Phasen der Komponente spezifische Logik ausführen können. Diese Hook-Funktionen ermöglichen es Ihnen, zu entscheidenden Zeitpunkten wie der Erstellung, dem Mounten, der Aktualisierung und der Zerstörung der Komponente einzugreifen und entsprechende Aktionen auszuführen.
 
 ## Lebenszyklus-Hook-Funktionen
 
-ofa.js bietet die folgenden hauptsächlichen Lebenszyklus-Hook-Funktionen an, geordnet nach der gebräuchlichen Reihenfolge:
+ofa.js bietet die folgenden wichtigsten Lebenszyklus-Hook-Funktionen, geordnet nach der üblichen Reihenfolge:
 
 ### attached
 
 
 
-Der `attached`-Hook wird aufgerufen, wenn die Komponente in das Dokument eingefügt wurde und signalisiert, dass die Komponente bereits an die Seite angehängt ist. Es handelt sich um den am häufigsten verwendeten Lifecycle-Hook; er dient in der Regel dazu, Initialisierungen auszuführen, die erst nach dem tatsächlichen Anzeigen der Komponente erfolgen dürfen, und vermeidet unnötige Berechnungen, solange die Komponente noch nicht sichtbar ist. Dieser Hook eignet sich auch hervorragend für Operationen wie die Messung von Elementabmessungen oder das Starten von Animationen, die davon abhängen, dass die Komponente bereits gerendert wurde.
+`attached`-Hook wird aufgerufen, wenn die Komponente in das Dokument eingefügt wird, und zeigt an, dass die Komponente bereits an die Seite angehängt wurde. Dies ist der am häufigsten verwendete Lebenszyklus-Hook und wird normalerweise verwendet, um Initialisierungen durchzuführen, die erst nach dem tatsächlichen Anzeigen der Komponente auf der Seite möglich sind, um unnötige Berechnungen zu vermeiden, wenn die Komponente nicht sichtbar ist. Dieser Hook eignet sich auch hervorragend für Operationen wie Elementgrößenmessung, Animationsstart usw., die davon abhängen, dass die Komponente bereits auf der Seite gerendert wurde.
 
-- **Aufrufzeitpunkt**: Wenn die Komponente zum DOM-Baum hinzugefügt wird
-- **Hauptzweck**: Timer starten, Event-Listener hinzufügen, Operationen ausführen, die Sichtbarkeit erfordern
+- **Aufrufzeitpunkt**: Die Komponente wird dem DOM-Baum hinzugefügt
+- **Hauptverwendung**: Timer starten, Ereignis-Listener hinzufügen, Operationen ausführen, die Sichtbarkeit erfordern
 
 ### detached
 
 
 
-Der `detached`-Hook wird aufgerufen, wenn die Komponente aus dem Dokument entfernt wird und signalisiert, dass die Komponente kurz vor dem Entladen steht. Dieser Hook eignet sich zum Aufräumen von Ressourcen, wie das Löschen von Timern oder das Entfernen von Event-Listenern.
+`detached`-Hook wird aufgerufen, wenn die Komponente aus dem Dokument entfernt wird, was bedeutet, dass die Komponente kurz vor dem Abbau steht. Dieser Hook eignet sich zum Bereinigen von Ressourcen wie dem Löschen von Timern, Entfernen von Ereignis-Listenern usw.
 
-- **Aufrufzeitpunkt**: Komponente wird aus dem DOM-Baum entfernt
-- **Hauptzweck**: Ressourcen bereinigen, Abonnements kündigen, Event-Listener entfernen
+- **Aufrufzeitpunkt**: Die Komponente wird aus dem DOM-Baum entfernt
+- **Hauptverwendung**: Ressourcen bereinigen, Abonnements kündigen, Event-Listener entfernen
 
 ### ready
 
 
 
-`ready` Hook wird aufgerufen, wenn die Komponente bereit ist. Zu diesem Zeitpunkt wurde die Vorlage der Komponente bereits gerendert, DOM-Elemente wurden erstellt, aber möglicherweise noch nicht in das Dokument eingefügt. Dieser Hook eignet sich für DOM-Manipulationen oder das Initialisieren von Bibliotheken von Drittanbietern.
+Der `ready`-Hook wird aufgerufen, wenn die Komponente bereit ist; zu diesem Zeitpunkt ist das Template der Komponente bereits gerendert, die DOM-Elemente wurden erstellt, aber möglicherweise noch nicht in das Dokument eingefügt. Dieser Hook eignet sich für DOM-Manipulationen oder die Initialisierung von Drittanbieter-Bibliotheken.
 
-- **Aufrufzeitpunkt**: Nachdem die Komponentenvorlage gerendert wurde und das DOM erstellt ist
-- **Hauptverwendungszweck**: Durchführung von DOM-abhängigen Initialisierungsoperationen
+- **Aufrufzeitpunkt**: Das Rendern der Komponentenvorlage ist abgeschlossen, das DOM wurde erstellt
+- **Hauptzweck**: Ausführen von Initialisierungsoperationen, die vom DOM abhängen
 
 ### loaded
 
 
 
-Der `loaded`-Hook wird ausgelöst, nachdem die Komponente und alle ihre Unterkomponenten sowie asynchrone Ressourcen vollständig geladen sind. Zu diesem Zeitpunkt kann der Ladezustand sicher entfernt oder nachfolgende Operationen ausgeführt werden, die von der vollständigen Komponentenstruktur abhängen. Wenn keine Abhängigkeiten bestehen, wird er nach dem `ready`-Hook aufgerufen.
+`loaded`-Hook wird ausgelöst, sobald die Komponente, alle ihre Unterkomponenten und asynchrone Ressourcen vollständig geladen sind. An diesem Punkt kann der Ladezustand sicher entfernt oder nachfolgende Operationen ausgeführt werden, die von der vollständigen Komponentenhierarchie abhängen. Wenn keine Abhängigkeiten bestehen, wird er nach dem `ready`-Hook aufgerufen.
 
-- **Aufrufzeitpunkt**: Komponente und ihre Unterkomponenten sind vollständig geladen
-- **Hauptverwendung**: Ausführung von Operationen, die auf dem vollständigen Komponentenbaum basieren
+- **Aufrufzeitpunkt**: Komponente und ihre untergeordneten Komponenten sind vollständig geladen
+- **Hauptverwendung**: Ausführen von Operationen, die auf dem vollständigen Komponentenbaum basieren
 
 ## Lebenszyklus-Ausführungsreihenfolge
 
-Die Lifecycle-Hooks einer Komponente werden in folgender Reihenfolge ausgeführt:
+Die Lifecycle-Hooks der Komponente werden in folgender Reihenfolge ausgeführt:
 
-1. `ready` - Komponente bereit (DOM erstellt)
-2. `attached` - Komponente in DOM eingehängt
-3. `loaded` - Komponente vollständig geladen
+2. `ready` - Komponente bereit (DOM erstellt)
+3. `attached` - Komponente an DOM angehängt
+4. `loaded` - Komponente vollständig geladen
 
 Wenn die Komponente aus dem DOM entfernt wird, wird der `detached`-Hook aufgerufen.
 
 ## Verwendungsbeispiel
 
-Das folgende Beispiel zeigt, wie man in einer Komponente Lebenszyklus-Hook-Funktionen verwendet:
+Das folgende Beispiel zeigt, wie man Lebenszyklus-Hook-Funktionen in Komponenten verwendet:
 
 <o-playground name="Lebenszyklus-Beispiel" style="--editor-height: 700px">
   <code>
@@ -73,7 +73,7 @@ Das folgende Beispiel zeigt, wie man in einer Komponente Lebenszyklus-Hook-Funkt
           padding: 5px 10px;
         }
       </style>
-      <h3>Lebenszyklus-Demonstration</h3>
+      <h3>Lebenszyklus-Demo</h3>
       <div class="counter">Zähler: {{count}}</div>
       <button on:click="count += 10">Um 10 erhöhen</button>
       <button on:click="removeSelf">Komponente entfernen</button>
@@ -102,20 +102,20 @@ Das folgende Beispiel zeigt, wie man in einer Komponente Lebenszyklus-Hook-Funkt
             },
             ready() {
               this.addLog("ready: Komponente bereit, DOM erstellt");
-              console.log("Komponente ist bereit");
+              console.log("Komponente bereit");
             },
             attached() {
-              this.addLog("attached: Komponente im DOM eingehängt");
+              this.addLog("attached: Komponente an DOM angehängt");
               this._timer = setInterval(() => {
                 this.count++;
               }, 1000);
-              console.log("Komponente eingehängt");
+              console.log("Komponente angehängt");
             },
             detached() {
               this.addLog("detached: Komponente aus DOM entfernt");
               // Timer löschen, um Speicherlecks zu verhindern
               clearInterval(this._timer); 
-              console.log("Komponente ausgehängt");
+              console.log("Komponente entfernt");
             },
             loaded() {
               this.addLog("loaded: Komponente vollständig geladen");
@@ -128,13 +128,13 @@ Das folgende Beispiel zeigt, wie man in einer Komponente Lebenszyklus-Hook-Funkt
   </code>
 </o-playground>
 
-In diesem Beispiel kannst du die Ausführungsreihenfolge und den Zeitpunkt verschiedener Lifecycle-Hooks beobachten. Wenn du auf die Schaltfläche „Komponente entfernen“ klickst, wird der Hook `detached` ausgelöst.
+In diesem Beispiel kannst du die Ausführungsreihenfolge und den Zeitpunkt der verschiedenen Lebenszyklus-Hooks beobachten. Wenn du auf den Button "Komponente entfernen" klickst, siehst du, dass der `detached`-Hook ausgelöst wird.
 
 ## Praktische Anwendungsszenarien
 
 ### Initialisierungsvorgang
 
-Die Dateninitialisierung im `ready`-Hook vornehmen:
+Dateninitialisierung im `ready`-Hook durchführen:
 
 ```javascript
 export default async () => {
@@ -143,7 +143,7 @@ export default async () => {
       items: []
     },
     ready() {
-      // DOM-Operationen
+      // DOM-Operation
       this.initDomElements();
     }
   };
@@ -177,5 +177,5 @@ export default async () => {
 };
 ```
 
-Die Lebenszyklus-Hook-Funktionen sind ein zentrales Konzept in der ofa.js-Komponentenentwicklung. Ihre korrekte Anwendung hilft dir, den Komponentenzustand und Ressourcen besser zu verwalten und die Leistung deiner Anwendung zu verbessern.
+Lebenszyklus-Hook-Funktionen sind ein wichtiges Konzept in der Entwicklung von ofa.js-Komponenten. Ihre korrekte Verwendung kann Ihnen helfen, den Komponentenstatus und Ressourcen besser zu verwalten und die Anwendungsleistung zu verbessern.
 

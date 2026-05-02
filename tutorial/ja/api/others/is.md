@@ -2,9 +2,9 @@
 
 
 
-`is` メソッドは、要素が式に合致するかどうかを検出するために使用されます。
+`is` メソッドは、要素が式に一致するかどうかを検出するために使用されます。
 
-<o-playground name="is - 要素の検出" style="--editor-height: 400px">
+<o-playground name="is - 検出要素" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <ul>

@@ -1,14 +1,14 @@
-# Comprendre la liaison d'attributs
+# Comprendre la liaison des propriétés
 
-Dans le contenu précédent, nous avons présenté les bases de l'utilisation de la [liaison de propriétés](./property-binding.md). L'exemple précédent consistait à lier l'attribut value d'un élément natif du navigateur (comme `textarea`). Cette section approfondira l'exploration de la nature de la liaison de propriétés — elle lie en réalité aux propriétés JavaScript de l'instance du composant, et non aux attributs HTML.
+Dans le contenu précédent, nous avons présenté brièvement la méthode de base de la [liaison de propriétés](./property-binding.md). L’exemple précédent servait à lier l’attribut `value` d’un élément natif du navigateur (comme `textarea`). Cette section approfondira l’essence de la liaison de propriétés : il s’agit en réalité de lier une propriété JavaScript après l’instanciation du composant, et non un attribut HTML.
 
-## Mécanisme de liaison des propriétés des composants
+## Mécanisme de liaison des propriétés du composant
 
-Dans ofa.js, lorsque nous utilisons la syntaxe `:toProp="fromProp"` dans un composant parent, nous définissons une propriété JavaScript de l'instance du composant enfant, et non un attribut HTML. Cela constitue une différence importante par rapport à la définition directe d'un attribut HTML (comme `attr:toKey="fromKey"`).
+Dans ofa.js, lorsque nous utilisons la syntaxe `:toProp="fromProp"` dans le composant parent, nous définissons la propriété JavaScript de l’instance du composant enfant, et non un attribut HTML. Cela diffère de la définition directe d’un attribut HTML (comme `attr:toKey="fromKey"`), et cette distinction est importante.
 
-L'exemple suivant montre comment transmettre des données à un composant personnalisé via la liaison d'attributs :
+L'exemple ci-dessous montre comment transmettre des données à un composant personnalisé via la liaison de propriétés :
 
-<o-playground name="Comprendre la liaison d'attributs" style="--editor-height: 500px">
+<o-playground name="Compréhension de la liaison des propriétés" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -47,7 +47,7 @@ L'exemple suivant montre comment transmettre des données à un composant person
           margin: 8px;
         }
       </style>
-      <p>Nom complet : {{fullName}}</p>
+      <p>FullName: {{fullName}}</p>
       <script>
         export default async ({ load }) => {
           return {
@@ -62,40 +62,40 @@ L'exemple suivant montre comment transmettre des données à un composant person
   </code>
 </o-playground>
 
-Dans cet exemple :- Les données `val` du composant parent sont liées à la propriété `fullName` du composant enfant `<demo-comp>`
-- Utiliser la syntaxe `:full-name="val"` pour transmettre la valeur `val` du composant parent à la propriété `fullName` du composant enfant
-- Après réception de cette valeur, le composant enfant l’affiche dans le modèle via `{{fullName}}`
+Dans cet exemple :- La donnée `val` du composant parent est liée à la propriété `fullName` du composant enfant `<demo-comp>`
+- La syntaxe `:full-name="val"` est utilisée pour transmettre la valeur de `val` du composant parent à la propriété `fullName` du composant enfant
+- Après avoir reçu cette valeur, le composant enfant l'affiche dans le template via `{{fullName}}`
 
-## Liaison d'attributs vs Héritage d'attributs de caractéristiques
+## Liaison de propriétés vs héritage de propriétés caractéristiques
 
-Il est important de noter que la liaison d'attributs (`:`) et l'héritage des attributs de caractéristiques (`attr:`) présentent les différences clés suivantes :
+Il convient de noter que la liaison de propriété (`:`) et l’héritage des attributs de caractéristique (`attr:`) présentent les différences clés suivantes :
 
 ### Liaison de propriété (`:`)
 
 - Propriétés JavaScript liées à l’instance du composant
 - Les données transmises conservent leur type d’origine (chaîne, nombre, booléen, etc.)
-- Elles sont directement accessibles et modifiables à l’intérieur du composant, sans même avoir à définir au préalable un `data` dans le composant
+- Accessibles et modifiables directement à l’intérieur du composant, sans même avoir à définir au préalable `data` dans le composant
 
 ### Héritage des attributs de caractéristiques (`attr:`)
 
-- Définir les attributs HTML
+- Définir des attributs HTML
 - Toutes les valeurs sont converties en chaînes de caractères
 - Principalement utilisé pour transmettre des attributs aux éléments DOM sous-jacents
 - Nécessite un traitement spécial pour analyser les données complexes
-- Doit être défini à l'avance dans le composant avec `attrs` pour recevoir les valeurs d'attribut
+- Il est nécessaire de définir `attrs` à l'intérieur du composant à l'avance pour pouvoir recevoir les valeurs d'attribut
 
 Comparaison grammaticale :```html
-<!-- Liaison d'attributs : transmettre des valeurs JavaScript, conserver les types de données -->
+<!-- Liaison de propriété : transmettre des valeurs JavaScript, en conservant le type de données -->
 <my-component :data-value="complexObject"></my-component>
 <my-component :count="42"></my-component>
 <my-component :is-active="true"></my-component>
 
 <!-- Héritage d'attributs : définir des attributs HTML, toutes les valeurs sont converties en chaînes -->
 <my-component attr:data-value="simpleString"></my-component>
-<my-component attr:count="42"></my-component>  <!-- Chaîne "42" réellement transmise -->
+<my-component attr:count="42"></my-component>  <!-- en pratique, la chaîne de caractères "42" est transmise -->
 ```
 
-## Comparaison des cas et différences
+## Comparaison des différences des cas
 
 <o-playground name="Comparaison des différences de cas" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -161,17 +161,17 @@ Comparaison grammaticale :```html
   </code>
 </o-playground>
 
-Ici, `vone` est une propriété de l'instance du composant, `vtwo` est un attribut HTML, la valeur de l'attribut sera sélectionnée par le sélecteur `[vtwo]` et les styles seront appliqués, tandis que `vone` est une propriété de l'instance du composant, elle ne sera pas sélectionnée par le sélecteur `[vone]`.
+où `vone` est une propriété de l'instance du composant, `vtwo` est un attribut HTML, la valeur de l'attribut sera sélectionnée par le sélecteur `[vtwo]` et un style lui sera appliqué, tandis que `vone` est une propriété de l'instance du composant et ne sera pas sélectionnée par le sélecteur `[vone]`.
 
 ## Liaison de données bidirectionnelle
 
-Les composants instanciés prennent également en charge la liaison de données bidirectionnelle, en utilisant la syntaxe `sync:toProp="fromProp"`. La liaison bidirectionnelle permet la synchronisation des données entre le composant parent et le composant enfant ; lorsque les données changent d'un côté, l'autre côté est mis à jour en conséquence.
+Une fois instancié, le composant prend également en charge la liaison de données bidirectionnelle via la syntaxe `sync:toProp="fromProp"`. Cette liaison bidirectionnelle permet la synchronisation des données entre le composant parent et le composant enfant ; lorsque les données changent d’un côté, l’autre côté se met à jour en conséquence.
 
-> Contrairement à Angular et Vue, ofa.js n'a pas besoin d'ajouter de configuration spéciale ou d'opérations supplémentaires aux composants pour prendre en charge nativement la syntaxe de liaison de données bidirectionnelle.
+> Contrairement à Angular et Vue, ofa.js prend en charge nativement la syntaxe de liaison de données bidirectionnelle sans nécessiter de configuration spéciale ou d'opérations supplémentaires pour les composants.
 
 ### Exemple de liaison bidirectionnelle
 
-L'exemple ci-dessous montre comment établir une liaison de données bidirectionnelle entre un composant parent et un composant enfant :
+L'exemple suivant montre comment établir une liaison de données bidirectionnelle entre un composant parent et un composant enfant :
 
 <o-playground name="Exemple de liaison bidirectionnelle" style="--editor-height: 600px">
   <code path="demo.html" preview unimportant>
@@ -189,9 +189,9 @@ L'exemple ci-dessous montre comment établir une liaison de données bidirection
           padding: 10px;
         }
       </style>
-      <h3 style="color:blue;">Valeur dans le composant parent : {{val}}</h3>
+      <h3 style="color:blue;">Valeur dans le composant parent: {{val}}</h3>
       <p>Modifier la valeur du composant parent via la zone de saisie :</p>
-      <input type="text" sync:value="val" placeholder="Saisissez du texte dans la zone...">
+      <input type="text" sync:value="val" placeholder="Saisissez du texte dans la zone de saisie...">
       <p>Modifier la valeur du composant parent via le composant enfant :</p>
       <demo-comp sync:full-name="val"></demo-comp>
       <script>
@@ -215,8 +215,8 @@ L'exemple ci-dessous montre comment établir une liaison de données bidirection
           margin: 8px;
         }
       </style>
-      <p>Valeur affichée par le composant enfant : {{fullName}}</p>
-      <input type="text" sync:value="fullName" placeholder="Saisissez dans la zone du composant enfant...">
+      <p>Valeur affichée dans le composant enfant : {{fullName}}</p>
+      <input type="text" sync:value="fullName" placeholder="Saisissez dans la zone de saisie du composant enfant...">
       <script>
         export default async ({ load }) => {
           return {
@@ -231,19 +231,19 @@ L'exemple ci-dessous montre comment établir une liaison de données bidirection
   </code>
 </o-playground>
 
-Dans cet exemple :- Le `val` du composant parent et le `fullName` du composant enfant réalisent une liaison bidirectionnelle via `sync:full-name="val"`
-- Lorsqu’on saisit du contenu dans le champ du composant parent, le composant enfant affiche immédiatement la nouvelle valeur
-- Lorsqu’on saisit du contenu dans le champ du composant enfant, le composant parent se met également à jour et affiche la nouvelle valeur
+Dans cet exemple :- La propriété `val` du composant parent et la propriété `fullName` du composant enfant sont liées de manière bidirectionnelle via `sync:full-name="val"`
+- Lorsque l'utilisateur saisit du contenu dans la zone de saisie du composant parent, le composant enfant affiche immédiatement la nouvelle valeur
+- Lorsque l'utilisateur saisit du contenu dans la zone de saisie du composant enfant, le composant parent est également mis à jour immédiatement
 
 ### Différence entre la liaison bidirectionnelle et la liaison de propriété normale
 
-| Caractéristique | Liaison d’attribut normale (`:`) | Liaison bidirectionnelle (`sync:`) |
+| Caractéristique | Liaison de propriété normale (`:`) | Liaison bidirectionnelle (`sync:`) |
 |------|-------------------|-------------------|
 | Flux de données | Unidirectionnel : parent → enfant | Bidirectionnel : parent ↔ enfant |
 | Syntaxe | `:prop="value"` | `sync:prop="value"` |
-| Modification du composant enfant | N’affecte pas le composant parent | Affecte le composant parent |
-| Scénarios applicables | Le composant parent transmet la configuration au composant enfant | Synchronisation des données entre parent et enfant requise |### Remarques
+| Modification par l'enfant | N'affecte pas le parent | Affecte le parent |
+| Cas d'utilisation | Parent transmet une configuration à l'enfant | Nécessite la synchronisation des données entre parent et enfant |### Remarques
 
-1. **Considérations de performance** : La liaison bidirectionnelle déclenche un nouveau rendu lors des changements de données, elle doit être utilisée avec prudence dans des scénarios complexes.
-2. **Contrôle du flux de données** : Un excès de liaisons bidirectionnelles peut rendre le flux de données difficile à suivre, il est recommandé de concevoir judicieusement les modes de communication entre les composants.
-3. **Compatibilité des composants** : Tous les composants ne sont pas adaptés à l'utilisation de la liaison bidirectionnelle, il faut tenir compte de l'objectif de conception du composant.
+1. **Considérations de performance** : la liaison bidirectionnelle déclenche un nouveau rendu lorsque les données changent ; elle doit être utilisée avec prudence dans des scénarios complexes  
+2. **Contrôle du flux de données** : trop de liaisons bidirectionnelles peuvent rendre le flux de données difficile à suivre ; il est conseillé de concevoir rationnellement les modes de communication entre composants  
+3. **Compatibilité des composants** : tous les composants ne sont pas adaptés à la liaison bidirectionnelle ; l’objectif de conception du composant doit être pris en compte

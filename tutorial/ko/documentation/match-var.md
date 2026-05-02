@@ -1,11 +1,11 @@
 # 스타일 쿼리
 
-`match-var`는 ofa.js에서 CSS 변수를 기반으로 스타일을 매칭하는 기능 컴포넌트입니다. `match-var`를 통해 현재 컴포넌트의 CSS 변수 값에 따라 동적으로 다른 스타일을 매칭하고 적용할 수 있습니다. 이러한 특성은 스타일과 관련된 컨텍스트 상태 전달에 특화되어 있으며, JavaScript를 사용할 필요 없이 더욱 편리하게 사용할 수 있어, 테마 색상 등 스타일 전달 요구사항에 적합합니다.
+`match-var`는 ofa.js에서 CSS 변수를 기반으로 스타일을 매칭하는 기능 컴포넌트입니다. `match-var`를 통해 현재 컴포넌트의 CSS 변수 값에 따라 동적으로 다른 스타일을 매칭하고 적용할 수 있습니다. 이 특성은 스타일과 관련된 컨텍스트 상태 전달에 특화되어 있으며 JavaScript를 사용할 필요가 없어 더욱 편리하게 사용할 수 있으며, 테마 색상 등 스타일 전달 요구사항에 적합합니다.
 
 ## 핵심 개념
 
-- **match-var**: CSS 변수 값에 따라 내부 스타일을 적용할지 결정하는 스타일 매칭 컴포넌트
-- **속성 매칭**: 컴포넌트 속성을 통해 매칭할 CSS 변수와 기대값을 정의
+- **match-var**: 스타일 매칭 컴포넌트, CSS 변수 값에 따라 내부 스타일 적용 여부 결정
+- **속성 매칭**: 컴포넌트 속성을 통해 매칭할 CSS 변수와 예상 값 정의
 - **스타일 적용**: 매칭 성공 시 내부 `<style>` 태그의 스타일이 컴포넌트에 적용됨
 
 ## 기본 사용법
@@ -25,17 +25,17 @@
 
 ### 속성
 
-`match-var` 컴포넌트는 CSS 변수의 매칭 규칙을 정의하기 위해 임의의 속성을 사용합니다. 속성 이름은 CSS 변수 이름(`--` 접두사 제외)에 해당하고, 속성 값은 기대하는 매칭 값입니다.
+`match-var` 컴포넌트는 임의의 속성을 사용하여 CSS 변수의 일치 규칙을 정의합니다. 속성 이름은 CSS 변수 이름( `--` 접두사 제외)에 해당하고, 속성 값은 일치시키려는 값입니다.
 
 ### 작동 원리
 
-1. **브라우저 지원**: 브라우저가 `@container style()` 쿼리를 지원하면 CSS 네이티브 기능을 바로 사용합니다
-2. **폴백 처리**: 지원하지 않을 경우, CSS 변수 값 변화를 폴링하며 감지하고 매치 성공 시 동적으로 스타일을 주입합니다
-3. **수동 새로고침**: `$.checkMatch()` 메서드로 수동으로 스타일 감지를 트리거할 수 있습니다
+1. **브라우저 지원**: 브라우저가 `@container style()` 쿼리를 지원하면 CSS 네이티브 기능을 바로 사용합니다.
+2. **폴백 처리**: 지원하지 않을 경우 CSS 변수 값 변화를 폴링으로 감지하여, 조건에 맞으면 동적으로 스타일을 주입합니다.
+3. **수동 새로고침**: `$.checkMatch()` 메서드로 수동으로 스타일 감지를 트리거할 수 있습니다.
 
 ## 기본 예제
 
-<o-playground name="기본 예시" style="--editor-height: 500px">
+<o-playground name="기본 예제" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -54,7 +54,7 @@
            --theme: data(currentTheme);
         }
       </style>
-      <button on:click="changeTheme">테마 전환</button> - 테마:{{currentTheme}}
+      <button on:click="changeTheme">테마 전환</button> - Theme:{{currentTheme}}
       <div class="container">
         <theme-box>
           CSS 변수에 따라 다른 스타일 표시
@@ -141,7 +141,7 @@
 </match-var>
 ```
 
-## 다중 조건 매칭 예시
+## 다중 조건 매칭 예제
 
 <o-playground name="속성 매칭 예제" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -164,7 +164,7 @@
       </style>
       <l-m src="./test-card.html"></l-m>
       <div>테마: {{theme}} <button on:click="changeTheme">테마 전환</button></div>
-      <div>사이즈: {{size}} <button on:click="changeSize">사이즈 전환</button></div>
+      <div>크기: {{size}} <button on:click="changeSize">크기 전환</button></div>
       <div class="content">
         <test-card>
           <div>다중 조건 스타일 매칭 예제</div>
@@ -246,9 +246,9 @@
 
 ## checkMatch 수동 새로고침
 
-어떤 경우에는 CSS 변수의 변경 사항이 자동으로 감지되지 않을 수 있으며, 이때 수동으로 `$.checkMatch()` 메서드를 호출하여 스타일 감지를 트리거할 수 있습니다.
+특정 상황에서는 CSS 변수의 변화가 자동으로 감지되지 않을 수 있으며, 이때 수동으로 `$.checkMatch()` 메서드를 호출해 스타일 검사를 트리거할 수 있습니다.
 
-> 현재 Firefox는 아직 `@container style()` 쿼리를 지원하지 않으므로, 수동으로 `$.checkMatch()`를 호출해야 합니다. 브라우저가 향후 네이티브로 지원하게 되면, 시스템이 변수 변경을 자동으로 감지하여 수동으로 트리거할 필요가 없어집니다.
+> 현재 Firefox는 `@container style()` 쿼리를 지원하지 않으므로 수동으로 `$.checkMatch()`를 호출해야 합니다. 향후 브라우저가 기본적으로 지원하게 되면 시스템이 자동으로 변수 변경을 감지하므로 수동으로 트리거할 필요가 없습니다.
 
 ```javascript
 proto: {
@@ -262,6 +262,6 @@ proto: {
 
 ## 모범 사례
 
-1. **CSS 네이티브 기능 우선 사용**: `match-var`는 브라우저 네이티브 `@container style()` 쿼리를 우선 사용하며, 최신 브라우저에서 성능이 더 우수합니다  
-2. **스타일을 합리적으로 구성**: 관련 있는 매칭 스타일을 한데 모아 유지보수와 이해를 용이하게 합니다  
-3. **data() 바인딩 활용**: `data()` 디렉티브와 결합하면 반응형 스타일 전환이 가능합니다
+1. **CSS 네이티브 기능 우선 사용**: `match-var`는 브라우저 네이티브 `@container style()` 쿼리를 우선 사용하며, 최신 브라우저에서 성능이 더 좋습니다.
+2. **스타일 합리적으로 구성**: 관련된 매칭 스타일을 함께 배치하여 유지보수와 이해를 용이하게 합니다.
+3. **data() 바인딩 사용**: `data()` 디렉티브와 결합하여 반응형 스타일 전환을 구현할 수 있습니다.

@@ -1,12 +1,12 @@
 # $
 
-`$` is the core function in ofa.js, used to get and manipulate DOM element instances. Below is a detailed introduction to the main features of `$`:
+The `$` method is the core function in ofa.js, used to obtain and manipulate DOM element instances. The main features of `$` are detailed below:
 
-## Obtaining Element Instances
+## Getting Element Instances
 
-With the `$` method, you can retrieve the first element instance on the page that matches the [CSS selector](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference/Selectors/Selector_list) and perform operations on it. Here’s an example:
+By using the `$` method, you can obtain the first element instance on the page that matches the [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Selector_list) and perform operations on it. Here is an example:
 
-<o-playground name="$ - Get element">
+<o-playground name="$ - Get Element">
   <code path="demo.html">
     <template>
       <div id="target1">target 1 text</div>
@@ -21,11 +21,11 @@ With the `$` method, you can retrieve the first element instance on the page tha
 
 In the example above, we used the `$` symbol to select the element instance with `id` "target1" and modified its text content by setting the `text` property.
 
-## Find Child Element Instance
+## Example of Finding Child Elements
 
-Instances also have the `$` method, which can be used to retrieve the first child element instance that meets the criteria from the instance.
+The instance also has a `$` method, which can be used to obtain the first matching child element instance of an element instance.
 
-<o-playground name="$ - Find child elements">
+<o-playground name="$ - Find Child Elements">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -40,7 +40,7 @@ Instances also have the `$` method, which can be used to retrieve the first chil
   </code>
 </o-playground>
 
-Do not insert the obtained element instance directly elsewhere, as this will affect the original element. If you need to create a copy, use the [clone](./clone.md) method.
+Please do not insert the obtained element instance directly elsewhere, as such an operation will affect the original element. If you need to create a copy, you can use the [clone](./clone.md) method.
 
 <o-playground name="$ - Instance Features" style="--editor-height: 360px">
   <code path="demo.html">
@@ -62,9 +62,9 @@ Do not insert the obtained element instance directly elsewhere, as this will aff
   </code>
 </o-playground>
 
-## Get child elements within the shadow node
+## Get Child Elements in Shadow Node
 
-After obtaining the instance through the [shadow](./shadow.md) attribute, you can use the `$` method to get the desired element:
+You can obtain the instance via the [shadow](./shadow.md) property, and then use the `$` method to get the desired element:
 
 ```javascript
 $('my-component').shadow.$("selector").method(xxx)
@@ -72,7 +72,7 @@ $('my-component').shadow.$("selector").method(xxx)
 
 ## Instantiating Elements Directly
 
-You can directly initialize a native element as a `$` instance object in the following way:
+You can directly initialize native elements as `$` instance objects in the following ways:
 
 ```javascript
 const ele = document.createElement('div');
@@ -84,15 +84,15 @@ const ele = document.querySelector('#target');
 const $ele = $(ele);
 ```
 
-This way, you can conveniently convert existing HTML elements into `$` instances, enabling you to use the functionalities provided by `$` for manipulation and processing.
+In this way, you can easily convert existing HTML elements into `$` instances so that you can use the functionality provided by `$` to operate and process them.
 
 ## Generate Element Instance
 
-Besides, `$` can be used not only to obtain existing element instances but also to create new ones and add them to the page.
+Besides, the `$` can be used not only to get existing element instances but also to create new element instances and add them to the page.
 
-### Generate via String
+### Generated via String
 
-You can create a new element instance from a string using the `$` function, as shown below:
+You can use the `$` function to create new element instances from strings, as shown below:
 
 <o-playground name="$ - String Generation" style="--editor-height: 260px">
   <code path="demo.html">
@@ -108,13 +108,13 @@ You can create a new element instance from a string using the `$` function, as s
   </code>
 </o-playground>
 
-In this example, we use the `$` function to create a new element instance with specified styles and text content, and add it inside an existing element instance with the `id` "target1".
+In this example， we use the `$` function to create a new element instance with specified styles and text content， and add it to the existing element instance with the `id` of "target1".
 
-### Generate via object
+### Generate via Object
 
-You can also use the `$` function to generate new element instances in an object-oriented manner, as shown below:
+You can also use the `$` function to generate new element instances in an object-oriented way, as shown below:
 
-<o-playground name="$ - Object Creation" style="--editor-height: 360px">
+<o-playground name="$ - Object Generation" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">
@@ -134,4 +134,42 @@ You can also use the `$` function to generate new element instances in an object
   </code>
 </o-playground>
 
-In this example, we use the `$` function to define a new element instance in an object-oriented way, including the tag type, text content, and style attributes, and add it inside an existing element instance with an `id` of "target1".
+In this example, we use the `$` function to define a new element instance through an object, including the tag type, text content, and style attributes, and add it to an existing element instance with the `id` of "target1".
+
+## Relationship between acquired examples and page/component instances
+
+The `$` method can be used to obtain the instance of the corresponding page or component element from the global scope, and its function is the same as the `this` reference in the lifecycle methods within the page or component module.
+
+```html
+<!DOCTYPE html>
+...
+<l-m src="./test-comp.html"></l-m>
+<test-comp id="target"></test-comp>
+<script type="module">
+  setTimeout(()=>{
+    console.log($('#target').title);  // => OFAJS Component Example
+  },300);
+</script>
+```
+
+```html
+<!-- test-comp.html -->
+ <template component>
+  <div>
+    <p>{{title}}</p>
+  </div>
+  <script>
+    export default async ({ load }) => {
+      return {
+        tag: "test-comp",
+        data: {
+          title: "OFAJS Component Example",
+        },
+        attached(){
+          console.log(this === $('#target')); // true
+        }
+      };
+    };
+  </script>
+ </template>
+```

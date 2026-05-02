@@ -6,18 +6,18 @@ Die Methode `text` wird verwendet, um den Textinhalt eines Elements abzurufen od
 
 ## Direkte Verwendung
 
-Sie können den Textinhalt eines Elements direkt abrufen oder festlegen.
+Sie können direkt den Textinhalt eines Elements abrufen oder festlegen.
 
 <o-playground name="text - direkte Verwendung" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target1">Ziel 1</div>
-      <div id="target2">Originaltext</div>
+      <div id="target1">target 1</div>
+      <div id="target2">origin text</div>
       <br>
       <div id="logger" style="color:red;"></div>
       <script>
         setTimeout(()=> {
-          \$('#target2').text = `<b style="color:blue;">neuer Text</b>`;
+          \$('#target2').text = `<b style="color:blue;">new text</b>`;
           \$("#logger").text = $("#target1").text;
         }, 500);
       </script>
@@ -25,11 +25,11 @@ Sie können den Textinhalt eines Elements direkt abrufen oder festlegen.
   </code>
 </o-playground>
 
-## Verwendung auf Template-Syntax-Weise
+## Verwendung der Vorlagensyntax
 
-Du kannst auch das `:text`-Attribut verwenden, um dem Ziel-Element den entsprechenden Textwert zuzuweisen. Dies ist besonders beim Rendern von Komponenten nützlich.
+Du kannst auch das `:text`-Attribut verwenden, um dem Zielelement den entsprechenden Textwert zuzuweisen. Dies ist besonders bei der Renderung von Komponenten nützlich.
 
-<o-playground name="text - Vorlagen-Syntax" style="--editor-height: 450px">
+<o-playground name="text - Vorlagensyntax" style="--editor-height: 450px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./text-demo.html"></l-m>
@@ -43,7 +43,7 @@ Du kannst auch das `:text`-Attribut verwenden, um dem Ziel-Element den entsprech
   </code>
   <code path="text-demo.html" active>
     <template component>
-      <div>Rendered text:
+      <div>Gerenderter Text:
         <span :text="txt" style="color:red;"></span>
       </div>
       <script>

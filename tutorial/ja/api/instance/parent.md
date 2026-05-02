@@ -2,7 +2,7 @@
 
 
 
-`parent` 属性を使用すると、インスタンスの親要素のインスタンスを取得できます。
+`parent` プロパティを使用すると、インスタンスの親要素インスタンスを取得できます。
 
 <o-playground name="parent - 親要素" style="--editor-height: 320px">
   <code path="demo.html">

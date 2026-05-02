@@ -1,8 +1,8 @@
-# Inject host styles
+# Injecting host styles
 
-In Web Components, due to the limitations of `slot`, it is impossible to directly style multi-level elements within the slot. To solve this, ofa.js provides the `<inject-host>` component, allowing styles to be injected from inside the component into the host element, thereby enabling styling of multi-level elements in slotted content.
+In Web Components, due to the limitations of the `slot` element, it is not possible to directly set styles for multi-level elements within the slot. To solve this problem, ofa.js provides the `<inject-host>` component, which allows injecting styles from within the component into the host element, thereby enabling style control over multi-level elements in the slot content.
 
-> Note: It is recommended to prioritize using the [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) selector for styling slotted content. Only use the `<inject-host>` component when it is necessary to meet specific requirements.
+> Note: It is recommended to use the [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) selector to style slot content first. Only use the `<inject-host>` component when the selector cannot meet the requirements.
 
 ## Basic Usage
 
@@ -14,7 +14,7 @@ In Web Components, due to the limitations of `slot`, it is impossible to directl
             border: 1px solid #007acc;
             padding: 10px;
         }
-        /* Style direct first-level children */
+        /* Set styles for direct child level elements */
         /* ::slotted(user-list-item) {
             background-color: aqua;
         } */
@@ -24,7 +24,7 @@ In Web Components, due to the limitations of `slot`, it is impossible to directl
             user-list user-list-item {
                 background-color: aqua;
             }
-            /* You can also style deeply nested elements */
+            /* You can also set styles for multi-level nesting */
             user-list user-list-item .user-list-item-content {
                 color: red;
             }
@@ -43,7 +43,7 @@ In Web Components, due to the limitations of `slot`, it is impossible to directl
 
 ## Case
 
-The example below demonstrates how to use `<inject-host>` to style nested elements within a slot. We create two components: the `user-list` component serves as the list container, and the `user-list-item` component serves as the list item. Through `<inject-host>`, we can style `user-list-item` and its internal elements within the `user-list` component.
+The following example demonstrates how to use `<inject-host>` to style nested elements within a slot. We create two components: a `user-list` component as the list container, and a `user-list-item` component as the list item. Through `<inject-host>`, we can style the `user-list-item` and its internal elements in the `user-list` component.
 
 <o-playground name="Inject Host Styles" style="--editor-height: 500px">
   <code path="index.html" preview>
@@ -117,25 +117,25 @@ The example below demonstrates how to use `<inject-host>` to style nested elemen
   </code>
 </o-playground>
 
-As can be seen in the running results:- The background color of the `user-list-item` component is aqua (set via `<inject-host>` of the `user-list` component)
-- The text color of the name is red (set via `<inject-host>` of the `user-list` component to style `user-list-item .item-name`)
+You can see in the output:- The background color of the `user-list-item` component is aqua (set via the `<inject-host>` of the `user-list` component)  
+- The text color of the name is red (set via the `<inject-host>` of the `user-list` component, styling `user-list-item .item-name`)
 
 ## How It Works
 
-The `<inject-host>` component injects the content of the internal `<style>` tag into the component's host element. This way, the injected style rules can penetrate the component boundary and apply to elements within the slot.
+`<inject-host>` component will inject the content of the `<style>` tag it contains into the component's host element. In this way, the injected style rules can penetrate the component boundary and affect elements inside the slot.
 
-In this way, you can:- Set styles for elements at any depth within slot content
-- Use complete selector paths to ensure styles only affect target elements
-- Maintain component style encapsulation while achieving flexible style penetration
+In this way, you can:- Set styles for elements at any depth within slot content  
+- Use a full selector path to ensure styles apply only to the target element  
+- Maintain component style encapsulation while enabling flexible style piercing
 
 ## Notes
 
-⚠️ **Style Pollution Risk**: Since the injected styles will take effect in the scope where the host element is located, they may affect elements within other components. When using it, be sure to follow the following principles:
+⚠️ **Style contamination risk**: Since injected styles act on the scope where the host element is located, they may affect elements within other components. When using, be sure to follow the following principles:
 
-1. **Use specific selectors**: Prefer full component tag paths; avoid overly broad selectors.  
-2. **Add namespace prefixes**: Give your style classes a unique prefix to reduce collision risk.  
-3. **Avoid universal tag selectors**: Favor class or attribute selectors over tag selectors.  
-4. **Rethink component design**: Consider whether you can avoid `<inject-host>` by refining the component. For example, combining child components with [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) selectors is often cleaner.
+1. **Use specific selectors**: Try to use complete component tag paths, avoid overly broad selectors
+2. **Add namespace prefixes**: Add unique prefixes to your style classes to reduce the possibility of conflicts with other components
+3. **Avoid using generic tag selectors**: Try to use class names or attribute selectors instead of tag selectors
+4. **Rethink component design**: Consider whether you can avoid using `<inject-host>` by optimizing component design. For example, using the [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) selector on child components is often more elegant.
 
 ```html
 <!-- Recommended ✅: Use specific selectors -->
@@ -147,10 +147,10 @@ In this way, you can:- Set styles for elements at any depth within slot content
     </style>
 </inject-host>
 
-<!-- Not recommended ❌: Using overly generic selectors -->
+<!-- Not Recommended ❌: Use overly generic selectors -->
 <inject-host>
     <style>
-        .content {  /* Prone to conflicts with other components */
+        .content {  <!-- Prone to conflict with other components -->
             color: red;
         }
     </style>
@@ -159,5 +159,5 @@ In this way, you can:- Set styles for elements at any depth within slot content
 
 ### Performance Tips
 
-Since `<inject-host>` triggers style re-injection into the host, which may lead to component reflow or repaint, use it with caution in frequently updated scenarios.
-If you only need to style the first-level elements inside a slot, prefer using the [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) pseudo-class selector instead, as it avoids the extra rendering overhead from penetrating injection and provides better performance.
+Since `<inject-host>` triggers re-injection of host styles, which may cause component re-layout or re-rendering, use it with caution in frequently updated scenarios.  
+If you only need to style the first-level elements within the slot, give priority to the [::slotted()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::slotted) pseudo-class selector, which can avoid the extra rendering overhead caused by penetration injection, thereby achieving better performance.

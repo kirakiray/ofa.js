@@ -2,11 +2,11 @@
 
 
 
-El método `after` se utiliza para agregar elementos después del elemento objetivo. Antes de ejecutar la operación `after`, se ejecutará automáticamente la operación de inicialización del [método $](../instance/dollar.md), por lo que se pueden especificar directamente la cadena de elementos específica o el objeto.
+`after` método se utiliza para agregar elementos después del elemento objetivo. Antes de ejecutar la operación `after`, se realiza automáticamente la inicialización del [método $](../instance/dollar.md), por lo que se pueden completar directamente cadenas u objetos de elementos específicos.
 
-**Por favor, tenga en cuenta que no se deben realizar operaciones dentro de los componentes de plantilla como o-fill o o-if.**
+**Nota: no opere dentro de los componentes de plantilla como o-fill o o-if。**
 
-<o-playground name="after - añadir detrás" style="--editor-height: 300px">
+<o-playground name="after - agregar después" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>

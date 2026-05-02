@@ -6,12 +6,12 @@
     align-items: center !important;
   }
 </style>
-<article><h1>Documentation API</h1>
+<article><h1>Documentation de l'API</h1>
 
 <p>
-    ofa.js prend en charge non seulement la syntaxe des modèles, mais fournit également une API riche pour manipuler directement le DOM. Tout comme
+    ofa.js prend non seulement en charge la syntaxe des modèles, mais fournit également une API riche pour manipuler directement le DOM. Tout comme
     <a href="https://jquery.com/">jQuery</a>,
-    vous pouvez utiliser la syntaxe concise d'ofa.js pour remplacer le JavaScript natif verbeux et effectuer facilement des opérations DOM.
+    vous pouvez remplacer le JavaScript natif verbeux par une syntaxe concise d’ofa.js et effectuer facilement des opérations sur le DOM.
   </p>
 
 <p>
@@ -20,10 +20,10 @@
 
 <api-container>
     <api-list>
-      <h3>Instance Related</h3>
+      <h3>Liées à l'instance</h3>
       <api-item>
         <a href="./instance/dollar.md">$(selector)</a>
-        <p>Fonction principale dans ofa.js, utilisée pour obtenir et manipuler des instances d'éléments DOM</p>
+        <p>Fonction centrale dans ofa.js, utilisée pour obtenir et manipuler des instances d'éléments DOM</p>
       </api-item>
       <api-item>
         <a href="./instance/all.md">all</a>
@@ -31,7 +31,7 @@
       </api-item>
       <api-item>
         <a href="./instance/shadow.md">shadow</a>
-        <p>Obtenir la racine d'ombre (shadow root) de l'élément courant</p>
+        <p>Obtenir le shadow root de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/prev.md">prev</a>
@@ -39,7 +39,7 @@
       </api-item>
       <api-item>
         <a href="./instance/prevs.md">prevs</a>
-        <p>Obtenir tous les éléments frères précédant l'élément courant</p>
+        <p>Obtenir tous les éléments frères précédents de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/next.md">next</a>
@@ -47,7 +47,7 @@
       </api-item>
       <api-item>
         <a href="./instance/nexts.md">nexts</a>
-        <p>Obtenir tous les éléments frères suivant l'élément courant</p>
+        <p>Obtenir tous les éléments frères suivants de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/siblings.md">siblings</a>
@@ -63,18 +63,18 @@
       </api-item>
       <api-item>
         <a href="./instance/clone.md">clone</a>
-        <p>Copier l'élément courant et ses éléments enfants</p>
+        <p>Cloner l'élément courant et ses éléments enfants</p>
       </api-item>
       <api-item>
         <a href="./instance/ele.md">ele</a>
-        <p>Obtenir l'instance de l'élément enfant de l'élément courant</p>
+        <p>Obtenir l'instance d'élément enfant de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/root.md">root</a>
         <p>Obtenir l'instance racine à laquelle appartient l'élément courant</p>
       </api-item>
       <api-item>
-        <a href="./instance/children.md">Éléments enfants</a>
+        <a href="./instance/children.md">éléments enfants</a>
         <p>Obtenir tous les éléments enfants de l'élément courant</p>
       </api-item>
       <api-item>
@@ -83,11 +83,11 @@
       </api-item>
       <api-item>
         <a href="./instance/app.md">app</a>
-        <p>Obtenir l'instance du composant o-app auquel appartient l'élément courant</p>
+        <p>Obtenir l'instance du composant o-app à laquelle appartient l'élément courant</p>
       </api-item>
     </api-list>
     <api-list>
-      <h3>Node Operations</h3>
+      <h3>Manipulation des nœuds</h3>
       <api-item>
         <a href="./operation/array-like.md">push</a>
         <p>Ajouter un élément enfant à l'élément courant</p>
@@ -126,11 +126,11 @@
       </api-item>
       <api-item>
         <a href="./operation/unwrap.md">unwrap</a>
-        <p>Supprimer l'enveloppe de l'élément parent de l'élément courant</p>
+        <p>Supprimer l'enveloppe parente de l'élément courant</p>
       </api-item>
     </api-list>
     <api-list>
-      <h3>Attribute Operations</h3>
+      <h3>Manipulation des attributs</h3>
       <api-item>
         <a href="./props/text.md">text</a>
         <p>Obtenir ou définir le contenu textuel de l'élément</p>
@@ -153,26 +153,26 @@
       </api-item>
       <api-item>
         <a href="./props/class-list.md">classList</a>
-        <p>Obtenir la liste des noms de classe de l'élément</p>
+        <p>Obtenir la liste des classes de l'élément</p>
       </api-item>
       <api-item>
         <a href="./props/data.md">data</a>
-        <p>Obtenir ou définir les attributs data de l'élément</p>
+        <p>Obtenir ou définir l'attribut data de l'élément</p>
       </api-item>
     </api-list>
     <api-list>
-      <h3>Event Related</h3>
+      <h3>Événements</h3>
       <api-item>
         <a href="./event/on.md">on</a>
         <p>Ajouter un écouteur d'événement à l'élément</p>
       </api-item>
       <api-item>
         <a href="./event/one.md">one</a>
-        <p>Ajouter un écouteur d'événement qui ne s'exécute qu'une seule fois à l'élément</p>
+        <p>Ajouter un écouteur d'événement qui ne s'exécute qu'une fois</p>
       </api-item>
       <api-item>
         <a href="./event/emit.md">emit</a>
-        <p>Déclencher un événement personnalisé sur l'élément</p>
+        <p>Déclencher un événement personnalisé de l'élément</p>
       </api-item>
       <api-item>
         <a href="./event/off.md">off</a>
@@ -180,18 +180,18 @@
       </api-item>
     </api-list>
     <api-list>
-      <h3>Others</h3>
+      <h3>Autres</h3>
       <api-item>
-        <a href="./others/app.md">Composant o-app</a>
-        <p>Composant racine de l'application ofa.js, utilisé pour gérer l'état de l'application et le routage</p>
+        <a href="./others/app.md">composant o-app</a>
+        <p>Composant racine de l'application ofa.js, utilisé pour gérer l'état et le routage</p>
       </api-item>
       <api-item>
-        <a href="./others/page.md">Composant o-page</a>
-        <p>Composant de page ofa.js, utilisé pour créer des pages d'application monopage</p>
+        <a href="./others/page.md">composant o-page</a>
+        <p>Composant de page d'ofa.js, utilisé pour créer des pages d'application monopage</p>
       </api-item>
       <api-item>
         <a href="./others/form-data.md">formData</a>
-        <p>Obtenir les données du formulaire</p>
+        <p>Obtenir les données d'un formulaire</p>
       </api-item>
       <api-item>
         <a href="./others/tag.md">tag</a>
@@ -199,15 +199,15 @@
       </api-item>
       <api-item>
         <a href="./others/index.md">index</a>
-        <p>Obtenir l'index de l'élément dans son élément parent</p>
+        <p>Obtenir l'index de l'élément dans son parent</p>
       </api-item>
       <api-item>
         <a href="./others/is.md">is</a>
-        <p>Déterminer si l'élément correspond au sélecteur spécifié</p>
+        <p>Vérifier si l'élément correspond au sélecteur spécifié</p>
       </api-item>
       <api-item>
         <a href="./others/refresh.md">refresh</a>
-        <p>Actualiser le composant ou la page courant(e)</p>
+        <p>Actualiser le composant ou la page courante</p>
       </api-item>
       <api-item>
         <a href="./others/path.md">PATH</a>
@@ -215,15 +215,15 @@
       </api-item>
       <api-item>
         <a href="./others/extend.md">extend</a>
-        <p>Étendre les fonctionnalités de ofa.js</p>
+        <p>Étendre les fonctionnalités d'ofa.js</p>
       </api-item>
       <api-item>
         <a href="./others/version.md">version</a>
-        <p>Obtenir le numéro de version de ofa.js</p>
+        <p>Obtenir le numéro de version d'ofa.js</p>
       </api-item>
       <api-item>
         <a href="./others/stanz.md">Caractéristiques des données d'instance</a>
-        <p>Stanz est la caractéristique de données réactives de ofa.js, prenant en charge la mise à jour automatique des données</p>
+        <p>Stanz est la caractéristique de données réactives d'ofa.js, supportant la mise à jour automatique des données</p>
       </api-item>
     </api-list>
   </api-container>

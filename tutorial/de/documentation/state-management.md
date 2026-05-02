@@ -1,29 +1,29 @@
 # Zustandsverwaltung
 
-## Was ist ein Status
+## Was ist Zustand
 
-In ofa.js bezieht sich **State** (Zustand) auf das `data`-Attribut der Komponente oder des Seitenmoduls selbst. Dieser Zustand kann nur innerhalb der aktuellen Komponente verwendet werden und dient zum Speichern und Verwalten der internen Daten der Komponente.
+In ofa.js bezeichnet **Status** das `data`-Attribut einer Komponente oder Seitenmoduls selbst. Dieser Status kann nur innerhalb der aktuellen Komponente verwendet werden, um interne Daten der Komponente zu speichern und zu verwalten.
 
-Wenn mehrere Komponenten oder Seiten dieselben Daten teilen müssen, besteht die herkömmliche Vorgehensweise darin, sie über Events oder durch mehrere Ebenen von props weiterzugeben. In komplexen Anwendungen führt dies zu schwer wartbarem Code. Daher ist **State-Management** erforderlich – durch Definition eines gemeinsamen State-Objekts können mehrere Komponenten oder Seitenmodule auf diese Daten zugreifen und sie ändern, wodurch der Status geteilt wird.
+Wenn mehrere Komponenten oder Seiten dieselben Daten gemeinsam nutzen müssen, werden Daten traditionell durch Ereignisweitergabe oder schrittweise Props-Weitergabe übergeben. Diese Methode führt in komplexen Anwendungen zu schwer wartbarem Code. Daher ist eine **Zustandsverwaltung** erforderlich – durch die Definition eines gemeinsamen Zustandsobjekts, auf das mehrere Komponenten oder Seitenmodule zugreifen und dieses ändern können, wird eine gemeinsame Nutzung des Zustands ermöglicht.
 
-> **Hinweis**: State-Management ist für Szenarien geeignet, in denen Daten über Komponenten und Seiten hinweg geteilt werden müssen, wie z. B. Benutzerinformationen, Warenkorb, Theme-Konfiguration, globale Konfiguration usw.
+> **Tipp**: Statusverwaltung eignet sich für Szenarien, in denen Daten über Komponenten und Seiten hinweg geteilt werden müssen, wie z. B. Benutzerinformationen, Warenkorb, Theme-Konfiguration, globale Einstellungen etc.
 
 ## Generieren des Statusobjekts
 
-Erstelle ein reaktives Statusobjekt mit `$.stanz({})`. Diese Methode erhält ein gewöhnliches Objekt als Ausgangsdaten und gibt einen reaktiven Status-Proxy zurück.
+Erstellen Sie mit `$.stanz({})` ein reaktives Zustandsobjekt. Diese Methode nimmt ein einfaches Objekt als Ausgangsdaten entgegen und gibt einen reaktiven Zustandsproxy zurück.
 
 ### Grundlegende Verwendung
 
-<o-playground name="Zustandsmanagement-Beispiel" style="--editor-height: 500px">
+<o-playground name="Zustandsverwaltungsbeispiel" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>
     </template>
   </code>
   <code path="app-config.js" unimportant>
-    // Startseitenadresse der Anwendung
+    // Startseite der App
     export const home = "./list.html";
-    // Konfiguration für Seitenwechselanimationen
+    // Konfiguration der Seitenübergangsanimation
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -43,12 +43,12 @@ Erstelle ein reaktives Statusobjekt mit `$.stanz({})`. Diese Methode erhält ein
   export const contacts = $.stanz({
     list: [{
         id: 10010,
-        name: "Peter",
-        info: "Jeder Tag ist ein Neuanfang, nach dem Regen kommt die Sonne.",
+        name: "Pete",
+        info: "Jeder Tag ist ein neuer Anfang, nach dem Regen kommt die Sonne.",
     },{
         id: 10020,
         name: "Mike",
-        info: "Das Leben ist wie ein Ozean, nur wer starken Willens ist, erreicht das andere Ufer.",
+        info: "Das Leben ist wie ein Ozean, nur wer einen starken Willen hat, kann das andere Ufer erreichen.",
     },{
         id: 10030,
         name: "John",
@@ -65,11 +65,11 @@ Erstelle ein reaktives Statusobjekt mit `$.stanz({})`. Diese Methode erhält ein
           padding: 10px;
         }
       </style>
-      <h2>Adressbuch</h2>
+      <h2>Kontaktliste</h2>
       <ul>
         <o-fill :value="list">
           <li>
-          Name: {{$data.name}} <button on:click="$host.gotoDetail($data)">Details</button>
+          Name: {{$data.name}} <button on:click="$host.gotoDetail($data)">Detail</button>
           </li>
         </o-fill>
       </ul>
@@ -89,7 +89,7 @@ Erstelle ein reaktives Statusobjekt mit `$.stanz({})`. Diese Methode erhält ein
               this.list = contacts.list;
             },
             detached(){
-              this.list = []; // Beim Zerstören der Komponente werden die bereitgestellten Zustandsdaten geleert
+              this.list = []; // Wenn die Komponente zerstört wird, die angehängten Zustandsdaten löschen
             }
           };
         };
@@ -124,7 +124,7 @@ Erstelle ein reaktives Statusobjekt mit `$.stanz({})`. Diese Methode erhält ein
       <div class="user-info">
         <div class="avatar">Avatar</div>
         <div style="font-size: 24px;">
-        Benutzername:
+        Benutzername: 
           <o-if :value="editorMode">
             <input type="text" sync:value="userData.name"/>
             <button on:click="editorMode = false">✅</button>
@@ -149,7 +149,7 @@ Erstelle ein reaktives Statusobjekt mit `$.stanz({})`. Diese Methode erhält ein
               this.userData = contacts.list.find(e=>e.id == query.id);
             },
             detached(){
-              this.userData = {}; // Beim Zerstören der Komponente werden die bereitgestellten Zustandsdaten geleert
+              this.userData = {}; // Wenn die Komponente zerstört wird, die angehängten Zustandsdaten löschen
             }
           };
         };
@@ -158,11 +158,11 @@ Erstelle ein reaktives Statusobjekt mit `$.stanz({})`. Diese Methode erhält ein
   </code>
 </o-playground>
 
-## Eigenschaften von Zustandsobjekten
+## Eigenschaften des Zustandsobjekts
 
-### 1. Reaktive Aktualisierung
+### 1. Reaktives Update
 
-`$.stanz()` erstellte Zustandsobjekte sind reaktiv. Wenn sich die Zustandsdaten ändern, werden alle Komponenten, die diese Daten referenzieren, automatisch aktualisiert.
+`$.stanz()` erzeugte Statusobjekte sind reaktiv. Wenn sich die Statusdaten ändern, werden alle Komponenten, die diese Daten referenzieren, automatisch aktualisiert.
 
 ```javascript
 const store = $.stanz({ count: 0 });
@@ -174,7 +174,7 @@ export default {
   },
   proto:{
     increment() {
-        store.count++; // Alle Komponenten, die auf store.count verweisen, werden automatisch aktualisiert
+        store.count++; // Alle Komponenten, die store.count referenzieren, werden automatisch aktualisiert
     }
   },
   attached() {
@@ -182,14 +182,14 @@ export default {
     this.store = store;
   },
   detached(){
-    this.store = {}; // Beim Zerstören der Komponente, die angehängten Zustandsdaten leeren
+    this.store = {}; // Beim Zerstören der Komponente die gemounteten Zustandsdaten leeren
   }
 };
 ```
 
-### 2. Tiefe Reaktivität
+### 2. Tiefe Responsivität
 
-Das Statusobjekt unterstützt tiefe Reaktivität; Änderungen an verschachtelten Objekten und Arrays werden ebenfalls überwacht.
+Zustandsobjekte unterstützen tiefe Reaktivität, Änderungen in verschachtelten Objekten und Arrays werden ebenfalls überwacht.
 
 ```javascript
 const store = $.stanz({
@@ -202,17 +202,17 @@ const store = $.stanz({
   list: []
 });
 
-// Änderungen an verschachtelten Eigenschaften lösen ebenfalls Updates aus
+// Das Ändern verschachtelter Eigenschaften löst ebenfalls Aktualisierungen aus
 store.user.name = "Li Si";
 store.user.settings.theme = "light";
 store.list.push({ id: 1, title: "Neue Aufgabe" });
 ```
 
-## Best Practices
+## Beste Praktiken
 
-### 1. Den Status in der Attached-Phase der Komponente einhängen
+### 1. Status beim attached-Zyklus des Components mounten
 
-Es wird empfohlen, den gemeinsamen Status im `attached`-Lebenszyklus der Komponente zu mounten:
+Es wird empfohlen, den gemeinsamen Zustand im `attached`-Lebenszyklus der Komponente zu mounten.
 
 ```javascript
 export default {
@@ -220,32 +220,32 @@ export default {
     list: []
   },
   attached() {
-    // Den gemeinsamen Status an die data des Components hängen
+    // Den gemeinsamen Zustand in die data der Komponente einhängen
     this.list = data.list;
   },
   detached() {
-    // Beim Zerstören des Components die angehängten Zustandsdaten löschen, um Speicherlecks zu verhindern
+    // Beim Zerstören der Komponente den eingehängten Zustand leeren, um Speicherlecks zu verhindern
     this.list = [];
   }
 };
 ```
 
-### 2. Angemessene Verwaltung des Statusgültigkeitsbereichs
+### 2. Sinnvolle Verwaltung des Zustandsbereichs
 
 - **Globaler Zustand**: Geeignet für Daten, auf die die gesamte Anwendung zugreifen muss (z. B. Benutzerinformationen, globale Konfiguration)
 - **Modulzustand**: Geeignet für Daten, die innerhalb eines bestimmten Funktionsmoduls gemeinsam genutzt werden
 
 ```javascript
-// Globaler Aufrufstatus
+// Globaler Aufrufzustand
 export const globalStore = $.stanz({ user: null, theme: "light" });
 
-// Innerhalb des Moduls verwendeter Status
+// Im Modul verwendeter Zustand
 const cartStore = $.stanz({ total: 0 });
 ```
 
-## Zustandsverwaltung innerhalb des Moduls
+## Statusverwaltung innerhalb des Moduls
 
-<o-playground name="Beispiel für Statusverwaltung innerhalb eines Moduls" style="--editor-height: 500px">
+<o-playground name="Beispiel für Zustandsverwaltung innerhalb eines Moduls" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -310,7 +310,7 @@ const cartStore = $.stanz({ total: 0 });
                 this.cartStore = cartStore;
             },
             detached(){
-                this.cartStore = {}; // Beim Zerstören der Komponente die gemounteten Statusdaten löschen
+                this.cartStore = {}; // Beim Zerstören der Komponente den gemounteten Zustand leeren
             }
           };
         };
@@ -321,11 +321,11 @@ const cartStore = $.stanz({ total: 0 });
 
 ## Hinweise
 
-1. **Zustandsbereinigung**: Bereinigen Sie im `detached`-Lebenszyklus der Komponente zeitnah Referenzen auf Zustandsdaten, um Speicherlecks zu vermeiden.
+1. **Zustandsbereinigung**: Entfernen Sie rechtzeitig Verweise auf Zustandsobjekte im `detached`-Lebenszyklus der Komponente, um Speicherlecks zu vermeiden.
 
-2. **Vermeidung von Zirkelabhängigkeiten**: Erzeugen Sie keine zirkulären Verweise zwischen Zustandsobjekten, da dies das Reaktivitätssystem beeinträchtigen kann.
+2. **Vermeidung zirkulärer Abhängigkeiten**: Bilden Sie keine zirkulären Referenzen zwischen Zustandsobjekten, da dies zu Problemen im reaktiven System führen kann.
 
-3. **Große Datenstrukturen**: Verwenden Sie bei großen Datenstrukturen berechnete Eigenschaften oder fragmentiertes Management, um unnötige Leistungseinbußen zu vermeiden.
+3. **Große Datenstrukturen**: Verwenden Sie für große Datenstrukturen berechnete Eigenschaften oder verwalten Sie diese in Teilen, um unnötige Leistungseinbußen zu vermeiden.
 
-4. **Zustandskonsistenz**: Achten Sie bei asynchronen Operationen auf die Konsistenz des Zustands; nutzen Sie Transaktionen oder Stapelaktualisierungen, um die Datenintegrität sicherzustellen.
+4. **Zustandskonsistenz**: Achten Sie bei asynchronen Operationen auf die Konsistenz des Zustands und verwenden Sie Transaktionen oder Batch-Updates, um die Datenintegrität zu gewährleisten.
 

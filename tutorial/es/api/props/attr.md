@@ -2,7 +2,7 @@
 
 
 
-El método `attr` se utiliza para obtener o establecer los atributos de un elemento.
+`attr` método se utiliza para obtener o establecer los atributos de un elemento.
 
 ## Uso directo
 
@@ -19,9 +19,9 @@ Puedes usar directamente el método `attr` para obtener o establecer los atribut
           color: green;
         }
       </style>
-      <div id="target1" test-attr="1">Soy objetivo 1</div>
-      <div id="target2">Soy objetivo 2</div>
-      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">registrador</div>
+      <div id="target1" test-attr="1">I am target 1</div>
+      <div id="target2">I am target 2</div>
+      <div id="logger" style="border:blue solid 1px;padding:8px;margin:8px;">logger</div>
       <script>
         $("#logger").text = $("#target1").attr('test-attr');
         setTimeout(()=> {
@@ -33,9 +33,9 @@ Puedes usar directamente el método `attr` para obtener o establecer los atribut
   </code>
 </o-playground>
 
-## Uso mediante sintaxis de plantilla
+## Uso de la sintaxis de plantillas
 
-También puedes usar el método `attr:aaa="bbb"` para establecer el atributo **aaa** del elemento objetivo en el valor del componente **bbb**. Este método es especialmente útil para el renderizado de componentes.
+También puedes usar la forma `attr:aaa="bbb"` para establecer el atributo **aaa** del elemento de destino al valor del componente **bbb**. Este método es especialmente útil para la representación de componentes.
 
 <o-playground name="attr - sintaxis de plantilla" style="--editor-height: 600px">
   <code path="demo.html" preview>
@@ -59,7 +59,7 @@ También puedes usar el método `attr:aaa="bbb"` para establecer el atributo **a
           color: green;
         }
       </style>
-      <div attr:test-attr="txt">Soy el objetivo</div>
+      <div attr:test-attr="txt">I am target</div>
       <script>
         export default {
           tag: "attr-demo",

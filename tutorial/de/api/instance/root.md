@@ -2,11 +2,11 @@
 
 
 
-Mit dem `root`-Attribut kann man den Wurzelknoten eines Elements abrufen.
+Mit dem Attribut `root` kann der Wurzelknoten eines Elements abgerufen werden.
 
-Auf der Seite ist der Wurzelknoten normaler Elemente eine `document`-Instanz.
+Auf der Seite ist der Wurzelknoten eines gewöhnlichen Elements immer eine Instanz von `document`.
 
-<o-playground name="root - Wurzelknoten" style="--editor-height: 320px">
+<o-playground name="root - Stammknoten" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>
@@ -22,12 +22,12 @@ Auf der Seite ist der Wurzelknoten normaler Elemente eine `document`-Instanz.
   </code>
 </o-playground>
 
-## Elemente innerhalb von Schattenknoten
+## Elemente innerhalb eines Schattenknotens
 
-Da die Elemente innerhalb der Komponente von der äußeren Umgebung isoliert sind, ist das `root`-Attribut der Elemente innerhalb des Shadow-Knotens der Shadow-Stammknoten.
+Da die Elemente innerhalb der Komponente von der äußeren Umgebung isoliert sind, ist die `root`-Eigenschaft der Elemente innerhalb des Shadow-Knotens der Shadow-Root-Knoten.
 
 
-<o-playground name="root - Shadow-Knoten" style="--editor-height: 600px">
+<o-playground name="root - Schattenknoten" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./test-root.html"></l-m>
@@ -46,9 +46,9 @@ Da die Elemente innerhalb der Komponente von der äußeren Umgebung isoliert sin
             <li id="target">item 2</li>
             <li>item 3</li>
         </ul>
-        <h3>logger1:</h3>
+        <h3>Logger1:</h3>
         <div id="logger1" style="color:red;">{{l1}}</div>
-        <h3>logger2:</h3>
+        <h3>Logger2:</h3>
         <div id="logger2" style="color:green;">{{l2}}</div>
         <script>
             export default {

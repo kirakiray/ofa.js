@@ -2,9 +2,9 @@
 
 
 
-Mit der Eigenschaft `prevs` können Sie problemlos alle vorherigen benachbarten Elementinstanzen des aktuellen Elements abrufen, die als Array zurückgegeben werden.
+Mit der `prevs`-Eigenschaft können Sie problemlos alle benachbarten Elementinstanzen vor dem aktuellen Element abrufen, die als Array zurückgegeben werden.
 
-<o-playground name="prevs - Vorige Elemente" style="--editor-height: 320px">
+<o-playground name="prevs - vorherige Elemente" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

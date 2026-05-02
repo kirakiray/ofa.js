@@ -1,6 +1,6 @@
 # Mikro-App
 
-Verwenden Sie `o-app`, um eine Anwendung zu erstellen; dieses Tag steht für eine Mikro-App. Es lädt die Konfigurationsdatei `app-config.js`, in der die Startseiten-Adresse und die Konfiguration für Seitenübergangsanimationen definiert sind.
+Verwenden Sie `o-app` für die Applikation, dieses Tag repräsentiert eine Mikro-App, die die Konfigurationsdatei `app-config.js` lädt, welche die Startseitenadresse und die Seitenwechsel-Animationseinstellungen der App definiert.
 
 ```html
 <o-app src="./app-config.js"></o-app>
@@ -8,10 +8,10 @@ Verwenden Sie `o-app`, um eine Anwendung zu erstellen; dieses Tag steht für ein
 
 ```javascript
 // app-config.js
-// Anwendungsstartseitenadresse
+// Startseite-URL der App
 export const home = "./home.html";
 
-// Konfiguration für Seitenwechselanimationen
+// Konfiguration der Seitenwechsel-Animation
 export const pageAnime = {
   current: {
     opacity: 1,
@@ -28,16 +28,16 @@ export const pageAnime = {
 };
 ```
 
-<o-playground name="Mikro-App-Beispiel" style="--editor-height: 500px">
+<o-playground name="Micro-App-Beispiel" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <o-app src="./app-config.js"></o-app>
     </template>
   </code>
   <code path="app-config.js">
-    // Startseiten-URL der App
+    // Startseiten-Adresse der App
     export const home = "./home.html";
-    // Konfiguration für Seitenwechselanimationen
+    // Konfiguration der Seitenübergangs-Animation
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -103,20 +103,20 @@ export const pageAnime = {
 
 ## home - Startseitenadresse
 
-Gibt den Pfad des Startmoduls an, das beim Start der Anwendung geladen wird, unterstützt relative und absolute Pfade.
+Geben Sie den Pfad des Startmoduls an, das beim Start der Anwendung geladen wird. Es werden relative und absolute Pfade unterstützt.
 
 ```javascript
 export const home = "./pages/home.html";
 ```
 
-## pageAnime - Seitenübergangsanimation
+## pageAnime - Seitenwechsel-Animation
 
-Steuern Sie die Übergangsanimation beim Wechseln der Seiten, umfasst drei Zustände:
+Steuert die Übergangsanimationseffekte beim Seitenwechsel, die drei Zustände umfassen:
 
-| Status | Beschreibung |
-|------|------|
+| Zustand | Beschreibung |
+|---------|--------------|
 | `current` | Stil nach Abschluss der Animation der aktuellen Seite |
-| `next` | Startstil beim Eintritt der neuen Seite |
+| `next` | Ausgangsstil beim Eintritt der neuen Seite |
 | `previous` | Zielstil beim Verlassen der alten Seite |```javascript
 export const pageAnime = {
   current: {
@@ -136,11 +136,11 @@ export const pageAnime = {
 
 ## Parameterübergabe
 
-In `o-app` unterstützt das Seitenwechseln die Übergabe von Parametern über URL Query, und die Zielseite empfängt diese über den `query`-Parameter der Modulfunktion.
+In der `o-app` unterstützt die Seiten Navigation die Übergabe von Parametern über URL-Query. Die Zielseite empfängt diese über den Parameter `query` der Modulfunktion.
 
 ## Seitennavigation
 
-In o-app kann jede Seitenkomponente mit einem `<a>`-Tag mit dem Attribut `olink` für Seitenwechsel verwendet werden. Dieses Tag löst einen Routing-Wechsel in der Anwendung aus, führt Übergangsanimationen aus und aktualisiert nicht die gesamte Seite.
+In der o-app kann jedes Seitenmodul ein `<a>`-Tag mit dem `olink`-Attribut verwenden, um zwischen Seiten zu wechseln. Dieses Tag löst das Routing der App aus, zeigt eine Übergangsanimation und lädt die gesamte Seite nicht neu.
 
 ```html
 <a href="./about.html" olink>Zur Über-Seite springen</a>

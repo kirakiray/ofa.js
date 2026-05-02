@@ -2,9 +2,9 @@
 
 
 
-Grâce à la propriété `ele`, vous pouvez obtenir l'[élément Element](https://developer.mozilla.org/zh-CN/docs/Web/API/Element) réel de l'instance, vous permettant ainsi d'utiliser les propriétés ou méthodes natives.
+Grâce à la propriété `ele`, vous pouvez obtenir l'[élément Element](https://developer.mozilla.org/zh-CN/docs/Web/API/Element) réel de l'instance, et ainsi utiliser ses propriétés ou méthodes natives.
 
-<o-playground name="ele - Obtenir l'élément" style="--editor-height: 320px">
+<o-playground name="ele - obtenir l'élément" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

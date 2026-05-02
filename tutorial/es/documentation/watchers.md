@@ -1,12 +1,12 @@
-# Escuchador
+# Oyente
 
-El observador (Watcher) es una función en ofa.js utilizada para escuchar cambios en los datos y ejecutar la lógica correspondiente. Cuando los datos reactivos cambian, el observador activa automáticamente la función de devolución de llamada, permitiéndote realizar tareas como transformación de datos, operaciones secundarias o procesamiento asíncrono.
+El observador (Watcher) es una función en ofa.js que se utiliza para detectar cambios en los datos y ejecutar la lógica correspondiente. Cuando los datos reactivos cambian, el observador activa automáticamente la función de devolución de llamada, permitiéndote realizar tareas como transformación de datos, operaciones secundarias o procesamiento asíncrono.
 
 ## Uso básico
 
-Los watchers se definen en el objeto `watch` del componente, donde el nombre de la clave corresponde al nombre de la propiedad de datos que se desea observar, y el valor es la función de callback que se ejecuta cuando cambian esos datos.
+Los observadores se definen en el objeto `watch` del componente, donde el nombre de la clave corresponde al nombre de la propiedad de datos que se debe observar, y el valor es la función de devolución de llamada que se ejecuta cuando los datos cambian.
 
-<o-playground name="observadores - uso básico" style="--editor-height: 700px">
+<o-playground name="watchers - uso básico" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -17,9 +17,9 @@ Los watchers se definen en el objeto `watch` del componente, donde el nombre de 
         }
       </style>
       <p>
-        contador:{{count}}
+        count:{{count}}
         <br />
-        dobleContador:{{doubleCount}}
+        doubleCount:{{doubleCount}}
       </p>
       <input sync:value="count" type="number" />
       <script>
@@ -43,16 +43,16 @@ Los watchers se definen en el objeto `watch` del componente, donde el nombre de 
   </code>
 </o-playground>
 
-## Parámetros de función de retorno de llamada
+## Parámetros de función callback
 
-La función de devolución de llamada del detector recibe dos parámetros:- `newValue`：el nuevo valor después del cambio
+La función de callback del listener recibe dos parámetros:- `newValue`：el nuevo valor después del cambio
 - `{watchers}`：todos los objetos observadores del componente actual
 
-Después de que los datos cambien, primero se procesará con debounce y luego se ejecutará la devolución de llamada en `watch`; el parámetro `watchers` es el conjunto de todos los cambios combinados dentro del período de debounce actual.
+Después de los cambios de datos, se realizará primero el procesamiento de antirrebote (debounce) y luego se ejecutarán las devoluciones de llamada en `watch`; el parámetro `watchers` es el conjunto de todos los cambios fusionados dentro de este ciclo de antirrebote.
 
-Las funciones en `watch` se invocan inmediatamente después de que el componente se inicializa, para establecer la escucha de datos. Puede distinguirse si es la primera invocación comprobando si `watchers` tiene longitud.
+La función en `watch` se llama inmediatamente después de que se complete la inicialización del componente, para establecer la supervisión de datos. Se puede distinguir si es la primera llamada verificando si `watchers` tiene longitud.
 
-<o-playground name="watchers - parámetros de devolución de llamada" style="--editor-height: 700px">
+<o-playground name="watchers - parámetros de callback" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -71,14 +71,14 @@ Las funciones en `watch` se invocan inmediatamente después de que el componente
       </style>
       <p>Nombre: {{name}}</p>
       <p>Edad: {{age}}</p>
-      <input sync:value="name" placeholder="Ingresa nombre" />
-      <input sync:value="age" type="number" placeholder="Ingresa edad" />
+      <input sync:value="name" placeholder="Ingrese el nombre" />
+      <input sync:value="age" type="number" placeholder="Ingrese la edad" />
       <div class="log">{{log}}</div>
       <script>
         export default async () => {
           return {
             data: {
-              name: "Zhang San",
+              name: "Juan",
               age: 25,
               log: "",
             },
@@ -87,14 +87,14 @@ Las funciones en `watch` se invocan inmediatamente después de que el componente
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // Obtener uno de ellos
+                const watcher = watchers[0]; // obtener uno de ellos
                 this.log += `La propiedad "${watcher.name}" cambió de "${watcher.oldValue}" a "${watcher.value}"\n`;
               },
               age(newVal,{watchers}) {
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // Obtener uno de ellos
+                const watcher = watchers[0]; // obtener uno de ellos
                 this.log += `La propiedad "${watcher.name}" cambió de "${watcher.oldValue}" a "${watcher.value}"\n`;
               },
             },
@@ -105,11 +105,11 @@ Las funciones en `watch` se invocan inmediatamente después de que el componente
   </code>
 </o-playground>
 
-## Escucha Profunda
+## Observación profunda
 
 Para datos anidados de tipo objeto o array, watch realizará automáticamente una escucha profunda.
 
-<o-playground name="watchers - Escucha profunda" style="--editor-height: 700px">
+<o-playground name="watchers - Observación profunda" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -132,13 +132,13 @@ Para datos anidados de tipo objeto o array, watch realizará automáticamente un
         <p>Información del usuario:</p>
         <p>Nombre: {{user.name}}</p>
         <p>Edad: {{user.age}}</p>
-        <p>Pasatiempos: {{user.hobbies.join(', ')}}</p>
+        <p>Aficiones: {{user.hobbies.join(', ')}}</p>
       </div>
       <div>
-        <button on:click="updateName">Cambiar nombre</button>
-        <button on:click="updateAge">Cambiar edad</button>
-        <button on:click="addHobby">Agregar pasatiempo</button>
-        <button on:click="updateHobby">Modificar pasatiempo</button>
+        <button on:click="updateName">Modificar nombre</button>
+        <button on:click="updateAge">Modificar edad</button>
+        <button on:click="addHobby">Agregar afición</button>
+        <button on:click="updateHobby">Modificar afición</button>
       </div>
       <div class="info" :html="log"></div>
       <script>
@@ -146,9 +146,9 @@ Para datos anidados de tipo objeto o array, watch realizará automáticamente un
           return {
             data: {
               user: {
-                name: "Zhang San",
+                name: "Juan",
                 age: 25,
-                hobbies: ["Baloncesto", "Fútbol"],
+                hobbies: ["baloncesto", "fútbol"],
               },
               log: "",
             },
@@ -157,27 +157,27 @@ Para datos anidados de tipo objeto o array, watch realizará automáticamente un
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // Obtener uno de ellos
-                console.log("Modificar: ",watcher.target);
+                const watcher = watchers[0]; // obtener uno de ellos
+                console.log("Modificación: ",watcher.target);
                 if(watcher.type === 'set'){
-                  this.log += `Modificar valor -> Propiedad "${watcher.name}" de "${watcher.oldValue}" a "${watcher.value}" <br>`;
+                  this.log += `Valor modificado -> propiedad "${watcher.name}" de "${watcher.oldValue}" a "${watcher.value}" <br>`;
                 }else{
-                  this.log += `Ejecutar método ${watcher.type} -> Nombre de función "${watcher.name}" Parámetros "${watcher.args}" <br>`;
+                  this.log += `Ejecutar método ${watcher.type} -> nombre de función "${watcher.name}" argumentos "${watcher.args}" <br>`;
                 }
               },
             },
             proto: {
               updateName() {
-                this.user.name = "Li Si";
+                this.user.name = "Luis";
               },
               updateAge() {
                 this.user.age = 30;
               },
               addHobby() {
-                this.user.hobbies.push("Natación");
+                this.user.hobbies.push("natación");
               },
               updateHobby() {
-                this.user.hobbies[0] = "Bádminton";
+                this.user.hobbies[0] = "bádminton";
               },
             },
           };
@@ -187,9 +187,9 @@ Para datos anidados de tipo objeto o array, watch realizará automáticamente un
   </code>
 </o-playground>
 
-## Monitorear múltiples fuentes de datos
+## Escuchar múltiples fuentes de datos
 
-Puedes escuchar simultáneamente los cambios en múltiples datos y, en la función de devolución de llamada, ejecutar la lógica correspondiente según los cambios de esos datos.
+Puedes escuchar simultáneamente los cambios en varios datos y, en la función de devolución de llamada, ejecutar la lógica correspondiente según los cambios en esos datos.
 
 <o-playground name="watchers - múltiples fuentes de datos" style="--editor-height: 600px">
   <code>
@@ -206,10 +206,10 @@ Puedes escuchar simultáneamente los cambios en múltiples datos y, en la funci�
         }
       </style>
       <p>Ancho: {{rectWidth}}</p>
-      <p>Altura: {{rectHeight}}</p>
+      <p>Alto: {{rectHeight}}</p>
       <p>Área: {{area}}</p>
       <input sync:value="rectWidth" type="number" placeholder="Ancho" />
-      <input sync:value="rectHeight" type="number" placeholder="Altura" />
+      <input sync:value="rectHeight" type="number" placeholder="Alto" />
       <script>
         export default async () => {
           return {
@@ -231,11 +231,11 @@ Puedes escuchar simultáneamente los cambios en múltiples datos y, en la funci�
   </code>
 </o-playground>
 
-## Escenarios de aplicación reales
+## Escenarios de aplicación práctica
 
 ### 1. Validación de formularios
 
-<o-playground name="watchers - Validación de formulario" style="--editor-height: 800px">
+<o-playground name="watchers - validación de formulario" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -278,7 +278,7 @@ Puedes escuchar simultáneamente los cambios en múltiples datos y, en la funci�
               email(val) {
                 const emailRegex = /^.+@.+\..+$/;
                 if (!emailRegex.test(val)) {
-                  this.emailError = "Por favor, ingrese una dirección de correo electrónico válida";
+                  this.emailError = "Por favor, introduce una dirección de correo válida";
                 } else {
                   this.emailError = "";
                 }
@@ -293,7 +293,7 @@ Puedes escuchar simultáneamente los cambios en múltiples datos y, en la funci�
 
 ### 2. Configurar el tema
 
-<o-playground name="watchers - establecer tema" style="--editor-height: 800px">
+<o-playground name="watchers - configurar tema" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -350,5 +350,5 @@ Puedes escuchar simultáneamente los cambios en múltiples datos y, en la funci�
 
 ## Precauciones
 
-- **Evitar modificar los datos observados**: Modificar los datos observados dentro del callback de un observador puede causar un bucle infinito. Si necesitas modificarlos, asegúrate de tener una condición de parada adecuada.
-- **Considerar usar propiedades computadas**: Si necesitas calcular un nuevo valor basado en cambios en múltiples datos, se recomienda usar [propiedades computadas](./computed-properties.md) en lugar de observadores.
+- **Evitar modificar los datos observados**: Modificar los datos que se están observando dentro de la función de callback de un observador puede provocar un bucle infinito. Si necesita modificarlos, asegúrese de tener una condición adecuada.
+- **Se puede usar una propiedad computada en su lugar**: Si necesita calcular un nuevo valor basado en cambios de múltiples datos, se recomienda usar una [propiedad computada](./computed-properties.md) en lugar de un observador.

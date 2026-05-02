@@ -2,9 +2,9 @@
 
 
 
-`prevs`プロパティを使用すると、現在の要素の前にあるすべての隣接する要素インスタンスを簡単に取得でき、これらは配列として返されます。
+`prevs` プロパティを使用すると、現在の要素の前に隣接するすべての要素のインスタンスを簡単に取得でき、それらの要素は配列として返されます。
 
-<o-playground name="prevs - 前置要素" style="--editor-height: 320px">
+<o-playground name="prevs - 前の要素" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

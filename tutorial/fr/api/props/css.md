@@ -2,16 +2,16 @@
 
 
 
-La méthode `css` sert à obtenir ou à définir le style de l’élément cible.
+`css` méthode est utilisée pour obtenir ou définir le style d'un élément cible.
 
 ## Utilisation directe
 
-Vous pouvez directement utiliser la méthode `css` pour obtenir ou définir les styles d'un élément.
+Vous pouvez utiliser directement la méthode `css` pour obtenir ou définir le style d'un élément.
 
 <o-playground name="css - utilisation directe" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target">texte d'origine</div>
+      <div id="target">origin text</div>
       <br>
       <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
@@ -26,16 +26,16 @@ Vous pouvez directement utiliser la méthode `css` pour obtenir ou définir les 
   </code>
 </o-playground>
 
-## Paramétrage complet
+## Configuration complète
 
-En obtenant l'objet `css`, vous pouvez directement définir les valeurs de style sur l'élément.
+Grâce à l'objet `css` acquis, vous pouvez directement définir la valeur de style sur l'élément.
 
 <o-playground name="css - Configuration complète" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
-      <div id="target" style="color:red">texte original</div>
+      <div id="target" style="color:red">origin text</div>
       <br>
-      <h4>journal</h4>
+      <h4>logger</h4>
       <div id="logger" style="border:#aaa solid 1px;padding:8px;"></div>
       <script>
         $("#logger").text = Object.keys($("#target").css);
@@ -51,13 +51,13 @@ En obtenant l'objet `css`, vous pouvez directement définir les valeurs de style
   </code>
 </o-playground>
 
-En utilisant les fonctionnalités de l'objet `css`, vous pouvez ajuster rapidement les styles de l'élément cible.
+En utilisant les propriétés de l’objet `css`, vous pouvez rapidement ajuster le style de l’élément cible.
 
-## Utilisation de la syntaxe de modèle
+## Utilisation via la syntaxe de modèle
 
-Vous pouvez également définir le style des éléments cibles via la syntaxe de modèle.
+Vous pouvez également définir le style de l'élément cible à l'aide de la syntaxe de modèle.
 
-<o-playground name="css - syntaxe de modèle" style="--editor-height: 400px">
+<o-playground name="css - Syntaxe du modèle" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./css-demo.html"></l-m>
@@ -71,7 +71,7 @@ Vous pouvez également définir le style des éléments cibles via la syntaxe de
   </code>
   <code path="css-demo.html" active>
     <template component>
-      <div :css.color="txt">Je suis la cible</div>
+      <div :css.color="txt">I am target</div>
       <script>
         export default {
           tag: "css-demo",
@@ -89,16 +89,16 @@ Vous pouvez également définir le style des éléments cibles via la syntaxe de
   </code>
 </o-playground>
 
-## Astuces pour configurer le CSS
+## Astuces pour configurer le css
 
-Vous pouvez modifier une propriété de style spécifique d'un élément via `$ele.css = {...$ele.css, color:'red'}` sans affecter les autres propriétés de style. Cette méthode permet de modifier une seule propriété sans avoir à réécrire l'ensemble des styles.
+Vous pouvez modifier une propriété de style d'un élément en utilisant `$ele.css = {...$ele.css, color:'red'}` sans affecter les autres propriétés de style. Cette approche permet de ne modifier qu'une seule propriété sans avoir à réécrire l'ensemble du style.
 
 ### Exemple
 
 ```javascript
-const monElement = $("#monElement");
+const myElement = $("#myElement");
 
-monElement.css = { ...monElement.css, color: 'rouge' };
+myElement.css = { ...myElement.css, color: 'red' };
 ```
 
-Dans l'exemple ci-dessus, en utilisant `{ ...myElement.css, color: 'red' }`, nous avons uniquement modifié la couleur de l'élément tout en conservant les autres propriétés de style inchangées. C'est une astuce très pratique qui permet de modifier de manière flexible les styles des éléments.
+Dans l'exemple ci-dessus, en utilisant `{ ...myElement.css, color: 'red' }`, nous avons modifié uniquement le style de couleur de l'élément, tout en gardant les autres propriétés de style inchangées. C'est une astuce très pratique qui permet de modifier les styles d'un élément de manière flexible.

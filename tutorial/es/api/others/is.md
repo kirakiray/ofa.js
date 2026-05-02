@@ -2,25 +2,25 @@
 
 
 
-El método `is` se utiliza para detectar si un elemento cumple con la expresión.
+`is` método se utiliza para detectar si un elemento coincide con una expresión.
 
 <o-playground name="is - detectar elemento" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <ul>
-        <li>Yo soy 1</li>
-        <li id="target">Yo soy el objetivo</li>
-        <li>Yo soy 3</li>
+        <li>I am 1</li>
+        <li id="target">I am target</li>
+        <li>I am 3</li>
       </ul>
-      <div id="logger">registrador</div>
+      <div id="logger">logger</div>
       <script>
         setTimeout(() => {
           const target = $("#target");
           \$("#logger").html = `
-          ¿Es li?: ${target.is('li')} <br>
-          ¿Es div?: ${target.is('div')} <br>
-          ¿Tiene id?: ${target.is('[id]')} <br>
-          ¿Tiene clase?: ${target.is('[class]')} <br>
+          Is li: ${target.is('li')} <br>
+          Is div: ${target.is('div')} <br>
+          Have id: ${target.is('[id]')} <br>
+          Have class: ${target.is('[class]')} <br>
           `;
         }, 500);
       </script>

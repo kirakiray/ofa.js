@@ -2,9 +2,9 @@
 
 
 
-Mit der `off`-Methode können registrierte Ereignisbehandlungsroutinen abgemeldet werden, um die Überwachung eines Ereignisses abzubrechen.
+Verwenden Sie die `off`-Methode, um einen registrierten Ereignishandler zu deregistrieren und das Abhören des Ereignisses abzubrechen.
 
-Hier ist ein Beispiel, das zeigt, wie man die `off`-Methode verwendet, um Ereignis-Listener zu entfernen:
+Nachfolgend ein Beispiel, das zeigt, wie man die Methode `off` verwendet, um die Ereignisüberwachung zu beenden:
 
 <o-playground name="off - Ereignis-Listener entfernen" style="--editor-height: 400px">
   <code path="demo.html">
@@ -27,4 +27,4 @@ Hier ist ein Beispiel, das zeigt, wie man die `off`-Methode verwendet, um Ereign
   </code>
 </o-playground>
 
-In diesem Beispiel registrieren wir einen Klick-Event-Handler `f`, der bei einem Klick auf den Button die Anzahl der Klicks im `#logger` anzeigt. Mit der Methode `off` entfernen wir die Event-Beobachtung, sobald die Anzahl der Klicks 3 erreicht.
+In diesem Beispiel registrieren wir einen Klickereignis-Handler `f`. Wenn die Schaltfläche angeklickt wird, zeigt der Handler die Anzahl der Klicks in `#logger` an. Mit der Methode `off` heben wir das Ereignis-Listening auf, wenn die Anzahl der Klicks 3 erreicht hat.

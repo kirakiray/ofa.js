@@ -2,7 +2,7 @@
 
 
 
-Los elementos dentro de `o-app`, incluyendo los elementos dentro de los nodos shadow de `o-page` que están dentro de `o-app`, o los subcomponentes más internos, todos tienen su propiedad `app` apuntando a la instancia del elemento `o-app`.
+Los elementos dentro de `o-app`, incluyendo aquellos dentro del nodo sombra de `o-page` dentro de `o-app`, o subcomponentes internos, su atributo `app` apunta a la instancia del elemento `o-app`.
 
 A continuación se muestra un ejemplo que demuestra cómo acceder al atributo `app` dentro de los elementos en `o-app`:
 

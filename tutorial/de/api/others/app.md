@@ -1,12 +1,12 @@
-# o-app Komponente
+# o-app-Komponente
 
-`o-app` ist eine der Kernkomponenten in ofa.js und wird zur Konfiguration und Verwaltung der gesamten Anwendung verwendet. Im Folgenden einige Schlüsselattribute und -methoden der App:
+`o-app` ist eine der Kernkomponenten in ofa.js, die zur Konfiguration und Verwaltung der gesamten Anwendung dient. Im Folgenden sind einige wichtige Eigenschaften und Methoden der app:
 
 ## src
 
 
 
-Das `src`-Attribut wird verwendet, um die spezifische Adresse des Anwendungsparameter-Konfigurationsmoduls anzugeben.
+`src` Attribut wird verwendet, um die genaue Adresse des Anwendungsparameter-Konfigurationsmoduls anzugeben.
 
 ```javascript
 const app = $("o-app");
@@ -17,7 +17,7 @@ console.log(app.src);
 
 
 
-Das `current`-Attribut wird verwendet, um die Instanz der aktuell angezeigten Seite abzurufen. Dies kann Ihnen helfen, auf die aktuell angezeigte Seite zuzugreifen und sie zu bearbeiten, z. B. um deren Inhalt zu aktualisieren oder bestimmte Aktionen auszuführen.
+Die Eigenschaft `current` wird verwendet, um die gerade angezeigte Seiteninstanz abzurufen. Auf diese Weise können Sie auf die aktuell dargestellte Seite zugreifen und sie bearbeiten, etwa um deren Inhalt zu aktualisieren oder bestimmte Aktionen auszuführen.
 
 ```javascript
 const currentPage = app.current;
@@ -27,7 +27,7 @@ const currentPage = app.current;
 
 
 
-Die Methode `goto` wird verwendet, um zu einer bestimmten Seite zu springen. Sie können die Adresse der Zielseite übergeben, und die Anwendung lädt und zeigt diese Seite an. Dies ist eine wichtige Methode für die Navigation in der Anwendung.
+`goto` Methode wird verwendet, um zu einer bestimmten Seite zu springen. Sie können die Adresse der Zielseite übergeben, die App wird die Seite laden und anzeigen. Dies ist eine wichtige Methode der App-Navigation.
 
 ```javascript
 app.goto("/page2.html");
@@ -37,17 +37,17 @@ app.goto("/page2.html");
 
 
 
-Die Methode `replace` ist ähnlich wie `goto`, ersetzt jedoch die aktuelle Seite anstatt eine neue Seite auf den Stapel zu legen. Sie kann verwendet werden, um eine Seitenersetzung statt einer Stapelnavigation zu realisieren.
+`replace`-Methode ähnelt `goto`, dient jedoch dazu, die aktuelle Seite zu ersetzen, anstatt eine neue Seite zum Stack hinzuzufügen. Dies kann verwendet werden, um Seitenersetzungen anstelle von Stack-Navigation zu implementieren.
 
 ```javascript
-app.replace("/new-page.html");
+app.replace("/neue-seite.html");
 ```
 
 ## back
 
 
 
-Die `back`-Methode wird verwendet, um zur vorherigen Seite zurückzukehren und ermöglicht die Navigation rückwärts durch die Seiten. Dadurch wird der Benutzer zur vorherigen Seite zurückgeleitet.
+`back` Methode wird verwendet, um zur vorherigen Seite zurückzukehren und die Rückwärtsnavigation der Seite zu realisieren. Dies führt den Benutzer zurück zur vorherigen Seite.
 
 ```javascript
 app.back();
@@ -57,7 +57,7 @@ app.back();
 
 
 
-Die Eigenschaft `routers` enthält die Routing-Konfigurationsinformationen der Anwendung. Dies ist eine wichtige Eigenschaft, die die Routing-Regeln und Zuordnungen der einzelnen Seiten innerhalb der Anwendung definiert. Die Routing-Konfiguration bestimmt die Navigation zwischen Seiten und die Behandlung von URLs.
+Das Attribut `routers` enthält die Routing-Konfigurationsinformationen der Anwendung. Es ist ein wichtiges Attribut, das die Routing-Regeln und Zuordnungen der einzelnen Seiten in der Anwendung definiert. Die Routing-Konfiguration bestimmt die Navigation zwischen den Seiten und die Behandlung von URLs.
 
 ```javascript
 const routeConfig = app.routers;

@@ -2,7 +2,7 @@
 
 
 
-`root` プロパティを使用すると、要素のルートノードを取得できます。
+`root` 属性を使用すると、要素のルートノードを取得できます。
 
 ページ上では、通常の要素のルートノードはすべて `document` インスタンスです。
 
@@ -24,7 +24,7 @@
 
 ## シャドウノード内の要素
 
-コンポーネント内の要素は外部環境と隔離されているため、シャドウノード内の要素の `root` プロパティはシャドウルートノードとなる。
+コンポーネント内の要素は外部環境と隔離されているため、シャドウノード内の要素の `root` プロパティはシャドウルートノードになります。
 
 
 <o-playground name="root - シャドウノード" style="--editor-height: 600px">
@@ -42,9 +42,9 @@
   <code path="test-root.html" active>
     <template component>
         <ul>
-            <li>アイテム 1</li>
-            <li id="target">アイテム 2</li>
-            <li>アイテム 3</li>
+            <li>item 1</li>
+            <li id="target">item 2</li>
+            <li>item 3</li>
         </ul>
         <h3>ロガー1:</h3>
         <div id="logger1" style="color:red;">{{l1}}</div>

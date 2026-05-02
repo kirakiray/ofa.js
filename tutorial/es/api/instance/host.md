@@ -2,11 +2,11 @@
 
 
 
-Usando la propiedad `host`, puedes obtener la instancia del componente host del elemento. Esto es muy útil para acceder a los datos y métodos de su componente host desde dentro del componente.
+Usando la propiedad `host`, se puede obtener la instancia del componente anfitrión del elemento. Esto es muy útil para acceder a los datos y métodos de su componente anfitrión dentro del componente.
 
-A continuación se muestra un ejemplo que demuestra cómo utilizar el atributo `host` para obtener la instancia del componente anfitrión:
+Aquí hay un ejemplo que demuestra cómo usar la propiedad `host` para obtener una instancia del componente host:
 
-<o-playground name="host - obtener anfitrión" style="--editor-height: 700px">
+<o-playground name="host - obtener el host" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -20,11 +20,11 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar el atributo `
         export default async function(){
           return {
             data: {
-              greeting: "Hola"
+              greeting: "Hello"
             },
             proto: {
               sayHi(){
-                return `${this.greeting}, ¡soy el anfitrión!`;
+                return `${this.greeting}, I'm the host!`;
               }
             }
           };
@@ -37,9 +37,9 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar el atributo `
       <style>
         :host{display:block;border:1px solid #ddd;padding:12px;margin:8px;border-radius:4px;}
       </style>
-      <div>Nombre de usuario: {{username}}</div>
-      <button on:click="onClick">Saludar</button>
-      <div>Respuesta: {{response}}</div>
+      <div>Username: {{username}}</div>
+      <button on:click="onClick">Say Hi</button>
+      <div>Response: {{response}}</div>
       <script>
         export default {
           tag: "user-card",
@@ -55,7 +55,7 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar el atributo `
             }
           },
           ready(){
-            console.log("Método del anfitrión:", this.host.sayHi());
+            console.log("Host method:", this.host.sayHi());
           },
         };
       </script>
@@ -63,11 +63,11 @@ A continuación se muestra un ejemplo que demuestra cómo utilizar el atributo `
   </code>
 </o-playground>
 
-En este ejemplo, creamos un componente personalizado `user-card` y, dentro del componente, accedemos al método `sayHi` del componente host (página) mediante `this.host`, logrando la interacción entre el componente y su host.
+En este ejemplo, creamos un componente personalizado `user-card` y, dentro del componente, accedemos al método `sayHi` del componente anfitrión (página) a través de `this.host`, logrando la interacción entre el componente y el anfitrión.
 
 Si el elemento no está dentro de un componente o módulo de página, el valor de `host` será `null`. Por ejemplo:
 
-<o-playground name="host - Sin host" style="--editor-height: 300px">
+<o-playground name="host - sin host" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
       <ul>
@@ -85,4 +85,4 @@ Si el elemento no está dentro de un componente o módulo de página, el valor d
   </code>
 </o-playground>
 
-En este ejemplo, el elemento `#target` está dentro del body, no dentro de ningún componente o página, por lo que el valor de `$("#target").host` es `null`.
+En este ejemplo, el elemento `#target` está dentro de body, no dentro de ningún componente o página, por lo que el valor de `$("#target").host` es `null`.

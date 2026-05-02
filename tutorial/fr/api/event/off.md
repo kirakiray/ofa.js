@@ -2,14 +2,14 @@
 
 
 
-L'utilisation de la méthode `off` permet de désinscrire les gestionnaires d'événements déjà enregistrés, afin d'annuler l'écoute des événements.
+Utiliser la méthode `off` permet de désenregistrer un gestionnaire d'événements déjà enregistré, afin d'annuler l'écoute de l'événement.
 
-Voici un exemple montrant comment utiliser la méthode `off` pour annuler l’écoute d’un événement :
+Voici un exemple montrant comment utiliser la méthode `off` pour supprimer un écouteur d’événement :
 
-<o-playground name="off - Supprimer l'écouteur d'événements" style="--editor-height: 400px">
+<o-playground name="off - supprimer l'écouteur d'événement" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
-      <button id="target">ajouter le compteur</button>
+      <button id="target">add count</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>
@@ -27,4 +27,4 @@ Voici un exemple montrant comment utiliser la méthode `off` pour annuler l’é
   </code>
 </o-playground>
 
-Dans cet exemple, nous avons enregistré un gestionnaire d'événement de clic `f`, lorsque le bouton est cliqué, le gestionnaire d'événement affichera le nombre de clics dans `#logger`. En utilisant la méthode `off`, nous avons désinscrit l'écoute de l'événement lorsque le nombre de clics atteint 3.
+Dans cet exemple, nous avons enregistré un gestionnaire d'événements `f` pour le clic. Lorsque le bouton est cliqué, le gestionnaire affiche le nombre de clics dans `#logger`. En utilisant la méthode `off`, nous avons supprimé l'écoute de l'événement lorsque le nombre de clics a atteint 3.

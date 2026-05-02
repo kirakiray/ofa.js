@@ -1,6 +1,6 @@
 # wrap
 
-The `wrap` method wraps the target element with another element. Before performing the `wrap` operation, the initialization of the [$ method](../instance/dollar.md) is automatically executed, so you can directly specify an element string or object.
+The `wrap` method is used to wrap a layer of elements around the target element. Before performing the `wrap` operation, the initialization of the [$ method](../instance/dollar.md) is automatically executed, so you can directly fill in the specific element string or object.
 
 <o-playground name="wrap - wrap element" style="--editor-height: 440px">
   <code path="demo.html">
@@ -31,8 +31,8 @@ const $el = $(`
 </div>
 `);
 
-$el.wrap("<div>new div</div>"); // Error, no parent element, cannot wrap
-$el.$('#target').wrap("<div>new div</div>"); // Correct, has parent element
+$el.wrap("<div>new div</div>"); // Error: no parent element, cannot wrap
+$el.$('#target').wrap("<div>new div</div>"); // Correct: has parent element
 ```
 
-Please note, do not operate within template components such as o-fill or o-if.
+**Please note, do not operate inside template components such as o-fill or o-if.**

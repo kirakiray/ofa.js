@@ -1,14 +1,14 @@
 # Single Page Application
 
-A single-page application binds the `o-app` component to the browser’s address bar, keeping the web URL synchronized with the in-app page path. After enabling the single-page application:
+A single-page application binds the `o-app` component to the browser's address bar, keeping the web URL synchronized with the in-app page path. After enabling the single-page application:
 
-- Refreshing the page preserves the current route state
-- Copying the URL from the address bar and opening it in another browser or tab also restores the application state
-- The browser's forward/back buttons work properly
+- Refreshing the webpage can maintain the current routing state
+- Copy the URL from the address bar and open it in another browser or tab, the application state can also be restored
+- The browser's forward/back buttons work normally
 
 ## Basic Usage
 
-Wrap the `o-app` component with the official `o-router` component to implement a single-page application.
+Use the official `o-router` component to wrap the `o-app` component to achieve a single-page application.
 
 ```html
 <!doctype html>
@@ -30,7 +30,7 @@ Wrap the `o-app` component with the official `o-router` component to implement a
 
 ## fix-body attribute
 
-After adding the `fix-body` attribute, `o-router` will automatically reset the styles of `html` and `body`, removing the default margin and padding.
+After adding the `fix-body` attribute, `o-router` will automatically reset the styles of `html` and `body`, eliminating the default margin and padding.
 
 ```html
 <o-router fix-body>
@@ -38,8 +38,8 @@ After adding the `fix-body` attribute, `o-router` will automatically reset the s
 </o-router>
 ```
 
-This is particularly useful in the following scenarios:- `o-app` needs to fill the viewport completely  
-- When the app is the only content of the page
+This is particularly useful in the following scenarios:- Need `o-app` to completely fill the viewport
+- When the app is the only content on the page
 
 ## Example
 
@@ -53,7 +53,7 @@ This is particularly useful in the following scenarios:- `o-app` needs to fill t
     </template>
   </code>
   <code path="app-config.js">
-    // Application home page URL
+    // App home page address
     export const home = "./home.html";
     // Page transition animation configuration
     export const pageAnime = {
@@ -148,21 +148,21 @@ This is particularly useful in the following scenarios:- `o-app` needs to fill t
 
 ## How It Works
 
-Single-page application implemented using browser-based Hash mode:
+Single-Page Application Implementation Based on Browser Hash Mode:
 
-1. When the page switches inside the app, `o-router` automatically updates the hash in the address bar (e.g., `#/about.html`).
-2. When users refresh the page or visit via URL, `o-router` reads the hash and loads the corresponding page.
-3. The browser’s forward/back buttons trigger hash changes, thereby controlling in-app navigation.
+1. When a page switch occurs within the application, `o-router` automatically updates the hash value in the address bar (e.g., `#/about.html`)
+2. When the user refreshes the page or accesses it via a URL, `o-router` reads the hash value and loads the corresponding page
+3. The browser's forward/back buttons trigger hash changes, thereby controlling the application's page navigation
 
-## URL Change Examples
+## URL Change Example
 
-Assume the application has two pages, `home.html` and `about.html`.
+Assuming the app has two pages `home.html` and `about.html`:
 
 | User Action | Address Bar Change |
-|---|---|
+|---------|-----------|
 | Open App | `index.html` → `index.html#/home.html` |
-| Navigate to About Page | `index.html#/home.html` → `index.html#/about.html` |
+| Navigate to About | `index.html#/home.html` → `index.html#/about.html` |
 | Click Back | `index.html#/about.html` → `index.html#/home.html` |
-| Refresh Page | Keep current hash unchanged |## Usage Restrictions
+| Refresh Page | Keep current hash unchanged |## Usage Limitations
 
-- A single-page application can only work with **one** `o-app` component.
+- A single-page application can only be used with **one** `o-app` component

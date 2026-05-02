@@ -1,22 +1,22 @@
-# Aplicación de página única
+# Aplicación de una sola página
 
-Una aplicación de una sola página vincula el componente `o-app` con la barra de direcciones del navegador, manteniendo sincronizada la URL de la página con la ruta de la página dentro de la aplicación. Tras habilitar la aplicación de una sola página:
+Una aplicación de una sola página vincula el componente `o-app` con la barra de direcciones del navegador, manteniendo sincronizada la URL de la página con la ruta de las páginas dentro de la aplicación. Tras habilitar la aplicación de una sola página:
 
-- Actualizar la página web puede mantener el estado actual de la ruta
+- Refrescar la página web puede mantener el estado actual de la ruta
 - Copiar la URL de la barra de direcciones y abrirla en otro navegador o pestaña también puede restaurar el estado de la aplicación
-- Los botones de avance/retroceso del navegador funcionan correctamente
+- Los botones de avanzar/retroceder del navegador funcionan con normalidad
 
 ## Uso básico
 
-Envuelve el componente `o-app` con el componente oficial `o-router` para implementar una aplicación de una sola página.
+Envuelve el componente `o-app` con el componente oficial `o-router` para lograr una aplicación de página única.
 
 ```html
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>prueba de enrutador</title>
+    <title>prueba de router</title>
     <script src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/dist/ofa.mjs" type="module"></script>
   </head>
   <body>
@@ -28,9 +28,9 @@ Envuelve el componente `o-app` con el componente oficial `o-router` para impleme
 </html>
 ```
 
-## atributo fix-body
+## Atributo fix-body
 
-Después de agregar el atributo `fix-body`, `o-router` restablecerá automáticamente los estilos de `html` y `body`, eliminando los márgenes y rellenos predeterminados.
+Después de agregar el atributo `fix-body`, `o-router` restablecerá automáticamente los estilos de `html` y `body`, eliminando el margin y padding predeterminados.
 
 ```html
 <o-router fix-body>
@@ -43,7 +43,7 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
 
 ## Ejemplo
 
-<o-playground name="Ejemplo de Aplicación de Página Única" style="--editor-height: 500px">
+<o-playground name="Ejemplo de aplicación de una sola página" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="https://cdn.jsdelivr.net/gh/ofajs/ofa.js/libs/router/dist/router.min.mjs"></l-m>
@@ -53,9 +53,9 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
     </template>
   </code>
   <code path="app-config.js">
-    // Dirección de la página de inicio de la aplicación
+    // dirección de la página de inicio de la aplicación
     export const home = "./home.html";
-    // Configuración de animación de cambio de página
+    // configuración de animación de cambio de página
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -103,15 +103,15 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
         }
       </style>
       <p>{{val}}</p>
-      <a href="./about.html" olink>Ir a Acerca de</a>
+      <a href="./about.html" olink>Go to About</a>
       <br>
       <br>
-      <button on:click="gotoAbout">Botón Ir a Acerca de</button>
+      <button on:click="gotoAbout">Go to About Button</button>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Hola dea.js Demo de Aplicación",
+              val: "Hello ofa.js App Demo",
             },
             proto:{
                 gotoAbout(){
@@ -131,13 +131,13 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
           padding: 10px;
         }
       </style>
-      <div style="padding: 8px;"> <button on:click="back()">Volver</button> </div>
-      <p> Acerca de <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
+      <div style="padding: 8px;"> <button on:click="back()">Back</button> </div>
+      <p> About <a href="https://ofajs.com" target="_blank">ofa.js</a></p>
       <script>
         export default async () => {
           return {
             data: {
-              val: "Hola dea.js Demo de Aplicación",
+              val: "Hello ofa.js App Demo",
             },
           };
         };
@@ -146,23 +146,23 @@ Esto es especialmente útil en los siguientes escenarios:- Se requiere que `o-ap
   </code>
 </o-playground>
 
-## Cómo funciona
+## Principio de funcionamiento
 
 Aplicación de una sola página implementada con el modo Hash del navegador:
 
-1. Cuando se produce un cambio de página dentro de la aplicación, `o-router` actualiza automáticamente el valor hash en la barra de direcciones (por ejemplo, `#/about.html`)
-2. Cuando el usuario actualiza la página o accede a través de una URL, `o-router` lee el valor hash y carga la página correspondiente
-3. Los botones de avance/retroceso del navegador activan cambios en el hash, controlando así la navegación de páginas de la aplicación
+1. Cuando se produce un cambio de página dentro de la aplicación, `o-router` actualiza automáticamente el valor hash en la barra de direcciones (por ejemplo, `#/about.html`).
+2. Cuando el usuario actualiza la página o accede a través de una URL, `o-router` lee el valor hash y carga la página correspondiente.
+3. Los botones de avance/retroceso del navegador activan cambios en el hash, controlando así la navegación de páginas de la aplicación.
 
 ## Ejemplo de cambio de URL
 
 Supongamos que la aplicación tiene dos páginas `home.html` y `about.html`:
 
-| Acción del usuario | Cambio en la barra de direcciones |
+| Operación del usuario | Cambio en la barra de direcciones |
 |---------|-----------|
 | Abrir la aplicación | `index.html` → `index.html#/home.html` |
 | Saltar a la página Acerca de | `index.html#/home.html` → `index.html#/about.html` |
 | Hacer clic en Atrás | `index.html#/about.html` → `index.html#/home.html` |
-| Actualizar la página | Mantiene el hash actual sin cambios |## Limitaciones de uso
+| Actualizar la página | Mantener el hash actual sin cambios |## Limitaciones de uso
 
-- Las aplicaciones de página única solo pueden funcionar con **un** componente `o-app`
+- Una aplicación de una sola página solo puede usarse con **un** componente `o-app`

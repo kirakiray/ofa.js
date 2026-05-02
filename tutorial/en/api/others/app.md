@@ -1,19 +1,19 @@
-# o-app Component
+# o-app component
 
-`o-app` is one of the core components in ofa.js, used to configure and manage the entire application. Here are some key properties and methods of app:
+`o-app` is one of the core components in ofa.js, used to configure and manage the entire application. Below are some key properties and methods of the app:
 
 ## src
 
-The "src" attribute is used to specify the specific address of the application parameter configuration module.
+The `src` attribute is used to specify the exact address of the application parameter configuration module.
 
 ```javascript
-const app = document.querySelector("o-app");
+const app = $("o-app");
 console.log(app.src);
 ```
 
 ## current
 
-The `current` property is used to obtain the page instance currently being displayed. It lets you access and manipulate the page that is on screen, such as updating its content or performing specific actions.
+`current` property is used to obtain the currently displayed page instance. This can help you access and manipulate the page that is currently being displayed, for example, to update its content or perform specific operations.
 
 ```javascript
 const currentPage = app.current;
@@ -21,7 +21,7 @@ const currentPage = app.current;
 
 ## goto
 
-The `goto` method is used to navigate to a specified page. You pass the address of the target page, and the app will load and display it. This is a key method for application navigation.
+`goto` method is used to navigate to a specified page. You can pass the address of the target page, and the app will load and display that page. This is an important method for app navigation.
 
 ```javascript
 app.goto("/page2.html");
@@ -29,7 +29,7 @@ app.goto("/page2.html");
 
 ## replace
 
-The `replace` method is similar to `goto`, but it is used to replace the current page instead of adding a new page to the stack. This can be used to implement page replacement rather than stack navigation.
+`replace` is similar to the `goto` method, but it is used to replace the current page instead of adding a new page to the stack. This can be used to implement page replacement instead of stack navigation.
 
 ```javascript
 app.replace("/new-page.html");
@@ -37,7 +37,7 @@ app.replace("/new-page.html");
 
 ## back
 
-The `back` method is used to return to the previous page, implementing the backward operation of page navigation. This navigates the user back to the previous page.
+`back` method is used to return to the previous page, implementing the backward operation of page navigation. This will navigate the user back to the previous page.
 
 ```javascript
 app.back();
@@ -45,7 +45,7 @@ app.back();
 
 ## routers
 
-The `routers` property contains the application's routing configuration. It is a critical property that defines the routing rules and mappings for each page in the application. The routing configuration determines navigation between pages and how URLs are handled.
+`routers` attribute contains the routing configuration information of the application. This is an important attribute that defines the routing rules and mappings for each page in the application. The routing configuration determines the navigation between pages and how URLs are handled.
 
 ```javascript
 const routeConfig = app.routers;

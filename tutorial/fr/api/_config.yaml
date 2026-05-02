@@ -1,6 +1,6 @@
 - name: Référence API
   url: ./api.html
-- name: Lié aux instances
+- name: Relatif aux instances
   content:
    - name: $(selector)
      url: ./instance/dollar.md
@@ -28,7 +28,7 @@
      url: ./instance/ele.md
    - name: root
      url: ./instance/root.md
-   - name: Éléments enfants
+   - name: Enfant
      url: ./instance/children.md
    - name: host
      url: ./instance/host.md
@@ -36,7 +36,7 @@
      url: ./instance/app.md
 - name: Opérations sur les nœuds
   content:
-   - name: Ajouter ou supprimer des éléments enfants
+   - name: Ajouter ou supprimer des enfants
      url: ./operation/array-like.md
    - name: before
      url: ./operation/before.md
@@ -96,5 +96,5 @@
      url: ./others/extend.md
    - name: version
      url: ./others/version.md
-   - name: Caractéristiques des données d’instance
+   - name: Caractéristiques des données d'instance
      url: ./others/stanz.md

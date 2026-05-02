@@ -1,14 +1,14 @@
 - name: Introducción
   url: ./introduction.md
-- name: Comenzar a usar
+- name: Comenzar
   content:
-    - name: Referencia de scripts
+    - name: Referencia de script
       url: ./script-reference.md
     - name: Crear la primera aplicación
       url: ./create-first-app.md
 - name: Inicio rápido
   url: ./quick-start.md
-- name: Sintaxis de plantillas
+- name: Sintaxis de plantilla
   content:
     - name: Renderizado de contenido
       url: ./content-rendering.md
@@ -32,31 +32,31 @@
       url: ./lifecycle.md
 - name: Componentes
   content:
-    - name: Crear componente
+    - name: Crear componentes
       url: ./create-component.md
-    - name: Pasar atributos característicos
+    - name: Pasar atributos heredados
       url: ./inherit-attributes.md
     - name: Slots
       url: ./slots.md
-    - name: Comprender el enlace de propiedades profundo
+    - name: Enlace profundo de propiedades
       url: ./deep-property-binding.md
     - name: Eventos personalizados
       url: ./custom-events.md
-- name: Aplicación y escalado
+- name: Aplicaciones y escalabilidad
   content:
-    - name: Micro-aplicación
+    - name: Micro aplicaciones
       url: ./micro-app.md
-    - name: Configuración de aplicación y funciones relacionadas
+    - name: Configuración de la aplicación y funciones relacionadas
       url: ./app-configuration.md
-    - name: Aplicación de página única
+    - name: Aplicaciones de una sola página
       url: ./routes.md
-    - name: Páginas/rutas anidadas
+    - name: Páginas/Rutas anidadas
       url: ./nested-routes.md
     - name: SSR
       url: ./ssr.md
 - name: Gestión de estado
   content:
-    - name: Qué es la gestión de estado
+    - name: ¿Qué es la gestión de estado?
       url: ./state-management.md
     - name: Estado de contexto
       url: ./context-state.md
@@ -68,7 +68,7 @@
   content:
     - name: Inyectar estilos del host
       url: ./inject-host-style.md
-    - name: Componente no explícito
+    - name: Componentes no explícitos
       url: ./non-explicit-component.md
     - name: Componente replace-temp
       url: ./replace-template.md

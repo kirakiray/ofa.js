@@ -1,17 +1,17 @@
 # Erste Anwendung erstellen
 
-Wenn du keine umständlichen Schritte durchlaufen möchtest und direkt mit ofa.js ein gesamtes Projekt entwickeln möchtest, kannst du das von ofa.js offiziell bereitgestellte Online-Build- und Vorschau-Tool verwenden, um deine erste lokale Anwendung mit nur einem Klick direkt im Browser zu erstellen.
+Wenn Sie sich andere komplizierte Schritte ersparen und direkt ofa.js für das gesamte Projekt nutzen möchten, können Sie mit dem offiziellen Online-Build- und Vorschau-Tool von ofa.js im Browser mit einem Klick Ihre erste lokale Anwendung erstellen.
 
-Dieses Tool wird auf einem statischen Server gehostet, alle Operationen werden lokal im Browser durchgeführt und erfordern keine Verbindung zu einem dynamischen Server. Bitte verwenden Sie es beruhigt.
+Dieses Tool wird auf einem statischen Server gehostet. Alle Vorgänge werden lokal im Browser ausgeführt, ohne dass eine Verbindung zu einem dynamischen Server erforderlich ist. Bitte verwenden Sie es beruhigt.
 
 ## Programm starten
 
-Klicke auf [OFA Studio](https://core.noneos.com?redirect=studio), um das ofa.js-Build-Tool zu öffnen. Das Tool greift direkt auf das lokale Dateisystem des Browsers zu, keine Installation oder Konfiguration erforderlich. Gehe wie folgt vor:
+Klicken Sie auf [OFA Studio](https://core.noneos.com?redirect=studio), um das ofa.js-Build-Tool zu öffnen. Dieses Tool verwendet direkt das lokale Dateisystem des Browsers und erfordert keine Installation oder Konfiguration. Gehen Sie wie folgt vor:
 
 1. Besuchen Sie die Website und warten Sie, bis das Programm geladen ist
 2. Klicken Sie auf die Schaltfläche "Neues Projekt erstellen"
 3. Wählen Sie den Typ "ofa.js App", geben Sie den Projektnamen ein und wählen Sie dann das lokale Verzeichnis
-4. Klicken Sie in dem daraufhin erscheinenden Dialogfeld zur Berechtigungsbestätigung auf alle Optionen "Zulassen" und dann auf "Erstellung bestätigen"
-5. Warten Sie einige Sekunden, danach wird das Projekt im ausgewählten Verzeichnis initialisiert sein
+4. Klicken Sie im angezeigten Berechtigungsbestätigungsdialog auf "Zulassen", und klicken Sie dann auf "Erstellung bestätigen"
+5. Warten Sie einige Sekunden, das Projekt wird im ausgewählten Verzeichnis initialisiert
 
-Nachdem das Projekt initialisiert wurde, können Sie dieses Verzeichnis mit [VSCode](https://code.visualstudio.com/) und anderen Editoren öffnen und mit dem Schreiben Ihres Anwendungscodes beginnen.
+Nach Abschluss der Projektinitialisierung können Sie das Verzeichnis mit einem Editor wie [VSCode](https://code.visualstudio.com/) öffnen und mit dem Schreiben des Anwendungscodes beginnen.

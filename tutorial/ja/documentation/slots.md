@@ -1,10 +1,10 @@
 # スロット
 
-スロットは、コンポーネント内で外部コンテンツを受け取るためのプレースホルダーです。スロットを使用することで、再利用可能なコンポーネントを作成しながら、コンポーネントの利用者がコンポーネント内部のコンテンツをカスタマイズできるようになります。
+スロットは、コンポーネント内で外部からのコンテンツを受け取るためのプレースホルダです。スロットを使用することで、再利用可能なコンポーネントを作成しつつ、コンポーネントを使用する人がその内部のコンテンツを自由にカスタマイズできるようになります。
 
 ## デフォルトスロット
 
-<o-playground name="デフォルトスロット例" style="--editor-height: 500px">
+<o-playground name="默认插槽示例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -39,17 +39,17 @@
 
 ### スロットのデフォルトコンテンツ
 
-親コンポーネントがスロットのコンテンツを提供していない場合、`<slot></slot>` 内部の要素はデフォルトのコンテンツとして表示されます。
+親コンポーネントがスロットコンテンツを提供していない場合、`<slot></slot>`内部の要素がデフォルトコンテンツとして表示されます。
 
-<o-playground name="スロットデフォルト内容の例" style="--editor-height: 500px">
+<o-playground name="スロットデフォルトコンテンツ例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
-      <h3>スロット内容あり：</h3>
+      <h3>スロットコンテンツあり：</h3>
       <demo-comp>
-        <div>これはカスタム内容です</div>
+        <div>これはカスタムコンテンツです</div>
       </demo-comp>
-      <h3>スロット内容なし（デフォルト内容を表示）：</h3>
+      <h3>スロットコンテンツなし（デフォルトコンテンツを表示）：</h3>
       <demo-comp></demo-comp>
     </template>
   </code>
@@ -62,10 +62,10 @@
           padding: 8px;
           margin-bottom: 10px;
         }
-      </style>スロット内容：
+      </style>スロットコンテンツ：
       <span style="color: red;">
         <slot>
-          <div>これはデフォルト内容です</div>
+          <div>これはデフォルトコンテンツです</div>
         </slot>
       </span>
       <script>
@@ -81,9 +81,9 @@
 
 ## 名前付きスロット
 
-コンポーネントで複数のスロットが必要な場合、名前付きスロットを使用してスロットを区別することができます。`<slot name="xxx">` で名前付きスロットを定義し、使用時には `slot="xxx"` 属性でコンテンツをどのスロットに入れるかを指定します。
+コンポーネントに複数のスロット位置が必要な場合、名前付きスロットを使って異なるスロットを区別できます。`<slot name="xxx">` で名前付きスロットを定義し、使用時には `slot="xxx"` 属性でどのスロットにコンテンツを入れるかを指定します。
 
-<o-playground name="名前付きスロットサンプル" style="--editor-height: 500px">
+<o-playground name="名前付きスロットの例" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./demo-comp.html"></l-m>
@@ -121,11 +121,11 @@
   </code>
 </o-playground>
 
-## 多階層スロットの受け渡し
+## 多層スロットの受け渡し
 
-スロットの内容は複数のコンポーネント層をまたいで渡すことができます。親コンポーネントが子コンポーネントにスロットの内容を渡した後、子コンポーネントはそのスロットの内容をさらに自分の子コンポーネントに渡し続けることができ、スロットの多層的な透過的な受け渡しを実現します。
+スロットの内容は、複数層のコンポーネントを越えて渡すことができます。親コンポーネントが子コンポーネントにスロットの内容を渡した後、子コンポーネントはさらにそのスロットの内容を自身の子コンポーネントに渡すことができ、スロットの多層透過を実現します。
 
-<o-playground name="多階層スロット伝達例" style="--editor-height: 500px">
+<o-playground name="多層スロット渡しサンプル" style="--editor-height: 500px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./outer-comp.html"></l-m>
@@ -144,7 +144,7 @@
           margin-bottom: 10px;
         }
       </style>
-      <h3>外層コンポーネント</h3>
+      <h3>外側コンポーネント</h3>
       <l-m src="./inner-comp.html"></l-m>
       <inner-comp>
         <div style="color: inherit;">
@@ -169,7 +169,7 @@
           padding: 8px;
         }
       </style>
-      <h4>内層コンポーネント</h4>
+      <h4>内側コンポーネント</h4>
       <slot></slot>
       <script>
         export default async ({ load }) => {
@@ -182,6 +182,6 @@
   </code>
 </o-playground>
 
-上記の例では：- 最上位の親コンポーネントが `slot="header"` の内容を定義しています
-- 外側のコンポーネント（outer-comp）はこのスロット内容を受け取り、それを内側のコンポーネント（inner-comp）に引き継ぎます
-- 内側のコンポーネントが最終的に最上位からのスロット内容をレンダリングします
+上記の例では：- 最外側の親コンポーネントが `slot="header"` の内容を定義しています
+- 外側のコンポーネント（outer-comp）がこのスロットの内容を受け取り、それを内側のコンポーネント（inner-comp）に渡し続けます
+- 内側のコンポーネントは最終的に、最外側からのスロット内容をレンダリングします

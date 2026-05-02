@@ -1,4 +1,4 @@
-- name: Referencia de API
+- name: Referencia de la API
   url: ./api.html
 - name: Relacionado con instancias
   content:
@@ -34,7 +34,7 @@
      url: ./instance/host.md
    - name: app
      url: ./instance/app.md
-- name: Operaciones de nodos
+- name: Operaciones de nodo
   content:
    - name: Agregar o eliminar elementos hijos
      url: ./operation/array-like.md

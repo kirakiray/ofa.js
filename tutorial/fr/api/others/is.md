@@ -2,9 +2,9 @@
 
 
 
-La méthode `is` sert à vérifier si un élément correspond à une expression.
+La méthode `is` est utilisée pour vérifier si un élément correspond à une expression.
 
-<o-playground name="is - Détecter les éléments" style="--editor-height: 400px">
+<o-playground name="is - Détection des éléments" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <ul>

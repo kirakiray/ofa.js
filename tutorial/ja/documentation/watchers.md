@@ -1,12 +1,12 @@
 # リスナー
 
-リスナー（Watcher）は、ofa.jsにおいてデータの変化を監視し、対応するロジックを実行するための機能です。リアクティブデータが変化すると、リスナーは自動的にコールバック関数をトリガーし、データ変換、副作用操作、非同期処理などのタスクを実行することができます。
+ウォッチャー（Watcher）は、ofa.jsにおいてデータの変化を監視し、対応するロジックを実行する機能です。リアクティブデータが変化すると、ウォッチャーは自動的にコールバック関数をトリガーし、データ変換、副作用の操作、非同期処理などのタスクを実行できます。
 
 ## 基本的な使い方
 
-リスナーはコンポーネントの `watch` オブジェクト内で定義され、キー名は監視するデータプロパティ名に対応し、値はデータが変化した際に実行されるコールバック関数です。
+ウォッチャーはコンポーネントの `watch` オブジェクト内に定義され、キー名は監視するデータプロパティ名に対応し、値はデータが変化したときに実行されるコールバック関数です。
 
-<o-playground name="watchers - 基本用法" style="--editor-height: 700px">
+<o-playground name="watchers - 基本的な使い方" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -45,12 +45,12 @@
 
 ## コールバック関数のパラメータ
 
-リスナーのコールバック関数は2つの引数を受け取ります：- `newValue`：変更後の新しい値
+リスナーコールバック関数は2つのパラメーターを受け取ります：- `newValue`：変化後の新しい値
 - `{watchers}`：現在のコンポーネントのすべてのウォッチャーオブジェクト
 
-データ変更後、まずデバウンス処理が行われ、その後`watch`内のコールバックが実行されます。`watchers`パラメータは本次デバウンス周期内にマージされたすべての変更セットです。
+データ変更後は、まずデバウンス処理が実行され、その後 `watch` 内のコールバックが実行されます。`watchers` パラメータは、今回のデバウンス周期内でマージされたすべての変更の集合です。
 
-`watch` の中の関数はコンポーネントの初期化完了後に即座に呼び出され、データ監視を確立するために使われる。`watchers` に長さがあるかどうかで初回呼び出しかどうかを判別できる。
+`watch` 内の関数はコンポーネントの初期化完了直後に呼び出され、データ監視を確立するために使用されます。`watchers` の長さがあるかどうかを判断することで、初回呼び出しかどうかを区別できます。
 
 <o-playground name="watchers - コールバックパラメータ" style="--editor-height: 700px">
   <code>
@@ -78,7 +78,7 @@
         export default async () => {
           return {
             data: {
-              name: "張三",
+              name: "张三",
               age: 25,
               log: "",
             },
@@ -105,9 +105,9 @@
   </code>
 </o-playground>
 
-## 深い監視
+## 深層リスニング
 
-オブジェクトまたは配列型のネストされたデータに対しては、watch内で自動的に深い監視が行われます。
+オブジェクトや配列型のネストされたデータに対して、watch 内では自動的に深い監視が行われます。
 
 <o-playground name="watchers - 深度監視" style="--editor-height: 700px">
   <code>
@@ -135,10 +135,10 @@
         <p>趣味: {{user.hobbies.join(', ')}}</p>
       </div>
       <div>
-        <button on:click="updateName">名前の変更</button>
-        <button on:click="updateAge">年齢の変更</button>
-        <button on:click="addHobby">趣味の追加</button>
-        <button on:click="updateHobby">趣味の変更</button>
+        <button on:click="updateName">名前を変更</button>
+        <button on:click="updateAge">年齢を変更</button>
+        <button on:click="addHobby">趣味を追加</button>
+        <button on:click="updateHobby">趣味を変更</button>
       </div>
       <div class="info" :html="log"></div>
       <script>
@@ -146,7 +146,7 @@
           return {
             data: {
               user: {
-                name: "張三",
+                name: "张三",
                 age: 25,
                 hobbies: ["バスケットボール", "サッカー"],
               },
@@ -157,10 +157,10 @@
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // そのうちの一つを取得
+                const watcher = watchers[0]; // いずれかを取得
                 console.log("変更: ",watcher.target);
                 if(watcher.type === 'set'){
-                  this.log += `値変更-> プロパティ "${watcher.name}" が "${watcher.oldValue}" から "${watcher.value}" に変更されました <br>`;
+                  this.log += `値を変更-> プロパティ "${watcher.name}" が "${watcher.oldValue}" から "${watcher.value}" に変わりました <br>`;
                 }else{
                   this.log += `メソッド実行${watcher.type}-> 関数名 "${watcher.name}"  引数 "${watcher.args}" <br>`;
                 }
@@ -186,11 +186,12 @@
     </template>
   </code>
 </o-playground>
-## 複数のデータソースをリッスンする
 
-複数のデータの変化を同時に監視し、コールバック関数内でそれらの変化に応じた処理を実行できます。
+## 複数のデータソースを監視する
 
-<o-playground name="watchers - マルチデータソース" style="--editor-height: 600px">
+複数のデータの変化を同時に監視し、コールバック関数内でそれらの変化に応じて適切なロジックを実行することができます。
+
+<o-playground name="watchers - 多データソース" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -253,7 +254,7 @@
           font-size: 12px;
         }
       </style>
-      <input sync:value="username" placeholder="ユーザー名（3-10文字）" />
+      <input sync:value="username" placeholder="ユーザー名（3～10文字）" />
       <span class="error">{{usernameError}}</span>
       <input sync:value="email" placeholder="メールアドレス" />
       <span class="error">{{emailError}}</span>
@@ -269,7 +270,7 @@
             watch: {
               username(val) {
                 if (val.length < 3 || val.length > 10) {
-                  this.usernameError = "ユーザー名は3-10文字である必要があります";
+                  this.usernameError = "ユーザー名は3～10文字である必要があります";
                 } else {
                   this.usernameError = "";
                 }
@@ -292,7 +293,7 @@
 
 ### 2. テーマの設定
 
-<o-playground name="watchers - テーマ設定" style="--editor-height: 800px">
+<o-playground name="watchers - 設定テーマ" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -349,5 +350,5 @@
 
 ## 注意事項
 
-- **監視対象データの変更を避ける**：ウォッチャーのコールバック内で監視対象のデータを変更すると、無限ループが発生する可能性があります。変更が必要な場合は、適切な条件分岐を設けてください。
-- **算出プロパティの使用を検討**：複数のデータの変化に基づいて新しい値を計算する必要がある場合は、ウォッチャーではなく[算出プロパティ](./computed-properties.md)の使用を推奨します。
+- **監視対象データの変更を避ける**：ウォッチャーのコールバック内で監視対象データを変更すると、無限ループが発生する可能性があります。変更が必要な場合は、適切な条件判断を必ず行ってください。
+- **代わりに算出プロパティを使用する**：複数のデータの変化に基づいて新しい値を計算する必要がある場合は、ウォッチャーではなく[算出プロパティ](./computed-properties.md)を使用することを推奨します。

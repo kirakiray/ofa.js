@@ -1,8 +1,8 @@
 # next
 
-Using the `next` property, you can obtain the instance of the next adjacent element.
+Using the `next` attribute, you can obtain the next adjacent element instance.
 
-<o-playground name="next - Next Element" style="--editor-height: 320px">
+<o-playground name="next - next element" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

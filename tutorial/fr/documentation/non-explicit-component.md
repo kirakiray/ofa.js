@@ -1,13 +1,13 @@
-# Composant implicite
+# Composants non explicites
 
 ofa.js intègre deux types de composants non explicites :
 
 * Composants de rendu conditionnel : `x-if`, `x-else-if`, `x-else`
 * Composants de remplissage : `x-fill`
 
-Ces deux composants ont des fonctionnalités identiques à celles des composants `o-if` et `o-fill`, mais ils ne seront pas réellement rendus dans le DOM ; à la place, leurs éléments internes seront directement rendus dans la zone correspondante.
+La fonctionnalité de ces deux composants est identique à celle des composants `o-if` et `o-fill`, mais ils ne sont pas réellement rendus dans le DOM ; ils transmettent leurs éléments internes directement à la zone correspondante.
 
-Par exemple :
+Par exemple：
 
 ```html
 <style>
@@ -17,11 +17,11 @@ Par exemple :
 </style>
 <div class="container">
     <o-if :value="true">
-        <!-- Le style n’est pas rouge, car le composant o-if existe dans le DOM -->
+        <!-- Le style n'est pas rouge, car le composant o-if existe lui-même dans le DOM -->
         <div class="item">1</div>
     </o-if>
     <x-if :value="true">
-        <!-- Le style est rouge, car le composant x-if n’est pas rendu dans le DOM -->
+        <!-- Le style est rouge, car le composant x-if n'est pas rendu dans le DOM -->
         <div class="item">2</div>
     </x-if>
 </div>
@@ -37,21 +37,21 @@ Par exemple :
             padding: 10px;
         }
         .container > .item {
-            /* sélectionne les éléments .item du premier niveau en rouge */
+            /* sélectionne les éléments .item de premier niveau en rouge */
             color:red;
         }
-        /* il faut sélectionner les éléments .item à l’intérieur du composant o-if */
+        /* nécessite de sélectionner les éléments .item à l’intérieur du composant o-if */
         /* .container > o-if > .item {
             color:green;
         } */
         </style>
         <div class="container">
             <o-if :value="true">
-                <!-- le style n’est pas rouge car le composant o-if existe dans le DOM -->
+                <!-- le style n’est pas rouge, car le composant o-if existe dans le DOM -->
                 <div class="item">ne s’affichera pas en rouge</div>
             </o-if>
             <x-if :value="true">
-                <!-- le style est rouge car le composant x-if n’est pas rendu dans le DOM -->
+                <!-- le style est rouge, car le composant x-if n’est pas rendu dans le DOM -->
                 <div class="item">s’affiche en rouge</div>
             </x-if>
         </div>
@@ -66,14 +66,14 @@ Par exemple :
   </code>
 </o-playground>
 
-## x-if Composant de rendu conditionnel
+## Composant de rendu conditionnel x-if
 
-`x-if` a exactement la même fonction que [o-if](./conditional-rendering.md), il est utilisé pour décider si le contenu doit être rendu en fonction de la valeur de vérité d'une expression conditionnelle. La différence est que `x-if` lui-même n'existe pas en tant qu'élément DOM, son contenu interne est directement rendu dans le conteneur parent.
+`x-if` a exactement la même fonctionnalité que [o-if](./conditional-rendering.md) ; il sert à décider si le contenu doit être rendu ou non selon la valeur vraie ou fausse de l’expression conditionnelle. La différence est que `x-if` n’existe pas lui-même comme élément du DOM, son contenu interne est directement rendu dans le conteneur parent.
 
 ```html
 <div class="container">
     <x-if :value="isLoggedIn">
-        <p>Bienvenue, utilisateur !</p>
+        <p>Bienvenue de retour, utilisateur !</p>
     </x-if>
 </div>
 ```
@@ -94,9 +94,9 @@ Par exemple :
 </div>
 ```
 
-## Composant de remplissage x-fill
+## x-fill composant de remplissage
 
-`x-fill` a exactement la même fonction que [o-fill](./list-rendering.md) : il sert à rendre des données de tableau sous forme de multiples éléments DOM. Comme `x-if`, `x-fill` ne se rend pas lui-même dans le DOM ; son modèle interne est rendu directement dans le conteneur parent.
+`x-fill` a exactement la même fonction que [o-fill](./list-rendering.md) : il sert à rendre des données de tableau sous forme de multiples éléments DOM. Comme `x-if`, `x-fill` ne se rend pas lui-même dans le DOM ; son template interne est rendu directement dans le conteneur parent.
 
 ```html
 <ul>
@@ -106,7 +106,7 @@ Par exemple :
 </ul>
 ```
 
-Exemple d'utilisation de modèles nommés :
+Exemple d'utilisation d'un template nommé :
 
 ```html
 <ul>
@@ -120,18 +120,18 @@ Exemple d'utilisation de modèles nommés :
 </template>
 ```
 
-## Spécifications de performance
+## Description des performances
 
-En plus des différences fonctionnelles, les performances de rendu des composants non explicites sont **bien inférieures** à celles des composants explicites (`o-if`, `o-fill`). En effet, les composants non explicites ne sont pas réellement rendus dans le DOM, nécessitant une logique de rendu simulé supplémentaire pour gérer le positionnement et la mise à jour des éléments internes.
+En plus des différences fonctionnelles, les composants non explicites ont des performances de rendre **nettement inférieures** à celles des composants explicites (`o-if`, `o-fill`). Cela tient au fait que les composants non explicites ne sont pas réellement rendus dans le DOM et nécessitent une logique de rendu simulé supplémentaire pour gérer le positionnement et la mise à jour des éléments internes.
 
-De plus, les composants non explicites peuvent introduire des bugs difficiles à détecter : comme ils ne sont pas réellement insérés dans le DOM, les opérations qui dépendent de la structure du DOM (comme la liaison d'événements, le calcul de styles ou les requêtes de bibliothèques tierces) peuvent échouer ou se comporter de manière anormale.
+De plus, les composants non explicites peuvent provoquer des bugs subtils : comme ils n'entrent pas vraiment dans le DOM, les opérations qui dépendent de la structure DOM (comme la liaison d'événements, le calcul de styles ou les requêtes de bibliothèques tierces) peuvent échouer ou se comporter de manière anormale.
 
-Par conséquent, il est conseillé de **préférer les composants explicites** (`o-if`, `o-else-if`, `o-else`, `o-fill`) et de n'utiliser les composants non explicites que dans des situations spécifiques.
+Par conséquent, il est recommandé d’**utiliser en priorité les composants explicites** (`o-if`, `o-else-if`, `o-else`, `o-fill`) et de n’employer les composants non explicites que dans des cas précis.
 
 ## Scénarios d'utilisation
 
-Bien que les composants implicites aient des performances inférieures, ils peuvent être utilisés dans les scénarios suivants :
+Bien que les composants non explicites aient des performances médiocres, ils peuvent être utilisés dans les scénarios suivants :
 
-1. **Éviter les niveaux DOM supplémentaires** : lorsque vous ne souhaitez pas que les éléments `o-if` ou `o-fill` fassent partie de la structure DOM  
-2. **Héritage des styles** : lorsque vous avez besoin que les éléments internes héritent directement des styles du conteneur parent, sans être influencés par des éléments de composants intermédiaires  
-3. **Limitations des sélecteurs CSS** : lorsque vous devez utiliser des sélecteurs d’enfant direct du parent (comme `.container > .item`) pour contrôler précisément les styles, sans qu’un élément d’emballage supplémentaire ne s’interpose
+1. **Éviter les niveaux DOM supplémentaires** : lorsque vous ne voulez pas que les éléments `o-if` ou `o-fill` fassent partie de la structure DOM
+2. **Héritage des styles** : lorsque vous avez besoin que les éléments internes héritent directement des styles du conteneur parent, sans être affectés par les éléments du composant intermédiaire
+3. **Restrictions des sélecteurs CSS** : lorsque vous devez utiliser le sélecteur enfant direct du parent (par exemple `.container > .item`) pour contrôler précisément le style, mais que vous ne voulez pas d'éléments d'emballage supplémentaires entre eux

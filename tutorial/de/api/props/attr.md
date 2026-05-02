@@ -2,11 +2,11 @@
 
 
 
-Die `attr` Methode wird zum Abrufen oder Festlegen von Attributen eines Elements verwendet.
+Die Methode `attr` wird verwendet, um die Attribute eines Elements abzurufen oder festzulegen.
 
 ## Direkte Verwendung
 
-Sie können direkt die `attr`-Methode verwenden, um Attribute eines Elements abzurufen oder festzulegen.
+Du kannst direkt die `attr`-Methode verwenden, um Attribute eines Elements zu erhalten oder zu setzen.
 
 <o-playground name="attr - Direkte Verwendung" style="--editor-height: 500px">
   <code path="demo.html">
@@ -33,9 +33,9 @@ Sie können direkt die `attr`-Methode verwenden, um Attribute eines Elements abz
   </code>
 </o-playground>
 
-## Verwendung auf Template-Syntax-Weise
+## Verwendung der Vorlagensyntax
 
-Sie können auch die Methode `attr:aaa="bbb"` verwenden, um das **aaa**-Attribut des Zielelements auf den Wert der Komponente **bbb** zu setzen. Diese Methode ist besonders nützlich für das Rendering von Komponenten.
+Du kannst auch die `attr:aaa="bbb"`-Methode verwenden, um das **aaa**-Attribut des Zielelements auf den Wert der Komponente **bbb** zu setzen. Diese Methode ist besonders nützlich für das Rendern von Komponenten.
 
 <o-playground name="attr - Vorlagen-Syntax" style="--editor-height: 600px">
   <code path="demo.html" preview>

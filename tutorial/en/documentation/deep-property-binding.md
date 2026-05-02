@@ -1,12 +1,12 @@
-# Understanding Property Binding
+# Understanding Attribute Binding
 
-In the previous content, we briefly introduced the basic usage of [property binding](./property-binding.md). The earlier example bound the `value` property of a native browser element (`textarea`); this section explores the essence of property binding—it actually binds to the JavaScript property of the instantiated component, not the HTML attribute.
+In the previous content, the basic usage of [property binding](./property-binding.md) was initially introduced. The previous example was used to bind the `value` property of a native browser element (such as `textarea`). This section will delve into the essence of property binding—it is actually binding to the JavaScript properties of a component after instantiation, not to HTML attributes.
 
 ## Component Property Binding Mechanism
 
-In ofa.js, when we use the `:toProp="fromProp"` syntax in a parent component, we are setting a JavaScript property of the child component instance, not an HTML attribute. This is an important distinction from directly setting HTML attributes (such as `attr:toKey="fromKey"`).
+In ofa.js, when we use the `:toProp="fromProp"` syntax in a parent component, we are setting the JavaScript property of the child component instance, not the HTML attribute. This is an important distinction from directly setting HTML attributes (such as `attr:toKey="fromKey"`).
 
-The following example demonstrates how to pass data to a custom component through property binding:
+The following example shows how to pass data to a custom component through property binding：
 
 <o-playground name="Understanding Property Binding" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -62,42 +62,42 @@ The following example demonstrates how to pass data to a custom component throug
   </code>
 </o-playground>
 
-In this example:- The `val` data in the parent component is bound to the `fullName` prop of the child component `<demo-comp>`.
-- The parent's `val` is passed to the child's `fullName` prop using the syntax `:full-name="val"`.
-- After receiving the value, the child component displays it in the template via `{{fullName}}`.
+In this example:- The `val` data in the parent component is bound to the `fullName` prop of the child component `<demo-comp>`
+- The syntax `:full-name="val"` is used to pass the parent component's `val` value to the child component's `fullName` prop
+- After receiving this value, the child component displays it in the template via `{{fullName}}`
 
-## Attribute Binding vs. Feature Attribute Inheritance
+## Attribute Binding vs Feature Property Inheritance
 
-It is worth noting that property binding (`:`) and attribute inheritance (`attr:`) have the following key differences:
+It should be noted that attribute binding (`:`) and characteristic attribute inheritance (`attr:`) have the following key differences:
 
-### Property Binding (`:`)
+### Property Binding (':')
 
-- JavaScript properties bound to component instances
-- Passed data maintains its original type (strings, numbers, booleans, etc.)
-- Can be directly accessed and modified within the component, even without the component internally defining `data` in advance
+- JavaScript properties bound to the component instance
+- The passed data retains its original type (string, number, boolean, etc.)
+- It can be directly accessed and modified within the component, even without predefining `data` inside the component
 
-### Feature Attribute Inheritance (`attr:`)
+### Feature attribute inheritance (`attr:`)
 
-- Setting HTML attributes
+- Set HTML attributes
 - All values are converted to strings
-- Primarily used for passing attributes to underlying DOM elements
+- Mainly used to pass attributes to the underlying DOM elements
 - Requires special handling to parse complex data
-- Must define `attrs` inside the component in advance to receive attribute values
+- Must define `attrs` in advance inside the component to receive attribute values
 
-Syntax comparison:```html
-<!-- Property binding: pass JavaScript values while preserving data types -->
+Grammar Comparison:```html
+<!-- Attribute binding: pass JavaScript values, keep data types -->
 <my-component :data-value="complexObject"></my-component>
 <my-component :count="42"></my-component>
 <my-component :is-active="true"></my-component>
 
 <!-- Attribute inheritance: set HTML attributes, all values become strings -->
 <my-component attr:data-value="simpleString"></my-component>
-<my-component attr:count="42"></my-component>  <!-- actually receives the string "42" -->
+<my-component attr:count="42"></my-component>  <!-- Actual passed string "42" -->
 ```
 
 ## Case Comparison Differences
 
-<o-playground name="Case Comparison Differences" style="--editor-height: 500px">
+<o-playground name="Case Comparison Difference" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="page1.html"></o-page>
@@ -161,17 +161,17 @@ Syntax comparison:```html
   </code>
 </o-playground>
 
-`vone` is a property of the component instance, while `vtwo` is an HTML attribute; the attribute’s value is matched by the `[vtwo]` selector and receives the corresponding styles, whereas `vone`, being a component-instance property, is not matched by the `[vone]` selector.
+Among them, `vone` is a property of the component instance, `vtwo` is an HTML attribute, and the value of the attribute will be selected by the `[vtwo]` selector and have styles applied, while `vone` is a property of the component instance and will not be selected by the `[vone]` selector.
 
 ## Two-way Data Binding
 
-Instantiated components also support two-way data binding using the `sync:toProp="fromProp"` syntax. Two-way binding allows data synchronization between parent and child components—when data changes on either side, the other side updates accordingly.
+The instantiated component also supports two-way data binding, using the `sync:toProp="fromProp"` syntax. Two-way binding allows data synchronization between parent and child components; when the data on either side changes, the other side updates accordingly.
 
-Unlike Angular and Vue, ofa.js natively supports two-way data binding syntax without requiring special configuration or extra operations for components.
+> Unlike Angular and Vue, ofa.js natively supports two-way data binding syntax without requiring any special configuration or additional operations for components.
 
-### Two-Way Binding Example
+### Two-way Binding Example
 
-The example below shows how to set up two-way data binding between a parent and a child component.
+The following example shows how to establish two-way data binding between parent and child components:
 
 <o-playground name="Two-way Binding Example" style="--editor-height: 600px">
   <code path="demo.html" preview unimportant>
@@ -190,9 +190,9 @@ The example below shows how to set up two-way data binding between a parent and 
         }
       </style>
       <h3 style="color:blue;">Value in parent component: {{val}}</h3>
-      <p>Modify parent component's value through input box:</p>
-      <input type="text" sync:value="val" placeholder="Enter text in input box...">
-      <p>Modify parent component's value through child component:</p>
+      <p>Modify the parent component's value via input:</p>
+      <input type="text" sync:value="val" placeholder="Enter text in the input box...">
+      <p>Modify the parent component's value via child component:</p>
       <demo-comp sync:full-name="val"></demo-comp>
       <script>
         export default async () => {
@@ -216,7 +216,7 @@ The example below shows how to set up two-way data binding between a parent and 
         }
       </style>
       <p>Value displayed in child component: {{fullName}}</p>
-      <input type="text" sync:value="fullName" placeholder="Enter in child component's input box...">
+      <input type="text" sync:value="fullName" placeholder="Enter text in the child component input box...">
       <script>
         export default async ({ load }) => {
           return {
@@ -231,19 +231,19 @@ The example below shows how to set up two-way data binding between a parent and 
   </code>
 </o-playground>
 
-In this example:- The parent's `val` and the child's `fullName` are two-way bound via `sync:full-name="val"`
-- When text is entered in the parent's input, the child instantly reflects the new value
-- When text is entered in the child's input, the parent is immediately updated
+In this example:- The `val` of the parent component and the `fullName` of the child component achieve two-way binding through `sync:full-name="val"`
+- When content is entered in the parent component's input box, the child component immediately displays the new value
+- When content is entered in the child component's input box, the parent component also updates the display immediately
 
 ### The Difference Between Two-Way Binding and Regular Property Binding
 
-| Feature | Normal Property Binding (`:`) | Two-way Binding (`sync:`) |
-|---|---|---|
+| Feature | Normal Property Binding (`:`) | Two-Way Binding (`sync:`) |
+|--------|-------------------------------|----------------------------|
 | Data Flow | One-way: Parent → Child | Two-way: Parent ↔ Child |
 | Syntax | `:prop="value"` | `sync:prop="value"` |
 | Child Component Modification | Does not affect parent component | Affects parent component |
-| Use Cases | Parent passes configuration to child | Need to synchronize data between parent and child |### Precautions
+| Suitable Scenarios | Parent passes configuration to child | Need synchronous data between parent and child |### Precautions
 
-1. **Performance considerations**: Two-way binding triggers re-renders on data changes; use sparingly in complex scenarios.  
-2. **Data-flow control**: Excessive two-way binding can make data flow hard to trace; design inter-component communication carefully.  
-3. **Component compatibility**: Not every component suits two-way binding; consider the component’s design intent.
+1. **Performance Consideration**: Two-way binding triggers re-rendering when data changes; use it cautiously in complex scenarios  
+2. **Data Flow Control**: Excessive two-way binding can make data flow hard to track; design inter-component communication wisely  
+3. **Component Compatibility**: Not all components are suited for two-way binding; consider the component’s design purpose

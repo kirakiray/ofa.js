@@ -2,9 +2,9 @@
 
 
 
-요소의 `dataset`을 가져오며, `data` 속성과 네이티브 [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset)과 일치하게 유지합니다.
+요소의 `dataset`을 가져옵니다. `data` 속성과 네이티브 [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset)을 사용하여 일관성을 유지합니다.
 
-<o-playground name="data - 사용 예제" style="--editor-height: 400px">
+<o-playground name="data - 사용 예시" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
       <style>

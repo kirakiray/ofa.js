@@ -2,7 +2,7 @@
 
 
 
-`text`メソッドは、要素のテキストコンテンツを取得または設定するために使用されます。
+`text` メソッドは、要素のテキストコンテンツを取得または設定するために使用されます。
 
 ## 直接使用
 
@@ -11,13 +11,13 @@
 <o-playground name="text - 直接使用" style="--editor-height: 300px">
   <code path="demo.html">
     <template>
-      <div id="target1">ターゲット 1</div>
-      <div id="target2">元のテキスト</div>
+      <div id="target1">target 1</div>
+      <div id="target2">origin text</div>
       <br>
       <div id="logger" style="color:red;"></div>
       <script>
         setTimeout(()=> {
-          \$('#target2').text = `<b style="color:blue;">新しいテキスト</b>`;
+          \$('#target2').text = `<b style="color:blue;">new text</b>`;
           \$("#logger").text = $("#target1").text;
         }, 500);
       </script>
@@ -27,7 +27,7 @@
 
 ## テンプレート構文方式での使用
 
-`:text`属性を使用して、対象要素に対応するテキスト値を設定することもできます。これはコンポーネントのレンダリングにおいて特に役立ちます。
+`:text` 属性を使用して、ターゲット要素に対応するテキスト値を設定することもできます。これはコンポーネントのレンダリングにおいて特に便利です。
 
 <o-playground name="text - テンプレート構文" style="--editor-height: 450px">
   <code path="demo.html" preview>

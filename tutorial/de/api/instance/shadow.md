@@ -2,7 +2,7 @@
 
 
 
-Mit dem `shadow`-Attribut können Sie die Instanz des Schattenwurzelknotens eines Elements abrufen.
+Mit der `shadow`-Eigenschaft können Sie die Instanz des Shadow-Root-Knotens eines Elements abrufen.
 
 <o-playground name="shadow - Schattenknoten" style="--editor-height: 400px">
   <code path="demo.html" preview>
@@ -32,24 +32,24 @@ Mit dem `shadow`-Attribut können Sie die Instanz des Schattenwurzelknotens eine
   </code>
 </o-playground>
 
-Es ist zu beachten, dass innerhalb von Elementen mit Vorlagensyntax direkte Änderungen an Elementen innerhalb des Schattenknotens vermieden werden sollten, um Konsistenz und Wartbarkeit der Operationen sicherzustellen.
+Es ist zu beachten, dass die direkte Modifikation von Elementen innerhalb von Schattenknoten in Elementen mit Vorlagensyntax vermieden werden sollte, um die Konsistenz und Wartbarkeit der Operationen zu gewährleisten.
 
-## Abrufen von Elementinstanzen innerhalb des Schatten-DOM einer Komponente von außen
+## Instanzen von Elementen innerhalb der Schatten-DOM-Komponente von außen abrufen
 
-Sie können auch eine benutzerdefinierte Elementinstanz von extern beziehen und dann über die Eigenschaft `shadow` auf die Elemente innerhalb des Schattenknotens zugreifen, wie folgt:
+Sie können auch eine benutzerdefinierte Elementinstanz von außen abrufen und dann über die `shadow`-Eigenschaft auf Elemente im Schattenknoten zugreifen, wie unten gezeigt:
 
 ```javascript
 $("test-shadow").shadow.$('selector').method(xxx);
 ```
 
-<o-playground name="Schatten - Externer Zugriff" style="--editor-height: 400px">
+<o-playground name="shadow - externer Zugriff" style="--editor-height: 400px">
   <code path="demo.html" preview active>
     <template>
       <l-m src="./test-shadow.html"></l-m>
       <test-shadow></test-shadow>
       <script>
         setTimeout(()=>{
-          $("test-shadow").shadow.$("#target").text = 'Ziel von außen ändern - ' + new Date();
+          $("test-shadow").shadow.$("#target").text = 'change target from outside - ' + new Date();
         },1000);
       </script>
     </template>
@@ -57,16 +57,16 @@ $("test-shadow").shadow.$('selector').method(xxx);
   <code path="test-shadow.html">
     <template component>
       <ul>
-        <li>Element 1</li>
-        <li id="target">Element 2</li>
-        <li>Element 3</li>
+        <li>item 1</li>
+        <li id="target">item 2</li>
+        <li>item 3</li>
       </ul>
       <script>
         export default {
           tag:"test-shadow",
           ready(){
             setTimeout(()=>{
-              this.shadow.$("#target").text = 'Ziel ändern';
+              this.shadow.$("#target").text = 'change target';
             },500);
           }
         };

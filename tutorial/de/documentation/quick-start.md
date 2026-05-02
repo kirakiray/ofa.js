@@ -1,15 +1,15 @@
 # Schnellstart
 
-In diesem Abschnitt wird erklärt, wie Sie schnell mit ofa.js beginnen können. In den folgenden Tutorials werden wir die Erstellung der index.html-Einstiegsdatei überspringen und nur den Code der Seitenmoduldateien zeigen. Sie können direkt auf der Grundlage der Vorlage entwickeln.
+Dieser Abschnitt zeigt Ihnen, wie Sie schnell mit ofa.js beginnen können. In den folgenden Tutorials werden wir den Schritt der Erstellung der index.html-Einstiegsdatei auslassen und nur den Code der Seitenmoduldateien zeigen. Sie können direkt auf Basis der Vorlage entwickeln.
 
-## Vorbereitung der Basisdateien
+## Vorbereitung der Basisdokumente
 
-Um ofa.js schnell einzusetzen, erstellst du einfach ein **Seitenmodul** und kombinierst es mit einer Einstiegs-HTML-Datei. Die erforderlichen Kern-Dateien sind:
+Um schnell mit ofa.js zu beginnen, erstellen Sie einfach ein **Seitenmodul** und kombinieren Sie es mit einer Einstiegs-HTML. Die benötigten Kern-Dateien sind wie folgt:
 
-- `index.html`: Die Einstiegsdatei der Anwendung, die für das Laden des ofa.js-Frameworks und das Einbinden von Seitenmodulen verantwortlich ist
-- `demo-page.html`: Die Seitenmoduldatei, die den spezifischen Inhalt, das Styling und die Datenlogik der Seite definiert
+- `index.html`: Die Einstiegsdatei der Anwendung, die das ofa.js-Framework lädt und das Seitenmodul einbindet
+- `demo-page.html`: Die Seitenmoduldatei, die den konkreten Inhalt, die Stile und die Datenlogik der Seite definiert
 
-### index.html (Anwendungseinstieg)
+### index.html (Anwendungseingang)
 
 ```html
 <!-- index.html -->
@@ -30,8 +30,8 @@ Um ofa.js schnell einzusetzen, erstellst du einfach ein **Seitenmodul** und komb
 </html>
 ```
 
-Die Hauptfunktion dieser Datei ist:- Einführung des ofa.js-Frameworks
-- Verwendung der `<o-page>`-Komponente zum Laden und Rendern von Seitenmodulen
+Die Hauptfunktion dieser Datei ist:- Einbindung des ofa.js-Frameworks
+- Verwenden der `<o-page>` Komponente zum Laden und Rendern des Seitenmoduls
 
 ### demo-page.html (Seitenmodul)
 
@@ -61,15 +61,15 @@ Die Hauptfunktion dieser Datei ist:- Einführung des ofa.js-Frameworks
 </template>
 ```
 
-Diese Datei definiert eine einfache Seitenkomponente, die Folgendes enthält:- `<template page>`-Tag, definiert Seitenmodul
-- CSS-Stile (Verwendung des `:host`-Selektors von Shadow DOM)
+Diese Datei definiert eine einfache Seitenkomponente, die Folgendes enthält:- `<template page>`-Tag, definiert ein Seitenmodul
+- CSS-Stile (unter Verwendung des `:host`-Selektors von Shadow DOM)
 - Datenbindungsausdruck `{{val}}`
-- JavaScript-Logik, gibt ein Objekt mit Anfangsdaten zurück
+- JavaScript-Logik, die ein Objekt mit Anfangsdaten zurückgibt
 
 
 ## Online-Demo
 
-Hier ist ein Live-Beispiel im Online-Editor, Sie können den Code direkt bearbeiten und die Auswirkungen sehen:
+Hier ist ein Live-Beispiel im Online-Editor, bei dem Sie den Code direkt ändern und das Ergebnis anzeigen können:
 
 <o-playground name="Online-Demo" style="--editor-height: 500px">
   <code>
@@ -89,7 +89,7 @@ Hier ist ein Live-Beispiel im Online-Editor, Sie können den Code direkt bearbei
         export default async () => {
           return {
             data: {
-              val: "Hallo ofa.js Demo-Code",
+              val: "Hello ofa.js Demo Code",
             },
           };
         };
@@ -98,10 +98,10 @@ Hier ist ein Live-Beispiel im Online-Editor, Sie können den Code direkt bearbei
   </code>
 </o-playground>
 
-Wir definieren Stile durch das `<style>`-Tag innerhalb der Komponente. Diese internen Stile wirken nur innerhalb der Komponente, bieten eine gute Kapselung und beeinflussen keine anderen Elemente auf der Seite.
+Wir definieren Stile durch das `<style>`-Tag innerhalb der Komponente. Diese internen Stile wirken nur innerhalb der Komponente, haben eine gute Kapselung und beeinflussen keine anderen Elemente auf der Seite.
 
-Hier wird der `:host`-Selektor verwendet, um die Stile des Host-Elements der Komponente zu definieren. Hier setzen wir die Komponente als Block-Level-Element und fügen einen roten Rahmen sowie einen Innenabstand von 10px hinzu.
+Dabei wird der `:host`-Selektor verwendet, um den Stil des Host-Elements der Komponente zu definieren. Hier setzen wir die Komponente als Blockelement und fügen einen roten Rand und einen Innenabstand von 10px hinzu.
 
-Mit dem `{{key}}`-Ausdruck kann der entsprechende Wert aus den Komponentendaten auf der Seite gerendert werden.
+Mit dem Ausdruck `{{key}}` kann der entsprechende Wert aus den Komponentendaten auf die Seite gerendert werden.
 
-Jetzt haben Sie erfolgreich Ihre erste ofa.js-Anwendung erstellt! Als nächstes lassen Sie uns tiefer in die Template-Rendering-Syntax und die fortgeschrittenen Funktionen von ofa.js eintauchen.
+Jetzt haben Sie erfolgreich Ihre erste ofa.js-Anwendung erstellt! Als Nächstes lassen Sie uns die Template-Rendering-Syntax und die erweiterten Funktionen von ofa.js vertiefen.

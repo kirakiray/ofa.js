@@ -2,11 +2,11 @@
 
 
 
-La méthode `formData` sert à générer un objet de données lié aux éléments de formulaire, rendant ainsi le traitement des éléments de formulaire plus simple et plus efficace. Cette méthode produit un objet contenant les valeurs de tous les éléments de formulaire présents dans l’élément cible, et cet objet reflète en temps réel les modifications des éléments de formulaire.
+La méthode `formData` est utilisée pour générer des données d'objet liées aux éléments de formulaire, ce qui rend le traitement des éléments de formulaire plus simple et plus efficace. Cette méthode génère un objet contenant les valeurs de tous les éléments de formulaire dans l'élément cible, et cet objet reflète les modifications des éléments de formulaire en temps réel.
 
-Dans l’exemple ci-dessous, nous montrons comment utiliser la méthode `formData` pour générer des données d’objet liées à un élément de formulaire :
+Dans l’exemple ci-dessous, nous montrons comment utiliser la méthode `formData` pour générer des données d’objet liées aux éléments de formulaire :
 
-<o-playground name="formData - Utilisation de base" style="--editor-height: 500px">
+<o-playground name="formData - utilisation de base" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <form id="myForm">
@@ -37,13 +37,13 @@ Dans l’exemple ci-dessous, nous montrons comment utiliser la méthode `formDat
   </code>
 </o-playground>
 
-Dans cet exemple, nous avons créé un formulaire contenant une zone de saisie de texte, des boutons radio et une zone de texte, et utilisé la méthode `formData` pour créer un objet `data` qui contient les valeurs de ces éléments de formulaire. Nous avons également utilisé la méthode `watch` pour surveiller les changements de données et afficher les données en temps réel sur la page. Lorsque l'utilisateur modifie la valeur d'un élément de formulaire, l'objet `data` est mis à jour en conséquence, rendant le traitement des données très simple et efficace.
+Dans cet exemple, nous avons créé un formulaire contenant un champ de saisie de texte, des boutons radio et une zone de texte, et nous avons utilisé la méthode `formData` pour créer un objet `data` contenant les valeurs de ces éléments de formulaire. Nous avons également utilisé la méthode `watch` pour surveiller les changements de données et afficher les données en temps réel sur la page. Lorsque l'utilisateur modifie la valeur d'un élément du formulaire, l'objet `data` se met à jour en conséquence, rendant le traitement des données très simple et efficace.
 
 ## Liaison de données inverse
 
-Les données d’objet générées possèdent également une capacité de liaison inverse, ce qui signifie que lorsque vous modifiez les propriétés de l’objet, les valeurs des éléments de formulaire associées se mettent à jour automatiquement. Cela est très utile lors du traitement des données de formulaire, car vous pouvez facilement mettre en œuvre une liaison de données bidirectionnelle.
+Les données d'objet générées ont également une capacité de liaison inverse, ce qui signifie que lorsque vous modifiez les attributs d'un objet, les valeurs des éléments de formulaire associés sont automatiquement mises à jour. Cela est très utile lors du traitement des données de formulaire, car vous pouvez facilement réaliser une liaison de données bidirectionnelle.
 
-Dans l'exemple ci-dessous, nous démontrons comment utiliser les données d'objet générées par la méthode `formData`, ainsi que la manière d'effectuer une liaison de données inverse :
+Dans l'exemple ci-dessous, nous montrons comment utiliser les données d'objet générées par la méthode `formData`, ainsi que la manière de procéder à la liaison de données inverse :
 
 <o-playground name="formData - liaison inverse" style="--editor-height: 500px">
   <code path="demo.html">
@@ -51,13 +51,13 @@ Dans l'exemple ci-dessous, nous démontrons comment utiliser les données d'obje
       <form id="myForm">
         <input type="text" name="username" value="John Doe" />
         <div>
-          sexe:
+          sex:
           <label>
-            homme
+            man
             <input type="radio" name="sex" value="man" />
           </label>
           <label>
-            femme
+            woman
             <input type="radio" name="sex" value="woman" />
           </label>
         </div>
@@ -77,15 +77,15 @@ Dans l'exemple ci-dessous, nous démontrons comment utiliser les données d'obje
   </code>
 </o-playground>
 
-Dans cet exemple, nous avons d'abord créé un formulaire contenant une zone de saisie de texte, des boutons radio et une zone de texte, puis nous avons utilisé la méthode `formData` pour générer un objet de données `data`. Ensuite, en modifiant les propriétés de l'objet `data`, nous avons réalisé une liaison de données bidirectionnelle, c'est-à-dire que les valeurs des éléments du formulaire sont automatiquement mises à jour lorsque les propriétés de l'objet sont modifiées. Cette fonctionnalité de liaison de données bidirectionnelle rend l'interaction avec les données du formulaire plus pratique.
+Dans cet exemple, nous avons d’abord créé un formulaire contenant un champ de saisie de texte, des boutons radio et une zone de texte, puis nous avons utilisé la méthode `formData` pour générer un objet de données `data`. Ensuite, en modifiant les propriétés de l’objet `data`, nous avons réalisé une liaison de données inverse, c’est-à-dire que les valeurs des éléments du formulaire se mettent à jour automatiquement lorsque les propriétés de l’objet changent. Cette fonctionnalité de liaison de données bidirectionnelle rend l’interaction avec les données du formulaire plus pratique.
 
 ## Écouter un formulaire spécifique
 
-Par défaut, la méthode `formData()` écoute tous les éléments `input`, `select` et `textarea` dans l'élément cible. Mais si vous ne souhaitez écouter que des éléments de formulaire spécifiques, vous pouvez le faire en transmettant un sélecteur CSS.
+Par défaut, la méthode `formData()` écoute tous les éléments `input`, `select` et `textarea` à l'intérieur de l'élément cible. Mais si vous souhaitez écouter uniquement des éléments de formulaire spécifiques, vous pouvez y parvenir en passant un sélecteur CSS.
 
 Dans l’exemple ci-dessous, nous montrons comment écouter un élément de formulaire spécifique en passant un sélecteur CSS :
 
-<o-playground name="formData - formulaire spécifique" style="--editor-height: 500px">
+<o-playground name="formData - Formulaire spécifique" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <form id="myForm">
@@ -116,13 +116,13 @@ Dans l’exemple ci-dessous, nous montrons comment écouter un élément de form
   </code>
 </o-playground>
 
-Dans cet exemple, nous souhaitons écouter uniquement les éléments de formulaire dont la `class` est "use-it", c'est pourquoi nous avons passé `".use-it"` comme paramètre à la méthode `formData()`. Ainsi, seuls les éléments de formulaire portant ce nom de classe seront écoutés et inclus dans l'objet de données généré. Cela est très utile pour écouter de manière sélective les éléments de formulaire, afin de gérer vos données de formulaire plus précisément.
+Dans cet exemple, nous souhaitons uniquement écouter les éléments de formulaire ayant la `class` "use-it", nous avons donc passé `".use-it"` comme paramètre à la méthode `formData()`. Ainsi, seuls les éléments de formulaire avec ce nom de classe seront surveillés et inclus dans l'objet de données généré. Cela est très utile pour écouter sélectivement les éléments de formulaire afin de gérer plus précisément vos données de formulaire.
 
 ## Formulaire personnalisé
 
-L'utilisation d'un composant de formulaire personnalisé est très simple : il suffit d'ajouter un **attribut value** au composant personnalisé et de définir une **propriété name**.
+L'utilisation des composants de formulaire personnalisés est très simple, il suffit d'ajouter un attribut **value** au composant personnalisé et de définir la propriété **name**.
 
-<o-playground name="formData - formulaire personnalisé" style="--editor-height: 500px">
+<o-playground name="formData - Formulaire personnalisé" style="--editor-height: 500px">
   <code path="demo.html" preview active>
     <template>
       <div id="myForm">
@@ -183,13 +183,13 @@ L'utilisation d'un composant de formulaire personnalisé est très simple : il s
   </code>
 </o-playground>
 
-Lorsque vous utilisez un composant de formulaire personnalisé, vous n'avez qu'à l'ajouter à votre formulaire et définir l'attribut `name` requis. Dans l'exemple ci-dessus, nous utilisons l'élément `<custom-input>` et définissons l'attribut `name` pour utiliser le composant de formulaire personnalisé. Ensuite, nous utilisons la méthode `formData()` pour écouter les valeurs des éléments d'entrée et des composants personnalisés, afin d'obtenir et de traiter les données du formulaire en temps réel. Cette méthode vous permet d'étendre facilement votre formulaire pour inclure des composants de formulaire personnalisés, répondant ainsi à vos besoins spécifiques.
+Lorsque vous utilisez un composant de formulaire personnalisé, il vous suffit de l'ajouter à votre formulaire et de définir l'attribut `name` requis. Dans l'exemple ci-dessus, nous utilisons un composant de formulaire personnalisé en ajoutant l'élément `<custom-input>` et en définissant l'attribut `name`. Ensuite, nous utilisons la méthode `formData()` pour écouter les valeurs des éléments d'entrée et des composants personnalisés, afin de récupérer et traiter les données du formulaire en temps réel. Cette approche vous permet d'étendre facilement votre formulaire pour y inclure des composants personnalisés, répondant ainsi à vos besoins spécifiques.
 
-## Utiliser des données de formulaire dans un composant ou une page
+## Utiliser les données de formulaire dans les composants ou pages
 
-Parfois, vous pouvez avoir besoin d'utiliser des données de formulaire dans un composant ou une page, et il est nécessaire de générer des données au moment du cycle de vie `attached` et de les lier au composant.
+Parfois, vous pouvez avoir besoin d'utiliser des données de formulaire dans un composant ou une page, et vous devez générer des données et les lier au composant pendant le cycle de vie `attached`.
 
-<o-playground name="formData - Utilisation dans le composant" style="--editor-height: 600px">
+<o-playground name="formData - utilisation dans le composant" style="--editor-height: 600px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./form-data-demo.html"></l-m>
@@ -228,6 +228,6 @@ Parfois, vous pouvez avoir besoin d'utiliser des données de formulaire dans un 
   </code>
 </o-playground>
 
-Grâce au cycle de vie `attached`, une fois le composant prêt, nous avons généré l’objet de données de formulaire `fdata` à l’aide de la méthode `this.shadow.formData()`.
+Grâce au cycle de vie `attached`, une fois que le composant est prêt, nous utilisons la méthode `this.shadow.formData()` pour générer l'objet de données de formulaire `fdata`.
 
-`formData()` est plus adapté aux scénarios de formulaires où la logique d'interaction est relativement simple.
+`formData()` est plus adapté aux scénarios de formulaire avec une logique d'interaction relativement simple.

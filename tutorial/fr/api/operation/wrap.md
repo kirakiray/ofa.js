@@ -2,29 +2,29 @@
 
 
 
-La méthode `wrap` est utilisée pour envelopper un élément cible avec une couche d'élément externe. Avant d'exécuter l'opération `wrap`, l'opération d'initialisation de la [méthode $](../instance/dollar.md) est automatiquement exécutée, il est donc possible de saisir directement une chaîne de caractères ou un objet d'élément spécifique.
+La méthode `wrap` sert à envelopper l’élément cible dans une couche d’éléments extérieurs. Avant l’exécution de l’opération `wrap`, l’initialisation de la méthode [$](../instance/dollar.md) est automatiquement effectuée, il est donc possible de renseigner directement une chaîne ou un objet d’élément spécifique.
 
-<o-playground name="wrap - Envelopper un élément" style="--editor-height: 440px">
+<o-playground name="wrap - élément enveloppant" style="--editor-height: 440px">
   <code path="demo.html">
     <template>
       <style> div{border: #aaa solid 1px; margin:8px; padding:8px;} </style>
       <div>
-        <div>Je suis 1</div>
-        <div id="target">Je suis 2</div>
-        <div>Je suis 3</div>
+        <div>I am 1</div>
+        <div id="target">I am 2</div>
+        <div>I am 3</div>
       </div>
       <script>
         setTimeout(()=>{
-          \$('#target').wrap(`<div style="border-color:red;">envelopper</div>`);
+          \$('#target').wrap(`<div style="border-color:red;">wrap</div>`);
         }, 500);
       </script>
     </template>
   </code>
 </o-playground>
 
-## Remarques
+## Points d'attention
 
-L'élément cible **doit avoir un nœud parent**, sinon l'opération d'enveloppement échouera.
+L'élément cible **doit avoir un nœud parent**, sinon l'opération d'encapsulation échouera.
 
 ```javascript
 const $el = $(`
@@ -33,7 +33,7 @@ const $el = $(`
 </div>
 `);
 
-$el.wrap("<div>new div</div>"); // erreur, pas d’élément parent, impossible d’envelopper
+$el.wrap("<div>new div</div>"); // erreur, pas d'élément parent, impossible d'envelopper
 $el.$('#target').wrap("<div>new div</div>"); // correct, il y a un élément parent
 ```
 

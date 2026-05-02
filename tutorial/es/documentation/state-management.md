@@ -1,20 +1,20 @@
-# Gestión de Estado
+# Gestión de estado
 
 ## ¿Qué es el estado?
 
-En ofa.js, **estado** se refiere a la propiedad `data` propia del componente o módulo de página. Este estado solo se puede usar en el componente actual y sirve para almacenar y gestionar los datos internos de ese componente.
+En ofa.js, el **estado** se refiere al atributo `data` del propio componente o módulo de página. Este estado solo puede usarse en el componente actual para almacenar y gestionar los datos internos de dicho componente.
 
-Cuando varios componentes o páginas necesitan compartir los mismos datos, la práctica tradicional consiste en pasarlos a través de eventos o mediante props capa por capa, lo cual en aplicaciones complejas hace que el código sea difícil de mantener. Por lo tanto, se necesita la **gestión del estado**—mediante la definición de un objeto de estado compartido, se permite que varios componentes o módulos de página accedan y modifiquen estos datos, logrando así la compartición del estado.
+Cuando varios componentes o páginas necesitan compartir los mismos datos, el enfoque tradicional consiste en transmitirlos mediante eventos o pasar propiedades (props) de capa en capa, lo que en aplicaciones complejas dificulta el mantenimiento del código. Por lo tanto, se necesita una **gestión del estado** —definiendo un objeto de estado compartido que permita a múltiples componentes o módulos de página acceder y modificar estos datos, logrando así la compartición del estado.
 
-> **Consejo**: La gestión del estado es adecuada para escenarios que requieren compartir datos entre componentes y páginas, como información del usuario, carrito de compras, configuración de temas, configuración global, etc.
+> **Consejo**: La gestión de estado es adecuada para escenarios que requieren compartir datos entre componentes y páginas, como información de usuario, carrito de compras, configuración de temas, configuración global, etc.
 
 ## Generar objeto de estado
 
-Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un objeto común como datos iniciales y devuelve un proxy de estado reactivo.
+Para crear un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un objeto normal como datos iniciales y devuelve un proxy de estado reactivo.
 
 ### Uso básico
 
-<o-playground name="Ejemplo de Gestión de Estado" style="--editor-height: 500px">
+<o-playground name="Ejemplo de gestión de estado" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>
@@ -23,7 +23,7 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
   <code path="app-config.js" unimportant>
     // Dirección de la página de inicio de la aplicación
     export const home = "./list.html";
-    // Configuración de animación de cambio de página
+    // Configuración de animación de transición de página
     export const pageAnime = {
       current: {
         opacity: 1,
@@ -43,16 +43,16 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
   export const contacts = $.stanz({
     list: [{
         id: 10010,
-        name: "Peter",
-        info: "Cada día es un nuevo comienzo, el sol siempre sale después de la tormenta.",
+        name: "Pete",
+        info: "Cada día es un nuevo comienzo, el sol siempre brilla después de la tormenta.",
     },{
         id: 10020,
         name: "Mike",
-        info: "La vida es como un océano, solo los de voluntad fuerte pueden llegar a la otra orilla.",
+        info: "La vida es como un océano, solo los fuertes de voluntad pueden llegar al otro lado.",
     },{
         id: 10030,
         name: "John",
-        info: "El secreto del éxito es persistir en tus sueños y nunca rendirse.",
+        info: "El secreto del éxito es mantener tus sueños y nunca rendirte.",
     }]
   });
   // await fetch("/list.api").then(e=>e.json()).then(list=>data.list = list)
@@ -65,11 +65,11 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
           padding: 10px;
         }
       </style>
-      <h2>Directorio de Contactos</h2>
+      <h2>Contactos</h2>
       <ul>
         <o-fill :value="list">
           <li>
-          Nombre: {{$data.name}} <button on:click="$host.gotoDetail($data)">Detalles</button>
+          Nombre: {{$data.name}} <button on:click="$host.gotoDetail($data)">Detalle</button>
           </li>
         </o-fill>
       </ul>
@@ -89,7 +89,7 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
               this.list = contacts.list;
             },
             detached(){
-              this.list = []; // Al destruir el componente, vaciar los datos de estado montados
+              this.list = []; // Al destruir el componente, limpiar los datos de estado montados
             }
           };
         };
@@ -124,7 +124,7 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
       <div class="user-info">
         <div class="avatar">Avatar</div>
         <div style="font-size: 24px;">
-        Nombre de Usuario: 
+        Nombre de usuario: 
           <o-if :value="editorMode">
             <input type="text" sync:value="userData.name"/>
             <button on:click="editorMode = false">✅</button>
@@ -134,7 +134,7 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
             <button on:click="editorMode = true">🖊️</button>
           </o-else>
         </div>
-        <div style="font-size: 16px;">ID de Usuario: {{userData.id}}</div>
+        <div style="font-size: 16px;">ID de usuario: {{userData.id}}</div>
         <p style="font-size: 14px;">{{userData.info}}</p>
       </div>
       <script>
@@ -149,7 +149,7 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
               this.userData = contacts.list.find(e=>e.id == query.id);
             },
             detached(){
-              this.userData = {}; // Al destruir el componente, vaciar los datos de estado montados
+              this.userData = {}; // Al destruir el componente, limpiar los datos de estado montados
             }
           };
         };
@@ -162,7 +162,7 @@ Crea un objeto de estado reactivo mediante `$.stanz({})`. Este método recibe un
 
 ### 1. Actualización responsiva
 
-El objeto de estado creado por `$.stanz()` es reactivo. Cuando los datos del estado cambian, todos los componentes que hacen referencia a esos datos se actualizarán automáticamente.
+`$.stanz()` crea un objeto de estado reactivo. Cuando los datos del estado cambian, todos los componentes que hacen referencia a esos datos se actualizan automáticamente.
 
 ```javascript
 const store = $.stanz({ count: 0 });
@@ -174,22 +174,22 @@ export default {
   },
   proto:{
     increment() {
-        store.count++; // Todos los componentes que referencian store.count se actualizarán automáticamente
+        store.count++; // Todos los componentes que hacen referencia a store.count se actualizarán automáticamente
     }
   },
   attached() {
-    // Referencia directa a la propiedad del objeto de estado
+    // Hacer referencia directa a la propiedad del objeto de estado
     this.store = store;
   },
   detached(){
-    this.store = {}; // Cuando el componente se destruye, vacía los datos de estado montados
+    this.store = {}; // Al destruir el componente, limpiar los datos de estado montados
   }
 };
 ```
 
-### 2. Reactividad profunda
+### 2. Respuesta profunda
 
-Los objetos de estado admiten reactividad profunda; los cambios en objetos y arrays anidados también son escuchados.
+El objeto de estado admite reactividad profunda; los cambios en objetos y arrays anidados también serán detectados.
 
 ```javascript
 const store = $.stanz({
@@ -202,15 +202,15 @@ const store = $.stanz({
   list: []
 });
 
-// Modificar propiedades anidadas también activa la actualización
+// Modificar propiedades anidadas también desencadena una actualización
 store.user.name = "Li Si";
 store.user.settings.theme = "light";
-store.list.push({ id: 1, title: "Nueva tarea" });
+store.list.push({ id: 1, title: "nueva tarea" });
 ```
 
 ## Mejores prácticas
 
-### 1. Montar estado en la etapa attached del componente
+### 1. Montar el estado durante la fase attached del componente
 
 Se recomienda montar el estado compartido en el ciclo de vida `attached` del componente:
 
@@ -220,20 +220,20 @@ export default {
     list: []
   },
   attached() {
-    // Montar el estado compartido en el data del componente
+    // Montar el estado compartido en los datos del componente
     this.list = data.list;
   },
   detached() {
-    // Cuando el componente se destruye, vaciar los datos de estado montados para evitar fugas de memoria
+    // Al destruir el componente, limpiar los datos de estado montados para evitar fugas de memoria
     this.list = [];
   }
 };
 ```
 
-### 2. Gestionar adecuadamente el ámbito del estado
+### 2. Gestión razonable del ámbito del estado
 
-- **Estado global**: adecuado para datos a los que toda la aplicación necesita acceder (como información del usuario, configuración global)
-- **Estado del módulo**: adecuado para datos compartidos dentro de un módulo de funcionalidad específico
+- **Estado global**: adecuado para datos que toda la aplicación necesita acceder (como información del usuario, configuración global)
+- **Estado del módulo**: adecuado para datos compartidos dentro de un módulo de funcionalidad específica
 
 ```javascript
 // Estado de llamada global
@@ -243,7 +243,7 @@ export const globalStore = $.stanz({ user: null, theme: "light" });
 const cartStore = $.stanz({ total: 0 });
 ```
 
-## Gestión del estado dentro del módulo
+## Gestión de estado dentro del módulo
 
 <o-playground name="Ejemplo de gestión de estado dentro del módulo" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
@@ -260,7 +260,7 @@ const cartStore = $.stanz({ total: 0 });
           padding: 8px;
         }
       </style>
-      <button on:click="addItem">Agregar Elemento</button>
+      <button on:click="addItem">Añadir elemento</button>
       <o-fill :value="list">
         <div>{{$index}} - <demo-comp :val="$data.val"></demo-comp></div>
       </o-fill>
@@ -291,7 +291,7 @@ const cartStore = $.stanz({ total: 0 });
             display: inline-block;
         }
       </style>
-      {{val}} - {{cartStore.total}} <button on:click="addStoreTotal">Agregar Total de la Tienda</button>
+      {{val}} - {{cartStore.total}} <button on:click="addStoreTotal">Añadir total de tienda</button>
       <script>
         const cartStore = $.stanz({ total: 0 });
         export default async () => {
@@ -310,7 +310,7 @@ const cartStore = $.stanz({ total: 0 });
                 this.cartStore = cartStore;
             },
             detached(){
-                this.cartStore = {}; // Al destruir el componente, vaciar los datos de estado montados
+                this.cartStore = {}; // Al destruir el componente, vacía los datos de estado montados
             }
           };
         };
@@ -319,13 +319,13 @@ const cartStore = $.stanz({ total: 0 });
   </code>
 </o-playground>
 
-## Precauciones
+## Notas importantes
 
-1. **Limpieza de estado**: en el ciclo de vida `detached` del componente, limpia de forma oportuna las referencias a los datos de estado para evitar pérdidas de memoria.
+1. **Limpieza de estado**: en el ciclo de vida `detached` del componente, limpia oportunamente las referencias a los datos de estado para evitar fugas de memoria.
 
 2. **Evita dependencias cíclicas**: los objetos de estado no deben formar referencias cíclicas, ya que podrían causar problemas en el sistema reactivo.
 
-3. **Estructuras de datos grandes**: para estructuras de datos grandes, considera usar propiedades computadas o gestión por fragmentos para evitar costes de rendimiento innecesarios.
+3. **Estructuras de datos grandes**: para estructuras de datos grandes, considera usar propiedades computadas o gestión por fragmentos para evitar sobrecargas de rendimiento innecesarias.
 
 4. **Consistencia del estado**: en operaciones asíncronas, presta atención a la consistencia del estado; puedes usar transacciones o actualizaciones por lotes para garantizar la integridad de los datos.
 

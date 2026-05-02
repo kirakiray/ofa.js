@@ -2,14 +2,14 @@
 
 
 
-El uso del método `off` permite cancelar un controlador de eventos previamente registrado, dejando de escuchar el evento.
+El uso del método `off` permite eliminar los controladores de eventos registrados para cancelar la escucha de eventos.
 
-A continuación se presenta un ejemplo que demuestra cómo usar el método `off` para cancelar el escucha de eventos：
+A continuación se muestra un ejemplo que demuestra cómo usar el método `off` para cancelar la escucha de eventos:
 
-<o-playground name="off - Quitar detector de eventos" style="--editor-height: 400px">
+<o-playground name="off - eliminar la escucha de eventos" style="--editor-height: 400px">
   <code path="demo.html">
     <template>
-      <button id="target">agregar conteo</button>
+      <button id="target">add count</button>
       <br>
       <br>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>
@@ -27,4 +27,4 @@ A continuación se presenta un ejemplo que demuestra cómo usar el método `off`
   </code>
 </o-playground>
 
-En este ejemplo, hemos registrado un controlador de eventos de clic `f`; cuando se pulsa el botón, el controlador muestra el número de clics dentro de `#logger`. Utilizamos el método `off` para cancelar la escucha del evento cuando el contador alcanza 3.
+En este ejemplo, registramos un controlador de eventos de clic `f`, que muestra el número de clics en `#logger` cuando se hace clic en el botón. Usando el método `off`, cancelamos la escucha del evento cuando el número de clics llega a 3.

@@ -2,7 +2,7 @@
 
 
 
-Mit der `all`-Methode können Sie alle Elemente auf der Seite abrufen, die dem CSS-Selektor entsprechen, und ein Array mit Instanzen dieser Elemente zurückgeben.
+Mit der `all`-Methode kannst du alle Elemente auf der Seite abrufen, die dem CSS-Selektor entsprechen, und ein Array mit diesen Elementinstanzen zurückgeben.
 
 <o-playground name="all - Alle Elemente abrufen" style="--editor-height: 360px">
   <code path="demo.html">
@@ -25,9 +25,9 @@ Mit der `all`-Methode können Sie alle Elemente auf der Seite abrufen, die dem C
 
 ## Untergeordnete Elemente abrufen
 
-Instanzen haben auch die `all`-Methode, mit der Sie Unterelemente über die Instanz auswählen und abrufen können.
+Instanzen besitzen ebenfalls die `all`-Methode; über die `all`-Methode der Instanz können untergeordnete Elemente ausgewählt und abgerufen werden.
 
-<o-playground name="all - Unterelemente abrufen" style="--editor-height: 360px">
+<o-playground name="all - Holen Sie sich untergeordnete Elemente" style="--editor-height: 360px">
   <code path="demo.html">
     <template>
       <div id="target1">

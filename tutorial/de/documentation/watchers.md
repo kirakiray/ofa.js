@@ -1,10 +1,10 @@
-# Listener
+# Lauscher
 
-Der Watcher ist eine Funktion in ofa.js zum Überwachen von Datenänderungen und zum Ausführen entsprechender Logik. Wenn sich reaktive Daten ändern, löst der Watcher automatisch eine Callback-Funktion aus, die es Ihnen ermöglicht, Aufgaben wie Datentransformation, Nebeneffekt-Operationen oder asynchrone Verarbeitung auszuführen.
+Watcher sind in ofa.js eine Funktion, um Änderungen von Daten zu überwachen und entsprechende Logik auszuführen. Wenn sich reaktive Daten ändern, wird automatisch eine Callback-Funktion ausgelöst, die dir erlaubt, Aufgaben wie Datentransformation, Seiteneffekte oder asynchrone Verarbeitungen durchzuführen.
 
 ## Grundlegende Verwendung
 
-Listener werden im `watch`-Objekt der Komponente definiert, wobei der Schlüsselname dem zu beobachtenden Datenattribut entspricht und der Wert die Callback-Funktion ist, die ausgeführt wird, wenn sich die Daten ändern.
+Listener werden im `watch`-Objekt der Komponente definiert, wobei der Schlüsselname dem zu beobachtenden Datenattributnamen entspricht und der Wert eine Callback-Funktion ist, die ausgeführt wird, wenn sich die Daten ändern.
 
 <o-playground name="watchers - Grundlegende Verwendung" style="--editor-height: 700px">
   <code>
@@ -43,16 +43,16 @@ Listener werden im `watch`-Objekt der Komponente definiert, wobei der Schlüssel
   </code>
 </o-playground>
 
-## Rückruffunktionsparameter
+## Parameter der Rückruffunktion
 
-Der Listener-Callback empfängt zwei Parameter:- `newValue`：Der neue Wert nach der Änderung
+Die Listener-Callback-Funktion empfängt zwei Parameter:- `newValue`：Der neue Wert nach der Änderung  
 - `{watchers}`：Alle Watcher-Objekte der aktuellen Komponente
 
-Nach einer Datenänderung wird zunächst eine Debouncing-Verarbeitung durchgeführt, bevor der Callback in `watch` ausgeführt wird; der Parameter `watchers` ist die Menge aller während dieser Debouncing-Periode zusammengefassten Änderungen.
+Nach einer Datenänderung wird zunächst eine Debounce-Verarbeitung durchgeführt, bevor der Callback in `watch` ausgeführt wird; der Parameter `watchers` ist die Menge aller im aktuellen Debounce-Zyklus zusammengefassten Änderungen.
 
-Die Funktion in "watch" wird unmittelbar nach der Initialisierung der Komponente aufgerufen, um die Datenüberwachung einzurichten. Man kann durch die Überprüfung, ob die watchers eine Länge haben, unterscheiden, ob es sich um den ersten Aufruf handelt.
+Die Funktion in `watch` wird sofort nach Abschluss der Komponenteninitialisierung aufgerufen, um Datenüberwachungen einzurichten. Man kann feststellen, ob es sich um den ersten Aufruf handelt, indem man prüft, ob `watchers` eine Länge hat.
 
-<o-playground name="Watchers - Rückrufparameter" style="--editor-height: 700px">
+<o-playground name="watchers - Rückrufparameter" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -78,7 +78,7 @@ Die Funktion in "watch" wird unmittelbar nach der Initialisierung der Komponente
         export default async () => {
           return {
             data: {
-              name: "Zhang San",
+              name: "Max",
               age: 25,
               log: "",
             },
@@ -87,15 +87,15 @@ Die Funktion in "watch" wird unmittelbar nach der Initialisierung der Komponente
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // Einen davon abrufen
-                this.log += `Eigenschaft "${watcher.name}" hat sich von "${watcher.oldValue}" zu "${watcher.value}" geändert\n`;
+                const watcher = watchers[0]; // einen davon abrufen
+                this.log += `Attribut "${watcher.name}" von "${watcher.oldValue}" zu "${watcher.value}" geändert\n`;
               },
               age(newVal,{watchers}) {
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // Einen davon abrufen
-                this.log += `Eigenschaft "${watcher.name}" hat sich von "${watcher.oldValue}" zu "${watcher.value}" geändert\n`;
+                const watcher = watchers[0]; // einen davon abrufen
+                this.log += `Attribut "${watcher.name}" von "${watcher.oldValue}" zu "${watcher.value}" geändert\n`;
               },
             },
           };
@@ -105,11 +105,11 @@ Die Funktion in "watch" wird unmittelbar nach der Initialisierung der Komponente
   </code>
 </o-playground>
 
-## Tiefe Überwachung
+## Tiefe Beobachtung
 
-Bei verschachtelten Daten vom Typ Objekt oder Array wird innerhalb von watch automatisch eine tiefe Überwachung durchgeführt.
+Bei verschachtelten Daten vom Typ Objekt oder Array führt watch automatisch eine Tiefenüberwachung durch.
 
-<o-playground name="Watchers - Tiefe Überwachung" style="--editor-height: 700px">
+<o-playground name="watchers - Tiefenüberwachung" style="--editor-height: 700px">
   <code>
     <template page>
       <style>
@@ -157,12 +157,12 @@ Bei verschachtelten Daten vom Typ Objekt oder Array wird innerhalb von watch aut
                 if(!watchers){
                   return;
                 }
-                const watcher = watchers[0]; // Einen davon abrufen
+                const watcher = watchers[0]; // Hole einen davon
                 console.log("Änderung: ",watcher.target);
                 if(watcher.type === 'set'){
-                  this.log += `Wert geändert-> Eigenschaft "${watcher.name}" von "${watcher.oldValue}" zu "${watcher.value}" <br>`;
+                  this.log += `Wert geändert -> Attribut "${watcher.name}" von "${watcher.oldValue}" zu "${watcher.value}" <br>`;
                 }else{
-                  this.log += `Methode ausgeführt ${watcher.type}-> Funktionsname "${watcher.name}"  Parameter "${watcher.args}" <br>`;
+                  this.log += `Methode ausgeführt ${watcher.type} -> Funktionsname "${watcher.name}" Parameter "${watcher.args}" <br>`;
                 }
               },
             },
@@ -187,9 +187,9 @@ Bei verschachtelten Daten vom Typ Objekt oder Array wird innerhalb von watch aut
   </code>
 </o-playground>
 
-## Mehrere Datenquellen beobachten
+## Mehrere Datenquellen überwachen
 
-Sie können gleichzeitig auf die Änderung mehrerer Daten lauschen und im Rückruf entsprechende Logik basierend auf diesen Änderungen ausführen.
+Sie können gleichzeitig Änderungen mehrerer Daten überwachen und in der Callback-Funktion die entsprechende Logik basierend auf den Änderungen mehrerer Daten ausführen.
 
 <o-playground name="watchers - Mehrere Datenquellen" style="--editor-height: 600px">
   <code>
@@ -291,9 +291,9 @@ Sie können gleichzeitig auf die Änderung mehrerer Daten lauschen und im Rückr
   </code>
 </o-playground>
 
-### 2. Design einrichten
+### 2. Thema einrichten
 
-<o-playground name="Watchers - Thema einstellen" style="--editor-height: 800px">
+<o-playground name="watchers - Thema festlegen" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -307,7 +307,7 @@ Sie können gleichzeitig auf die Änderung mehrerer Daten lauschen und im Rückr
           padding: 8px 12px;
         }
       </style>
-      <p>Einstellungen: {{settings.theme}}</p>
+      <p>Einstellung: {{settings.theme}}</p>
       <p>Speicherstatus: {{saveStatus}}</p>
       <button on:click="setLight">Helles Thema</button>
       <button on:click="setDark">Dunkles Thema</button>
@@ -323,10 +323,10 @@ Sie können gleichzeitig auf die Änderung mehrerer Daten lauschen und im Rückr
             },
             watch: {
               settings(){
-                  this.saveStatus = "Speichern...";
+                  this.saveStatus = "Wird gespeichert...";
                   setTimeout(() => {
                     this.saveStatus = "Gespeichert";
-                    console.log("Einstellungen gespeichert:", this.settings);
+                    console.log("Einstellung gespeichert:", this.settings);
                   }, 500);
               }
             },
@@ -350,5 +350,5 @@ Sie können gleichzeitig auf die Änderung mehrerer Daten lauschen und im Rückr
 
 ## Hinweise
 
-- **Vermeiden Sie die Änderung der überwachten Daten**: Das Ändern der überwachten Daten im Watcher-Callback kann zu einer Endlosschleife führen. Wenn Sie Änderungen vornehmen müssen, stellen Sie sicher, dass angemessene Bedingungsprüfungen vorhanden sind.
-- **Erwägen Sie stattdessen Computed Properties**: Wenn Sie einen neuen Wert basierend auf Änderungen mehrerer Daten berechnen müssen, wird empfohlen, [Computed Properties](./computed-properties.md) anstelle von Watchern zu verwenden.
+- **Vermeiden Sie die Änderung von überwachten Daten**: Das Ändern von überwachten Daten im Rückruf eines Watchers kann zu einer Endlosschleife führen. Falls eine Änderung erforderlich ist, stellen Sie sicher, dass eine angemessene Bedingung vorhanden ist.
+- **Verwenden Sie stattdessen berechnete Eigenschaften**: Wenn Sie einen neuen Wert basierend auf Änderungen mehrerer Daten berechnen müssen, wird empfohlen, [berechnete Eigenschaften](./computed-properties.md) anstelle eines Watchers zu verwenden.

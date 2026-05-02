@@ -2,11 +2,11 @@
 
 
 
-`host` 属性を使用すると、要素のホストコンポーネントインスタンスを取得できます。これは、コンポーネント内部からそのホストコンポーネントのデータやメソッドにアクセスするのに非常に便利です。
+`host` プロパティを使用すると、要素のホストコンポーネントインスタンスを取得できます。これは、コンポーネント内部からそのホストコンポーネントのデータやメソッドにアクセスする際に非常に便利です。
 
-以下は、`host` 属性を使用してホストコンポーネントのインスタンスを取得する方法を示す例です：
+以下は、`host` プロパティを使用してホストコンポーネントのインスタンスを取得する方法を示す例です：
 
-<o-playground name="host - ホストを取得" style="--editor-height: 700px">
+<o-playground name="host - 获取宿主" style="--editor-height: 700px">
   <code path="demo.html" preview>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -63,7 +63,7 @@
   </code>
 </o-playground>
 
-この例では、カスタムコンポーネント `user-card` を作成し、コンポーネント内部で `this.host` を通じてホストコンポーネント（ページ）のメソッド `sayHi` にアクセスすることで、コンポーネントとホスト間の相互作用を実現しています。
+在这个示例中，我们创建了一个自定义组件 `user-card`，并在组件内部通过 `this.host` 访问宿主组件（页面）的方法 `sayHi`，实现了组件与宿主之间的交互。
 
 要素がコンポーネントまたはページモジュール内にない場合、`host` の値は `null` になります。例：
 
@@ -72,7 +72,7 @@
     <template>
       <ul>
         <li id="target">
-          私はターゲットです
+          I am target
         </li>
       </ul>
       <div id="logger" style="border:red solid 1px;padding:8px;">-</div>
@@ -85,4 +85,4 @@
   </code>
 </o-playground>
 
-この例では、`#target` 要素は body の下にあり、どのコンポーネントやページ内にもないため、`$("#target").host` の値は `null` になります。
+この例では、`#target` 要素は body の直下にあり、いかなるコンポーネントやページの内部にも存在しないため、`$("#target").host` の値は `null` となります。

@@ -2,7 +2,7 @@
 
 
 
-Mit der Eigenschaft `siblings` können Sie ganz einfach alle benachbarten Element-Instanzen des aktuellen Elements abrufen; diese werden als Array zurückgegeben.
+Mit der Eigenschaft `siblings` können Sie einfach alle benachbarten Elementinstanzen des aktuellen Elements abrufen, die als Array zurückgegeben werden.
 
 <o-playground name="siblings - benachbarte Elemente" style="--editor-height: 360px">
   <code path="demo.html">

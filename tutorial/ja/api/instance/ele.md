@@ -2,7 +2,7 @@
 
 
 
-`ele` 属性を通じて、インスタンスの実際の [Element 要素](https://developer.mozilla.org/ja/docs/Web/API/Element) を取得でき、ネイティブのプロパティやメソッドを使用できます。
+`ele` 属性を使用すると、インスタンスの実際の [Element 要素](https://developer.mozilla.org/zh-CN/docs/Web/API/Element) を取得し、ネイティブの属性やメソッドを使用できます。
 
 <o-playground name="ele - 要素を取得" style="--editor-height: 320px">
   <code path="demo.html">

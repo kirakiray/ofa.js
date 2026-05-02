@@ -2,11 +2,11 @@
 
 
 
-La propriété `classList` est identique à celle du natif. Vous pouvez utiliser [classList](https://developer.mozilla.org/fr/docs/Web/API/Element/classList) pour ajouter, supprimer et basculer des noms de classe.
+La propriété `classList` est cohérente avec celle native. Vous pouvez utiliser [classList](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/classList) pour ajouter, supprimer et basculer des noms de classe.
 
-Voici un exemple montrant comment utiliser `classList` :
+Voici un exemple qui montre comment utiliser `classList`：
 
-<o-playground name="classList - Exemple d'utilisation" style="--editor-height: 500px">
+<o-playground name="classList - exemple d'utilisation" style="--editor-height: 500px">
   <code path="demo.html">
     <template>
       <style>
@@ -20,7 +20,7 @@ Voici un exemple montrant comment utiliser `classList` :
           font-size:20px;
         }
       </style>
-      <div id="target" class="t-red">texte d'origine</div>
+      <div id="target" class="t-red">origin text</div>
       <script>
         setTimeout(()=> {
           $("#target").classList.remove('t-red');
@@ -33,4 +33,4 @@ Voici un exemple montrant comment utiliser `classList` :
   </code>
 </o-playground>
 
-La propriété `classList` vous permet d'ajouter, supprimer et basculer facilement des noms de classe, afin de modifier dynamiquement les styles de l'élément.
+La propriété `classList` vous permet d'ajouter, supprimer et basculer facilement les noms de classe afin de modifier dynamiquement le style d'un élément.

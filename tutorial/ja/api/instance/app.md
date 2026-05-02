@@ -2,12 +2,12 @@
 
 
 
-`o-app` 内部の要素、`o-app` 内部にある `o-page` のシャドウノード内部の要素、またはそのさらに内部にあるサブコンポーネントの `app` プロパティは、すべてこの `o-app` の要素インスタンスを指します。
+`o-app` 内の要素（`o-app` 内の `o-page` のシャドウノード内の要素、またはさらに内部のサブコンポーネントを含む）の `app` 属性は、すべてこの `o-app` の要素インスタンスを指します。
 
-以下は、`o-app` 内の要素で `app` 属性にアクセスする方法を示す例です：
+以下は、`o-app`内の要素から`app`属性にアクセスする方法を示す例です：
 
 
-<o-playground name="app - アプリケーションインスタンスの取得" style="--editor-height: 500px">
+<o-playground name="app - アプリケーションインスタンスを取得" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-app src="./app-config.js"></o-app>

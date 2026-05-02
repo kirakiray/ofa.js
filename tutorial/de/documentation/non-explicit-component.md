@@ -1,13 +1,13 @@
-# Nicht-explizite Komponenten
+# Nicht explizite Komponenten
 
-ofa.js enthält standardmäßig zwei implizite Komponenten:
+ofa.js enthält zwei implizite Komponenten:
 
-* Bedingte Render-Komponenten: `x-if`, `x-else-if`, `x-else`
-* Füll-Komponente: `x-fill`
+* Bedingte Rendering-Komponenten: `x-if`, `x-else-if`, `x-else`
+* Füllkomponente: `x-fill`
 
-Die Funktionen dieser beiden Komponenten entsprechen jeweils den `o-if`- und `o-fill`-Komponenten, jedoch werden sie selbst nicht wirklich in das DOM gerendert, sondern ihre internen Elemente werden direkt in den entsprechenden Bereich gerendert.
+Die Funktionen dieser beiden Komponenten sind jeweils identisch mit den Komponenten `o-if` und `o-fill`, aber sie selbst werden nicht wirklich im DOM gerendert, sondern ihre inneren Elemente werden direkt in den entsprechenden Bereich gerendert.
 
-Beispiel:
+zum Beispiel:
 
 ```html
 <style>
@@ -17,11 +17,11 @@ Beispiel:
 </style>
 <div class="container">
     <o-if :value="true">
-        <!-- Der Stil ist nicht rot, weil die o-if-Komponente selbst im DOM existiert -->
+        <!-- Der Stil ist nicht rot, da die o-if-Komponente selbst im DOM vorhanden ist -->
         <div class="item">1</div>
     </o-if>
     <x-if :value="true">
-        <!-- Der Stil ist rot, weil die x-if-Komponente nicht ins DOM gerendert wird -->
+        <!-- Der Stil ist rot, da die x-if-Komponente nicht in das DOM gerendert wird -->
         <div class="item">2</div>
     </x-if>
 </div>
@@ -37,7 +37,7 @@ Beispiel:
             padding: 10px;
         }
         .container > .item {
-            /* Wählt direkte .item-Elemente der ersten Ebene aus und färbt sie rot */
+            /* Wählt direkte untergeordnete .item-Elemente und färbt sie rot */
             color:red;
         }
         /* Muss .item-Elemente innerhalb der o-if-Komponente auswählen */
@@ -48,11 +48,11 @@ Beispiel:
         <div class="container">
             <o-if :value="true">
                 <!-- Der Stil ist nicht rot, weil die o-if-Komponente selbst im DOM existiert -->
-                <div class="item">Wird nicht rot dargestellt</div>
+                <div class="item">Wird nicht rot angezeigt</div>
             </o-if>
             <x-if :value="true">
                 <!-- Der Stil ist rot, weil die x-if-Komponente nicht ins DOM gerendert wird -->
-                <div class="item">Wird rot dargestellt</div>
+                <div class="item">Wird rot angezeigt</div>
             </x-if>
         </div>
         <script>
@@ -66,9 +66,9 @@ Beispiel:
   </code>
 </o-playground>
 
-## x-if Bedingtes-Rendering-Komponente
+## x-if-Komponente für bedingtes Rendering
 
-`x-if` funktioniert genauso wie [o-if](./conditional-rendering.md) und wird verwendet, um basierend auf dem Wahrheitswert eines Bedingungsausdrucks zu entscheiden, ob Inhalte gerendert werden sollen. Der Unterschied besteht darin, dass sich `x-if` selbst nicht als DOM-Element verhält und seine internen Inhalte direkt in den übergeordneten Container gerendert werden.
+`x-if` hat genau die gleiche Funktionalität wie [o-if](./conditional-rendering.md) und wird verwendet, um zu entscheiden, ob Inhalte basierend auf dem Wahrheitswert eines bedingten Ausdrucks gerendert werden sollen. Der Unterschied besteht darin, dass `x-if` selbst nicht als DOM-Element existiert; sein interner Inhalt wird direkt im übergeordneten Container gerendert.
 
 ```html
 <div class="container">
@@ -78,25 +78,25 @@ Beispiel:
 </div>
 ```
 
-`x-if` kann auch zusammen mit `x-else-if` und `x-else` verwendet werden:
+`x-if` kann auch mit `x-else-if` und `x-else` verwendet werden:
 
 ```html
 <div class="container">
     <x-if :value="role === 'admin'">
-        <p>Administrator-Panel</p>
+        <p>Administrationsbereich</p>
     </x-if>
     <x-else-if :value="role === 'user'">
         <p>Benutzerzentrum</p>
     </x-else-if>
     <x-else>
-        <p>Bitte einloggen</p>
+        <p>Bitte anmelden</p>
     </x-else>
 </div>
 ```
 
 ## x-fill Füllkomponente
 
-`x-fill` hat genau die gleiche Funktion wie [o-fill](./list-rendering.md) und wird verwendet, um Array-Daten als mehrere DOM-Elemente zu rendern. Ähnlich wie `x-if` rendert sich `x-fill` nicht selbst in das DOM, sondern dessen internes Template wird direkt im übergeordneten Container gerendert.
+`x-fill` hat die exakt gleiche Funktionalität wie [o-fill](./list-rendering.md) und wird verwendet, um Array-Daten in mehrere DOM-Elemente zu rendern. Ähnlich wie `x-if` wird `x-fill` selbst nicht ins DOM gerendert, sondern die innere Vorlage wird direkt in das übergeordnete Container-Element gerendert.
 
 ```html
 <ul>
@@ -106,7 +106,7 @@ Beispiel:
 </ul>
 ```
 
-Beispiel für die Verwendung von benannten Templates:
+Beispiel für die Verwendung benannter Vorlagen:
 
 ```html
 <ul>
@@ -120,20 +120,18 @@ Beispiel für die Verwendung von benannten Templates:
 </template>
 ```
 
-## Leistungsbeschreibung
+## Leistungshinweise
 
-Neben den funktionalen Unterschieden ist die Rendering-Leistung von nicht expliziten Komponenten im Vergleich zu expliziten Komponenten (`o-if`, `o-fill`) **viel schlechter**. Dies liegt daran, dass nicht explizite Komponenten nicht tatsächlich in das DOM gerendert werden und zusätzliche Logik zur Simulation des Renderings benötigen, um die Positionierung und Aktualisierung interner Elemente zu verarbeiten.
+Abgesehen von den funktionalen Unterschieden ist die Rendering-Leistung von nicht-expliziten Komponenten **viel schlechter** als die von expliziten Komponenten (`o-if`, `o-fill`). Dies liegt daran, dass nicht-explizite Komponenten nicht tatsächlich im DOM gerendert werden und zusätzliche simulierte Rendering-Logik erfordern, um die Positionierung und Aktualisierung interner Elemente zu verarbeiten.
 
-Darüber hinaus können implizite Komponenten einige schwer erkennbare Bugs verursachen: Da sie nicht wirklich in das DOM eintreten, können Operationen, die von der DOM-Struktur abhängen (wie Event-Bindungen, Stilberechnungen oder Abfragen durch Drittanbieter-Bibliotheken), fehlschlagen oder sich unerwartet verhalten.
+Darüber hinaus können implizite Komponenten einige schwer erkennbare Bugs verursachen: Da sie nicht wirklich in das DOM eintreten, können Operationen, die von der DOM-Struktur abhängen (wie Event-Bindungen, Stilberechnungen oder Abfragen durch Drittanbieter-Bibliotheken), unwirksam oder anomal sein.
 
-Daher wird empfohlen, **explizite Komponenten** (`o-if`, `o-else-if`, `o-else`, `o-fill`) **vorrangig zu verwenden** und nicht-explizite Komponenten nur in bestimmten Szenarien einzusetzen.
+Daher wird empfohlen, **vorzugsweise explizite Komponenten** (`o-if`, `o-else-if`, `o-else`, `o-fill`) zu verwenden und nicht explizite Komponenten nur in bestimmten Szenarien einzusetzen.
 
-## Anwendungsfälle
+## Anwendungsszenario
 
-Obwohl nicht explizite Komponenten eine schlechtere Leistung aufweisen, können sie in den folgenden Szenarien nützlich sein:
+Obwohl nicht-explizite Komponenten eine schlechtere Leistung aufweisen, können sie in den folgenden Szenarien verwendet werden:
 
-1. **Vermeiden zusätzlicher DOM-Ebenen**: Wenn Sie nicht möchten, dass `o-if` oder `o-fill` Elemente Teil der DOM-Struktur werden
-
-2. **Stilvererbung**: Wenn Sie möchten, dass innere Elemente direkt die Stile des übergeordneten Containers erben, ohne von dazwischenliegenden Komponentenelementen beeinflusst zu werden
-
-3. **CSS-Selektor-Einschränkungen**: Wenn Sie übergeordnete Kind-Selektoren (wie `.container > .item`) verwenden müssen, um Stile präzise zu kontrollieren, aber keine zusätzlichen Wrapper-Elemente dazwischen wünschen
+1. **Vermeide zusätzliche DOM-Ebenen**: Wenn du nicht möchtest, dass `o-if`- oder `o-fill`-Elemente Teil der DOM-Struktur werden
+2. **Stilvererbung**: Wenn du möchtest, dass innere Elemente direkt die Stile des übergeordneten Containers erben, ohne von Zwischenkomponenten beeinflusst zu werden
+3. **Einschränkungen bei CSS-Selektoren**: Wenn du Eltern-Direktkind-Selektoren (wie `.container > .item`) verwenden musst, um Stile präzise zu steuern, aber keine zusätzlichen Wrapper-Elemente dazwischen haben willst

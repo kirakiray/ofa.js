@@ -2,7 +2,7 @@
 
 
 
-Mit der `nexts`-Eigenschaft können Sie mühelos alle benachbarten Elementinstanzen nach dem aktuellen Element abrufen, die als Array zurückgegeben werden.
+Mit der `nexts`-Eigenschaft können Sie problemlos alle benachbarten Elementinstanzen hinter dem aktuellen Element abrufen, die als Array zurückgegeben werden.
 
 <o-playground name="nexts - Nachfolgende Elemente" style="--editor-height: 320px">
   <code path="demo.html">

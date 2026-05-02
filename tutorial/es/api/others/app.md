@@ -1,12 +1,12 @@
-# Componente o-app
+# o-app componente
 
-`o-app` es uno de los componentes centrales en ofa.js, utilizado para configurar y gestionar toda la aplicación. A continuación, se presentan algunas propiedades y métodos clave de app:
+`o-app` es uno de los componentes centrales de ofa.js, utilizado para configurar y gestionar toda la aplicación. A continuación se presentan algunas propiedades y métodos clave de la aplicación:
 
 ## src
 
 
 
-El atributo `src` se utiliza para especificar la dirección específica del módulo de configuración de parámetros de la aplicación.
+El atributo `src` se utiliza para especificar la dirección concreta del módulo de configuración de parámetros de la aplicación.
 
 ```javascript
 const app = $("o-app");
@@ -17,7 +17,7 @@ console.log(app.src);
 
 
 
-La propiedad `current` se utiliza para obtener la instancia de la página que se está mostrando. Esto puede ayudarle a acceder y manipular la página que se está mostrando actualmente, por ejemplo, actualizar su contenido o ejecutar operaciones específicas.
+`current` propiedad se utiliza para obtener la instancia de la página que se está mostrando. Esto puede ayudarle a acceder y manipular la página que se está mostrando actualmente, por ejemplo, para actualizar su contenido o realizar operaciones específicas.
 
 ```javascript
 const currentPage = app.current;
@@ -27,7 +27,7 @@ const currentPage = app.current;
 
 
 
-El método `goto` se utiliza para saltar a una página específica. Puedes pasar la dirección de la página de destino, y la aplicación cargará y mostrará esa página. Este es un método importante para la navegación de la aplicación.
+`goto` método se utiliza para saltar a la página especificada. Puede pasar la dirección de la página de destino, la aplicación cargará y mostrará esa página. Este es un método importante para la navegación de la aplicación.
 
 ```javascript
 app.goto("/page2.html");
@@ -37,7 +37,7 @@ app.goto("/page2.html");
 
 
 
-El método `replace` es similar a `goto`, pero se utiliza para reemplazar la página actual en lugar de añadir una nueva página a la pila. Esto puede usarse para realizar un reemplazo de página en lugar de una navegación por pila.
+`replace` es similar a `goto`, pero se utiliza para reemplazar la página actual en lugar de añadir una nueva página a la pila. Esto puede usarse para implementar la sustitución de páginas en lugar de la navegación por pila.
 
 ```javascript
 app.replace("/new-page.html");
@@ -47,7 +47,7 @@ app.replace("/new-page.html");
 
 
 
-El método `back` se utiliza para regresar a la página anterior, implementando la operación de retroceso en la navegación de páginas. Esto lleva al usuario de vuelta a la página previa.
+El método `back` se utiliza para volver a la página anterior, realizando la operación de retroceso en la navegación. Esto lleva al usuario de regreso a la página anterior.
 
 ```javascript
 app.back();
@@ -57,7 +57,7 @@ app.back();
 
 
 
-El atributo `routers` contiene la información de configuración de rutas de la aplicación. Es un atributo importante que define las reglas de enrutamiento y el mapeo de cada página dentro de la aplicación. La configuración de rutas determina la navegación entre páginas y cómo se manejan las URL.
+El atributo `routers` contiene la información de configuración de rutas de la aplicación. Es un atributo importante que define las reglas y mapeos de rutas para cada página dentro de la aplicación. La configuración de rutas determina la navegación entre páginas y cómo se manejan las URL.
 
 ```javascript
 const routeConfig = app.routers;

@@ -1,5 +1,5 @@
 index: ./index.html
-header: # 헤더에 표시될 내비게이션 주소
+header: # 헤더에 표시될 네비게이션 주소
   - name: 튜토리얼
     url: ./documentation/_config.yaml
   - name: API

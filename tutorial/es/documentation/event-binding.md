@@ -1,10 +1,10 @@
-# Enlace de eventos
+# Vinculación de eventos
 
-En ofa.js, la vinculación de eventos es un mecanismo importante para lograr la interacción del usuario. Puedes vincular controladores de eventos a los elementos de varias maneras para responder a las acciones del usuario.
+En ofa.js, el enlace de eventos es un mecanismo importante para lograr la interacción del usuario. Puedes vincular manejadores de eventos a los elementos de varias maneras para responder a las acciones del usuario.
 
-## Vincular eventos desde proto
+## Enlace de eventos desde proto
 
-Esta es la forma recomendada de vincular eventos, adecuada para lógicas de manejo de eventos complejas. Definir las funciones de manejo de eventos en el objeto `proto` permite organizar mejor la lógica del código y facilita su mantenimiento y reutilización.
+Esta es la forma recomendada de enlace de eventos, adecuada para lógica de manejo de eventos compleja. Definir las funciones de manejo de eventos en el objeto `proto` permite organizar mejor la lógica del código y facilita el mantenimiento y la reutilización.
 
 <o-playground name="Enlazar eventos desde proto" style="--editor-height: 500px">
   <code>
@@ -35,9 +35,9 @@ Esta es la forma recomendada de vincular eventos, adecuada para lógicas de mane
   </code>
 </o-playground>
 
-## Ejecutar la función directamente
+## Ejecutar función directamente
 
-Para operaciones simples (como incremento de contador, cambio de estado, etc.), se pueden escribir expresiones breves directamente en los atributos de eventos. Este enfoque es conciso y claro, adecuado para manejar lógica simple.
+Para operaciones simples (como incrementar un contador, cambiar un estado, etc.), se pueden escribir expresiones breves directamente en los atributos de evento. Este método es conciso y claro, adecuado para manejar lógica simple.
 
 <o-playground name="Ejecutar función directamente" style="--editor-height: 500px">
   <code>
@@ -63,20 +63,20 @@ Para operaciones simples (como incremento de contador, cambio de estado, etc.), 
   </code>
 </o-playground>
 
-## Tipos de eventos admitidos
+## Tipos de eventos compatibles
 
-ofa.js admite todos los eventos DOM estándar, incluyendo pero no limitándose a:
+ofa.js soporta todos los eventos DOM estándar, incluyendo pero no limitado a:
 
-- Eventos del ratón: `click`、`dblclick`、`mousedown`、`mouseup`、`mouseover`、`mouseout`, etc.
-- Eventos del teclado: `keydown`、`keyup`、`keypress`, etc.
-- Eventos de formulario: `submit`、`change`、`input`、`focus`、`blur`, etc.
-- Eventos táctiles: `touchstart`、`touchmove`、`touchend`, etc.
+- Eventos de ratón: `click`, `dblclick`, `mousedown`, `mouseup`, `mouseover`, `mouseout`, etc.
+- Eventos de teclado: `keydown`, `keyup`, `keypress`, etc.
+- Eventos de formulario: `submit`, `change`, `input`, `focus`, `blur`, etc.
+- Eventos táctiles: `touchstart`, `touchmove`, `touchend`, etc.
 
-ofa.js es compatible con los mismos tipos de eventos que los eventos DOM nativos. Para más detalles, consulta la [documentación de eventos de MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Event).
+ofa.js admite los mismos tipos de eventos que los eventos DOM nativos; para más detalles, consulte la [documentación de eventos de MDN](https://developer.mozilla.org/es/docs/Web/API/Event).
 
-## Pasar parámetros a controladores de eventos
+## Pasar parámetros al manejador de eventos
 
-También puedes pasar parámetros a los controladores de eventos:
+También puedes pasar parámetros al manejador de eventos:
 
 <o-playground name="Pasar parámetros al manejador de eventos" style="--editor-height: 600px">
   <code>
@@ -130,7 +130,7 @@ En los manejadores de eventos, puedes acceder al objeto de evento nativo a trav�
           justify-content: center;
         }
       </style>
-      <div class="container" on:click="handleClick">Haz clic en cualquier lugar para ver las coordenadas</div>
+      <div class="container" on:click="handleClick">Haga clic en cualquier lugar para ver las coordenadas</div>
       <p>X: {{x}}, Y: {{y}}</p>
       <script>
         export default async () => {
@@ -152,10 +152,10 @@ En los manejadores de eventos, puedes acceder al objeto de evento nativo a trav�
   </code>
 </o-playground>
 
-También puedes usar el parámetro `$event` en la expresión para acceder al objeto de evento nativo, por ejemplo, para obtener las coordenadas del clic del ratón:
+También puedes usar el parámetro `$event` en las expresiones para acceder al objeto de evento nativo, por ejemplo, para obtener las coordenadas del clic del mouse:
 
 ```html
-<div class="container" on:click="handleClick($event)">Haz clic en cualquier lugar para ver las coordenadas</div>
+<div class="container" on:click="handleClick($event)">Haga clic en cualquier lugar para ver las coordenadas</div>
 ```
 
 ## Escuchar eventos personalizados
@@ -166,4 +166,4 @@ Además de escuchar eventos nativos del DOM, también puedes escuchar fácilment
 <custom-comp on:custom-event="handleCustomEvent"></custom-comp>
 ```
 
-Para profundizar en los eventos personalizados, consulte el capítulo [Eventos personalizados](custom-events.md). Se recomienda seguir el tutorial en orden progresivo, ya que los contenidos posteriores se desarrollarán de forma natural; no obstante, también puede consultarlo en cualquier momento para adelantarse.
+Para profundizar en los eventos personalizados, consulte el capítulo [Eventos personalizados](custom-events.md). Se recomienda seguir el tutorial en orden, ya que los contenidos posteriores se desarrollarán de forma natural; sin embargo, también puede consultarlo en cualquier momento para adelantarse.

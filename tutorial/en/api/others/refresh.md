@@ -1,10 +1,10 @@
 # refresh
 
-The `refresh` method is used to proactively refresh a component's rendered view. When the data on the component hasn't updated, you can use this method to refresh the component's view.
+The `refresh` method is used to actively refresh the rendering view of a component. Sometimes when the data on the component has not been updated, this method can be used to refresh the component's view.
 
-Applicable to scenarios that require manual refreshing of [non-reactive data](../../documentation/property-response.md).
+Suitable for scenarios where manual refresh of [non-reactive data](../../documentation/property-response.md) is required.
 
-<o-playground name="refresh - Refresh View" style="--editor-height: 400px">
+<o-playground name="refresh - refresh view" style="--editor-height: 400px">
   <code path="demo.html" preview>
     <template>
       <l-m src="./refresh-demo.html"></l-m>

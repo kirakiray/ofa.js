@@ -1,22 +1,22 @@
 # Renderizado de listas
 
-En ofa.js, el componente `o-fill` proporciona una potente función de renderizado de listas, capaz de renderizar eficientemente datos de array en múltiples elementos similares. Admite dos formas principales de uso: renderizado directo y renderizado de plantilla.
+En ofa.js, el componente `o-fill` proporciona potentes capacidades de renderizado de listas, permitiendo renderizar eficientemente datos de un array en múltiples elementos similares. Admite dos formas principales de uso: renderizado directo y renderizado con plantillas.
 
-## Introducción del componente o-fill
+## Introducción al componente o-fill
 
-`o-fill` es el componente principal en ofa.js para el renderizado de listas; recibe una propiedad `value` de tipo array y genera un elemento DOM correspondiente para cada ítem del array. Durante el renderizado, ofa.js rastrea automáticamente los cambios en el array y actualiza el DOM de manera eficiente.
+`o-fill` es el componente principal de ofa.js utilizado para la representación de listas. Recibe un atributo `value` de tipo array y genera un elemento DOM correspondiente para cada elemento del array. Durante el proceso de representación, ofa.js rastrea automáticamente los cambios en el array y actualiza el DOM de manera eficiente.
 
-### Características principales：
+### Características principales:
 
-- **Actualización eficiente**: rastrea los cambios en el array mediante pares clave-valor y actualiza solo las partes necesarias
-- **Acceso por índice**: accede al índice del elemento actual mediante `$index`
-- **Acceso a datos**: accede a los datos del elemento actual mediante `$data`
-- **Acceso al host**: accede a la instancia del componente actual mediante `$host`, pudiendo invocar métodos o acceder a datos del componente
-- **Reutilización de plantillas**: admite el uso de plantillas con nombre para renderizar listas complejas
+- **Actualización eficiente**: rastrea los cambios en la matriz mediante valores clave y actualiza solo las partes que necesitan cambios.
+- **Acceso por índice**: accede al índice del elemento actual a través de `$index`.
+- **Acceso a datos**: accede a los datos del elemento actual a través de `$data`.
+- **Acceso al anfitrión**: accede a la instancia del componente actual a través de `$host`, puede llamar a métodos del componente o acceder a datos del componente.
+- **Reutilización de plantillas**: admite el uso de plantillas con nombre para renderizado de listas complejas.
 
 ## Renderizado directo
 
-La renderización directa es la forma más sencilla de uso: se escribe el contenido de la plantilla directamente dentro de la etiqueta `o-fill`. Cuando el array cambia, `o-fill` crea automáticamente los elementos correspondientes para cada dato.
+La renderización directa es la forma más simple de usar, escribiendo el contenido de la plantilla directamente dentro de la etiqueta `o-fill`. Cuando el array cambia, `o-fill` crea automáticamente los elementos correspondientes para cada elemento de datos.
 
 <o-playground name="o-fill - renderizado directo" style="--editor-height: 600px">
   <code>
@@ -68,16 +68,16 @@ La renderización directa es la forma más sencilla de uso: se escribe el conten
   </code>
 </o-playground>
 
-En este ejemplo, podemos ver:- `$index` representa el índice del elemento actual (comenzando desde 0)
+En este ejemplo, podemos ver:- `$index` representa el índice del elemento actual (comienza desde 0)
 - `$data` representa el objeto de datos del elemento actual
 - `$host` representa la instancia del componente actual, se puede utilizar para invocar métodos del componente o acceder a los datos del componente
 - Cuando el array cambia, la lista se actualiza automáticamente
 
-## Renderizado de plantillas
+## Representación de plantillas
 
-Para estructuras de elementos de lista más complejas, puede utilizar plantillas con nombre. Defina la plantilla dentro de la etiqueta `template` y luego refiérase a ella en `o-fill` mediante el atributo `name`.
+Para estructuras de elementos de lista más complejas, se puede utilizar el método de plantilla nombrada. Defina la plantilla en la etiqueta `template` y luego haga referencia a ella mediante el atributo `name` en `o-fill`.
 
-<o-playground name="o-fill - Renderizado de plantilla" style="--editor-height: 600px">
+<o-playground name="o-fill - renderizado de plantilla" style="--editor-height: 600px">
   <code>
     <template page>
       <style>
@@ -87,8 +87,8 @@ Para estructuras de elementos de lista más complejas, puede utilizar plantillas
         .product-price { color: #832c22; font-weight: bold; }
         .product-desc { color: #929292; font-size: 0.9em; margin-top: 5px; }
       </style>
-      <h3>Lista de Productos</h3>
-      <button on:click="addProduct">Agregar Producto</button>
+      <h3>Lista de productos</h3>
+      <button on:click="addProduct">Agregar producto</button>
       <div class="products-container">
         <o-fill :value="products" name="product-template"></o-fill>
       </div>
@@ -97,16 +97,16 @@ Para estructuras de elementos de lista más complejas, puede utilizar plantillas
           <div class="product-name">{{$data.name}}</div>
           <div class="product-price">¥{{$data.price}}</div>
           <div class="product-desc">{{$data.description}}</div>
-          <small>Número de serie: {{$index + 1}}</small>
+          <small>Número: {{$index + 1}}</small>
         </div>
       </template>
       <script>
         export default async () => ({
           data: {
             products: [
-              { name: "MacBook Pro", price: 12999, description: "Computadora portátil de alto rendimiento, adecuada para trabajo profesional" },
-              { name: "iPhone 15", price: 5999, description: "Último modelo de teléfono inteligente, excelente calidad de fotos" },
-              { name: "AirPods Pro", price: 1999, description: "Auriculares inalámbricos con cancelación de ruido, excelente calidad de sonido" }
+              { name: "MacBook Pro", price: 12999, description: "Portátil de alto rendimiento, adecuado para trabajo profesional" },
+              { name: "iPhone 15", price: 5999, description: "Último modelo de teléfono inteligente, excelente para fotografía" },
+              { name: "AirPods Pro", price: 1999, description: "Auriculares inalámbricos con cancelación de ruido, calidad de sonido excelente" }
             ],
             productIndex: 0,
           },
@@ -132,9 +132,9 @@ Para estructuras de elementos de lista más complejas, puede utilizar plantillas
 
 ## Renderizado de listas anidadas
 
-`o-fill` admite el uso anidado y puede manejar estructuras de datos jerárquicas complejas, como menús de árbol, listas de categorías, etc.
+`o-fill` admite uso anidado y puede manejar estructuras de datos jerárquicas complejas, como menús en árbol, listas de categorías, etc.
 
-<o-playground name="o-fill - renderizado de listas anidadas" style="--editor-height: 800px">
+<o-playground name="o-fill - Renderizado de listas anidadas" style="--editor-height: 800px">
   <code>
     <template page>
       <style>
@@ -163,7 +163,7 @@ Para estructuras de elementos de lista más complejas, puede utilizar plantillas
           color: #34495e;
         }
       </style>
-      <h3>Navegación por categorías de productos</h3>
+      <h3>Navegación de categorías de productos</h3>
       <div class="navigation">
         <o-fill :value="categories" name="category-template"></o-fill>
       </div>
@@ -187,15 +187,15 @@ Para estructuras de elementos de lista más complejas, puede utilizar plantillas
             data: {
               categories: [
                 {
-                  name: "Electrónica",
+                  name: "Productos electrónicos",
                   subcategories: [
                     {
                       name: "Teléfonos",
-                      items: ["iPhone", "Teléfonos Android", "Teléfonos básicos"]
+                      items: ["iPhone", "Android", "Teléfonos básicos"]
                     },
                     {
-                      name: "Ordenadores",
-                      items: ["Portátiles", "Sobremesa", "Tabletas"]
+                      name: "Computadoras",
+                      items: ["Portátiles", "Escritorios", "Tabletas"]
                     }
                   ]
                 },
@@ -204,7 +204,7 @@ Para estructuras de elementos de lista más complejas, puede utilizar plantillas
                   subcategories: [
                     {
                       name: "Utensilios de cocina",
-                      items: ["Cacerolas", "Vajilla", "Electrodomésticos pequeños"]
+                      items: ["Ollas", "Cubiertos", "Pequeños electrodomésticos"]
                     },
                     {
                       name: "Artículos de dormitorio",
@@ -217,7 +217,7 @@ Para estructuras de elementos de lista más complejas, puede utilizar plantillas
                   subcategories: [
                     {
                       name: "Ropa de hombre",
-                      items: ["Camisetas", "Camisas", "Abrigos"]
+                      items: ["Camisetas", "Camisas", "Chaquetas"]
                     },
                     {
                       name: "Ropa de mujer",
@@ -245,12 +245,12 @@ Para listas que requieren actualizaciones frecuentes, puedes especificar un iden
 </o-fill>
 ```
 
-En el ejemplo anterior, `fill-key="id"` le dice a ofa.js que use el atributo `id` de cada elemento de datos como identificador único, de modo que incluso si el orden del array cambia, puede identificar y actualizar correctamente los elementos correspondientes.
+En el ejemplo anterior, `fill-key="id"` le dice a ofa.js que use el atributo `id` de cada elemento de datos como identificador único, de modo que incluso si el orden de la matriz cambia, pueda identificar y actualizar correctamente los elementos correspondientes.
 
-## Mejores prácticas para renderizado de listas
+## Mejores prácticas de renderizado de listas
 
-1. **Manejo de eventos**: Al usar eventos en elementos de lista, tenga en cuenta que `$host` apunta a la instancia del componente actual, y `$data` apunta a los datos del elemento actual
-2. **Elegir el método de renderizado adecuado**: Use renderizado directo para listas simples, y renderizado de plantilla para estructuras complejas
-3. **Consideraciones de rendimiento**: Para listas grandes o listas que se actualizan frecuentemente, use `fill-key` para especificar el valor de la clave
-4. **Estructura de datos**: Asegúrese de que cada elemento en el array sea un objeto de datos válido
-5. **Evitar anidación profunda**: Aunque se soporta el anidamiento, se debe evitar niveles de anidación excesivamente profundos
+1. **Manejo de eventos**: Al utilizar eventos en elementos de lista, tenga en cuenta que `$host` apunta a la instancia del componente actual, y `$data` apunta a los datos del elemento actual.
+2. **Seleccione el método de renderizado adecuado**: Para listas simples, use renderizado directo; para estructuras complejas, use renderizado de plantillas.
+3. **Consideraciones de rendimiento**: Para listas grandes o que se actualizan con frecuencia, use `fill-key` para especificar el valor clave.
+4. **Estructura de datos**: Asegúrese de que cada elemento en la matriz sea un objeto de datos válido.
+5. **Evite anidamientos profundos**: Aunque se admiten anidamientos, evite niveles de anidamiento demasiado profundos.

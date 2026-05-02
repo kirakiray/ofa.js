@@ -1,8 +1,8 @@
 # nexts
 
-Using the `nexts` property, you can easily retrieve all adjacent element instances following the current element, which will be returned as an array.
+Using the `nexts` property, you can easily get all adjacent element instances after the current element, and these elements will be returned as an array.
 
-<o-playground name="nexts - Subsequent Elements" style="--editor-height: 320px">
+<o-playground name="nexts - following elements" style="--editor-height: 320px">
   <code path="demo.html">
     <template>
       <ul>

@@ -10,7 +10,7 @@
   url: ./quick-start.md
 - name: 템플릿 문법
   content:
-    - name: 콘텐츠 렌더링
+    - name: 내용 렌더링
       url: ./content-rendering.md
     - name: 이벤트 바인딩
       url: ./event-binding.md
@@ -28,41 +28,41 @@
       url: ./computed-properties.md
     - name: 감시자
       url: ./watchers.md
-    - name: 라이프사이클
+    - name: 생명주기
       url: ./lifecycle.md
 - name: 컴포넌트
   content:
-    - name: 컴포넌트 만들기
+    - name: 컴포넌트 생성
       url: ./create-component.md
-    - name: 특성 속성 전달
+    - name: 상속 속성 전달
       url: ./inherit-attributes.md
     - name: 슬롯
       url: ./slots.md
-    - name: 깊은 속성 바인딩 이해
+    - name: 깊은 속성 바인딩
       url: ./deep-property-binding.md
     - name: 사용자 정의 이벤트
       url: ./custom-events.md
-- name: 앱과 확장
+- name: 애플리케이션 및 확장
   content:
     - name: 마이크로 앱
       url: ./micro-app.md
-    - name: 앱 설정 및 관련 함수
+    - name: 앱 구성 및 관련 함수
       url: ./app-configuration.md
-    - name: 싱글 페이지 애플리케이션
+    - name: 단일 페이지 애플리케이션
       url: ./routes.md
-    - name: 중첩된 페이지/라우팅
+    - name: 중첩 페이지/라우트
       url: ./nested-routes.md
     - name: SSR
       url: ./ssr.md
 - name: 상태 관리
   content:
-    - name: 상태 관리란?
+    - name: 상태 관리란 무엇인가
       url: ./state-management.md
     - name: 컨텍스트 상태
       url: ./context-state.md
     - name: 스타일 쿼리
       url: ./match-var.md
-- name: 프로덕션 및 배포
+- name: 빌드 및 배포
   url: ./build-app.md
 - name: 기타 컴포넌트
   content:

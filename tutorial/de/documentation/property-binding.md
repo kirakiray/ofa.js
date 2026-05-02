@@ -1,10 +1,10 @@
-# Eigenschaftsbindung
+# Attributbindung
 
-ofa.js unterstützt das Binden von Daten an Eigenschaften des nach der Instanziierung des Elements erzeugten Objekts, wie z. B. die value- oder checked-Eigenschaft eines input-Elements.
+ofa.js unterstützt die Bindung von Daten an die Eigenschaften von Objekten, die nach der Instanziierung von Elementen entstehen, wie z. B. die value- oder checked-Eigenschaft eines input-Elements.
 
-## Unidirektionale Eigenschaftsbindung
+## Einweg-Attributbindung
 
-Unidirektionale Attributbindung verwendet die Syntax `:toKey="fromKey"`, um Komponentendaten "unidirektional" mit den Attributen eines DOM-Elements zu synchronisieren. Bei Änderungen der Komponentendaten werden die Elementattribute sofort aktualisiert; jedoch werden Änderungen am Element selbst (z. B. Benutzereingaben) nicht zurück in die Komponente geschrieben, wodurch der Datenfluss einfach und kontrollierbar bleibt.
+Einweg-Attribut-Bindung verwendet die Syntax `:toKey="fromKey"`, um Komponentendaten „einseitig“ mit dem Attribut eines DOM-Elements zu synchronisieren. Ändert sich die Komponentendatum, wird das Elementattribut sofort aktualisiert; Änderungen am Element selbst (z. B. Benutzereingaben) fließen jedoch nicht zurück in die Komponente und halten den Datenfluss einseitig und steuerbar.
 
 <o-playground name="Einweg-Attribut-Bindung" style="--editor-height: 500px">
   <code>
@@ -24,7 +24,7 @@ Unidirektionale Attributbindung verwendet die Syntax `:toKey="fromKey"`, um Komp
       </style>
       <p>Aktueller Wert: {{val}}</p>
       <input type="text" :value="val" placeholder="Dies ist ein einweg-gebundenes Eingabefeld">
-      <p>Hinweis: Direktes Ändern des Inhalts im Eingabefeld ändert den oben angezeigten Wert nicht</p>
+      <p>Hinweis: Eine direkte Änderung des Inhalts im Eingabefeld ändert den oben angezeigten Wert nicht</p>
       <script>
         export default async () => {
           return {
@@ -36,11 +36,11 @@ Unidirektionale Attributbindung verwendet die Syntax `:toKey="fromKey"`, um Komp
   </code>
 </o-playground>
 
-## Zweiseitige Attributbindung
+## Zweiwege-Attributbindung
 
-Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und ermöglicht die bidirektionale Synchronisierung zwischen Komponentendaten und DOM-Elementen. Wenn sich die Komponentendaten ändern, werden die Attribute des DOM-Elements aktualisiert; wenn sich die Attribute des DOM-Elements ändern (z. B. durch Benutzereingaben), werden auch die Komponentendaten synchron aktualisiert.
+Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und realisiert die bidirektionale Synchronisation zwischen Komponentendaten und DOM-Elementen. Wenn sich die Komponentendaten ändern, wird die Eigenschaft des DOM-Elements aktualisiert; wenn sich die Eigenschaft des DOM-Elements ändert (z. B. durch Benutzereingaben), werden auch die Komponentendaten synchronisiert.
 
-<o-playground name="Zweirichtungs-Attribut-Bindung" style="--editor-height: 500px">
+<o-playground name="Zwei-Wege-Datenbindung" style="--editor-height: 500px">
   <code>
     <template page>
       <style>
@@ -57,8 +57,8 @@ Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und ermö
         }
       </style>
       <p>Aktueller Wert: {{val}}</p>
-      <input type="text" sync:value="val" placeholder="Dies ist ein Eingabefeld mit Zweirichtungs-Bindung">
-      <p>Tipp: Änderungen im Eingabefeld aktualisieren den oben angezeigten Wert in Echtzeit</p>
+      <input type="text" sync:value="val" placeholder="Dies ist ein Eingabefeld mit bidirektionaler Bindung">
+      <p>Hinweis: Änderungen im Eingabefeld aktualisieren sofort den darüber angezeigten Wert</p>
       <script>
         export default async () => {
           return {
@@ -70,14 +70,14 @@ Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und ermö
   </code>
 </o-playground>
 
-### Zwei-Wege-Datenbindung Merkmale
+### Merkmale der bidirektionalen Bindung
 
--  Datenfluss: Komponente ↔ DOM-Element (bidirektional)
--  Komponentendatenänderungen → DOM-Element-Aktualisierung
--  DOM-Element-Änderungen → Komponentendaten-Aktualisierung
--  Geeignet für Szenarien, die Benutzereingaben und Datensynchronisierung erfordern
+- Datenfluss: Komponente ↔ DOM-Element (bidirektional)
+- Änderung der Komponentendaten → Aktualisierung des DOM-Elements
+- Änderung des DOM-Elements → Aktualisierung der Komponentendaten
+- Geeignet für Szenarien, die Benutzereingaben und Datensynchronisation erfordern
 
-### Häufige Szenarien für bidirektionale Datenbindung
+### Häufige Szenarien für bidirektionale Bindung
 
 <o-playground name="Formular-Zwei-Wege-Bindung Beispiel" style="--editor-height: 700px">
   <code>
@@ -105,11 +105,11 @@ Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und ermö
       </style>
       <h3>Formular-Zwei-Wege-Bindung Beispiel</h3>
       <div class="form-group">
-        <label>Textfeld:</label>
+        <label>Texteingabefeld:</label>
         <input type="text" sync:value="textInput" placeholder="Text eingeben">
       </div>
       <div class="form-group">
-        <label>Zahlenfeld:</label>
+        <label>Nummerneingabefeld:</label>
         <input type="number" sync:value="numberInput" placeholder="Zahl eingeben">
       </div>
       <div class="form-group">
@@ -119,7 +119,7 @@ Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und ermö
       <div class="form-group">
         <label>Auswahlfeld:</label>
         <select sync:value="selectedOption">
-          <option value="">Bitte auswählen...</option>
+          <option value="">Bitte wählen...</option>
           <option value="option1">Option 1</option>
           <option value="option2">Option 2</option>
           <option value="option3">Option 3</option>
@@ -132,12 +132,12 @@ Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und ermö
         </label>
       </div>
       <div class="preview">
-        <h4>Live-Vorschau:</h4>
+        <h4>Echtzeit-Vorschau:</h4>
         <p>Text: {{textInput}}</p>
         <p>Zahl: {{numberInput}}</p>
         <p>Mehrzeiliger Text: {{textareaInput}}</p>
         <p>Auswahl: {{selectedOption}}</p>
-        <p>Checkbox-Status: {{isChecked ? 'Ausgewählt' : 'Nicht ausgewählt'}}</p>
+        <p>Checkbox-Status: {{isChecked ? 'angekreuzt' : 'nicht angekreuzt'}}</p>
       </div>
       <script>
         export default async () => {
@@ -152,7 +152,7 @@ Die bidirektionale Eigenschaftsbindung verwendet die `sync:xxx`-Syntax und ermö
 
 ## Hinweise
 
-1. **Performance-Aspekte**: Zwei-Wege-Bindung erzeugt Daten-Listener, deren massenhafter Einsatz die Leistung beeinträchtigen kann  
-2. **Datenkonsistenz**: Zwei-Wege-Bindung stellt die Übereinstimmung von Daten und View sicher, doch sollte man auf endless Update-Schleifen achten  
-3. **Initialwert setzen**: Stelle sicher, dass die gebundenen Daten sinnvolle Initialwerte besitzen, um undefined-Anzeigeprobleme zu vermeiden  
-4. **Event-Konflikte**: Verwende nicht gleichzeitig Zwei-Wege-Bindung und manuelle Event-Behandlung am selben Element, um Konflikte zu verhindern
+1. **Leistungsaspekte**：Zwei-Wege-Datenbindung erstellt Daten-Listener, eine umfangreiche Nutzung kann die Leistung beeinträchtigen.
+2. **Datenkonsistenz**：Zwei-Wege-Datenbindung gewährleistet die Konsistenz von Daten und Ansicht, aber es ist darauf zu achten, Endlosschleifen-Updates zu vermeiden.
+3. **Initialwertsetzung**：Stellen Sie sicher, dass die gebundenen Daten geeignete Anfangswerte haben, um Anzeigeprobleme durch undefined zu vermeiden.
+4. **Ereigniskonflikte**：Vermeiden Sie die gleichzeitige Verwendung von Zwei-Wege-Datenbindung und manueller Ereignisbehandlung auf demselben Element, um Konflikte zu vermeiden.

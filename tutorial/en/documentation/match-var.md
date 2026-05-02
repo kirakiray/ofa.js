@@ -1,16 +1,16 @@
-# Style Query
+# Style Queries
 
-`match-var` is a utility in ofa.js for styling based on CSS variables. It dynamically applies different styles according to the current component’s CSS variable values, enabling context-aware styling without JavaScript—ideal for theme colors and similar use cases.
+`match-var` is a feature component in ofa.js used for style matching based on CSS variables. With `match-var`, you can dynamically match and apply different styles according to the current component's CSS variable values. This feature is specifically designed for style-related context state passing, requires no JavaScript, is more convenient to use, and is suitable for style-propagation needs such as theme colors.
 
 ## Core Concepts
 
-- **match-var**: A style-matching component that applies internal styles only when a CSS variable equals a given value.  
-- **Attribute Matching**: Define the CSS variable and expected value to match via component attributes.  
-- **Style Application**: When the match succeeds, the rules inside the `<style>` tag are applied to the component.
+- **match-var**: Style matching component, determines whether to apply internal styles based on CSS variable values
+- **Attribute matching**: Through component properties, define the CSS variables to match and the expected values
+- **Style application**: When matched successfully, the styles inside the `<style>` tag will be applied to the component
 
 ## Basic Usage
 
-The `match-var` component uses attributes to define the CSS variable to match and its expected value. When the component's CSS variable equals the specified attribute value, the internally defined styles are applied.
+The `match-var` component defines the CSS variable to match and its expected value through attributes. When the component's CSS variable value matches the specified attribute value, the internally defined styles are applied.
 
 ```html
 <match-var theme="dark">
@@ -25,13 +25,13 @@ The `match-var` component uses attributes to define the CSS variable to match an
 
 ### Attributes
 
-The `match-var` component uses arbitrary attributes to define matching rules for CSS variables. The attribute name corresponds to the CSS variable name (without the `--` prefix), and the attribute value is the expected value to match.
+`match-var` component uses arbitrary attributes to define matching rules for CSS variables. The attribute name corresponds to the CSS variable name (without the `--` prefix), and the attribute value is the expected match value.
 
-### How it works
+### Working Principle
 
-1. **Browser support**: If the browser supports `@container style()` queries, the native CSS capability is used directly.  
-2. **Fallback**: If not supported, it polls for changes in CSS variable values and dynamically injects styles once a match is found.  
-3. **Manual refresh**: Style detection can be triggered manually via the `$.checkMatch()` method.
+1. **Browser Support**: If the browser supports `@container style()` queries, it will directly use native CSS capabilities.
+2. **Fallback Handling**: If not supported, it will poll to detect changes in CSS variable values and dynamically inject styles upon successful matching.
+3. **Manual Refresh**: You can manually trigger style detection via the `$.checkMatch()` method.
 
 ## Basic Example
 
@@ -57,7 +57,7 @@ The `match-var` component uses arbitrary attributes to define matching rules for
       <button on:click="changeTheme">Switch Theme</button> - Theme:{{currentTheme}}
       <div class="container">
         <theme-box>
-          Display different styles based on CSS variables
+          Display different styles based on CSS variable
         </theme-box>
       </div>
         <theme-box style="--theme: light;">
@@ -126,9 +126,9 @@ The `match-var` component uses arbitrary attributes to define matching rules for
   </code>
 </o-playground>
 
-## Multi-condition matching
+## Multi-Condition Matching
 
-Multiple attributes can be used simultaneously to define more complex matching conditions, and the styles will only be applied when all CSS variables match.
+Multiple attributes can be used simultaneously to define more complex matching conditions; styles are applied only when all CSS variables match.
 
 ```html
 <match-var theme="dark" size="large">
@@ -141,9 +141,9 @@ Multiple attributes can be used simultaneously to define more complex matching c
 </match-var>
 ```
 
-## Multi-Condition Matching Example
+## Multi-condition Matching Example
 
-<o-playground name="Property Matching Example" style="--editor-height: 500px">
+<o-playground name="Attribute Matching Example" style="--editor-height: 500px">
   <code path="demo.html" preview unimportant>
     <template>
       <o-page src="./page1.html"></o-page>
@@ -163,11 +163,11 @@ Multiple attributes can be used simultaneously to define more complex matching c
         }
       </style>
       <l-m src="./test-card.html"></l-m>
-      <div>Theme: {{theme}} <button on:click="changeTheme">Toggle Theme</button></div>
-      <div>Size: {{size}} <button on:click="changeSize">Toggle Size</button></div>
+      <div>Theme: {{theme}} <button on:click="changeTheme">Switch Theme</button></div>
+      <div>Size: {{size}} <button on:click="changeSize">Switch Size</button></div>
       <div class="content">
         <test-card>
-          <div>Multi-condition Style Matching Example</div>
+          <div>Multi-condition style matching example</div>
         </test-card>
       </div>
       <script>
@@ -244,11 +244,11 @@ Multiple attributes can be used simultaneously to define more complex matching c
   </code>
 </o-playground>
 
-## checkMatch Manual Refresh
+## checkMatch manual refresh
 
-In some cases, changes to CSS variables may not be automatically detected; you can manually call the `$.checkMatch()` method to trigger style detection.
+In some cases, changes to CSS variables may not be automatically detected. You can then manually call the `$.checkMatch()` method to trigger style detection.
 
-> Currently, Firefox does not yet support `@container style()` queries, so it is necessary to manually call `$.checkMatch()`; once future browsers natively support it, the system will automatically detect variable changes, eliminating the need for manual triggering.
+> Currently, Firefox does not support the `@container style()` query, so you need to manually call `$.checkMatch()`; once browsers natively support it in the future, the system will automatically detect variable changes without requiring manual triggering.
 
 ```javascript
 proto: {
@@ -262,6 +262,6 @@ proto: {
 
 ## Best Practices
 
-1. **Prioritize Native CSS Capabilities**: `match-var` prioritizes the use of the browser's native `@container style()` queries, offering better performance in modern browsers.  
-2. **Organize Styles Reasonably**: Keep related matching styles together for easier maintenance and understanding.  
-3. **Utilize data() Binding**: Combine with the `data()` directive to achieve responsive style switching.
+1. **Prioritize native CSS capabilities**: `match-var` will prefer the browser-native `@container style()` query, offering better performance in modern browsers  
+2. **Organize styles logically**: Keep related matching styles together for easier maintenance and comprehension  
+3. **Use data() binding**: Combine with the `data()` directive to achieve responsive style switching

@@ -2,7 +2,7 @@
 
 
 
-Mit der `parent`-Eigenschaft können Sie die übergeordnete Elementinstanz einer Instanz abrufen.
+Mit der Eigenschaft `parent` können Sie die übergeordnete Elementinstanz einer Instanz abrufen.
 
 <o-playground name="parent - Elternelement" style="--editor-height: 320px">
   <code path="demo.html">
