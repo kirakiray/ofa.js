@@ -80,6 +80,8 @@
      url: ./others/app.md
    - name: o-page组件
      url: ./others/page.md
+   - name: 模块返回对象属性
+     url: ./others/module-return.md
    - name: formData
      url: ./others/form-data.md
    - name: tag
