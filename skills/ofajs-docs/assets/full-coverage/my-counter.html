@@ -25,45 +25,39 @@
     <button class="btn" on:click="increment">+</button>
     <button class="btn" on:click="decrement">-</button>
   </div>
-</template>
 
-<script>
-  export default {
-    tag: "my-counter",
-    attrs: {
-      initialValue: 0
-    },
-    data: {
-      currentValue: 0
-    },
-    
-    watch: {
-      initialValue(val) {
-        this.currentValue = val;
-      }
-    },
-
-    ready() {
-      this.currentValue = this.initialValue;
-    },
-
-    proto: {
-      increment() {
-        this.currentValue++;
-        this.emitChange();
+  <script>
+    export default {
+      tag: "my-counter",
+      attrs: {
+        initialValue: 0,
       },
-      
-      decrement() {
-        this.currentValue--;
-        this.emitChange();
+      data: {
+        currentValue: 0,
       },
-      
-      emitChange() {
-        this.emit("change", {
-          detail: { value: this.currentValue }
-        });
-      }
-    }
-  };
-</script>
+      watch: {
+        initialValue(val) {
+          this.currentValue = val;
+        },
+      },
+      proto: {
+        increment() {
+          this.currentValue++;
+          this.emitChange();
+        },
+        decrement() {
+          this.currentValue--;
+          this.emitChange();
+        },
+        emitChange() {
+          this.emit("change", {
+            detail: { value: this.currentValue },
+          });
+        },
+      },
+      ready() {
+        this.currentValue = this.initialValue;
+      },
+    };
+  </script>
 </template>

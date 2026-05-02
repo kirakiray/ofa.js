@@ -5,19 +5,42 @@
     :host {
       display: block;
     }
-    .container { padding: 20px; font-family: Arial, sans-serif; }
-    .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
-    .active { background-color: #e3f2fd; }
-    .highlight { color: #1976d2; font-weight: bold; }
-    .btn { padding: 8px 16px; margin: 5px; cursor: pointer; }
-    .error { color: red; }
-    .success { color: green; }
-    .warning { color: orange; }
+    .container {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .active {
+      background-color: #e3f2fd;
+    }
+    .highlight {
+      color: #1976d2;
+      font-weight: bold;
+    }
+    .btn {
+      padding: 8px 16px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+    }
+    .success {
+      color: green;
+    }
+    .warning {
+      color: orange;
+    }
   </style>
 
   <div class="container">
     <h1>ofa.js 完整功能演示</h1>
-    
+
     <div class="section">
       <h2>1. 文本插值与 HTML 渲染</h2>
       <p>普通文本: {{message}}</p>
@@ -63,11 +86,11 @@
       </div>
       <o-fill :value="todoList">
         <template>
-          <todo-item 
-            :index="index" 
-            :text="item.text" 
-            sync:completed="item.completed"
-            on:remove="removeTodoItem(index)"
+          <todo-item
+            :index="$index"
+            :text="$data.text"
+            sync:completed="$data.completed"
+            on:remove="removeTodoItem($index)"
           ></todo-item>
         </template>
       </o-fill>
@@ -83,9 +106,9 @@
     <div class="section">
       <h2>7. 属性绑定演示</h2>
       <p>单向绑定: {{inputValue}}</p>
-      <input type="text" :value="inputValue" on:input="updateInput($event)">
+      <input type="text" :value="inputValue" on:input="updateInput($event)" />
       <p>双向绑定: {{syncValue}}</p>
-      <input type="text" sync:value="syncValue">
+      <input type="text" sync:value="syncValue" />
     </div>
 
     <div class="section">
@@ -93,81 +116,71 @@
       <div :html="lifecycleLogs"></div>
     </div>
   </div>
-</template>
 
-<script>
-  export default async ({ query }) => {
-    return {
-      data: {
-        message: "Hello ofa.js!",
-        count: 0,
-        isActive: false,
-        htmlContent: "<strong>加粗文本</strong>",
-        inputValue: "初始值",
-        syncValue: "双向绑定值",
-        todoList: [
-          { text: "学习 ofa.js", completed: false },
-          { text: "创建组件", completed: true }
-        ],
-        lifecycleLogs: ""
-      },
+  <script>
+    export default async ({ query }) => {
+      return {
+        data: {
+          message: "Hello ofa.js!",
+          count: 0,
+          isActive: false,
+          htmlContent: "<strong>加粗文本</strong>",
+          inputValue: "初始值",
+          syncValue: "双向绑定值",
+          todoList: [
+            { text: "学习 ofa.js", completed: false },
+            { text: "创建组件", completed: true },
+          ],
+          lifecycleLogs: "",
+        },
+        watch: {
+          count(val, oldVal) {
+            console.log(`count changed: ${oldVal} -> ${val}`);
+          },
+        },
 
-      get doubleCount() {
-        return this.count * 2;
-      },
-
-      watch: {
-        count(val, oldVal) {
-          console.log(`count changed: ${oldVal} -> ${val}`);
-        }
-      },
-
-      ready() {
-        this.lifecycleLogs += "<p>ready: 页面初始化完成</p>";
-        console.log("Query params:", query);
-      },
-
-      attached() {
-        this.lifecycleLogs += "<p>attached: 页面已挂载</p>";
-      },
-
-      detached() {
-        console.log("detached: 页面已卸载");
-      },
-
-      decrement() {
-        if (this.count > 0) this.count--;
-      },
-
-      toggle() {
-        this.isActive = !this.isActive;
-      },
-
-      addItem() {
-        this.todoList.push({
-          text: `新项目 ${this.todoList.length + 1}`,
-          completed: false
-        });
-      },
-
-      removeItem() {
-        if (this.todoList.length > 0) {
-          this.todoList.pop();
-        }
-      },
-
-      removeTodoItem(index) {
-        this.todoList.splice(index, 1);
-      },
-
-      updateInput(event) {
-        this.inputValue = event.target.value;
-      },
-
-      handleCounterChange(event) {
-        console.log("Counter changed:", event.detail);
-      }
+        proto: {
+          get doubleCount() {
+            return this.count * 2;
+          },
+          decrement() {
+            if (this.count > 0) this.count--;
+          },
+          toggle() {
+            this.isActive = !this.isActive;
+          },
+          addItem() {
+            this.todoList.push({
+              text: `新项目 ${this.todoList.length + 1}`,
+              completed: false,
+            });
+          },
+          removeItem() {
+            if (this.todoList.length > 0) {
+              this.todoList.pop();
+            }
+          },
+          removeTodoItem(index) {
+            this.todoList.splice(index, 1);
+          },
+          updateInput(event) {
+            this.inputValue = event.target.value;
+          },
+          handleCounterChange(event) {
+            console.log("Counter changed:", event.detail);
+          },
+        },
+        ready() {
+          this.lifecycleLogs += "<p>ready: 页面初始化完成</p>";
+          console.log("Query params:", query);
+        },
+        attached() {
+          this.lifecycleLogs += "<p>attached: 页面已挂载</p>";
+        },
+        detached() {
+          console.log("detached: 页面已卸载");
+        },
+      };
     };
-  };
-</script>
+  </script>
 </template>
