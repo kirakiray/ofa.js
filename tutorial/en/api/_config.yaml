@@ -34,9 +34,9 @@
      url: ./instance/host.md
    - name: app
      url: ./instance/app.md
-- name: Node Operations
+- name: Node Manipulation
   content:
-   - name: Add or Remove Child Elements
+   - name: Add or Remove Children
      url: ./operation/array-like.md
    - name: before
      url: ./operation/before.md
@@ -48,7 +48,7 @@
      url: ./operation/wrap.md
    - name: unwrap
      url: ./operation/unwrap.md
-- name: Attribute Operations
+- name: Attribute Manipulation
   content:
    - name: text
      url: ./props/text.md
@@ -64,7 +64,7 @@
      url: ./props/class-list.md
    - name: data
      url: ./props/data.md
-- name: Events
+- name: Event Related
   content:
    - name: on
      url: ./event/on.md
@@ -80,6 +80,8 @@
      url: ./others/app.md
    - name: o-page Component
      url: ./others/page.md
+   - name: Module Return Object Properties
+     url: ./others/module-return.md
    - name: formData
      url: ./others/form-data.md
    - name: tag
@@ -96,5 +98,5 @@
      url: ./others/extend.md
    - name: version
      url: ./others/version.md
-   - name: Instance Data Characteristics
+   - name: Instance Data Feature
      url: ./others/stanz.md

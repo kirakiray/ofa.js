@@ -1,4 +1,4 @@
-- name: AI가 ofa.js를 사용하는 장점
+- name: AI 사용 시 ofa.js의 장점
   url: ./more-suitable-for-ai.md
-- name: ofa.js 프로젝트 AI 프롬프트
-  url: ./use-ofa.js-in-project.md
+- name: 프로젝트에서 ofa.js의 AI 스킬 사용
+  url: ./ai-skill-usage.md

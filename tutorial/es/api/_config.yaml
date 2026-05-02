@@ -28,7 +28,7 @@
      url: ./instance/ele.md
    - name: root
      url: ./instance/root.md
-   - name: Elementos hijos
+   - name: Elemento hijo
      url: ./instance/children.md
    - name: host
      url: ./instance/host.md
@@ -36,7 +36,7 @@
      url: ./instance/app.md
 - name: Operaciones de nodo
   content:
-   - name: Agregar o eliminar elementos hijos
+   - name: Agregar o eliminar elementos secundarios
      url: ./operation/array-like.md
    - name: before
      url: ./operation/before.md
@@ -80,6 +80,8 @@
      url: ./others/app.md
    - name: Componente o-page
      url: ./others/page.md
+   - name: Propiedades del objeto devuelto por el módulo
+     url: ./others/module-return.md
    - name: formData
      url: ./others/form-data.md
    - name: tag
@@ -96,5 +98,5 @@
      url: ./others/extend.md
    - name: version
      url: ./others/version.md
-   - name: Características de datos de instancia
+   - name: Características de los datos de la instancia
      url: ./others/stanz.md

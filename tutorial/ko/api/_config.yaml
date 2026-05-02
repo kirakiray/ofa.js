@@ -1,4 +1,4 @@
-- name: API참조
+- name: API 참조
   url: ./api.html
 - name: 인스턴스 관련
   content:
@@ -76,10 +76,12 @@
      url: ./event/off.md
 - name: 기타
   content:
-   - name: o-app컴포넌트
+   - name: o-app 컴포넌트
      url: ./others/app.md
-   - name: o-page컴포넌트
+   - name: o-page 컴포넌트
      url: ./others/page.md
+   - name: 모듈 반환 객체 속성
+     url: ./others/module-return.md
    - name: formData
      url: ./others/form-data.md
    - name: tag

@@ -20,14 +20,14 @@
 
 <api-container>
     <api-list>
-      <h3>Liées à l'instance</h3>
+      <h3>Relatif à l'instance</h3>
       <api-item>
         <a href="./instance/dollar.md">$(selector)</a>
-        <p>Fonction centrale dans ofa.js, utilisée pour obtenir et manipuler des instances d'éléments DOM</p>
+        <p>Fonction centrale d'ofa.js, utilisée pour obtenir et manipuler des instances d'éléments DOM</p>
       </api-item>
       <api-item>
         <a href="./instance/all.md">all</a>
-        <p>Obtenir toutes les instances d'éléments enfants de l'élément courant</p>
+        <p>Obtenir toutes les instances des éléments enfants de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/shadow.md">shadow</a>
@@ -63,27 +63,27 @@
       </api-item>
       <api-item>
         <a href="./instance/clone.md">clone</a>
-        <p>Cloner l'élément courant et ses éléments enfants</p>
+        <p>Copier l'élément courant et ses enfants</p>
       </api-item>
       <api-item>
         <a href="./instance/ele.md">ele</a>
-        <p>Obtenir l'instance d'élément enfant de l'élément courant</p>
+        <p>Obtenir l'instance d'un élément enfant de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/root.md">root</a>
         <p>Obtenir l'instance racine à laquelle appartient l'élément courant</p>
       </api-item>
       <api-item>
-        <a href="./instance/children.md">éléments enfants</a>
+        <a href="./instance/children.md">Éléments enfants</a>
         <p>Obtenir tous les éléments enfants de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/host.md">host</a>
-        <p>Obtenir l'élément hôte du web component auquel appartient l'élément courant</p>
+        <p>Obtenir l'élément hôte du composant web auquel appartient l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./instance/app.md">app</a>
-        <p>Obtenir l'instance du composant o-app à laquelle appartient l'élément courant</p>
+        <p>Obtenir l'instance du composant o-app auquel appartient l'élément courant</p>
       </api-item>
     </api-list>
     <api-list>
@@ -102,7 +102,7 @@
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=8">unshift</a>
-        <p>Ajouter le premier élément enfant à l'élément courant</p>
+        <p>Ajouter un élément enfant en première position de l'élément courant</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=17">splice</a>
@@ -126,14 +126,14 @@
       </api-item>
       <api-item>
         <a href="./operation/unwrap.md">unwrap</a>
-        <p>Supprimer l'enveloppe parente de l'élément courant</p>
+        <p>Supprimer l'enveloppe de l'élément parent de l'élément courant</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>Manipulation des attributs</h3>
       <api-item>
         <a href="./props/text.md">text</a>
-        <p>Obtenir ou définir le contenu textuel de l'élément</p>
+        <p>Obtenir ou définir le contenu texte de l'élément</p>
       </api-item>
       <api-item>
         <a href="./props/html.md">html</a>
@@ -157,22 +157,22 @@
       </api-item>
       <api-item>
         <a href="./props/data.md">data</a>
-        <p>Obtenir ou définir l'attribut data de l'élément</p>
+        <p>Obtenir ou définir les attributs data de l'élément</p>
       </api-item>
     </api-list>
     <api-list>
-      <h3>Événements</h3>
+      <h3>Relatif aux événements</h3>
       <api-item>
         <a href="./event/on.md">on</a>
         <p>Ajouter un écouteur d'événement à l'élément</p>
       </api-item>
       <api-item>
         <a href="./event/one.md">one</a>
-        <p>Ajouter un écouteur d'événement qui ne s'exécute qu'une fois</p>
+        <p>Ajouter un écouteur d'événement qui ne s'exécute qu'une seule fois à l'élément</p>
       </api-item>
       <api-item>
         <a href="./event/emit.md">emit</a>
-        <p>Déclencher un événement personnalisé de l'élément</p>
+        <p>Déclencher un événement personnalisé sur l'élément</p>
       </api-item>
       <api-item>
         <a href="./event/off.md">off</a>
@@ -182,20 +182,24 @@
     <api-list>
       <h3>Autres</h3>
       <api-item>
-        <a href="./others/app.md">composant o-app</a>
-        <p>Composant racine de l'application ofa.js, utilisé pour gérer l'état et le routage</p>
+        <a href="./others/app.md">Composant o-app</a>
+        <p>Composant racine de l'application ofa.js, utilisé pour gérer l'état et le routage de l'application</p>
       </api-item>
       <api-item>
-        <a href="./others/page.md">composant o-page</a>
+        <a href="./others/page.md">Composant o-page</a>
         <p>Composant de page d'ofa.js, utilisé pour créer des pages d'application monopage</p>
       </api-item>
       <api-item>
+        <a href="./others/module-return.md">Propriétés de l'objet retourné par le module</a>
+        <p>Résumé des propriétés de l'objet retourné par les modules de page et de composant</p>
+      </api-item>
+      <api-item>
         <a href="./others/form-data.md">formData</a>
-        <p>Obtenir les données d'un formulaire</p>
+        <p>Obtenir les données du formulaire</p>
       </api-item>
       <api-item>
         <a href="./others/tag.md">tag</a>
-        <p>Obtenir le nom de balise de l'élément</p>
+        <p>Obtenir le nom de la balise de l'élément</p>
       </api-item>
       <api-item>
         <a href="./others/index.md">index</a>
@@ -203,7 +207,7 @@
       </api-item>
       <api-item>
         <a href="./others/is.md">is</a>
-        <p>Vérifier si l'élément correspond au sélecteur spécifié</p>
+        <p>Vérifier si l'élément correspond à un sélecteur spécifié</p>
       </api-item>
       <api-item>
         <a href="./others/refresh.md">refresh</a>
@@ -223,7 +227,7 @@
       </api-item>
       <api-item>
         <a href="./others/stanz.md">Caractéristiques des données d'instance</a>
-        <p>Stanz est la caractéristique de données réactives d'ofa.js, supportant la mise à jour automatique des données</p>
+        <p>Stanz est la caractéristique de données réactives d'ofa.js, prenant en charge la mise à jour automatique des données</p>
       </api-item>
     </api-list>
   </api-container>

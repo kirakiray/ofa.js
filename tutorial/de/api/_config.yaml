@@ -28,7 +28,7 @@
      url: ./instance/ele.md
    - name: root
      url: ./instance/root.md
-   - name: Kind-Elemente
+   - name: Kindelemente
      url: ./instance/children.md
    - name: host
      url: ./instance/host.md
@@ -36,7 +36,7 @@
      url: ./instance/app.md
 - name: Knotenoperationen
   content:
-   - name: Kind-Elemente hinzufügen oder entfernen
+   - name: Kindelemente hinzufügen oder löschen
      url: ./operation/array-like.md
    - name: before
      url: ./operation/before.md
@@ -80,6 +80,8 @@
      url: ./others/app.md
    - name: o-page-Komponente
      url: ./others/page.md
+   - name: Eigenschaften des Modulrückgabeobjekts
+     url: ./others/module-return.md
    - name: formData
      url: ./others/form-data.md
    - name: tag
@@ -96,5 +98,5 @@
      url: ./others/extend.md
    - name: version
      url: ./others/version.md
-   - name: Instanzdaten-Eigenschaften
+   - name: Eigenschaften der Instanzdaten
      url: ./others/stanz.md
