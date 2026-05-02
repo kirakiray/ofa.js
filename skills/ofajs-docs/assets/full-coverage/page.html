@@ -132,8 +132,13 @@
           lifecycleLogs: "",
         },
         watch: {
-          count(val, oldVal) {
-            console.log(`count changed: ${oldVal} -> ${val}`);
+          count(val, { watchers }) {
+            if (watchers) {
+              const watcher = watchers[0];
+              console.log(`count changed: ${watcher.oldValue} -> ${val}`);
+            } else {
+              // console.log("没有 watchers 代表是初始化时的赋值监听");
+            }
           },
         },
 
