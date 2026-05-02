@@ -29,7 +29,7 @@
 
   <div class="item-content" class:completed="completed">
     <input type="checkbox" sync:checked="completed" />
-    <span class="text">{{index + 1}}. {{text}}</span>
+    <span class="text">{{idx + 1}}. {{content}}</span>
     <span class="remove-btn" on:click="removeSelf">✕</span>
   </div>
 
@@ -37,8 +37,8 @@
     export default {
       tag: "todo-item",
       attrs: {
-        index: 0,
-        text: "",
+        idx: 0,
+        content: "",
         completed: false,
       },
       data: {},

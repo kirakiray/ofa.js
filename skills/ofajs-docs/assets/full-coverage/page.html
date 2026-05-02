@@ -86,8 +86,8 @@
       </div>
       <o-fill :value="todoList">
         <todo-item
-          attr:index="$index"
-          :text="$data.text"
+          attr:idx="$index"
+          :content="$data.content"
           sync:completed="$data.completed"
           on:remove="$host.removeTodoItem($index)"
         ></todo-item>
