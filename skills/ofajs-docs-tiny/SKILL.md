@@ -1,3 +1,8 @@
+---
+name: ofajs-docs-tiny
+description: ofa.js 框架精简速查文档。当用户需要快速查阅 ofa.js 核心语法、API 使用方法，或需要生成简洁的 ofa.js 代码示例时使用。
+---
+
 # ofa.js AI 开发速查
 
 这组文档用于帮助 AI 生成可直接运行的 `ofa.js` 页面、组件和微应用代码。原则是：**优先保证正确性，再压缩篇幅**。
