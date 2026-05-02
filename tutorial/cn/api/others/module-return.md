@@ -4,20 +4,20 @@
 
 ## 属性总览
 
-| 属性 | 类型 | 页面模块 | 组件模块 | 说明 |
-|------|------|:-------:|:-------:|------|
-| `tag` | `string` | ❌ | ✅ 必须 | 组件标签名 |
-| `data` | `object` | ✅ | ✅ | 响应式数据对象 |
-| `attrs` | `object` | ❌ | ✅ | 组件属性定义 |
-| `proto` | `object` | ✅ | ✅ | 方法和计算属性 |
-| `watch` | `object` | ✅ | ✅ | 侦听器 |
-| `ready` | `function` | ✅ | ✅ | DOM 创建完成时调用 |
-| `attached` | `function` | ✅ | ✅ | 挂载到 DOM 时调用 |
-| `detached` | `function` | ✅ | ✅ | 从 DOM 移除时调用 |
-| `loaded` | `function` | ✅ | ✅ | 完全加载完成时调用 |
-| `routerChange` | `function` | ✅ 父页面 | ❌ | 路由变化时调用 |
+| 属性 | 类型 | 页面模块 | 组件模块 | 说明 | 相关文档 |
+|------|------|:-------:|:-------:|------|------|
+| `tag` | `string` | ❌ | ✅ 必须 | 组件标签名 | [创建组件](../../documentation/create-component.md) |
+| `data` | `object` | ✅ | ✅ | 响应式数据对象 | [属性响应](../../documentation/property-response.md) |
+| `attrs` | `object` | ❌ | ✅ | 组件属性定义 | [传递特征属性](../../documentation/inherit-attributes.md) |
+| `proto` | `object` | ✅ | ✅ | 方法和计算属性 | [计算属性](../../documentation/computed-properties.md) |
+| `watch` | `object` | ✅ | ✅ | 侦听器 | [侦听器](../../documentation/watchers.md) |
+| `ready` | `function` | ✅ | ✅ | DOM 创建完成时调用 | [生命周期](../../documentation/lifecycle.md) |
+| `attached` | `function` | ✅ | ✅ | 挂载到 DOM 时调用 | [生命周期](../../documentation/lifecycle.md) |
+| `detached` | `function` | ✅ | ✅ | 从 DOM 移除时调用 | [生命周期](../../documentation/lifecycle.md) |
+| `loaded` | `function` | ✅ | ✅ | 完全加载完成时调用 | [生命周期](../../documentation/lifecycle.md) |
+| `routerChange` | `function` | ✅ 父页面 | ❌ | 路由变化时调用 | [嵌套页面/路由](../../documentation/nested-routes.md) |
 
-> **特殊导出**：`export const parent = "./layout.html"` - 用于嵌套路由，指定父页面路径（不在返回对象中）
+> **特殊导出**：`export const parent = "./layout.html"` - 用于嵌套路由，指定父页面路径（不在返回对象中）。详见 [嵌套页面/路由](../../documentation/nested-routes.md)。
 
 ## 核心属性
 
@@ -255,15 +255,12 @@ ready → attached → loaded
     export default async () => {
       return {
         tag: "my-component",
-        
         attrs: {
           title: "默认标题"
         },
-        
         data: {
           count: 0
         },
-        
         proto: {
           increment() {
             this.count++;
@@ -272,21 +269,17 @@ ready → attached → loaded
             return this.count * 2;
           }
         },
-        
         watch: {
           count(newVal) {
             console.log('count 变化为:', newVal);
           }
         },
-        
         ready() {
           console.log('组件准备就绪');
         },
-        
         attached() {
           console.log('组件已挂载');
         },
-        
         detached() {
           console.log('组件已卸载');
         }
