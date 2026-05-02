@@ -1,5 +1,5 @@
 - name: AI使用ofa.js的优势
   url: ./more-suitable-for-ai.md
-- name: ofa.js项目AI提示词
-  url: ./use-ofa.js-in-project.md
+- name: 在项目中使用ofa.js的AI技能
+  url: ./ai-skill-usage.md
 
