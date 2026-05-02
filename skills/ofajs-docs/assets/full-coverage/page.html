@@ -87,7 +87,7 @@
       <o-fill :value="todoList">
         <template>
           <todo-item
-            :index="$index"
+            attr:index="$index"
             :text="$data.text"
             sync:completed="$data.completed"
             on:remove="removeTodoItem($index)"
@@ -167,7 +167,7 @@
             this.inputValue = event.target.value;
           },
           handleCounterChange(event) {
-            console.log("Counter changed:", event.detail);
+            console.log("Counter changed:", event.data);
           },
         },
         ready() {
