@@ -20,14 +20,14 @@
 
 <api-container>
     <api-list>
-      <h3>Relacionado con la instancia</h3>
+      <h3>Relacionados con instancias</h3>
       <api-item>
         <a href="./instance/dollar.md">$(selector)</a>
-        <p>Función principal en ofa.js para obtener y manipular instancias de elementos del DOM</p>
+        <p>Función central de ofa.js, utilizada para obtener y manipular instancias de elementos DOM</p>
       </api-item>
       <api-item>
         <a href="./instance/all.md">all</a>
-        <p>Obtiene todas las instancias de elementos hijos del elemento actual</p>
+        <p>Obtiene todas las instancias de los elementos secundarios del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./instance/shadow.md">shadow</a>
@@ -39,7 +39,7 @@
       </api-item>
       <api-item>
         <a href="./instance/prevs.md">prevs</a>
-        <p>Obtiene todos los elementos hermanos anteriores del elemento actual</p>
+        <p>Obtiene todos los elementos hermanos anteriores al elemento actual</p>
       </api-item>
       <api-item>
         <a href="./instance/next.md">next</a>
@@ -47,7 +47,7 @@
       </api-item>
       <api-item>
         <a href="./instance/nexts.md">nexts</a>
-        <p>Obtiene todos los elementos hermanos posteriores del elemento actual</p>
+        <p>Obtiene todos los elementos hermanos posteriores al elemento actual</p>
       </api-item>
       <api-item>
         <a href="./instance/siblings.md">siblings</a>
@@ -63,58 +63,58 @@
       </api-item>
       <api-item>
         <a href="./instance/clone.md">clone</a>
-        <p>Clona el elemento actual y sus elementos hijos</p>
+        <p>Clona el elemento actual y sus elementos secundarios</p>
       </api-item>
       <api-item>
         <a href="./instance/ele.md">ele</a>
-        <p>Obtiene la instancia de elemento hijo del elemento actual</p>
+        <p>Obtiene la instancia del elemento secundario del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./instance/root.md">root</a>
         <p>Obtiene la instancia raíz a la que pertenece el elemento actual</p>
       </api-item>
       <api-item>
-        <a href="./instance/children.md">elementos infantiles</a>
-        <p>Obtiene todos los elementos hijos del elemento actual</p>
+        <a href="./instance/children.md">Elementos secundarios</a>
+        <p>Obtiene todos los elementos secundarios del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./instance/host.md">host</a>
-        <p>Obtiene el elemento host del web component al que pertenece el elemento actual</p>
+        <p>Obtiene el elemento anfitrión del componente web al que pertenece el elemento actual</p>
       </api-item>
       <api-item>
         <a href="./instance/app.md">app</a>
-        <p>Obtiene la instancia del componente o-app a la que pertenece el elemento actual</p>
+        <p>Obtiene la instancia del componente o-app al que pertenece el elemento actual</p>
       </api-item>
     </api-list>
     <api-list>
-      <h3>Manipulación de nodos</h3>
+      <h3>Operaciones de nodos</h3>
       <api-item>
         <a href="./operation/array-like.md">push</a>
-        <p>Añade un elemento hijo al elemento actual</p>
+        <p>Añade un elemento secundario al elemento actual</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=11">pop</a>
-        <p>Elimina el último elemento hijo del elemento actual</p>
+        <p>Elimina el último elemento secundario del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=14">shift</a>
-        <p>Elimina el primer elemento hijo del elemento actual</p>
+        <p>Elimina el primer elemento secundario del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=8">unshift</a>
-        <p>Añade el primer elemento hijo al elemento actual</p>
+        <p>Añade un elemento al inicio del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./operation/array-like.md?L=17">splice</a>
-        <p>Añade o elimina elementos hijos del elemento actual</p>
+        <p>Añade o elimina elementos secundarios del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./operation/before.md">before</a>
-        <p>Añade un elemento hijo antes del elemento actual</p>
+        <p>Añade un elemento antes del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./operation/after.md">after</a>
-        <p>Añade un elemento hijo después del elemento actual</p>
+        <p>Añade un elemento después del elemento actual</p>
       </api-item>
       <api-item>
         <a href="./operation/remove.md">remove</a>
@@ -122,7 +122,7 @@
       </api-item>
       <api-item>
         <a href="./operation/wrap.md">wrap</a>
-        <p>Envuelve el elemento actual dentro del elemento especificado</p>
+        <p>Envuelve el elemento actual dentro de un elemento especificado</p>
       </api-item>
       <api-item>
         <a href="./operation/unwrap.md">unwrap</a>
@@ -130,7 +130,7 @@
       </api-item>
     </api-list>
     <api-list>
-      <h3>Manipulación de atributos</h3>
+      <h3>Operaciones de atributos</h3>
       <api-item>
         <a href="./props/text.md">text</a>
         <p>Obtiene o establece el contenido de texto del elemento</p>
@@ -141,11 +141,11 @@
       </api-item>
       <api-item>
         <a href="./props/attr.md">attr</a>
-        <p>Obtiene o establece los atributos del elemento</p>
+        <p>Obtiene o establece un atributo del elemento</p>
       </api-item>
       <api-item>
         <a href="./props/css.md">css</a>
-        <p>Obtiene o establece los estilos del elemento</p>
+        <p>Obtiene o establece los estilos CSS del elemento</p>
       </api-item>
       <api-item>
         <a href="./props/style.md">style</a>
@@ -161,33 +161,37 @@
       </api-item>
     </api-list>
     <api-list>
-      <h3>Relacionado con eventos</h3>
+      <h3>Relacionados con eventos</h3>
       <api-item>
         <a href="./event/on.md">on</a>
-        <p>Añade un detector de eventos al elemento</p>
+        <p>Añade un escuchador de eventos al elemento</p>
       </api-item>
       <api-item>
         <a href="./event/one.md">one</a>
-        <p>Añade un detector de eventos que se ejecuta solo una vez al elemento</p>
+        <p>Añade un escuchador de eventos que se ejecuta solo una vez al elemento</p>
       </api-item>
       <api-item>
         <a href="./event/emit.md">emit</a>
-        <p>Dispara un evento personalizado del elemento</p>
+        <p>Desencadena un evento personalizado en el elemento</p>
       </api-item>
       <api-item>
         <a href="./event/off.md">off</a>
-        <p>Elimina el detector de eventos del elemento</p>
+        <p>Elimina un escuchador de eventos del elemento</p>
       </api-item>
     </api-list>
     <api-list>
       <h3>Otros</h3>
       <api-item>
-        <a href="./others/app.md">componente o-app</a>
-        <p>Componente raíz de la aplicación ofa.js, utilizado para gestionar el estado y el enrutamiento de la aplicación</p>
+        <a href="./others/app.md">Componente o-app</a>
+        <p>Componente raíz de la aplicación ofa.js, utilizado para administrar el estado de la aplicación y las rutas</p>
       </api-item>
       <api-item>
-        <a href="./others/page.md">componente de página o</a>
+        <a href="./others/page.md">Componente o-page</a>
         <p>Componente de página de ofa.js, utilizado para crear páginas de aplicaciones de una sola página</p>
+      </api-item>
+      <api-item>
+        <a href="./others/module-return.md">Atributos del objeto de retorno del módulo</a>
+        <p>Resumen de los atributos del objeto retornado por los módulos de página y de componente</p>
       </api-item>
       <api-item>
         <a href="./others/form-data.md">formData</a>
@@ -203,11 +207,11 @@
       </api-item>
       <api-item>
         <a href="./others/is.md">is</a>
-        <p>Comprueba si el elemento coincide con el selector especificado</p>
+        <p>Determina si el elemento coincide con un selector especificado</p>
       </api-item>
       <api-item>
         <a href="./others/refresh.md">refresh</a>
-        <p>Refresca el componente o página actual</p>
+        <p>Actualiza el componente o la página actual</p>
       </api-item>
       <api-item>
         <a href="./others/path.md">PATH</a>
@@ -215,15 +219,15 @@
       </api-item>
       <api-item>
         <a href="./others/extend.md">extend</a>
-        <p>Extiende la funcionalidad de ofa.js</p>
+        <p>Extiende las funcionalidades de ofa.js</p>
       </api-item>
       <api-item>
         <a href="./others/version.md">version</a>
         <p>Obtiene el número de versión de ofa.js</p>
       </api-item>
       <api-item>
-        <a href="./others/stanz.md">Características de los datos de instancia</a>
-        <p>Stanz es la característica de datos reactivos de ofa.js, que admite la actualización automática de datos</p>
+        <a href="./others/stanz.md">Característica de datos de instancia</a>
+        <p>Stanz es la característica de datos reactivos de ofa.js, que soporta la actualización automática de datos</p>
       </api-item>
     </api-list>
   </api-container>

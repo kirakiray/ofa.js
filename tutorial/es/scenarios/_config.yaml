@@ -1,4 +1,4 @@
-- name: Ventajas de ofa.js para la IA
+- name: Ventajas de usar ofa.js con IA
   url: ./more-suitable-for-ai.md
-- name: Prompts de IA para proyectos de ofa.js
-  url: ./use-ofa.js-in-project.md
+- name: Habilidades de IA al usar ofa.js en proyectos
+  url: ./ai-skill-usage.md

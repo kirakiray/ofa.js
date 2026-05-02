@@ -80,6 +80,8 @@
      url: ./others/app.md
    - name: o-pageコンポーネント
      url: ./others/page.md
+   - name: モジュール戻り値オブジェクトのプロパティ
+     url: ./others/module-return.md
    - name: formData
      url: ./others/form-data.md
    - name: tag
