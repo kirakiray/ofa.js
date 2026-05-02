@@ -85,14 +85,12 @@
         <button class="btn" on:click="removeItem">删除最后</button>
       </div>
       <o-fill :value="todoList">
-        <template>
-          <todo-item
-            attr:index="$index"
-            :text="$data.text"
-            sync:completed="$data.completed"
-            on:remove="removeTodoItem($index)"
-          ></todo-item>
-        </template>
+        <todo-item
+          attr:index="$index"
+          :text="$data.text"
+          sync:completed="$data.completed"
+          on:remove="$host.removeTodoItem($index)"
+        ></todo-item>
       </o-fill>
     </div>
 
