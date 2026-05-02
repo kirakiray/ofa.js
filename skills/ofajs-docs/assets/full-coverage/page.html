@@ -126,8 +126,8 @@
           inputValue: "初始值",
           syncValue: "双向绑定值",
           todoList: [
-            { text: "学习 ofa.js", completed: false },
-            { text: "创建组件", completed: true },
+            { content: "学习 ofa.js", completed: false },
+            { content: "创建组件", completed: true },
           ],
           lifecycleLogs: "",
         },
@@ -149,7 +149,7 @@
           },
           addItem() {
             this.todoList.push({
-              text: `新项目 ${this.todoList.length + 1}`,
+              content: `新项目 ${this.todoList.length + 1}`,
               completed: false,
             });
           },

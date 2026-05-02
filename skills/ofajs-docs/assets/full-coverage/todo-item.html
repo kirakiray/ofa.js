@@ -37,11 +37,12 @@
     export default {
       tag: "todo-item",
       attrs: {
-        idx: 0,
         content: "",
+      },
+      data: {
+        idx: 0,
         completed: false,
       },
-      data: {},
       proto: {
         removeSelf() {
           this.emit("remove");
