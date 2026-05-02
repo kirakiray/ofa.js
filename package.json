@@ -10,6 +10,7 @@
     "static": "node scripts/static-server",
     "start": "node scripts/start.mjs",
     "test": "node scripts/ci-test",
+    "build-skill": "node scripts/build-skill.js",
     "playwright": "npx playwright test",
     "ncu": "ncu -u xhear drill.js && npm i",
     "router-server": "node ./scripts/router-server"
