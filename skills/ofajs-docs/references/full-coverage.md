@@ -20,11 +20,10 @@
     </style>
   </head>
   <body>
-    <!-- <script
-      src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@main/dist/ofa.min.mjs#debug"
+    <script
+      src="https://cdn.jsdelivr.net/gh/kirakiray/ofa.js@main/dist/ofa.min.mjs"
       type="module"
-    ></script> -->
-    <script type="module" src="/packages/ofa/main.mjs#debug"></script>
+    ></script>
     <o-page src="./page.html"></o-page>
   </body>
 </html>
