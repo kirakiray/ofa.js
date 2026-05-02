@@ -613,6 +613,8 @@ removeTodoItem(index) {
 - 数据和属性相互影响
 - 常用于表单元素
 
+**注意**：避免将 `sync:` 与 `attrs` 属性绑定，防止类型转换导致的循环更新问题（死循环卡死界面）。
+
 #### 3. 属性传递 (`attr:`)
 ```html
 <todo-item attr:idx="$index"></todo-item>
