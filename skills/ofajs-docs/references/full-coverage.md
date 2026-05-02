@@ -29,7 +29,9 @@
   </body>
 </html>
 
+```
 
+```html
 <!-- my-counter.html -->
 <template component>
   <style>
@@ -95,7 +97,9 @@
   </script>
 </template>
 
+```
 
+```html
 <!-- page.html -->
 <template page>
   <l-m src="./my-counter.html"></l-m>
@@ -282,7 +286,9 @@
   </script>
 </template>
 
+```
 
+```html
 <!-- todo-item.html -->
 <template component>
   <style>

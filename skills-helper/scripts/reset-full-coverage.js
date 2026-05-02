@@ -18,7 +18,7 @@ async function main() {
   for (const file of files) {
     const filePath = join(assetsDir, file);
     const content = await readFile(filePath, "utf-8");
-    fileContents.push(`<!-- ${file} -->\n${content}`);
+    fileContents.push(`\`\`\`html\n<!-- ${file} -->\n${content}\n\`\`\``);
   }
 
   const newContent = fileContents.join("\n\n");
@@ -38,7 +38,7 @@ async function main() {
   const before = mdContent.substring(0, startIndex + startMarker.length);
   const after = mdContent.substring(endIndex);
 
-  const updatedContent = `${before}\n\n\`\`\`html\n${newContent}\n\`\`\`\n\n${after}`;
+  const updatedContent = `${before}\n\n${newContent}\n\n${after}`;
 
   await writeFile(targetFile, updatedContent, "utf-8");
 
