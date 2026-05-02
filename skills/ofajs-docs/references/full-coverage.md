@@ -670,8 +670,13 @@ proto: {
 #### 2. 侦听器
 ```javascript
 watch: {
-  count(val, oldVal) {
-    console.log(`count changed: ${oldVal} -> ${val}`);
+  count(val, { watchers }) {
+    if (watchers) {
+      const watcher = watchers[0];
+      console.log(`count changed: ${watcher.oldValue} -> ${val}`);
+    } else {
+      // 没有 watchers 代表是初始化时的赋值监听
+    }
   },
   initialValue(val) {
     this.currentValue = val;
@@ -680,7 +685,9 @@ watch: {
 ```
 **说明**：
 - `watch` 对象定义侦听器
-- 函数参数：新值、旧值
+- 函数参数：`val`（新值）、`{ watchers }`（包含旧值的对象）
+- `watchers[0].oldValue` 获取旧值
+- `watchers` 为空时表示初始化赋值，非数据变化触发
 - 常用于响应数据变化执行副作用
 
 ---
